@@ -11,10 +11,10 @@ import {
 interface ModalProps {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  title: string;
-  subtitle: string;
-  actionText: string;
-  size:
+  title?: string;
+  subtitle?: string;
+  actionText?: string;
+  size?:
     | "xs"
     | "sm"
     | "md"
@@ -28,20 +28,20 @@ interface ModalProps {
     | undefined;
   children: JSX.Element;
   actionForm: () => void;
-  isHaveCloseButton?: boolean;
+  hideActionButton?: boolean;
   actionButtonDisabled: boolean;
 }
 
 export default function ModalComponent({
   visible,
   setVisible,
-  title,
-  subtitle,
-  actionText,
+  title = "",
+  subtitle = "",
+  actionText = "",
   children,
   size = "md",
   actionForm,
-  isHaveCloseButton = false,
+  hideActionButton = false,
   actionButtonDisabled,
 }: ModalProps) {
   const { onOpenChange } = useDisclosure();
@@ -59,6 +59,7 @@ export default function ModalComponent({
         onClose={closeHandler}
         size={size}
         onOpenChange={onOpenChange}
+        scrollBehavior="inside"
       >
         <ModalContent>
           {(onClose) => (
@@ -80,7 +81,10 @@ export default function ModalComponent({
                   Close
                 </Button>
                 <Button
-                  style={{ backgroundColor: "#5c5edc" }}
+                  style={{
+                    display: hideActionButton ? "none" : "block",
+                    backgroundColor: "#5c5edc",
+                  }}
                   onPress={actionButtonForm}
                   disabled={actionButtonDisabled}
                 >

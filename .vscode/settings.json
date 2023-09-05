@@ -2,11 +2,15 @@
   "typescript.tsdk": "node_modules/.pnpm/typescript@4.9.5/node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "cSpell.words": [
+    "conio",
     "contabil",
+    "ICTP",
     "imac",
     "Macbook",
     "Malka",
+    "Saifr",
     "Sensei",
-    "Solucoes"
+    "Solucoes",
+    "Udemy"
   ]
 }

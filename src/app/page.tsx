@@ -4,6 +4,7 @@ import AcademicEducation from "./academic-education";
 import Projects from "./projects";
 import Contact from "./contact";
 import Contributing from "./contributing";
+import Courses from "./courses";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <AboutMe />
       <ProfessionalExperience />
       <AcademicEducation />
+      <Courses />
       <Projects />
       <Contributing />
       <Contact />

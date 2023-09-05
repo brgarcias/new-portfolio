@@ -552,3 +552,27 @@ a:hover {
     font-size: 1.8em;
   }
 }
+
+/* Estilização da barra de rolagem */
+/* Estilização da barra de rolagem em navegadores WebKit, como o Google Chrome e o Safari */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #999;
+  border-radius: 6px;
+}
+
+/* Estilização da barra de rolagem em navegadores Firefox */
+/* Observe que isso pode não funcionar em versões mais recentes do Firefox */
+scrollbar-color: #999 transparent;
+
+/* Estilização da barra de rolagem em navegadores Firefox em sistemas MacOS */
+/* Isso pode ser necessário para obter a aparência desejada em sistemas MacOS */
+/* Observe que isso pode não funcionar em versões mais recentes do Firefox */
+scrollbar-width: thin;
