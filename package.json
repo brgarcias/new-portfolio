@@ -2,6 +2,11 @@
   "name": "new-portfolio",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "Bruno Garcia",
+    "email": "bruno-151299@hotmail.com",
+    "url": "https://brgarcias-portfolio.netlify.app/"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,17 +14,30 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-brands-svg-icons": "^6.4.2",
+    "@fortawesome/free-regular-svg-icons": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@nextui-org/react": "^2.1.10",
     "@types/node": "20.5.9",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.15",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
+    "framer-motion": "^10.16.4",
+    "modernizr": "^3.13.0",
     "next": "13.4.19",
     "postcss": "8.4.29",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "sass": "^1.66.1",
+    "sharp": "^0.32.5",
     "tailwindcss": "3.3.3",
     "typescript": "5.2.2"
+  },
+  "devDependencies": {
+    "@types/modernizr": "^3.5.3"
   }
 }
