@@ -34,7 +34,7 @@ export default function Contact() {
           <div className="app">
             <div className="app_inner">
               {tabs.map((tab) => (
-                <Tab key={tab.id} {...tab} />
+                <Tab key={tab.id} {...tab} checked={tab.id === "tab-1"} />
               ))}
             </div>
           </div>

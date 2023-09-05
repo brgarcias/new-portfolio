@@ -10,6 +10,7 @@ interface TabProps {
   title: string;
   subtitle: string;
   extraInfo: string[];
+  checked: boolean;
 }
 
 const robotoCondensed = Roboto_Condensed({
@@ -23,10 +24,11 @@ export default function Tab({
   title,
   subtitle,
   extraInfo,
+  checked,
 }: TabProps) {
   return (
     <>
-      <input id={id} name="buttons" type="radio" />
+      <input id={id} name="buttons" type="radio" defaultChecked={checked} />
       <label htmlFor={id}>
         <div className="app_inner__tab">
           <h2 className={robotoCondensed.className}>
