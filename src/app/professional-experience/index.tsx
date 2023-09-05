@@ -1,14 +1,6 @@
 import Image from "next/image";
 // IMAGES
 import ProfessionalExperienceImg from "@/public/images/professional-experience/professional-experience.png";
-// FONT AWESOME
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCode,
-  faDesktopAlt,
-  faMobileRetro,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
 // SASS
 import "./styles.css";
 import ExperienceItem from "./ExperienceItem";
