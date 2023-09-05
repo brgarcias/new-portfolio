@@ -193,6 +193,10 @@ html.js,
 
 .poster-2 {
   max-height: 100%;
+  position: absolute;
+  bottom: 0px;
+  left: 60%;
+  max-width: 40%;
 }
 
 /* Menu button */
@@ -336,7 +340,8 @@ html.js,
   font-weight: normal;
   font-style: normal;
   src: url("../../public/fonts/bpicons/bpicons.eot");
-  src: url("../../public/fonts/bpicons/bpicons.eot?#iefix") format("embedded-opentype"),
+  src: url("../../public/fonts/bpicons/bpicons.eot?#iefix")
+      format("embedded-opentype"),
     url("../../public/fonts/bpicons/bpicons.woff") format("woff"),
     url("../../public/fonts/bpicons/bpicons.ttf") format("truetype"),
     url("../../public/fonts/bpicons/bpicons.svg#bpicons") format("svg");

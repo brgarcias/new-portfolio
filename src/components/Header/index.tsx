@@ -209,38 +209,38 @@ export default function Header() {
     <>
       <nav className="pages-nav">
         <div className="pages-nav__item">
-          <Link className="link link--page" href="/">
+          <Link className="link link--page" href="#about-me">
             About Me
           </Link>
         </div>
         <div className="pages-nav__item">
-          <Link className="link link--page" href="/professional-experience">
+          <Link className="link link--page" href="#professional-experience">
             Professional Experience
           </Link>
         </div>
         <div className="pages-nav__item">
-          <Link className="link link--page" href="/academic-education">
+          <Link className="link link--page" href="#academic-education">
             Academic Education
           </Link>
         </div>
         <div className="pages-nav__item">
-          <Link className="link link--page" href="/courses">
+          <Link className="link link--page" href="#courses">
             Courses &amp; Certifications
           </Link>
         </div>
         <div className="pages-nav__item">
-          <Link className="link link--page" href="/projects">
+          <Link className="link link--page" href="#projects">
             Projects
           </Link>
         </div>
         <div className="pages-nav__item">
-          <Link className="link link--page" href="/contributing">
+          <Link className="link link--page" href="#contributing">
             Contributing
           </Link>
         </div>
 
         <div className="pages-nav__item pages-nav__item--small">
-          <Link className="link link--page link--faded" href="/contact">
+          <Link className="link link--page link--faded" href="#contact">
             Contact
           </Link>
         </div>
