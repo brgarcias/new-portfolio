@@ -1,3 +1,5 @@
+import dynamics from "dynamics.js";
+
 export const loadScript = () => {
   const bodyEl: any = document.body;
   const docElem: HTMLElement = window.document.documentElement;
@@ -48,10 +50,8 @@ export const loadScript = () => {
     // index of current item
     current = 0,
     // check if an item is "open"
-    isOpen = false,
-    isFirefox = typeof InstallTrigger !== "undefined",
-    // scale body when zooming into the items, if not Firefox (the performance in Firefox is not very good)
-    bodyScale = isFirefox ? false : 3;
+    isOpen = false;
+  // scale body when zooming into the items, if not Firefox (the performance in Firefox is not very good)
 
   // some helper functions:
   function scrollX() {
@@ -158,9 +158,10 @@ export const loadScript = () => {
     isOpen = true;
 
     // the element that will be transformed
-    var zoomer: any = item.querySelector(".zoomer");
+    var zoomer: HTMLElement | null = item.querySelector(".zoomer");
     // slide screen preview
-    classie.add(zoomer, "zoomer--active");
+    if (!zoomer) return;
+    zoomer.classList.add("zoomer--active");
     // disallow scroll
     if (scrollContainer) {
       scrollContainer.addEventListener("scroll", noscroll);
@@ -168,36 +169,36 @@ export const loadScript = () => {
     // apply transforms
     applyTransforms(zoomer);
     // also scale the body so it looks the camera moves to the item.
-    if (bodyScale) {
-      dynamics.animate(
-        bodyEl,
-        { scale: bodyScale },
-        { type: dynamics.easeInOut, duration: 500 }
-      );
-    }
+    dynamics.animate(
+      bodyEl,
+      { scale: 3 },
+      { type: dynamics.easeInOut, duration: 500 }
+    );
     // after the transition is finished:
     onEndTransition(zoomer, function () {
       // reset body transform
-      if (bodyScale) {
-        dynamics.stop(bodyEl);
-        dynamics.css(bodyEl, { scale: 1 });
+      dynamics.stop(bodyEl);
+      dynamics.css(bodyEl, { scale: 1 });
 
-        // fix for safari (allowing fixed children to keep position)
-        bodyEl.style.WebkitTransform = "none";
-        bodyEl.style.transform = "none";
-      }
+      // fix for safari (allowing fixed children to keep position)
+      bodyEl.style.WebkitTransform = "none";
+      bodyEl.style.transform = "none";
+
       // no scrolling
-      classie.add(bodyEl, "noscroll");
-      classie.add(contentEl, "content--open");
-      var contentItem = document.getElementById(
-        item.getAttribute("data-content")
-      );
-      classie.add(contentItem, "content__item--current");
-      classie.add(contentItem, "content__item--reset");
+      bodyEl.classList.add("noscroll");
+      contentEl.classList.add("content--open");
+      const contentItemAttribute = item.getAttribute("data-content");
+      if (!contentItemAttribute) return;
+      const contentItem: HTMLElement | null =
+        document.getElementById(contentItemAttribute);
+      if (contentItem) {
+        contentItem.classList.add("content__item--current");
+        contentItem.classList.add("content__item--reset");
+      }
 
+      if (!zoomer) return;
       // reset zoomer transform - back to its original position/transform without a transition
-      classie.add(zoomer, "zoomer--notrans");
-      zoomer.style.WebkitTransform = "translate3d(0,0,0) scale3d(1,1,1)";
+      zoomer.classList.add("zoomer--notrans");
       zoomer.style.transform = "translate3d(0,0,0) scale3d(1,1,1)";
     });
   }
@@ -205,34 +206,33 @@ export const loadScript = () => {
   // closes the item/content
   function closeContent() {
     var contentItem = contentEl?.querySelector(".content__item--current"),
-      zoomer = items[current].querySelector(".zoomer");
+      zoomer: HTMLElement | null = items[current].querySelector(".zoomer");
 
     if (contentEl) {
-      classie.remove(contentEl, "content--open");
+      contentEl.classList.remove("content--open");
     }
     if (contentItem) {
-      classie.remove(contentItem, "content__item--current");
+      contentItem.classList.remove("content__item--current");
     }
     if (bodyEl) {
-      classie.remove(bodyEl, "noscroll");
+      bodyEl.classList.remove("noscroll");
     }
 
-    if (bodyScale) {
-      // reset fix for safari (allowing fixed children to keep position)
-      if (bodyEl) {
-        bodyEl.style.WebkitTransform = "";
-        bodyEl.style.transform = "";
-      }
+    // reset fix for safari (allowing fixed children to keep position)
+    if (bodyEl) {
+      bodyEl.style.WebkitTransform = "";
+      bodyEl.style.transform = "";
     }
 
     /* fix for safari flickering */
     var nobodyscale = true;
+    if (!zoomer) return;
     applyTransforms(zoomer, nobodyscale);
     /* fix for safari flickering */
 
     // wait for the inner content to finish the transition
-    onEndTransition(contentItem, function (ev) {
-      classie.remove(this, "content__item--reset");
+    onEndTransition(contentItem, function () {
+      // this.classList.remove("content__item--reset");
 
       // reset scrolling permission
       lockScroll = false;
@@ -240,8 +240,8 @@ export const loadScript = () => {
         scrollContainer.removeEventListener("scroll", noscroll);
       }
 
+      if (!zoomer) return;
       /* fix for safari flickering */
-      zoomer.style.WebkitTransform = "translate3d(0,0,0) scale3d(1,1,1)";
       zoomer.style.transform = "translate3d(0,0,0) scale3d(1,1,1)";
       /* fix for safari flickering */
 
@@ -250,23 +250,21 @@ export const loadScript = () => {
 
       // animate/scale down the item
       setTimeout(function () {
-        classie.remove(zoomer, "zoomer--notrans");
-        classie.remove(zoomer, "zoomer--active");
-        zoomer.style.WebkitTransform = "translate3d(0,0,0) scale3d(1,1,1)";
+        zoomer?.classList.remove("zoomer--notrans");
+        zoomer?.classList.remove("zoomer--active");
+        if (!zoomer) return;
         zoomer.style.transform = "translate3d(0,0,0) scale3d(1,1,1)";
       }, 25);
 
-      if (bodyScale) {
-        dynamics.css(bodyEl, { scale: bodyScale });
-        dynamics.animate(
-          bodyEl,
-          { scale: 1 },
-          {
-            type: dynamics.easeInOut,
-            duration: 500,
-          }
-        );
-      }
+      dynamics.css(bodyEl, { scale: 3 });
+      dynamics.animate(
+        bodyEl,
+        { scale: 1 },
+        {
+          type: dynamics.easeInOut,
+          duration: 500,
+        }
+      );
 
       isOpen = false;
     });
@@ -275,7 +273,7 @@ export const loadScript = () => {
   // applies the necessary transform value to scale the item up
   function applyTransforms(el: HTMLElement, nobodyscale?: boolean) {
     // zoomer area and scale value
-    var zoomerArea = el.querySelector(".zoomer__area"),
+    var zoomerArea: HTMLElement | null = el.querySelector(".zoomer__area"),
       zoomerAreaSize = {
         width: zoomerArea?.offsetWidth || 0,
         height: zoomerArea?.offsetHeight || 0,
@@ -289,12 +287,12 @@ export const loadScript = () => {
           ? win.width / zoomerAreaSize.width
           : win.height / zoomerAreaSize.height;
 
-    if (bodyScale && !nobodyscale) {
-      scaleVal /= bodyScale;
+    if (!nobodyscale) {
+      scaleVal /= 3;
     }
 
     // apply transform
-    el.style.WebkitTransform =
+    el.style.transform =
       "translate3d(" +
       Number(win.width / 2 - (zoomerOffset.left + zoomerAreaSize.width / 2)) +
       "px," +
@@ -319,7 +317,8 @@ export const loadScript = () => {
   // navigate the slider
   function navigate(dir: string) {
     var itemCurrent = items[current],
-      currentEl = itemCurrent.querySelector(".slide__mover"),
+      currentEl: HTMLElement | null =
+        itemCurrent.querySelector(".slide__mover"),
       currentTitleEl = itemCurrent.querySelector(".slide__title");
 
     // update new current value
@@ -330,10 +329,11 @@ export const loadScript = () => {
     }
 
     var itemNext = items[current],
-      nextEl = itemNext.querySelector(".slide__mover"),
+      nextEl: HTMLElement | null = itemNext.querySelector(".slide__mover"),
       nextTitleEl = itemNext.querySelector(".slide__title");
 
     // animate the current element out
+    if (!currentEl) return;
     dynamics.animate(
       currentEl,
       {
@@ -370,6 +370,7 @@ export const loadScript = () => {
 
     // set the right properties for the next element to come in
     dynamics.css(itemNext, { opacity: 1, visibility: "visible" });
+    if (!nextEl) return;
     dynamics.css(nextEl, {
       opacity: 0,
       translateX:
@@ -389,9 +390,9 @@ export const loadScript = () => {
         friction: 600,
         complete: function () {
           items.forEach(function (item) {
-            classie.remove(item, "slide--current");
+            item.classList.remove("slide--current");
           });
-          classie.add(itemNext, "slide--current");
+          itemNext.classList.add("slide--current");
         },
       }
     );

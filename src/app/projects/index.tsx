@@ -14,12 +14,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 // CSS
 import "./styles.css";
+// PROJECTS DATA
 import { projects } from "./projects";
+// COMPONENT
 import renderProjects from "./Projects";
+import { loadScript } from "./loadScript";
 
 export default function Projects() {
   useEffect(() => {
-
+    loadScript();
   }, []);
   return (
     <div className="page" id="projects">
@@ -30,7 +33,7 @@ export default function Projects() {
         </p>
       </header>
 
-      <div className="container">
+      <div className="container-slider">
         <section className="slider">
           {renderProjects(projects)}
 

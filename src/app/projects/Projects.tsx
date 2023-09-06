@@ -18,7 +18,7 @@ export default function renderProjects(data: typeof projects) {
               src={project.previewImage}
               alt={project.title}
               unoptimized
-              width={117}
+              style={{ width: `${project.imageWidth}`, height: `${project.heightWidth}` }}
             />
             <div className="zoomer__area zoomer__area--size-2"></div>
           </div>
