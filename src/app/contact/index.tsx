@@ -13,7 +13,7 @@ export default function Contact() {
         <p className="bp-header__desc">
           My personal information, but if you prefer{" "}
           <a
-            href="https://api.whatsapp.com/send?phone=5511996969301"
+            href="https://api.whatsapp.com/send?phone=5511996969301&text=Hello,%20Bruno!%20Really%20liked%20your%20portfolio."
             target="_blank"
           >
             text me
