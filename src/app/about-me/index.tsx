@@ -1,16 +1,50 @@
 "use client";
+
+// NEXT
 import Image from "next/image";
+// HOOKS
 import { useState } from "react";
+// LODASH
+import { isEmpty } from "lodash";
+// FONTAWESOME
+import {
+  faCheck,
+  faCircleExclamation,
+} from "@fortawesome/free-solid-svg-icons";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 // IMAGES
 import AboutMeImg from "@/public/images/about-me/about-me.png";
 // COMPONENTS
 import ModalComponent from "@/src/components/Modal";
 import Form from "@/src/components/Form";
+import SnackbarFeedback from "@/src/components/SnackBar";
 
 export default function AboutMe() {
   const [visible, setVisible] = useState(false);
+  const [fullNameValue, setFullNameValue] = useState("");
+  const [emailValue, setEmailValue] = useState("");
+  const [feedbackValue, setFeedbackValue] = useState("");
   const [isSubmitting, setSubmitting] = useState(false);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState({
+    open: false,
+    title: "",
+    description: "",
+    icon: faCheck as IconProp,
+    colorIcon: "",
+  });
+  const [errorsState, setErrorsState] = useState({
+    fullNameValue: false,
+    emailValue: false,
+    feedbackValue: false,
+  });
+  const validateField = (fieldName: string, value: any) => {
+    if (!isEmpty(value))
+      return setErrorsState((prevState) => ({
+        ...prevState,
+        [fieldName]: false,
+      }));
+    setErrorsState((prevState) => ({ ...prevState, [fieldName]: true }));
+  };
 
   const downloadZIP = async () => {
     try {
@@ -37,60 +71,68 @@ export default function AboutMe() {
     }
   };
 
-  const submitForm = async () => {
-    // const formFieldsValidated = validateFormFields(formData);
-    // setCanSendFormData((prevState) => ({
-    //   ...prevState,
-    //   ...formFieldsValidated,
-    // }));
-    // if (Object.values(formFieldsValidated).every((value) => value === false)) {
-    //   setSubmitting(true);
-    // }
-    // await sendForm(formData)
-    //   .then((r) => {
-    //     if (r.status <= 300) {
-    //       setSnackbarData({
-    //         message: f('SnackBarSuccess'),
-    //         severity: 'success',
-    //         variant: 'filled',
-    //         duration: 3000,
-    //       });
-    //       setOpenSnackbar(true);
-    //       setVisible(false);
-    //       setSubmitting(false);
-    //       return;
-    //     }
-    //     setSnackbarData({
-    //       message: f('SnackBarError'),
-    //       severity: 'error',
-    //       variant: 'filled',
-    //       duration: 3000,
-    //     });
-    //     setOpen(true);
-    //     setVisible(true);
-    //     setSubmitting(false);
-    //   })
-    //   .catch((error) => {
-    //     if (error?.name === 'FormValidationError' && error?.status === 500) {
-    //       setVisible(true);
-    //       setSubmitting(false);
-    //       return;
-    //     }
-    //     setSnackbarData({
-    //       message: f('SnackBarError'),
-    //       severity: 'error',
-    //       variant: 'filled',
-    //       duration: 3000,
-    //     });
-    //     setOpen(true);
-    //     setVisible(true);
-    //     setSubmitting(false);
-    //   });
+  const submitForm = async (data: any) => {
+    data.preventDefault();
+    setSubmitting(true);
+    Object.entries(errorsState).map((item, index) => {
+      validateField(item[0], data.target[index].value);
+    });
+    if (Object.values(errorsState).every((item) => item === false)) {
+      const dataToSend = {
+        fullName: fullNameValue,
+        email: emailValue,
+        feedback: feedbackValue,
+      };
+      fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          "form-name": "contact",
+          ...dataToSend,
+        }).toString(),
+      })
+        .then((response) => {
+          if (response.ok) {
+            setOpenSnackbar({
+              open: true,
+              title: "Message Submitted",
+              description: "Thank you very much for your feedback!",
+              icon: faCheck,
+              colorIcon: "#66bb6a",
+            });
+          } else {
+            console.error("Error on sending forms: ", response);
+            setOpenSnackbar({
+              open: true,
+              title: "We had a problem",
+              description: "An error occurred while sending your message!",
+              icon: faCircleExclamation,
+              colorIcon: "rgb(230, 154, 147)",
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error submitting form:", error);
+          setOpenSnackbar({
+            open: true,
+            title: "We had a problem",
+            description: "An error occurred while sending your message!",
+            icon: faCircleExclamation,
+            colorIcon: "rgb(230, 154, 147)",
+          });
+        })
+        .finally(() => setSubmitting(false));
+    }
+    Object.entries(errorsState).map((item, index) => {
+      validateField(item[0], data.target[index].value);
+    });
+    setSubmitting(false);
   };
 
   const openModalFeedback = () => setVisible(true);
   return (
     <div className="bp-header page" id="about-me">
+      <SnackbarFeedback content={openSnackbar} setOpen={setOpenSnackbar} />
       <header className="cf">
         <span className="bp-header__present">
           Bruno Garcia
@@ -152,8 +194,26 @@ export default function AboutMe() {
         size="md"
         actionForm={submitForm}
         actionButtonDisabled={isSubmitting}
+        hideCloseButton
+        hideActionButton
       >
-        <Form />
+        <Form
+          submitForm={submitForm}
+          isSubmitting={isSubmitting}
+          formData={{
+            emailValue,
+            feedbackValue,
+            fullNameValue,
+            setEmailValue,
+            setFeedbackValue,
+            setFullNameValue,
+          }}
+          actionForm={submitForm}
+          validateField={validateField}
+          onClose={() => setVisible(false)}
+          actionButtonDisabled={isSubmitting}
+          errorsState={errorsState}
+        />
       </ModalComponent>
       <Image
         className="poster"

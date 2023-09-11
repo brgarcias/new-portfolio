@@ -27,9 +27,10 @@ interface ModalProps {
     | "full"
     | undefined;
   children: JSX.Element;
-  actionForm: () => void;
+  actionForm: (data: any) => Promise<void>;
   hideActionButton?: boolean;
   actionButtonDisabled: boolean;
+  hideCloseButton?: boolean;
 }
 
 export default function ModalComponent({
@@ -43,10 +44,11 @@ export default function ModalComponent({
   actionForm,
   hideActionButton = false,
   actionButtonDisabled,
+  hideCloseButton = false,
 }: ModalProps) {
   const { onOpenChange } = useDisclosure();
   const closeHandler = () => setVisible(false);
-  const actionButtonForm = () => actionForm();
+  const actionButtonForm = (data: any) => actionForm(data);
 
   return (
     <>
@@ -77,7 +79,14 @@ export default function ModalComponent({
               </ModalHeader>
               <ModalBody>{children}</ModalBody>
               <ModalFooter>
-                <Button color="default" variant="light" onPress={onClose}>
+                <Button
+                  style={{
+                    display: hideCloseButton ? "none" : "block",
+                  }}
+                  color="default"
+                  variant="light"
+                  onPress={onClose}
+                >
                   Close
                 </Button>
                 <Button
