@@ -38,7 +38,15 @@ export default function AboutMe() {
     feedback: false,
   });
   const validateField = (fieldName: string, value: any) => {
-    setErrorsState((prevState) => ({ ...prevState, [fieldName]: isEmpty(value) }));
+    setErrorsState((prevState) => ({
+      ...prevState,
+      [fieldName]: isEmpty(value),
+    }));
+  };
+  const callValidateFields = (formDataParsed: Record<string, string>) => {
+    Object.entries(errorsState).map((item) => {
+      validateField(item[0], formDataParsed[item[0]]);
+    });
   };
 
   const downloadZIP = async () => {
@@ -68,65 +76,53 @@ export default function AboutMe() {
 
   const submitForm = async (data: any) => {
     data.preventDefault();
-    setSubmitting(true);
     const formData = new FormData(data.target);
-    const formDataParsed: any = {};
+    const formDataParsed: Record<string, string> = {};
+
     formData.forEach(function (value, index) {
-      formDataParsed[index] = value;
+      formDataParsed[index] = value.toString();
     });
-    Object.entries(errorsState).map((item) => {
-      validateField(item[0], formDataParsed[item[0]]);
-    });
-    if (Object.values(errorsState).every((item) => item === false)) {
-      const dataToSend = {
-        fullName: formDataParsed.fullName,
-        email: formDataParsed.email,
-        feedback: formDataParsed.feedback,
-      };
-      fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          "form-name": "contact",
-          ...dataToSend,
-        }).toString(),
-      })
-        .then((response) => {
-          if (response.ok) {
-            setOpenSnackbar({
-              open: true,
-              title: "Message Submitted",
-              description: "Thank you very much for your feedback!",
-              icon: faCheck,
-              colorIcon: "#66bb6a",
-            });
-          } else {
-            console.error("Error on sending forms: ", response);
-            setOpenSnackbar({
-              open: true,
-              title: "We had a problem",
-              description: "An error occurred while sending your message!",
-              icon: faCircleExclamation,
-              colorIcon: "rgb(230, 154, 147)",
-            });
-          }
-        })
-        .catch((error) => {
-          console.error("Error submitting form:", error);
+
+    const validateAndSubmit = async () => {
+      try {
+        const response = await fetch("/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams(formDataParsed).toString(),
+        });
+
+        if (response.ok) {
           setOpenSnackbar({
             open: true,
-            title: "We had a problem",
-            description: "An error occurred while sending your message!",
-            icon: faCircleExclamation,
-            colorIcon: "rgb(230, 154, 147)",
+            title: "Message Submitted",
+            description: "Thank you very much for your feedback!",
+            icon: faCheck,
+            colorIcon: "#66bb6a",
           });
-        })
-        .finally(() => setSubmitting(false));
+        } else {
+          console.error("Error on sending forms: ", response);
+          throw new Error("An error occurred while sending your message");
+        }
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        setOpenSnackbar({
+          open: true,
+          title: "We had a problem",
+          description: "An error occurred while sending your message!",
+          icon: faCircleExclamation,
+          colorIcon: "rgb(230, 154, 147)",
+        });
+      } finally {
+        setSubmitting(false);
+        setVisible(false);
+      }
+    };
+    callValidateFields(formDataParsed);
+
+    if (Object.values(formDataParsed).every((item) => !isEmpty(item))) {
+      setSubmitting(true);
+      validateAndSubmit();
     }
-    Object.entries(errorsState).map((item) => {
-      validateField(item[0], formDataParsed[item[0]]);
-    });
-    setSubmitting(false);
   };
 
   const openModalFeedback = () => setVisible(true);
