@@ -16,7 +16,7 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  manifest: "public/favicon/manifest.json",
+  manifest: "favicon/manifest.json",
   themeColor: "#ffffff",
   icons: [
     {
