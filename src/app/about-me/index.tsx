@@ -217,6 +217,26 @@ export default function AboutMe() {
         unoptimized
         priority
       />
+
+
+
+        <Form
+          hidden
+          submitForm={submitForm}
+          isSubmitting={isSubmitting}
+          formData={{
+            emailValue,
+            feedbackValue,
+            fullNameValue,
+            setEmailValue,
+            setFeedbackValue,
+            setFullNameValue,
+          }}
+          validateField={validateField}
+          onClose={() => setVisible(false)}
+          actionButtonDisabled={isSubmitting}
+          errorsState={errorsState}
+        />
     </div>
   );
 }
