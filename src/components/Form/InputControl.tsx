@@ -20,7 +20,7 @@ interface InputControlProps {
   helperText: string;
   onChangeHandler: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   onFocusHandler: FocusEventHandler;
-  onBlurHandler: FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  onBlurHandler: any;
   disabled: boolean;
 }
 

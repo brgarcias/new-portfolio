@@ -10,6 +10,7 @@ import { Button } from "@nextui-org/react";
 import InputControl from "./InputControl";
 // CSS
 import "./styles.css";
+// UTILS
 import { formatEmail } from "./utils";
 
 interface FormDataValue {
@@ -95,7 +96,7 @@ const Form: FC<FormProps> = ({
         disabled={isSubmitting}
         onChangeHandler={(e) => handleInputChange("fullName", e.target.value)}
         onFocusHandler={(_e) => handleInputFocus("fullName")}
-        onBlurHandler={(e) => handleInputBlur("fullName", e.target.value)}
+        onBlurHandler={(e: any) => handleInputBlur("fullName", e.target.value)}
         error={errorsState.fullName}
         helperText="Please, write your name."
       />
@@ -110,7 +111,7 @@ const Form: FC<FormProps> = ({
         disabled={isSubmitting}
         onChangeHandler={(e) => handleInputChange("email", e.target.value)}
         onFocusHandler={(_e) => handleInputFocus("email")}
-        onBlurHandler={(e) => handleInputBlur("email", e.target.value)}
+        onBlurHandler={(e: any) => handleInputBlur("email", e.target.value)}
         error={errorsState.email}
         helperText="Please, tell me your email."
       />
@@ -126,7 +127,7 @@ const Form: FC<FormProps> = ({
         disabled={isSubmitting}
         onChangeHandler={(e) => handleInputChange("feedback", e.target.value)}
         onFocusHandler={(_e) => handleInputFocus("feedback")}
-        onBlurHandler={(e) => handleInputBlur("feedback", e.target.value)}
+        onBlurHandler={(e: any) => handleInputBlur("feedback", e.target.value)}
         error={errorsState.feedback}
         helperText="Please, give me your feedback."
       />
