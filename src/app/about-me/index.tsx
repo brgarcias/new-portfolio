@@ -52,7 +52,7 @@ export default function AboutMe() {
   const downloadZIP = async () => {
     try {
       const response = await fetch(
-        "public/documents/cv/Bruno_Garcia_Resume.zip",
+        "documents/cv/Bruno_Garcia_Resume.zip",
         {
           method: "GET",
           headers: {
@@ -65,7 +65,7 @@ export default function AboutMe() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "Bruno_Resume.zip";
+      a.download = "Bruno_Garcia_Resume.zip";
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
