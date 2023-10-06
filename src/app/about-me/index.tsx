@@ -33,17 +33,12 @@ export default function AboutMe() {
     colorIcon: "",
   });
   const [errorsState, setErrorsState] = useState({
-    fullNameValue: false,
-    emailValue: false,
-    feedbackValue: false,
+    fullName: false,
+    email: false,
+    feedback: false,
   });
   const validateField = (fieldName: string, value: any) => {
-    if (!isEmpty(value))
-      return setErrorsState((prevState) => ({
-        ...prevState,
-        [fieldName]: false,
-      }));
-    setErrorsState((prevState) => ({ ...prevState, [fieldName]: true }));
+    setErrorsState((prevState) => ({ ...prevState, [fieldName]: isEmpty(value) }));
   };
 
   const downloadZIP = async () => {
@@ -74,14 +69,19 @@ export default function AboutMe() {
   const submitForm = async (data: any) => {
     data.preventDefault();
     setSubmitting(true);
-    Object.entries(errorsState).map((item, index) => {
-      validateField(item[0], data.target[index].value);
+    const formData = new FormData(data.target);
+    const formDataParsed: any = {};
+    formData.forEach(function (value, index) {
+      formDataParsed[index] = value;
+    });
+    Object.entries(errorsState).map((item) => {
+      validateField(item[0], formDataParsed[item[0]]);
     });
     if (Object.values(errorsState).every((item) => item === false)) {
       const dataToSend = {
-        fullName: fullNameValue,
-        email: emailValue,
-        feedback: feedbackValue,
+        fullName: formDataParsed.fullName,
+        email: formDataParsed.email,
+        feedback: formDataParsed.feedback,
       };
       fetch("/", {
         method: "POST",
@@ -123,8 +123,8 @@ export default function AboutMe() {
         })
         .finally(() => setSubmitting(false));
     }
-    Object.entries(errorsState).map((item, index) => {
-      validateField(item[0], data.target[index].value);
+    Object.entries(errorsState).map((item) => {
+      validateField(item[0], formDataParsed[item[0]]);
     });
     setSubmitting(false);
   };
@@ -208,7 +208,6 @@ export default function AboutMe() {
             setFeedbackValue,
             setFullNameValue,
           }}
-          actionForm={submitForm}
           validateField={validateField}
           onClose={() => setVisible(false)}
           actionButtonDisabled={isSubmitting}

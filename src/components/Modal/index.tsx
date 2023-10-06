@@ -78,7 +78,11 @@ export default function ModalComponent({
                 </p>
               </ModalHeader>
               <ModalBody>{children}</ModalBody>
-              <ModalFooter>
+              <ModalFooter
+                style={{
+                      display: hideActionButton && hideCloseButton ? "none" : "flex",
+                    }}
+              >
                 <Button
                   style={{
                     display: hideCloseButton ? "none" : "block",

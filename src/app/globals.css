@@ -13,6 +13,15 @@ html.js,
     "cv04", "cv05", "cv06", "cv09", "cv10";
 }
 
+img {
+  user-drag: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
 /* Pages nav */
 
 .pages-nav {

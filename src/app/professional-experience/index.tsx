@@ -1,7 +1,7 @@
 import Image from "next/image";
 // IMAGES
 import ProfessionalExperienceImg from "@/public/images/professional-experience/professional-experience.png";
-// SASS
+// CSS
 import "./styles.css";
 import ExperienceItem from "./ExperienceItem";
 import { experiences } from "./experiences";

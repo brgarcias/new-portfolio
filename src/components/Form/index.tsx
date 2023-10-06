@@ -8,6 +8,9 @@ import { faEnvelope, faUserAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@nextui-org/react";
 // COMPONENT
 import InputControl from "./InputControl";
+// CSS
+import "./styles.css";
+import { formatEmail } from "./utils";
 
 interface FormDataValue {
   emailValue: string;
@@ -24,7 +27,6 @@ interface FormProps {
   formData: FormDataValue;
   errorsState: Record<string, boolean>;
   validateField: (input: string, value: any) => void;
-  actionForm: (data: any) => Promise<void>;
   onClose: () => void;
   actionButtonDisabled: boolean;
 }
@@ -35,7 +37,6 @@ const Form: FC<FormProps> = ({
   formData,
   validateField,
   errorsState,
-  actionForm,
   onClose,
   actionButtonDisabled,
 }) => {
@@ -46,7 +47,7 @@ const Form: FC<FormProps> = ({
         formData.setFullNameValue(value);
         break;
       case "email":
-        formData.setEmailValue(value);
+        formData.setEmailValue(formatEmail(value, validateField));
         break;
       case "feedback":
         formData.setFeedbackValue(value);
@@ -74,7 +75,6 @@ const Form: FC<FormProps> = ({
     validateField(inputName, value);
   };
 
-  const actionButtonForm = (data: any) => actionForm(data);
   return (
     <form
       name="contact"
@@ -96,7 +96,7 @@ const Form: FC<FormProps> = ({
         onChangeHandler={(e) => handleInputChange("fullName", e.target.value)}
         onFocusHandler={(_e) => handleInputFocus("fullName")}
         onBlurHandler={(e) => handleInputBlur("fullName", e.target.value)}
-        error={errorsState.fullNameValue}
+        error={errorsState.fullName}
         helperText="Please, write your name."
       />
       <Spacer y={2} />
@@ -111,7 +111,7 @@ const Form: FC<FormProps> = ({
         onChangeHandler={(e) => handleInputChange("email", e.target.value)}
         onFocusHandler={(_e) => handleInputFocus("email")}
         onBlurHandler={(e) => handleInputBlur("email", e.target.value)}
-        error={errorsState.emailValue}
+        error={errorsState.email}
         helperText="Please, tell me your email."
       />
       <Spacer y={2} />
@@ -127,8 +127,8 @@ const Form: FC<FormProps> = ({
         onChangeHandler={(e) => handleInputChange("feedback", e.target.value)}
         onFocusHandler={(_e) => handleInputFocus("feedback")}
         onBlurHandler={(e) => handleInputBlur("feedback", e.target.value)}
-        error={errorsState.feedbackValue}
-        helperText="Please, write your feedback."
+        error={errorsState.feedback}
+        helperText="Please, give me your feedback."
       />
       <div
         style={{
@@ -136,22 +136,20 @@ const Form: FC<FormProps> = ({
           flexDirection: "row",
           justifyContent: "end",
           marginTop: "20px",
+          marginBottom: "5px",
         }}
       >
         <Button color="default" variant="light" onPress={onClose}>
           Close
         </Button>
         <Spacer x={2} />
-        <Button
-          style={{
-            backgroundColor: "#5c5edc",
-          }}
-          type="submit"
-          onPress={actionButtonForm}
+        <button
+          className="action-button"
           disabled={actionButtonDisabled}
+          type="submit"
         >
           Send
-        </Button>
+        </button>
       </div>
       <div data-netlify-recaptcha="true" />
     </form>

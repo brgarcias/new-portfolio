@@ -18,9 +18,9 @@ interface InputControlProps {
   isTextarea?: boolean;
   error: boolean;
   helperText: string;
-  onChangeHandler: ChangeEventHandler<HTMLInputElement>;
+  onChangeHandler: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   onFocusHandler: FocusEventHandler;
-  onBlurHandler: FocusEventHandler<HTMLInputElement>;
+  onBlurHandler: FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   disabled: boolean;
 }
 
@@ -39,35 +39,34 @@ export default function InputControl({
   onFocusHandler,
   onBlurHandler,
 }: InputControlProps) {
-  return isTextarea ? (
+  return (
     <div>
-      <Textarea
-        label={label}
-        name={name}
-        placeholder={placeholder}
-        variant={variant}
-        minRows={4}
-        onChange={onChangeHandler}
-        disabled={disabled}
-        onFocus={onFocusHandler}
-        onBlur={onBlurHandler}
-      />
-      <HelperText error={error} helperText={helperText} />
-    </div>
-  ) : (
-    <div>
-      <Input
-        endContent={<FontAwesomeIcon icon={icon} />}
-        label={label}
-        name={name}
-        placeholder={placeholder}
-        variant={variant}
-        type={type}
-        onChange={onChangeHandler}
-        disabled={disabled}
-        onFocus={onFocusHandler}
-        onBlur={onBlurHandler}
-      />
+      {isTextarea ? (
+        <Textarea
+          label={label}
+          name={name}
+          placeholder={placeholder}
+          variant={variant}
+          minRows={4}
+          onChange={onChangeHandler}
+          disabled={disabled}
+          onFocus={onFocusHandler}
+          onBlur={onBlurHandler}
+        />
+      ) : (
+        <Input
+          endContent={<FontAwesomeIcon icon={icon} />}
+          label={label}
+          name={name}
+          placeholder={placeholder}
+          variant={variant}
+          type={type}
+          onChange={onChangeHandler}
+          disabled={disabled}
+          onFocus={onFocusHandler}
+          onBlur={onBlurHandler}
+        />
+      )}
       <HelperText error={error} helperText={helperText} />
     </div>
   );

@@ -30,7 +30,7 @@ export default function Course(data: (typeof courses)[0]) {
         visible={visible}
         setVisible={setVisible}
         size="5xl"
-        actionForm={() => null}
+        actionForm={async () => {return}}
         actionButtonDisabled={false}
         hideActionButton={true}
       >
