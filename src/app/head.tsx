@@ -6,7 +6,7 @@ export default function Head() {
       <meta name="msapplication-TileColor" content="#ffffff" />
       <meta
         name="msapplication-TileImage"
-        content="/public/favicon/ms-icon-144x144.png"
+        content="favicon/ms-icon-144x144.png"
       />
     </>
   );
