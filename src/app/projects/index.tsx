@@ -70,13 +70,13 @@ export default function Projects() {
                 <h2>{project.insideTitle}</h2>
                 <h3>{project.insideSubtitle}</h3>
                 <p>{project.description}</p>
-                <p>
+                <p style={{ marginTop: "15px" }}>
                   <a
                     href={project.websiteLink}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    See more about the website &xrarr;
+                    See more about the website &rarr;
                   </a>
                 </p>
               </div>

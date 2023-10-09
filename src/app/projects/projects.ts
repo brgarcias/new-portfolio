@@ -19,35 +19,49 @@ import MalkaImg from "@/public/images/projects/malka.png";
 export const projects = [
   {
     contentId: "content-1",
-    titleSpan: "Soluções Integradas",
+    titleSpan: "Integrated Solutions",
     title: "CSS",
     image: iPhoneImg,
     previewImage: CssPreviewImg,
     imageWidth: "117px",
     heightWidth: "auto",
     insideImage: CssSolucoesImg,
-    insideTitle: "CSS - Soluções Integradas",
-    insideSubtitle: "Serviços especializados para terminais",
-    description: "Primeiro site que realizei sozinho e do zero...",
+    insideTitle: "CSS - Integrated Solutions",
+    insideSubtitle: "Specialized services for terminals",
+    description: `
+      This was the first website I developed entirely on my own,
+      starting from scratch. Since the company offers a wide range of services,
+      I had to create multiple pages to accommodate all the information. The
+      service names were quite lengthy, which challenged me to ensure that the
+      design was responsive and that the layout of the menus (header, footer, and sidebar)
+      was correct in all situations.
+    `,
     websiteLink: "http://csssolucoes.com.br/",
   },
   {
     contentId: "content-2",
-    titleSpan: "Organização Contábil",
+    titleSpan: "Accounting Organization",
     title: "Sensei",
     image: iPadImg,
     imageWidth: "152px",
     heightWidth: "auto",
     previewImage: SenseiPreviewImg,
     insideImage: SenseiContabilImg,
-    insideTitle: "Sensei Organização Contábil",
-    insideSubtitle: "Empresa de contabilidade",
-    description: "Primeira vez que implemento um site responsivo...",
+    insideTitle: "Sensei Accounting Organization",
+    insideSubtitle: "Accounting firm",
+    description: `
+      This was my first time implementing a responsive website.
+      During this occasion, I had to deal with several responsiveness
+      issues, especially with the breadcrumb, where both the images
+      and the text/title needed significant improvements. Additionally,
+      it was also my first time creating a drop-down menu, which can
+      be seen in the "Services" tab.
+    `,
     websiteLink: "https://www.senseicontabil.com.br/",
   },
   {
     contentId: "content-3",
-    titleSpan: "Reparo de Smartphone",
+    titleSpan: "Smartphone Repair",
     title: "Reparofone",
     image: MacbookImg,
     imageWidth: "321px",
@@ -55,13 +69,22 @@ export const projects = [
     previewImage: ReparofonePreviewImg,
     insideImage: ReparofoneImg,
     insideTitle: "Reparofone",
-    insideSubtitle: "Reparofone de Smartphones",
-    description: "Primeira página feita 100% em React e primeira atuação...",
+    insideSubtitle: "Smartphone Repair",
+    description: `
+      This was my first page developed entirely in
+      React and my first experience working as a Full-Stack
+      developer. On the frontend side, I used technologies
+      and libraries associated with React, including Redux
+      for application state management, Material UI for creating
+      components and styling, and GraphQL for consuming APIs.
+      For building the APIs and the backend structure, I used
+      PHP with the Laravel framework and a MySQL database.
+    `,
     websiteLink: "https://reparofone.com.br/novaordem",
   },
   {
     contentId: "content-4",
-    titleSpan: "Venda de sucatas",
+    titleSpan: "Sale of Scrap",
     title: "Saldofone",
     image: iMacImg,
     imageWidth: "321px",
@@ -69,13 +92,26 @@ export const projects = [
     previewImage: SaldofonePreviewImg,
     insideImage: SaldofonePreviewImg,
     insideTitle: "Saldofone",
-    insideSubtitle: "Venda de sucatas",
-    description: "Com mais experiência em atuação Full-Stack...",
+    insideSubtitle: "Sale of Scrap",
+    description: `
+      With more experience in Full-Stack development,
+      this project was built using Node.js and NestJS
+      for the backend, and ReactJS and NextJS for the
+      frontend. It marked my first experience with the
+      AWS cloud platform. I utilized various features,
+      such as hosting the frontend in a serverless environment,
+      building some microservices with Lambda, using SQS queues,
+      reading logs in CloudWatch, establishing connections
+      with the REDIS database, creating worker lambdas,
+      and integrating with Nuvemshop to receive orders
+      generated on the Saldofone e-commerce platform through
+      a webhook. It was a remarkably successful project.
+    `,
     websiteLink: "http://www.saldofone.com.br/",
   },
   {
     contentId: "content-5",
-    titleSpan: "Recrutamento e seleção",
+    titleSpan: "Recruitment and Selection",
     title: "Malka RH",
     imageWidth: "100px",
     heightWidth: "120px",
@@ -83,8 +119,18 @@ export const projects = [
     previewImage: MalkaPreviewImg,
     insideImage: MalkaImg,
     insideTitle: "Malka RH",
-    insideSubtitle: "Recrutamento e seleção",
-    description: "Nesse site fiz meu primeiro modal. Coloquei dentro dele...",
+    insideSubtitle: "Recruitment and Selection",
+    description: `
+      On this website, I created my first modal.
+      Inside it, I embedded an iframe that connected
+      to a customer service page within the client's
+      system. Given that the company operates in the
+      field of recruitment and selection and provides
+      rapid customer service, I had to implement a
+      condition for the modal to appear only during
+      specific hours (from 8 a.m. to 6 p.m. on weekdays),
+      and I achieved this using JavaScript.
+    `,
     websiteLink: "http://malkarh.com.br/lp/recrutamento-e-selecao/",
   },
 ];
