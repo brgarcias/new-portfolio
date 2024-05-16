@@ -10,7 +10,7 @@ export default function AcademicEducation() {
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "development") return;
-    const step1: any = document.getElementById(`step-1`);
+    const step1 = document.getElementById(`step-1`) as HTMLInputElement;
     if (!step1) return;
     step1.checked = true;
   }, []);

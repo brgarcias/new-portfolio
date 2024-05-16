@@ -16,19 +16,18 @@ export default function ExperienceItem({
   icon,
   title,
   description,
-}: ExperienceItemProps) {
-  const createMarkup = () => ({ __html: description });
+}: Readonly<ExperienceItemProps>) {
   return (
     <li>
       <time className="cbp_tmtime" dateTime={date}>
         <span>{date}</span> <span>{company}</span>
       </time>
-      <div className={`cbp_tmicon cbp_tmicon-${icon}`}>
+      <div className={`cbp_tmicon cbp_tmicon`}>
         <FontAwesomeIcon icon={icon} />
       </div>
       <div className="cbp_tmlabel">
         <h2 className="heading">{title}</h2>
-        <div dangerouslySetInnerHTML={createMarkup()} />
+        <div className="description" dangerouslySetInnerHTML={{ __html: description }} />
       </div>
     </li>
   );
