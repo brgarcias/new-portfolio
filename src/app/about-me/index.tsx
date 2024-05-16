@@ -3,7 +3,7 @@
 // NEXT
 import Image from "next/image";
 // HOOKS
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 // LODASH
 import { isEmpty } from "lodash";
 // FONTAWESOME
@@ -51,15 +51,12 @@ export default function AboutMe() {
 
   const downloadZIP = async () => {
     try {
-      const response = await fetch(
-        "documents/cv/Bruno_Garcia_Resume.zip",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "blob",
-          },
-        }
-      ).then((response) => response.blob());
+      const response = await fetch("documents/cv/Bruno_Garcia_Resume.zip", {
+        method: "GET",
+        headers: {
+          "Content-Type": "blob",
+        },
+      }).then((response) => response.blob());
 
       const blob = new Blob([response], { type: "application/zip" });
       const url = window.URL.createObjectURL(blob);
@@ -74,9 +71,9 @@ export default function AboutMe() {
     }
   };
 
-  const submitForm = async (data: any) => {
+  const submitForm = async (data: FormEvent<HTMLFormElement>) => {
     data.preventDefault();
-    const formData = new FormData(data.target);
+    const formData = new FormData(data.currentTarget);
     const formDataParsed: Record<string, string> = {};
 
     formData.forEach(function (value, index) {
@@ -140,47 +137,67 @@ export default function AboutMe() {
 
         <h1 className="bp-header__title">Full-Stack Developer</h1>
 
-        <p className="bp-header__desc">
-          Experienced and dedicated Full Stack Developer with a proven track
-          record spanning several years, showcasing expertise in programming,
-          project coordination, and management. Proficient in orchestrating
-          end-to-end planning, guiding clients from initial concepts to
-          successful execution, and overseeing all phases of advanced
-          development. Highly skilled in UI design, meticulous testing, and
-          effective debugging protocols. Demonstrated ability to handle multiple
-          projects concurrently with exceptional attention to detail. Adept at
-          nurturing strong relationships with both clients and team members,
-          prioritizing their satisfaction and project success above all else.
-        </p>
+        <div className="bp-header__div_desc">
+          <div className="bp-header__desc">
+            <p>
+              Passionate and experienced Full Stack Developer with a solid track
+              record spanning several years in programming, coordinating, and
+              supervising various types of projects. I am an enthusiast for
+              comprehensive project lifecycle management, from conception to
+              implementation, mastering all stages of advanced development.
+              Maintaining a high level of attention to detail and the ability to
+              concurrently manage multiple projects. My experience extends to
+              building strong and productive relationships with clients and team
+              members, always with a total focus on customer satisfaction and
+              project success.
+            </p>
 
-        <p className="bp-header__desc">
-          Possessing a versatile skill set that encompasses a wide array of
-          technologies, including PHP (CodeIgniter/Laravel), GraphQL/REST API,
-          ReactJS/NextJS, NodeJS/NestJS, Python, and databases like
-          MySQL/PostgreSQL. Additionally, well-versed in utilizing essential
-          tools such as Jira, Jenkins, and AWS. Equally proficient in both
-          autonomous project management and collaborative teamwork environments.
-        </p>
+            <p>
+              My proficiency covers a wide range of technologies, including PHP
+              with frameworks like CodeIgniter and Laravel, GraphQL and REST
+              APIs, ReactJS and NextJS, NodeJS and NestJS, Python, as well as
+              experience with MySQL and Postgres databases. I am also competent
+              in essential tools like Jira and AWS. I am capable of
+              self-managing effectively in independent projects while also
+              collaborating productively in team environments.
+            </p>
 
-        <nav className="bp-nav">
-          <a
-            className="bp-nav__item bp-icon bp-icon--drop open-options"
-            style={{ transition: "0.5s", cursor: "pointer" }}
-            onClick={openModalFeedback}
-            data-info="Leave Feedback"
-          >
-            <span> Leave Feedback</span>
-          </a>
-          <a
-            className="bp-nav__item bp-icon bp-icon--archive"
-            style={{ transition: "0.5s", cursor: "pointer" }}
-            onClick={downloadZIP}
-            data-info="Download CV"
-          >
-            <span>Download CV</span>
-          </a>
-        </nav>
+            <p>
+              I am committed to driving the success of every project I&apos;m
+              involved in, and I&apos;m always eager to explore new
+              opportunities and challenges in the field of software development.
+            </p>
+
+            <nav className="bp-nav">
+              <a
+                className="bp-nav__item bp-icon bp-icon--drop open-options"
+                style={{ transition: "0.5s", cursor: "pointer" }}
+                onClick={openModalFeedback}
+                data-info="Leave Feedback"
+              >
+                <span> Leave Feedback</span>
+              </a>
+              <a
+                className="bp-nav__item bp-icon bp-icon--archive"
+                style={{ transition: "0.5s", cursor: "pointer" }}
+                onClick={downloadZIP}
+                data-info="Download CV"
+              >
+                <span>Download CV</span>
+              </a>
+            </nav>
+          </div>
+
+          <Image
+            className="poster"
+            src={AboutMeImg}
+            alt="Bruno Garcia"
+            unoptimized
+            priority
+          />
+        </div>
       </header>
+
       <ModalComponent
         title="Welcome!"
         subtitle="Please share your thoughts and feedback to help me improve my portfolio."
@@ -210,33 +227,24 @@ export default function AboutMe() {
           errorsState={errorsState}
         />
       </ModalComponent>
-      <Image
-        className="poster"
-        src={AboutMeImg}
-        alt="Bruno Garcia"
-        unoptimized
-        priority
+
+      <Form
+        hidden
+        submitForm={submitForm}
+        isSubmitting={isSubmitting}
+        formData={{
+          emailValue,
+          feedbackValue,
+          fullNameValue,
+          setEmailValue,
+          setFeedbackValue,
+          setFullNameValue,
+        }}
+        validateField={validateField}
+        onClose={() => setVisible(false)}
+        actionButtonDisabled={isSubmitting}
+        errorsState={errorsState}
       />
-
-
-
-        <Form
-          hidden
-          submitForm={submitForm}
-          isSubmitting={isSubmitting}
-          formData={{
-            emailValue,
-            feedbackValue,
-            fullNameValue,
-            setEmailValue,
-            setFeedbackValue,
-            setFullNameValue,
-          }}
-          validateField={validateField}
-          onClose={() => setVisible(false)}
-          actionButtonDisabled={isSubmitting}
-          errorsState={errorsState}
-        />
     </div>
   );
 }

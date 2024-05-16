@@ -429,7 +429,11 @@ a:hover {
   color: #fff;
 }
 
-.bp-header__desc {
+.bp-header__div_desc {
+  display: flex;
+}
+
+.bp-header__desc p {
   font-size: 0.95em;
   margin: 0.5em 0 1em;
   padding: 0;
@@ -564,6 +568,9 @@ a:hover {
   }
   .bp-header__title {
     font-size: 1.8em;
+  }
+  .bp-header__div_desc {
+    display: block;
   }
 }
 

@@ -7,6 +7,7 @@ import {
   Button,
   useDisclosure,
 } from "@nextui-org/react";
+import { FormEvent } from "react";
 
 interface ModalProps {
   visible: boolean;
@@ -27,7 +28,7 @@ interface ModalProps {
     | "full"
     | undefined;
   children: JSX.Element;
-  actionForm: (data: any) => Promise<void>;
+  actionForm: (data: FormEvent<HTMLFormElement>) => Promise<void>;
   hideActionButton?: boolean;
   actionButtonDisabled: boolean;
   hideCloseButton?: boolean;
@@ -45,14 +46,13 @@ export default function ModalComponent({
   hideActionButton = false,
   actionButtonDisabled,
   hideCloseButton = false,
-}: ModalProps) {
+}: Readonly<ModalProps>) {
   const { onOpenChange } = useDisclosure();
   const closeHandler = () => setVisible(false);
   const actionButtonForm = (data: any) => actionForm(data);
 
   return (
-    <>
-      <Modal
+    <Modal
         closeButton
         isDismissable
         backdrop="blur"
@@ -108,6 +108,5 @@ export default function ModalComponent({
           )}
         </ModalContent>
       </Modal>
-    </>
   );
 }

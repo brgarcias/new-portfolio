@@ -1,14 +1,35 @@
 .main {
-  width: 60%;
-  max-width: 69em;
-  margin: 0;
-  padding: 0px 20px;
-  margin-bottom: 75px;
+  width: 93%;
+  margin-bottom: 25px;
 }
 
 .heading {
-  font-size: 30px;
+  font-size: 2.2rem;
   font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.description {
+  font-weight: 200;
+  line-height: 1.6;
+}
+
+.description > ul > h3 {
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-top: 20px;
+  color: #2a2b30;
+  font-style: oblique;
+}
+
+.description ul {
+  list-style-type: disc;
+}
+
+.description ul li {
+  margin-left: 20px;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
 }
 
 .bp-icon:after {
@@ -63,6 +84,7 @@
   background: #afdcf8;
   left: 20%;
   margin-left: -10px;
+  border-radius: 5px;
 }
 
 /* The date/time */
@@ -71,9 +93,23 @@
   position: relative;
 }
 
+.cbp_tmtimeline > li:not(:last-child) {
+  margin-bottom: 25px;
+}
+
+.cbp_tmtimeline > li:before,
+.cbp_tmtimeline > li:after {
+  content: " ";
+  display: table;
+}
+
+.cbp_tmtimeline > li:after {
+  clear: both;
+}
+
 .cbp_tmtimeline > li .cbp_tmtime {
   display: block;
-  width: 25%;
+  width: 23%;
   padding-right: 100px;
   position: absolute;
 }
@@ -84,12 +120,12 @@
 }
 
 .cbp_tmtimeline > li .cbp_tmtime span:first-child {
-  font-size: 12px;
+  font-size: 18px;
   color: #bdd0db;
 }
 
 .cbp_tmtimeline > li .cbp_tmtime span:last-child {
-  font-size: 14px;
+  font-size: 20px;
   color: #3594cb;
 }
 
@@ -100,7 +136,7 @@
 /* Right content */
 
 .cbp_tmtimeline > li .cbp_tmlabel {
-  margin: 0 0 15px 25%;
+  margin: 0 0 40px 23%;
   background: #3594cb;
   color: #fff;
   padding: 2em;
@@ -119,6 +155,7 @@
   margin-top: 0px;
   padding: 0 0 10px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  color: #2a2b30;
 }
 
 /* The triangle */
@@ -176,10 +213,23 @@
 @media screen and (max-width: 960px) {
   .main {
     width: 100%;
+    padding: 0 20px;
   }
 }
 
 @media screen and (max-width: 47.2em) {
+  .heading {
+    font-size: 1.55rem;
+  }
+
+  .description ul li {
+    font-size: 1rem;
+  }
+
+  .description ul h3 {
+    font-size: 1.2rem;
+  }
+
   .cbp_tmtimeline:before {
     display: none;
   }

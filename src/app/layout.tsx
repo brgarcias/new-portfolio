@@ -1,5 +1,5 @@
 // NEXT METADATA
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 // NEXT GOOGLE FONT
 import { Inter } from "next/font/google";
 // GLOBAL CSS
@@ -17,7 +17,6 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   manifest: "favicon/manifest.json",
-  themeColor: "#ffffff",
   icons: [
     {
       rel: "icon",
@@ -108,10 +107,6 @@ export const metadata: Metadata = {
     default: "Bruno Garcia — Dev. Full-Stack",
     template: "%s | Bruno Garcia — Dev. Full-Stack",
   },
-  viewport: {
-    initialScale: 1,
-    width: "device-width",
-  },
   robots: {
     index: true,
     follow: true,
@@ -119,11 +114,17 @@ export const metadata: Metadata = {
   description: "Bruno Garcia: An inspired Full-Stack Developer",
 };
 
+export const viewport: Viewport = {
+  themeColor: '#ffffff',
+  initialScale: 1,
+  width: "device-width",
+}
+
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en" className="js csstransitions dark">
       <head />
