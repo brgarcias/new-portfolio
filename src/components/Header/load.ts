@@ -125,7 +125,6 @@ export const loadScript = () => {
     const futurePage = id ? document.getElementById(id) : pages[current];
     if (!futurePage) return;
     const futureCurrent = pages.indexOf(futurePage);
-    const stackPagesIdxs = getStackPagesIdxs(futureCurrent);
 
     if (futurePage) {
       futurePage.style.transform = "translate3d(0, 0, 0)";
@@ -153,8 +152,6 @@ export const loadScript = () => {
     const nextStackPageIdx_2 = current + 2 < pagesTotal ? current + 2 : 1;
     const idxs = [];
 
-    const excludeIdx = excludePageIdx || -1;
-
     if (excludePageIdx !== current) {
       idxs.push(current);
     }
@@ -174,7 +171,6 @@ export const loadScript = () => {
     const futurePage = id ? document.getElementById(id) : pages[current];
     if (!futurePage) return;
     const futureCurrent = pages.indexOf(futurePage);
-    const stackPagesIdxs = getStackPagesIdxs(futureCurrent);
 
     if (futurePage) {
       futurePage.style.transform = "translate3d(0, 0, 0)";

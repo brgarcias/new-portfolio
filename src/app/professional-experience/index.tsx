@@ -1,10 +1,6 @@
-import Image from "next/image";
-// IMAGES
-import ProfessionalExperienceImg from "@/public/images/professional-experience/professional-experience.png";
-// CSS
-import "./styles.css";
 import ExperienceItem from "./ExperienceItem";
 import { experiences } from "./experiences";
+import "./styles.css";
 
 export default function ProfessionalExperience() {
   return (
@@ -15,19 +11,10 @@ export default function ProfessionalExperience() {
 
       <div className="main">
         <ul className="cbp_tmtimeline">
-          {experiences.map((experience, index) => (
-            <ExperienceItem key={index} {...experience} />
+          {experiences.map((experience) => (
+            <ExperienceItem key={experience.id} {...experience} />
           ))}
         </ul>
-      </div>
-
-      <div>
-        <Image
-          className="poster poster-2"
-          src={ProfessionalExperienceImg}
-          alt="Bruno Garcia"
-          unoptimized
-        />
       </div>
     </div>
   );

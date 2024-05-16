@@ -1,11 +1,9 @@
 // FORM PROPS
 import { Dispatch, FC, FormEvent, SetStateAction } from "react";
 // NEXTUI
-import { Spacer } from "@nextui-org/react";
+import { Spacer, Button } from "@nextui-org/react";
 // FONTAWESOME
 import { faEnvelope, faUserAlt } from "@fortawesome/free-solid-svg-icons";
-// NEXT UI BUTTON
-import { Button } from "@nextui-org/react";
 // COMPONENT
 import InputControl from "./InputControl";
 // CSS
@@ -23,7 +21,7 @@ interface FormDataValue {
 }
 
 interface FormProps {
-  submitForm: (e: FormEvent) => void;
+  submitForm: (e: FormEvent<HTMLFormElement>) => void;
   isSubmitting: boolean;
   formData: FormDataValue;
   errorsState: Record<string, boolean>;
@@ -58,20 +56,8 @@ const Form: FC<FormProps> = ({
     }
   };
 
-  const handleInputFocus = (inputName: string) => {
-    let value = null;
-    switch (inputName) {
-      case "fullName":
-        value = formData.fullNameValue;
-        break;
-      case "email":
-        value = formData.emailValue;
-        break;
-      case "feedback":
-        value = formData.feedbackValue;
-        break;
-    }
-    validateField(inputName, value);
+  const handleInputFocus = (inputName: string, e: any) => {
+    validateField(inputName, e.target.value);
   };
 
   const handleInputBlur = (inputName: string, value: string) => {
@@ -98,7 +84,7 @@ const Form: FC<FormProps> = ({
         variant="bordered"
         disabled={isSubmitting}
         onChangeHandler={(e) => handleInputChange("fullName", e.target.value)}
-        onFocusHandler={(_e) => handleInputFocus("fullName")}
+        onFocusHandler={(e) => handleInputFocus("fullName", e)}
         onBlurHandler={(e: any) => handleInputBlur("fullName", e.target.value)}
         error={errorsState.fullName}
         helperText="Please, write your name."
@@ -113,7 +99,7 @@ const Form: FC<FormProps> = ({
         variant="bordered"
         disabled={isSubmitting}
         onChangeHandler={(e) => handleInputChange("email", e.target.value)}
-        onFocusHandler={(_e) => handleInputFocus("email")}
+        onFocusHandler={(e) => handleInputFocus("email", e)}
         onBlurHandler={(e: any) => handleInputBlur("email", e.target.value)}
         error={errorsState.email}
         helperText="Please, tell me your email."
@@ -129,7 +115,7 @@ const Form: FC<FormProps> = ({
         isTextarea
         disabled={isSubmitting}
         onChangeHandler={(e) => handleInputChange("feedback", e.target.value)}
-        onFocusHandler={(_e) => handleInputFocus("feedback")}
+        onFocusHandler={(e) => handleInputFocus("feedback", e)}
         onBlurHandler={(e: any) => handleInputBlur("feedback", e.target.value)}
         error={errorsState.feedback}
         helperText="Please, give me your feedback."

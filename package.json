@@ -14,37 +14,49 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@fortawesome/fontawesome-svg-core": "^6.4.2",
-    "@fortawesome/free-brands-svg-icons": "^6.4.2",
-    "@fortawesome/free-regular-svg-icons": "^6.4.2",
-    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@fortawesome/fontawesome-svg-core": "^6.5.2",
+    "@fortawesome/free-brands-svg-icons": "^6.5.2",
+    "@fortawesome/free-regular-svg-icons": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@mui/base": "5.0.0-beta.14",
-    "@mui/system": "^5.14.8",
-    "@nextui-org/react": "^2.1.10",
+    "@mui/system": "^5.15.15",
+    "@nextui-org/react": "^2.3.6",
     "@types/node": "20.5.9",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.15",
     "dynamics.js": "^1.1.5",
-    "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
-    "framer-motion": "^10.16.4",
+    "framer-motion": "^10.18.0",
     "lodash": "^4.17.21",
-    "next": "13.4.19",
-    "postcss": "8.4.29",
+    "next": "^14.2.3",
+    "postcss": "^8.4.38",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-transition-group": "^4.4.5",
-    "sass": "^1.66.1",
-    "sharp": "^0.32.5",
-    "tailwindcss": "3.3.3"
+    "sass": "^1.77.1",
+    "sharp": "^0.32.6",
+    "tailwindcss": "3.4.0",
+    "typescript-eslint": "0.0.1-alpha.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.198",
-    "@types/react-transition-group": "^4.4.6",
+    "@types/lodash": "^4.17.1",
+    "@types/react-transition-group": "^4.4.10",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "8.48.0",
     "typescript": "5.2.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss@<8.4.31": ">=8.4.31",
+      "zod@<=3.22.2": ">=3.22.3",
+      "next@>=0.9.9 <13.4.20-canary.13": ">=13.4.20-canary.13",
+      "next@>=13.4.0 <14.1.1": ">=14.1.1",
+      "next@>=13.4.0 <13.5.1": ">=13.5.1"
+    }
   }
 }
