@@ -69,12 +69,9 @@ const Form: FC<FormProps> = ({
       hidden={hidden}
       name="contact"
       className="contact-form"
-      data-netlify="true"
-      netlify-honeypot="bot-field"
       method="post"
       onSubmit={submitForm}
     >
-      <input type="hidden" name="form-name" value="contact" />
       <InputControl
         icon={faUserAlt}
         label="Full Name"
@@ -141,7 +138,6 @@ const Form: FC<FormProps> = ({
           Send
         </button>
       </div>
-      <div data-netlify-recaptcha="true" />
     </form>
   );
 };

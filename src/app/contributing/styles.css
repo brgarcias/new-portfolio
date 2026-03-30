@@ -122,7 +122,7 @@
     position: relative;
     border-radius: 6px;
     overflow: hidden;
-    cursor: pointer;
+    cursor: auto;
     margin: 0;
     /* aspect ratio via the image wrapper below */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
