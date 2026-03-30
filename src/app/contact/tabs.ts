@@ -7,6 +7,7 @@ import {
   faBalanceScale,
 } from "@fortawesome/free-solid-svg-icons";
 import { faAngellist, faMailchimp } from "@fortawesome/free-brands-svg-icons";
+import {calculateAge} from "@/src/app/contact/age.utils";
 
 export const tabs = [
   {
@@ -15,7 +16,7 @@ export const tabs = [
     iconTop: faUserAstronaut,
     title: "Bruno Garcia da Silva",
     subtitle: "Full-Stack Developer",
-    extraInfo: ["Single", "23 years"],
+    extraInfo: ["Married", calculateAge("1999-12-15")],
   },
   {
     id: "tab-2",
