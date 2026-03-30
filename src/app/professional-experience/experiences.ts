@@ -4,7 +4,10 @@ import {
   faMobileRetro,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import {calculateDuration, formatDateRange} from "@/src/app/professional-experience/date-format";
+import {
+  calculateDuration,
+  formatDateRange,
+} from "@/src/app/professional-experience/date-format";
 
 export const experiences = [
   {
@@ -22,7 +25,7 @@ export const experiences = [
         <li>Applied clean architecture and strong modular design patterns to support maintainability across a growing codebase</li>
         <li>Collaborated cross-functionally with platform engineers, product stakeholders, and frontend teams to deliver secure and production-grade features at scale</li>
       </ul>
-      `
+      `,
   },
   {
     id: 2,
@@ -240,5 +243,48 @@ export const experiences = [
       associations, and connect with professionals to expand your network and
       stay updated on industry trends.</li>
     </ul>`,
-  }
+  },
+  {
+    id: 8,
+    date: formatDateRange("2017-05", "2018-04"),
+    duration: calculateDuration("2017-05", "2018-04"),
+    company: "Ingenico",
+    icon: faUsers,
+    title: "Young HR Apprentice",
+    description: `
+    <ul>
+      <li>Learning the Basics: Begin by grasping fundamental HR concepts such as
+      recruitment, employee relations, training, and HR policies.</li>
+      <li>Shadowing HR Professionals: Observe experienced HR practitioners to
+      understand their roles and responsibilities in real-world scenarios.</li>
+      <li>Assisting with Administrative Tasks: Help with paperwork, data entry,
+      and scheduling interviews to understand the operational side of HR.</li>
+      <li>Participating in Recruitment Processes: Assist in sourcing candidates,
+      screening resumes, and coordinating interviews under the guidance of
+      senior HR staff.</li>
+      <li>Supporting Employee Onboarding: Aid in orientation programs, preparing
+      materials, and ensuring new hires feel welcomed and informed about company
+      policies.</li>
+      <li>Learning HR Software and Systems: Gain proficiency in HRIS
+      (Human Resources Information Systems) and other software used for payroll,
+      attendance tracking, and performance management.</li>
+      <li>Understanding Legal Compliance: Familiarize yourself with labor laws,
+      regulations, and company policies to ensure HR practices align with legal
+      requirements.</li>
+      <li>Engaging in Training and Development Activities: Attend workshops,
+      webinars, and seminars to enhance knowledge in areas like conflict
+      resolution, diversity training, and leadership development.</li>
+      <li>Assisting with Employee Relations: Handle basic inquiries, grievances,
+      and conflicts, learning how to maintain a fair and supportive workplace
+      environment.</li>
+      <li>Observing HR Strategy Development: Observe strategic planning meetings
+      and discussions to understand how HR aligns with broader organizational
+      goals.</li>
+      <li>Seeking Feedback and Mentorship: Regularly request feedback from mentors
+      and supervisors to identify areas for improvement and personal growth.</li>
+      <li>Building Professional Network: Attend industry events, join HR
+      associations, and connect with professionals to expand your network and
+      stay updated on industry trends.</li>
+    </ul>`,
+  },
 ];
