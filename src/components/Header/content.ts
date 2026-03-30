@@ -10,7 +10,7 @@ export const navItems = [
   { text: "Professional Experience", href: "#professional-experience" },
   { text: "Academic Education", href: "#academic-education" },
   { text: "Courses & Certifications", href: "#courses" },
-  { text: "Projects", href: "#projects" },
+  { text: "Projects", href: "#projectsData" },
   { text: "Contributing", href: "#contributing" },
 ];
 

@@ -1,8 +1,8 @@
 // NEXT
 import Image from "next/image";
-import { projects } from "./projects";
+import { projectsData } from "./projects.data";
 
-export default function renderProjects(data: typeof projects) {
+export default function renderProjects(data: typeof projectsData) {
   return data.map((project, index) => (
     <div className="slide" key={index} data-content={project.contentId}>
       <div className="slide__mover">
