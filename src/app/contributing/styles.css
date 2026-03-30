@@ -1,0 +1,351 @@
+/* ============================================================
+   CONTRIBUTING PAGE — styles.css
+   Dark-theme safe. All text uses inherit or explicit light
+   colors so it's visible on the project's dark background.
+   Project accent palette: #3594cb / #6cbfee / #afdcf8
+   ============================================================ */
+
+/* ── REVEAL ────────────────────────────────────────────────── */
+#contributing .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+#contributing .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── SECTION BASE ──────────────────────────────────────────── */
+#contributing .contrib-section {
+    width: 93%;
+    margin: 0 auto;
+    padding: 48px 0;
+    border-bottom: 1px solid rgba(175, 220, 248, 0.18);
+}
+#contributing .contrib-closing {
+    border-bottom: none;
+}
+
+/* ── LABELS / TITLES ───────────────────────────────────────── */
+#contributing .contrib-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #6cbfee;
+    margin-bottom: 10px;
+}
+
+#contributing .contrib-section__header {
+    margin-bottom: 28px;
+}
+
+#contributing .contrib-title {
+    font-size: clamp(1.4rem, 2.6vw, 2rem);
+    font-weight: 900;
+    line-height: 1.15;
+    /* inherit so it takes the project's heading color (white/light) */
+    color: inherit;
+    margin: 0 0 10px;
+}
+
+/* ── NARRATIVE ─────────────────────────────────────────────── */
+#contributing .contrib-narrative__body p {
+    font-size: 1.05rem;
+    font-weight: 400;
+    line-height: 1.75;
+    /* inherit from project's body color */
+    color: inherit;
+    opacity: 0.85;
+    margin: 0 0 14px;
+}
+#contributing .contrib-narrative__body p:last-child {
+    margin-bottom: 0;
+}
+
+/* ── HINT ──────────────────────────────────────────────────── */
+#contributing .contrib-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: inherit;
+    opacity: 0.55;
+    margin: 0;
+}
+#contributing .contrib-hint__dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #6cbfee;
+    position: relative;
+    flex-shrink: 0;
+}
+#contributing .contrib-hint__dot::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    background: #6cbfee;
+    animation: contrib-pulse 2s ease-in-out infinite;
+}
+@keyframes contrib-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.3; transform: scale(0.5); }
+}
+
+/* ── GRID ──────────────────────────────────────────────────── */
+#contributing .contrib-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 28px;
+}
+@media (max-width: 900px) {
+    #contributing .contrib-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+}
+@media (max-width: 500px) {
+    #contributing .contrib-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+}
+
+/* ── CARD ──────────────────────────────────────────────────── */
+#contributing .c-card {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    margin: 0;
+    /* aspect ratio via the image wrapper below */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.is-visible #contributing .c-card {
+    opacity: 1;
+    transform: translateY(0);
+}
+#contributing .c-card:hover,
+#contributing .c-card--active {
+    box-shadow: 0 8px 28px rgba(53, 148, 203, 0.35);
+}
+
+/* ── IMAGE WRAPPER ─────────────────────────────────────────── */
+/*
+  Key fix: use aspect-ratio on the wrapper so it has a real
+  height. The <img> inside gets width/height 100% via inline
+  style on the component, so it fills the wrapper exactly.
+  We do NOT use padding-bottom here — aspect-ratio is
+  well-supported and cleaner.
+*/
+#contributing .c-card__img-wrap {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: #1a2a38;
+}
+
+/* The inline style on <Image> sets width/height 100% already.
+   This selector is a safety net for Next.js generated markup. */
+#contributing .c-card__img-wrap img {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    object-fit: cover;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+#contributing .c-card:hover .c-card__img-wrap img,
+#contributing .c-card--active .c-card__img-wrap img {
+    transform: scale(1.07);
+}
+
+/* ── STRIP ─────────────────────────────────────────────────── */
+#contributing .c-card__strip {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 32px 14px 12px;
+    background: linear-gradient(to top, rgba(10,15,20,0.9) 0%, transparent 100%);
+    transition: opacity 0.28s ease;
+}
+#contributing .c-card:hover .c-card__strip,
+#contributing .c-card--active .c-card__strip {
+    opacity: 0;
+}
+#contributing .c-card__num {
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    color: #afdcf8;
+    opacity: 0.75;
+}
+#contributing .c-card__label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.04em;
+}
+
+/* ── OVERLAY ───────────────────────────────────────────────── */
+#contributing .c-card__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: linear-gradient(
+            155deg,
+            rgba(15, 75, 130, 0.95) 0%,
+            rgba(53, 148, 203, 0.90) 55%,
+            rgba(108, 191, 238, 0.85) 100%
+    );
+    display: flex;
+    align-items: flex-end;
+    padding: 20px 16px;
+
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+            opacity   0.3s cubic-bezier(0.22, 1, 0.36, 1),
+            transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+}
+#contributing .c-card:hover .c-card__overlay,
+#contributing .c-card--active .c-card__overlay {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+#contributing .c-card__overlay-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+#contributing .c-card__overlay-num {
+    font-size: 0.58rem;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    color: #afdcf8;
+    opacity: 0.7;
+    text-transform: uppercase;
+}
+#contributing .c-card__overlay-title {
+    font-size: clamp(0.88rem, 1.3vw, 1.05rem);
+    font-weight: 900;
+    color: #fff;
+    margin: 0;
+    line-height: 1.2;
+}
+#contributing .c-card__overlay-desc {
+    font-size: clamp(0.72rem, 1vw, 0.82rem);
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Touch: tap to toggle */
+@media (hover: none) {
+    #contributing .c-card__overlay {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    #contributing .c-card--active .c-card__overlay {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    #contributing .c-card--active .c-card__strip {
+        opacity: 0;
+    }
+}
+
+/* ── CLOSING ───────────────────────────────────────────────── */
+#contributing .contrib-closing__inner {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 56px;
+    align-items: center;
+}
+@media (max-width: 700px) {
+    #contributing .contrib-closing__inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+}
+
+/* stats */
+#contributing .contrib-stats {
+    border-left: 3px solid #3594cb;
+    padding-left: 24px;
+    display: flex;
+    flex-direction: column;
+}
+#contributing .contrib-stat {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(175, 220, 248, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+#contributing .contrib-stat:last-child {
+    border-bottom: none;
+}
+#contributing .contrib-stat strong {
+    font-size: clamp(1.9rem, 3.2vw, 2.6rem);
+    font-weight: 900;
+    line-height: 1;
+    color: #3594cb;
+}
+#contributing .contrib-stat strong sup {
+    font-size: 0.4em;
+    vertical-align: super;
+    color: #6cbfee;
+}
+#contributing .contrib-stat span {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: inherit;
+    opacity: 0.45;
+}
+
+/* text */
+#contributing .contrib-closing__text p {
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+    font-weight: 400;
+    line-height: 1.65;
+    color: inherit;
+    opacity: 0.75;
+    margin: 0 0 14px;
+}
+#contributing .contrib-closing__highlight {
+    font-size: clamp(1.2rem, 2.2vw, 1.55rem) !important;
+    font-weight: 900 !important;
+    opacity: 1 !important;
+    color: inherit !important;
+    letter-spacing: -0.01em;
+    line-height: 1.3 !important;
+}
+#contributing .contrib-closing__highlight em {
+    font-style: italic;
+    color: #6cbfee;
+}
+.contrib-hint__text::after {
+    content: "Hover over each photo to learn more";
+}
+
+@media (hover: none) {
+    .contrib-hint__text::after {
+        content: "Tap each photo to learn more";
+    }
+}

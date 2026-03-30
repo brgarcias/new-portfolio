@@ -11,8 +11,12 @@ export default function ProfessionalExperience() {
 
       <div className="main">
         <ul className="cbp_tmtimeline">
-          {experiences.map((experience) => (
-            <ExperienceItem key={experience.id} {...experience} />
+          {experiences.map((experience, index) => (
+            <ExperienceItem
+              key={experience.id}
+              {...experience}
+              defaultOpen={index === 0}
+            />
           ))}
         </ul>
       </div>

@@ -15,7 +15,7 @@ import {
 // CSS
 import "./styles.css";
 // PROJECTS DATA
-import { projects } from "./projects";
+import { projectsData } from "./projects.data";
 // COMPONENT
 import renderProjects from "./Projects";
 import { loadScript } from "./loadScript";
@@ -29,13 +29,13 @@ export default function Projects() {
       <header className="bp-header cf">
         <h1 className="bp-header__title">My Projects</h1>
         <p className="bp-header__desc">
-          Some of the projects carried out throughout my career!
+          Some of the projectsData carried out throughout my career!
         </p>
       </header>
 
       <div className="container-slider">
         <section className="slider">
-          {renderProjects(projects)}
+          {renderProjects(projectsData)}
 
           <nav className="slider__nav">
             <button className="button button--nav-prev">
@@ -54,7 +54,7 @@ export default function Projects() {
         </section>
 
         <section className="content">
-          {projects.map((project) => (
+          {projectsData.map((project) => (
             <div
               className="content__item"
               id={project.contentId}

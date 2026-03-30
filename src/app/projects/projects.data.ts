@@ -16,7 +16,7 @@ import SenseiContabilImg from "@/public/images/projects/sensei-contabil.png";
 import ReparofoneImg from "@/public/images/projects/trocafone_reparos.png";
 import MalkaImg from "@/public/images/projects/malka.png";
 
-export const projects = [
+export const projectsData = [
   {
     contentId: "content-1",
     titleSpan: "Integrated Solutions",

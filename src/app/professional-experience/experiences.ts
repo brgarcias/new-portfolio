@@ -4,11 +4,88 @@ import {
   faMobileRetro,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  calculateDuration,
+  formatDateRange,
+} from "@/src/app/professional-experience/date-format";
 
 export const experiences = [
   {
     id: 1,
-    date: "03/2021 - present",
+    date: formatDateRange("2025-10"),
+    duration: calculateDuration("2025-10"),
+    company: "PayPal",
+    icon: faCode,
+    title: "Software Engineer (Node.js / GraphQL Platform)",
+    description: `
+      <ul>
+        <li>Designed and evolved GraphQL schemas powering scalable data access across multiple platform services and frontend applications</li>
+        <li>Implemented resilient APIs supporting service-to-service communication within a distributed architecture</li>
+        <li>Improved resolver performance and query efficiency, reducing over-fetching and optimizing client response times</li>
+        <li>Applied clean architecture and strong modular design patterns to support maintainability across a growing codebase</li>
+        <li>Collaborated cross-functionally with platform engineers, product stakeholders, and frontend teams to deliver secure and production-grade features at scale</li>
+      </ul>
+      `,
+  },
+  {
+    id: 2,
+    date: formatDateRange("2025-02", "2026-03"),
+    duration: calculateDuration("2025-02", "2026-03"),
+    company: "Ab Inbev",
+    icon: faCode,
+    title: "Full Stack Developer",
+    description: `
+    <ul>
+      <li>Developing and maintaining scalable RESTful APIs and GraphQL services using NestJS.</li>  
+      <li>Building high-performance web applications with Next.js, ensuring optimal user experience and performance.</li>  
+      <li>Designing and optimizing relational databases using Microsoft SQL Server to support business-critical applications.</li>  
+      <li>Deploying and managing cloud-based solutions on Microsoft Azure, leveraging Azure DevOps Services for CI/CD automation.</li>  
+      <li>Implementing best practices in code quality, security, and performance to ensure robust and maintainable software.</li>  
+      <li>Collaborating with cross-functional teams to align software solutions with business objectives.</li>  
+      <li>Managing source control, pipelines, and deployments using Azure DevOps Server.</li>
+    </ul>`,
+  },
+  {
+    id: 3,
+    date: formatDateRange("2024-09", "2025-02"),
+    duration: calculateDuration("2024-09", "2025-02"),
+    company: "Serasa",
+    icon: faCode,
+    title: "Backend Developer",
+    description: `
+    <ul>
+      <li>Focused on developing unit and end-to-end (E2E) tests using Jest, ensuring the reliability and quality of delivered applications.</li>  
+      <li>Experience in handling parallelism and concurrency, optimizing the performance of complex systems and ensuring efficiency in executing multiple simultaneous tasks.</li>  
+      <li>Implementation of solutions with AWS Lambda, SQS, SNS, and Step Functions, leveraging serverless resources to create scalable and highly available systems.</li>  
+      <li>Node.js: Development of robust and scalable applications using the NestJS framework to create modular and maintainable solutions.</li>  
+      <li>Development of RESTful APIs to facilitate service integration and meet client needs with high performance and security.</li>  
+      <li>Utilization of microservices-based architectures, promoting modularity and system resilience in production.</li>  
+      <li>Experience with API Gateway for request management and ensuring efficient communication between services.</li>
+    </ul>`,
+  },
+  {
+    id: 4,
+    date: formatDateRange("2024-06", "2025-02"),
+    duration: calculateDuration("2024-06", "2025-02"),
+    company: "Domy",
+    icon: faCode,
+    title: "Backend Developer",
+    description: `
+    <ul>
+      <li>Backend Development: Designing and implementing server-side logic to ensure high performance and responsiveness to front-end requests.</li>
+      <li>Node.js: Leveraging the power of Node.js to build efficient and scalable network applications.</li>
+      <li>NestJS: Utilizing NestJS framework to develop maintainable and modular server-side applications.</li>
+      <li>AWS: Implementing and managing cloud infrastructure using Amazon Web Services to ensure reliability and scalability.</li>
+      <li>API REST: Designing and developing RESTful APIs to enable seamless communication between client and server.</li>
+      <li>Microservices: Building and orchestrating microservices architecture to enhance modularity and improve system resilience.</li>
+      <li>API Gateway: Managing and routing API requests efficiently with API Gateway to ensure secure and consistent service delivery.</li>
+      <li>Passionate about leveraging modern technologies to solve complex problems, I thrive in dynamic environments where innovation and continuous learning are valued.</li>
+    </ul>`,
+  },
+  {
+    id: 5,
+    date: formatDateRange("2021-03", "2024-07"),
+    duration: calculateDuration("2021-03", "2024-07"),
     company: "Trocafone",
     icon: faCode,
     title: "Full Stack Developer",
@@ -71,8 +148,9 @@ export const experiences = [
     </ul>`,
   },
   {
-    id: 2,
-    date: "09/2020 - 03/2021",
+    id: 6,
+    date: formatDateRange("2020-09", "2021-03"),
+    duration: calculateDuration("2020-09", "2021-03"),
     company: "Art Seven",
     icon: faDesktopAlt,
     title: "Jr. Frontend Developer",
@@ -98,8 +176,9 @@ export const experiences = [
     `,
   },
   {
-    id: 3,
-    date: "04/2018 - 04/2020",
+    id: 7,
+    date: formatDateRange("2018-04", "2020-04"),
+    duration: calculateDuration("2018-04", "2020-04"),
     company: "Ingenico",
     icon: faMobileRetro,
     title: "Intern Software Developer",
@@ -123,8 +202,9 @@ export const experiences = [
     `,
   },
   {
-    id: 4,
-    date: "05/2017 - 04/2018",
+    id: 8,
+    date: formatDateRange("2017-05", "2018-04"),
+    duration: calculateDuration("2017-05", "2018-04"),
     company: "Ingenico",
     icon: faUsers,
     title: "Young HR Apprentice",
@@ -163,5 +243,5 @@ export const experiences = [
       associations, and connect with professionals to expand your network and
       stay updated on industry trends.</li>
     </ul>`,
-  }
+  },
 ];
