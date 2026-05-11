@@ -32,7 +32,7 @@ export const tabs = [
     iconTop: faMailchimp,
     title: "bruno-151299@hotmail.com",
     subtitle: "+55 (11) 99696-9301",
-    extraInfo: ["Vila Nova Mazzei - Tucuruvi", "São Paulo, SP - Brazil"],
+    extraInfo: ["Vila Nova Cachoeirinha - Limão", "São Paulo, SP - Brazil"],
   },
   {
     id: "tab-4",
