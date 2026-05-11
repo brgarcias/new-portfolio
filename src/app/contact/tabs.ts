@@ -7,7 +7,7 @@ import {
   faBalanceScale,
 } from "@fortawesome/free-solid-svg-icons";
 import { faAngellist, faMailchimp } from "@fortawesome/free-brands-svg-icons";
-import {calculateAge} from "@/src/app/contact/age.utils";
+import { calculateAge } from "@/src/app/contact/age.utils";
 
 export const tabs = [
   {
@@ -22,7 +22,7 @@ export const tabs = [
     id: "tab-2",
     icon: faUserTie,
     iconTop: faUserGraduate,
-    title: "Computer Science",
+    title: "Bachelor of Computer Science",
     subtitle: "Universidade São Judas Tadeu - USJT",
     extraInfo: ["Concluded", "06/2018 - 06/2022"],
   },
