@@ -185,7 +185,7 @@ export default function Projects() {
                     alt={project.title}
                     unoptimized
                   />
-                  <div className="preview rounded">
+                  <div className="preview w-max">
                     <Image
                       src={project.previewImage}
                       alt={project.title}
