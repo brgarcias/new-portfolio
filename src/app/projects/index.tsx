@@ -15,11 +15,6 @@ import { projectsData } from "./projects.data";
 /* ─── types ─────────────────────────────────────────────── */
 type Project = (typeof projectsData)[number];
 
-/* ─── helpers ───────────────────────────────────────────── */
-function clamp(val: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, val));
-}
-
 /* ─── component ─────────────────────────────────────────── */
 export default function Projects() {
   const [current, setCurrent] = useState(0);
