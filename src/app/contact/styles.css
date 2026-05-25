@@ -6,6 +6,10 @@ body .left {
   left: 30%;
 }
 
+#contact {
+  overflow: hidden;
+}
+
 body .left_inner {
   width: 340px;
   margin: 0 auto;
