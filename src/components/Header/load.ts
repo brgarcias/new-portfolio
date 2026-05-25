@@ -44,9 +44,11 @@ export const loadScript = () => {
         if (posIdx !== -1) {
           page.style.transform = `translate3d(
             0,
-            75%,
+            ${posIdx === 0 ? "0" : "75%"},
             ${-200 - 50 * posIdx}px
           )`;
+        } else {
+          page.style.transform = "translate3d(0,75%,-300px)";
         }
       } else {
         page.classList.remove("page--inactive");
