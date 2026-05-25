@@ -42,9 +42,11 @@ export const loadScript = () => {
         page.classList.add("page--inactive");
 
         if (posIdx !== -1) {
-          page.style.transform = "translate3d(0,100%,0)";
-        } else {
-          page.style.transform = "translate3d(0,75%,-300px)";
+          page.style.transform = `translate3d(
+            0,
+            75%,
+            ${-200 - 50 * posIdx}px
+          )`;
         }
       } else {
         page.classList.remove("page--inactive");
@@ -108,12 +110,15 @@ export const loadScript = () => {
     nav?.classList.add("pages-nav--open");
 
     const stackPagesIdxs = getStackPagesIdxs();
-    stackPagesIdxs.forEach((i) => {
-      const page = pages[i];
+    stackPagesIdxs.forEach((pageIndex, posIdx) => {
+      const page = pages[pageIndex];
       if (!page) return;
-      page.style.transform = `translate3d(0, 75%, ${parseInt(
-        -1 * 200 - 50 * i + ""
-      )}px)`;
+
+      page.style.transform = `translate3d(
+        0,
+        75%,
+        ${-200 - 50 * posIdx}px
+      )`;
     });
   }
 
