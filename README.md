@@ -45,7 +45,7 @@ Para usar um Chromium já instalado, defina `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
 
 As fontes são desenhadas de forma diferente em cada sistema operacional, então os testes visuais só rodam no Linux, dentro do contêiner `mcr.microsoft.com/playwright:v1.64.1-noble`, que é o mesmo do CI. Em outros sistemas, `pnpm test:e2e` os ignora. A tag do contêiner acompanha a versão de `@playwright/test`; ao atualizar uma, atualize a outra e regrave as imagens.
 
-Quando uma mudança visual for intencional, o CI falha e publica as novas imagens no artefato `test-results`, com o sufixo `-actual.png`. Confira as imagens e copie cada uma para `tests/snapshots/<desktop|mobile>/`, com o nome sem o sufixo.
+Quando uma mudança visual for intencional, o teste falha e o CI publica as novas imagens no artefato `test-results`, com o sufixo `-actual.png`. Confira as imagens e copie cada uma para `tests/snapshots/<desktop|mobile>/`, com o nome sem o sufixo. Um teste visual novo grava a própria imagem e passa, mas o job falha no passo **Fail on new screenshots** até que ela seja versionada; a imagem fica no mesmo artefato, em `tests/snapshots/`.
 
 O GitHub Actions roda `pnpm check`, `pnpm build` e `pnpm test:e2e` em cada pull request para `main`, no job `quality` de `.github/workflows/ci.yml`. Quando algo falha, a pasta `test-results/` fica disponível como artefato da execução por sete dias.
 

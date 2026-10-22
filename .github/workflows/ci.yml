@@ -33,7 +33,22 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm build
+      # Playwright writes a missing screenshot and passes the test, so the job
+      # compares the snapshot folder before and after the tests.
+      - name: List screenshots
+        run: |
+          mkdir -p tests/snapshots
+          find tests/snapshots -type f | sort > "$RUNNER_TEMP/snapshots-before.txt"
       - run: pnpm test:e2e
+      - name: Fail on new screenshots
+        run: |
+          find tests/snapshots -type f | sort > "$RUNNER_TEMP/snapshots-after.txt"
+          new=$(comm -13 "$RUNNER_TEMP/snapshots-before.txt" "$RUNNER_TEMP/snapshots-after.txt")
+          if [ -n "$new" ]; then
+            echo "$new"
+            echo "::error::New screenshots were recorded. Review them in the test-results artifact and commit them to tests/snapshots."
+            exit 1
+          fi
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v7

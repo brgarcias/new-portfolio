@@ -17,9 +17,7 @@ test.skip(
   'Visual snapshots are recorded and compared in the Linux container used by CI.',
 );
 
-// No retries: a retry would find the screenshot written by the first attempt
-// and pass without it ever being committed.
-test.describe.configure({ mode: 'parallel', retries: 0 });
+test.describe.configure({ mode: 'parallel' });
 
 // A failed comparison already saves the actual and diff images, and traces
 // of these pages would carry every photo of the contributing section.
