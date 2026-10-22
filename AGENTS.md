@@ -1,0 +1,108 @@
+# AGENTS.md
+
+Instruções para agentes de código que trabalham neste repositório. O projeto é o portfólio profissional de Bruno Garcia, desenvolvedor full-stack. É um site de página única, em inglês, feito com Next.js 16 (App Router), React 19, TypeScript estrito, Tailwind CSS 3 e HeroUI, publicado no Netlify.
+
+## Regra principal
+
+O Bruno gosta do portfólio como ele é. Não mude a aparência nem o comportamento do site sem pedido explícito: cores, fontes, tamanhos, espaçamentos, animações, textos, ordem das seções e interações ficam como estão. Correções, atualizações de dependências e melhorias de desempenho e segurança precisam manter o resultado visual idêntico.
+
+Os testes visuais de `tests/visual.spec.ts` garantem isso. Nunca regrave as imagens de `tests/snapshots/` para fazer um teste passar, a não ser que o pedido tenha sido justamente uma mudança visual. Nesse caso, confira cada imagem nova antes de versioná-la e diga no PR o que mudou.
+
+## Ambiente
+
+- Use Node.js 24.22.1, a versão do `.nvmrc`. Rode `nvm use` antes de qualquer comando e confira com `node --version`, porque o shell pode abrir em outra versão. Se cada comando abrir um shell novo, ative o Node no mesmo comando, como em `nvm use >/dev/null && pnpm check`. O `.npmrc` tem `engine-strict=true`, então outra versão do Node faz a instalação falhar.
+- Use somente pnpm 11.3.0, via Corepack. Não use npm nem yarn para instalar dependências e não crie outros lockfiles. O único lockfile é o `pnpm-lock.yaml`.
+- Instale com `pnpm install --frozen-lockfile`.
+- O `pnpm-workspace.yaml` libera scripts de instalação apenas para `@heroui/shared-utils`, que copia a variante para React 19 na instalação, e para `unrs-resolver`. Ele também aceita ESLint 10 nos plugins que ainda declaram suporte só até a versão 9. Mantenha essas regras ao mexer em dependências.
+
+## Comandos
+
+| Comando           | O que faz                                                         |
+| ----------------- | ----------------------------------------------------------------- |
+| `pnpm dev`        | Servidor de desenvolvimento em <http://localhost:3000>.           |
+| `pnpm check`      | ESLint sem avisos, verificação de tipos e checagem do Prettier.   |
+| `pnpm format:fix` | Aplica a formatação do Prettier.                                  |
+| `pnpm build`      | Build de produção.                                                |
+| `pnpm test:e2e`   | Testes Playwright em desktop e celular sobre o build de produção. |
+
+`pnpm test:e2e` sobe o servidor com `pnpm start` na porta 4173, então rode `pnpm build` antes. Para instalar o navegador, use `pnpm exec playwright install chromium`. Para usar um Chromium já instalado, defina `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`.
+
+Antes de considerar uma mudança pronta, rode `pnpm check`, `pnpm build` e `pnpm test:e2e`, e confirme que tudo passa. O job `quality` do GitHub Actions, em `.github/workflows/ci.yml`, roda os mesmos comandos em cada PR para `main`.
+
+`pnpm dev` e `pnpm build` usam o webpack de propósito. O Turbopack minifica o CSS com o Lightning CSS, que reescreve `translate3d(...)`, `scale3d(...)` e `rotate3d(...)` como transformações 2D. A geometria é a mesma, mas o navegador deixa de criar camadas próprias para esses elementos e passa a desenhar imagens reduzidas com outra filtragem. Não troque para o Turbopack sem comparar as imagens dos testes visuais.
+
+## Estrutura
+
+- `src/app/layout.tsx` define `lang="en"`, as classes `js csstransitions dark` no `<html>`, das quais dependem o CSS do template e o tema escuro do HeroUI, a fonte Inter, os metadados, os ícones de `public/favicon/`, o `Header` e os `Providers`.
+- `src/app/providers.tsx` envolve as seções no `HeroUIProvider`.
+- `src/app/page.tsx` monta as seções nesta ordem: About Me, Professional Experience, Academic Education, Courses & Certifications, Projects, Contributing e Contact. Cada seção é um `div.page` dentro de `div.pages-stack`.
+- `src/components/Header/` é o menu em pilha de páginas, adaptado de um template da Codrops. `load.ts` manipula o DOM diretamente: alterna `pages-stack--open`, `pages-nav--open`, `menu-button--open` e `page--inactive` e aplica transformações 3D inline em cada página. As transições terminam por `transitionend`. `content.ts` tem os links do menu e das redes sociais.
+- `src/app/<seção>/` tem o componente da seção, os dados (`experiences.ts`, `sections.ts`, `courses.ts`, `projects.data.ts`, `contributing.ts`, `tabs.ts`) e o `styles.css` próprio.
+- `src/components/Modal`, `Form` e `SnackBar` são o modal do HeroUI usado pelo feedback e pelos cursos, o formulário de feedback e o aviso de envio.
+- `src/app/globals.css` tem as diretivas do Tailwind, o menu, a pilha de páginas, o cabeçalho das seções e a fonte de ícones `bpicons`.
+- `src/app/not-found.tsx` e `src/app/error.tsx` são as páginas de erro.
+- `public/` guarda favicon, imagens, a fonte `bpicons`, o currículo em `documents/cv/Bruno_Garcia_Resume.zip` e `contact.html`, que declara o formulário para o Netlify Forms.
+- `src/emails/feedback/index.html` é um modelo de e-mail do SendGrid mantido fora do build. O site não o usa e o Prettier o ignora.
+- `tests/portfolio.spec.ts` tem os testes funcionais, `tests/visual.spec.ts` os testes visuais, `tests/helpers.ts` a navegação compartilhada e `tests/snapshots/` as imagens de referência.
+
+O projeto usa o App Router. As seções são componentes de servidor quando não precisam de estado; os interativos têm `'use client'`.
+
+## Conteúdo
+
+- Todo texto visível do site é em inglês. Documentação, títulos e descrições de PRs e títulos de testes ficam em português.
+- Nunca invente experiências, projetos, cursos, métricas, depoimentos ou datas. Se faltar uma informação, pergunte.
+- As experiências ficam em `src/app/professional-experience/experiences.ts`, da mais recente para a mais antiga. Datas usam o formato `AAAA-MM`, e o período e a duração são calculados a partir delas. A experiência sem data de fim é a atual.
+- E-mail, WhatsApp, LinkedIn e GitHub aparecem em `src/components/Header/content.ts`, em `src/app/contact/tabs.ts` e no link do WhatsApp de `src/app/contact/index.tsx`. Ao trocar um contato, atualize todos os lugares e os testes.
+- O currículo é `public/documents/cv/Bruno_Garcia_Resume.zip`. Os testes conferem o nome do download e que o arquivo é um ZIP.
+- O endereço oficial é <https://brgarcias-portfolio.netlify.app>, usado nos metadados de `src/app/layout.tsx` e em `package.json`.
+- O site é verificado no Google Search Console como propriedade de prefixo do URL, pela meta tag `google-site-verification`, com o token em `verification.google` de `src/app/layout.tsx`. Não remova a tag. Uma propriedade do tipo Domínio só verifica por DNS e não funciona em `netlify.app`.
+
+## Código
+
+- TypeScript estrito, com `noUnusedLocals` e `noUnusedParameters`. O alias `@/` aponta para a raiz do repositório, então os imports são `@/src/...` e `@/public/...`.
+- Siga o estilo do arquivo ao redor: componentes com exportação padrão, comentários de grupo nos imports (`// HOOKS`, `// FONTAWESOME`), nomes e classes em inglês.
+- Prettier com aspas simples e vírgula final. Indentação de dois espaços e quebras de linha LF.
+- Os estilos ficam no `styles.css` de cada seção e no `globals.css`, com as classes do template original. Não converta CSS para Tailwind, não reorganize as folhas de estilo e não troque valores por equivalentes "mais limpos": até mudanças de mesma geometria podem alterar a renderização. O Tailwind serve ao HeroUI e a poucas classes utilitárias.
+- Ícones vêm do FontAwesome 6, com `@fortawesome/react-fontawesome`.
+- Imagens são importadas estaticamente e exibidas com `next/image`. Remova metadados, como localização, de qualquer foto antes de publicá-la.
+- O projeto tem poucas dependências de produção. Evite adicionar novas e justifique no PR quando for necessário.
+- Não edite `next-env.d.ts`, que é gerado pelo Next.js. Não versione `.next/`, `test-results/`, `playwright-report/` nem `tsconfig.tsbuildinfo`.
+
+### Versões que não devem subir sem cuidado
+
+- **Tailwind CSS** fica na 3.4. A versão 4 muda o reset de estilos e o HeroUI 2.8 em diante exige a 4.
+- **HeroUI** fica em `@heroui/react` 2.7.11, a última linha compatível com Tailwind 3. O `Modal` fixa `max-h-[calc(100%_-_7.5rem)]`, porque o HeroUI mudou esse limite para 8rem.
+- **FontAwesome** fica na 6.x. A versão 7 redesenhou ícones e mudou a largura padrão.
+- **Playwright**: a versão de `@playwright/test` precisa ser igual à tag do contêiner em `.github/workflows/ci.yml`. Ao atualizar, regrave as imagens dos testes visuais e confira que nada mudou além do esperado.
+
+## Testes
+
+Os testes de navegador são o contrato de qualidade do site. Eles exigem:
+
+- Nenhum erro de JavaScript no carregamento e nenhuma rolagem horizontal.
+- Menu que navega por todas as seções e fecha com Escape.
+- Experiências que abrem e recolhem, etapas da formação, modal dos cursos, slider e detalhes dos projetos, cartões de contribuição e abas de contato funcionando.
+- Download do currículo e links de contato corretos.
+- Validação, aviso de sucesso e aviso de erro do formulário de feedback.
+- Página 404.
+- Aparência idêntica às imagens de `tests/snapshots/`, em desktop e em celular.
+
+Os testes procuram textos visíveis, como títulos de seções e cargos. Se mudar esses textos a pedido, atualize os testes na mesma mudança. Nunca enfraqueça ou remova um teste para fazê-lo passar.
+
+Os testes visuais só rodam no Linux, dentro do contêiner `mcr.microsoft.com/playwright:<versão>-noble` usado pelo CI, porque cada sistema desenha fontes de um jeito. No macOS e no Windows, `pnpm test:e2e` os ignora. Quando o CI falhar num teste visual, baixe o artefato `test-results` da execução com `gh run download` e examine as imagens `*-actual.png` e `*-diff.png`. Se a mudança não foi pedida, corrija o código. Se foi, copie cada `*-actual.png` para `tests/snapshots/<desktop|mobile>/`, com o nome sem o sufixo.
+
+O Playwright grava a imagem de um teste visual novo e aprova o teste. Por isso o job compara `tests/snapshots/` antes e depois dos testes e falha no passo **Fail on new screenshots** até que a imagem seja versionada. A imagem nova vem no mesmo artefato, em `tests/snapshots/`; revise-a antes de versionar. Todas as seções ficam no DOM ao mesmo tempo, então máscaras e seletores dos testes visuais precisam se limitar à seção ativa, `.pages-stack > .page:not(.page--inactive)`.
+
+## Git, pull requests e publicação
+
+- `main` é a única branch permanente e a branch de produção do site `brgarcias-portfolio` no Netlify. Cada merge em `main` publica o site em <https://brgarcias-portfolio.netlify.app>. Não crie `develop` nem outra branch permanente.
+- Crie uma branch de trabalho a partir de `main` atualizada, com prefixo como `feat/`, `fix/`, `docs/`, `test/` ou `chore/`.
+- Mensagens de commit seguem Conventional Commits, em inglês, como `fix: keep the menu usable after a fast close`.
+- Os commits precisam de assinatura verificada pelo GitHub. O hook de pre-commit roda o Prettier nos arquivos preparados. Nunca use `--no-verify` nem desative a assinatura.
+- Abra o PR com destino a `main`. O título segue Conventional Commits, e título e descrição ficam em português.
+- O Netlify gera um Deploy Preview para cada PR, em `https://deploy-preview-<número>--brgarcias-portfolio.netlify.app`. A `main` exige quatro checks do Netlify: `Header rules - brgarcias-portfolio`, `Pages changed - brgarcias-portfolio`, `Redirect rules - brgarcias-portfolio` e `netlify/brgarcias-portfolio/deploy-preview`.
+- O job `quality` do GitHub Actions também roda em cada PR. Só faça o merge com ele aprovado.
+- A `main` exige histórico linear e PR atualizado em relação a ela. Faça merge só com **Squash and merge**, depois que os checks passarem.
+- Nunca faça push direto ou force push em `main` e nunca altere as proteções da branch.
+- Não publique pelo Netlify CLI. A produção só muda por merge em `main`.
+- A configuração do Netlify fica no painel do site. Não há `netlify.toml` no repositório.
