@@ -46,7 +46,9 @@ function timeDependent(page: Page) {
     page.locator(
       `${active} .cbp_tmtimeline > li:first-child .cbp_tmtime > span:first-child`,
     ),
-    page.locator(`${active} label[for="tab-1"] .tab_right p`).last(),
+    // The age only shows while its tab is open. Collapsed, its box overlaps
+    // the open tab.
+    page.locator(`${active} #tab-1:checked + label .tab_right p`).last(),
   ];
 }
 
