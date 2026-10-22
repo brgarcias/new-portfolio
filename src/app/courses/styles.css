@@ -48,8 +48,8 @@
   font-weight: 100;
 }
 
-.rb-grid li[class^="icon-"]:before,
-.rb-grid li[class*=" icon-"]:before {
+.rb-grid li[class^='icon-']:before,
+.rb-grid li[class*=' icon-']:before {
   font-size: 10em;
   position: absolute;
   display: block;
@@ -84,10 +84,18 @@
   width: 100%;
   height: 100%;
   background: #444;
-  -webkit-transition: opacity 0.4s ease, -webkit-transform 0.4s ease,
+  -webkit-transition:
+    opacity 0.4s ease,
+    -webkit-transform 0.4s ease,
     clip 0.4s ease;
-  -moz-transition: opacity 0.4s ease, -moz-transform 0.4s ease, clip 0.4s ease;
-  transition: opacity 0.4s ease, transform 0.4s ease, clip 0.4s ease;
+  -moz-transition:
+    opacity 0.4s ease,
+    -moz-transform 0.4s ease,
+    clip 0.4s ease;
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease,
+    clip 0.4s ease;
   z-index: -1;
   pointer-events: none;
   cursor: default;
@@ -106,7 +114,7 @@
 }
 
 .rb-close::before {
-  content: "x";
+  content: 'x';
   font-weight: 100;
   position: absolute;
   top: 0;
@@ -151,12 +159,12 @@
   padding: 5px;
 }
 
-.rb-week [class^="icon-"]:before {
+.rb-week [class^='icon-']:before {
   font-size: 2.5em;
   font-weight: normal;
 }
 
-.rb-week > div:first-child [class^="icon-"] {
+.rb-week > div:first-child [class^='icon-'] {
   opacity: 0.1;
 }
 
@@ -571,8 +579,8 @@
     text-align: left;
     padding: 0.7em;
   }
-  .rb-grid li[class^="icon-"]:before,
-  .rb-grid li[class*=" icon-"]:before {
+  .rb-grid li[class^='icon-']:before,
+  .rb-grid li[class*=' icon-']:before {
     font-size: 6em;
     left: auto;
     right: 0;

@@ -1,9 +1,9 @@
 // CSS
-import "./styles.css";
+import './styles.css';
 // COMPONENT
-import Course from "./Course";
+import Course from './Course';
 // DATA
-import { courses } from "./courses";
+import { courses } from './courses';
 
 export default function Courses() {
   return (

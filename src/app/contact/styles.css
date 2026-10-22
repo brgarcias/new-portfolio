@@ -61,31 +61,31 @@ body .right {
   position: relative;
 }
 
-.app_inner input[type="radio"] {
+.app_inner input[type='radio'] {
   display: none;
 }
 
-.app_inner input[type="radio"]:checked + label .app_inner__tab {
+.app_inner input[type='radio']:checked + label .app_inner__tab {
   height: 175px;
 }
 
-.app_inner input[type="radio"]:checked + label .app_inner__tab .tab_right {
+.app_inner input[type='radio']:checked + label .app_inner__tab .tab_right {
   top: 39px;
   transition: all 0.3s 0.2s cubic-bezier(0.455, 0.03, 0.515, 0.955);
 }
 
-.app_inner input[type="radio"]:not(checked) + label .app_inner__tab {
+.app_inner input[type='radio']:not(checked) + label .app_inner__tab {
   height: 80px;
   border-left: 12px solid rgba(0, 0, 0, 0.12);
 }
 
-.app_inner input[type="radio"]:not(checked) + label .app_inner__tab .tab_right {
+.app_inner input[type='radio']:not(checked) + label .app_inner__tab .tab_right {
   top: 200px;
   transition: all 0.3s 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955);
 }
 
 .app_inner
-  input[type="radio"]:checked
+  input[type='radio']:checked
   + label
   .app_inner__tab
   .tab_left
@@ -98,7 +98,7 @@ body .right {
 }
 
 .app_inner
-  input[type="radio"]:not(checked)
+  input[type='radio']:not(checked)
   + label
   .app_inner__tab
   .tab_left
@@ -109,12 +109,12 @@ body .right {
   transition: all 0.3s 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955);
 }
 
-.app_inner input[type="radio"]:checked + label .app_inner__tab .tab_left .big {
+.app_inner input[type='radio']:checked + label .app_inner__tab .tab_left .big {
   left: 260px;
 }
 
 .app_inner
-  input[type="radio"]:not(checked)
+  input[type='radio']:not(checked)
   + label
   .app_inner__tab
   .tab_left
@@ -122,11 +122,11 @@ body .right {
   left: 400px;
 }
 
-.app_inner input[type="radio"]:checked + label .app_inner__tab h2 svg {
+.app_inner input[type='radio']:checked + label .app_inner__tab h2 svg {
   opacity: 0;
 }
 
-.app_inner input[type="radio"]:not(checked) + label .app_inner__tab h2 svg {
+.app_inner input[type='radio']:not(checked) + label .app_inner__tab h2 svg {
   opacity: 0.3;
 }
 

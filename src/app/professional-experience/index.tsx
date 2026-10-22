@@ -1,6 +1,6 @@
-import ExperienceItem from "./ExperienceItem";
-import { experiences } from "./experiences";
-import "./styles.css";
+import ExperienceItem from './ExperienceItem';
+import { experiences } from './experiences';
+import './styles.css';
 
 export default function ProfessionalExperience() {
   return (

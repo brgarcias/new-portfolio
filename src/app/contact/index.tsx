@@ -1,9 +1,9 @@
 // CSS
-import "./styles.css";
+import './styles.css';
 // TAB COMPONENT
-import Tab from "./Tab";
+import Tab from './Tab';
 // TABS DATA
-import { tabs } from "./tabs";
+import { tabs } from './tabs';
 
 export default function Contact() {
   return (
@@ -11,7 +11,7 @@ export default function Contact() {
       <header className="bp-header cf">
         <h1 className="bp-header__title">Contact</h1>
         <p className="bp-header__desc">
-          My personal information, but if you prefer{" "}
+          My personal information, but if you prefer{' '}
           <a
             href="https://api.whatsapp.com/send?phone=5511996969301&text=Hello,%20Bruno!%20Really%20liked%20your%20portfolio."
             target="_blank"
@@ -34,7 +34,7 @@ export default function Contact() {
           <div className="app">
             <div className="app_inner">
               {tabs.map((tab) => (
-                <Tab key={tab.id} {...tab} checked={tab.id === "tab-1"} />
+                <Tab key={tab.id} {...tab} checked={tab.id === 'tab-1'} />
               ))}
             </div>
           </div>
