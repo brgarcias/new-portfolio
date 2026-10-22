@@ -79,3 +79,7 @@ A branch `main` exige pull request, histórico linear, commits com assinatura ve
 Não use uma segunda branch permanente, como `develop`, para promover alterações a `main`. Com histórico linear obrigatório, cada squash ou rebase cria em `main` um commit que não existe na outra branch, e as duas divergem a cada publicação. No painel do Netlify, em **Branches and deploy contexts**, somente `main` tem deploy de branch; os Deploy Previews de PRs continuam ativos.
 
 Para assinaturas SSH, a chave pública usada pelo Git deve estar cadastrada no GitHub como **Signing Key**. Uma chave cadastrada apenas para autenticação não basta para verificar a assinatura dos commits.
+
+### Agentes de código
+
+As instruções para agentes de código ficam em `AGENTS.md`. O `CLAUDE.md` importa esse arquivo e acrescenta notas específicas do Claude Code. O `.claude/settings.json` bloqueia comandos destrutivos, como apagar o site no Netlify, publicar pelo Netlify CLI ou apagar o repositório. Configurações pessoais do Claude Code ficam em `.claude/settings.local.json`, que não é versionado.
