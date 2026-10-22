@@ -27,6 +27,30 @@ pnpm start
 
 Os comandos de lint, tipos e formatação também podem ser executados individualmente: `pnpm lint`, `pnpm typecheck` e `pnpm format`. Para aplicar a formatação: `pnpm format:fix`. O hook de pre-commit formata os arquivos preparados com o Prettier.
 
+## Testes
+
+Os testes de navegador rodam em desktop (1440 px) e em celular (iPhone 13) sobre o build de produção. Eles cobrem a navegação pelo menu e o fechamento com Esc, as experiências, as etapas da formação, o modal dos cursos, o slider e os detalhes dos projetos, as contribuições, as abas de contato, o download do currículo, os links de contato, a validação e o envio do feedback e a página 404.
+
+```sh
+pnpm exec playwright install chromium
+pnpm build
+pnpm test:e2e
+```
+
+Para usar um Chromium já instalado, defina `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` com o caminho completo do executável. Capturas e rastros de falhas ficam em `test-results/`, ignorado pelo Git.
+
+### Testes visuais
+
+`tests/visual.spec.ts` compara cada seção e cada estado interativo com as imagens de `tests/snapshots/`. Essas imagens são o contrato da aparência do site: qualquer mudança de estilo, mesmo de um pixel de deslocamento ou de uma cor, faz o teste falhar. Trechos que dependem da data de hoje, como a duração do emprego atual e a idade, ficam mascarados.
+
+As fontes são desenhadas de forma diferente em cada sistema operacional, então os testes visuais só rodam no Linux, dentro do contêiner `mcr.microsoft.com/playwright:v1.64.1-noble`, que é o mesmo do CI. Em outros sistemas, `pnpm test:e2e` os ignora. A tag do contêiner acompanha a versão de `@playwright/test`; ao atualizar uma, atualize a outra e regrave as imagens.
+
+Quando uma mudança visual for intencional, o CI falha e publica as novas imagens no artefato `test-results`, com o sufixo `-actual.png`. Confira as imagens e copie cada uma para `tests/snapshots/<desktop|mobile>/`, com o nome sem o sufixo.
+
+O GitHub Actions roda `pnpm check`, `pnpm build` e `pnpm test:e2e` em cada pull request para `main`, no job `quality` de `.github/workflows/ci.yml`. Quando algo falha, a pasta `test-results/` fica disponível como artefato da execução por sete dias.
+
+## Observações sobre o build
+
 `pnpm dev` e `pnpm build` usam o webpack, e não o Turbopack. O minificador de CSS do Turbopack, o Lightning CSS, troca transformações 3D como `translate3d(0, 150px, 0)` por equivalentes 2D. A geometria é a mesma, mas o navegador deixa de criar camadas próprias para esses elementos, e imagens reduzidas, como as prévias da seção de projetos, passam a ser desenhadas com outra filtragem. Com o webpack, o CSS publicado continua igual ao de antes.
 
 ## Publicação
