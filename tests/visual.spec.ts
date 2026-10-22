@@ -19,6 +19,10 @@ test.skip(
 
 test.describe.configure({ mode: 'parallel' });
 
+// A failed comparison already saves the actual and diff images, and traces
+// of these pages would carry every photo of the contributing section.
+test.use({ trace: 'off' });
+
 async function settle(page: Page, scope = 'body') {
   await page.evaluate(() => document.fonts.ready);
   await page.locator(`${scope} img`).evaluateAll((images) =>
