@@ -1,5 +1,5 @@
 import ExperienceItem from './ExperienceItem';
-import { experiences } from './experiences';
+import { getExperiences } from './experiences';
 import './styles.css';
 
 export default function ProfessionalExperience() {
@@ -11,7 +11,7 @@ export default function ProfessionalExperience() {
 
       <div className="main">
         <ul className="cbp_tmtimeline">
-          {experiences.map((experience, index) => (
+          {getExperiences().map((experience, index) => (
             <ExperienceItem
               key={experience.id}
               {...experience}

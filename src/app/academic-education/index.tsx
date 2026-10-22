@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import './styles.css';
@@ -7,13 +7,6 @@ import { tabsContent } from './sections';
 
 export default function AcademicEducation() {
   const [activeTab, setActiveTab] = useState(0);
-
-  useEffect(() => {
-    if (process.env.NODE_ENV !== 'development') return;
-    const step1 = document.getElementById(`step-1`) as HTMLInputElement;
-    if (!step1) return;
-    step1.checked = true;
-  }, []);
 
   return (
     <div className="page" id="academic-education">

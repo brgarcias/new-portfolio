@@ -1,3 +1,22 @@
-<form name="contact" method="POST" data-netlify="true">
-  <input type="hidden" name="form-name" value="contact" />
-</form>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>Site forms</title>
+  </head>
+  <body>
+    <!--
+      Netlify detects forms only in static HTML at deploy time. The feedback
+      form in src/components/Form posts here, and every field it sends must
+      also be declared below.
+    -->
+    <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="contact" />
+      <input name="bot-field" />
+      <input name="fullName" />
+      <input name="email" type="email" />
+      <textarea name="feedback"></textarea>
+    </form>
+  </body>
+</html>

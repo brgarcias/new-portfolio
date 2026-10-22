@@ -9,7 +9,9 @@ import {
   formatDateRange,
 } from '@/src/app/professional-experience/date-format';
 
-export const experiences = [
+// A function, so the current role's duration is computed on every render
+// instead of once when the module loads.
+export const getExperiences = () => [
   {
     id: 1,
     date: formatDateRange('2025-10'),

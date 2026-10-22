@@ -49,28 +49,6 @@ export default function AboutMe() {
     });
   };
 
-  const downloadZIP = async () => {
-    try {
-      const response = await fetch('documents/cv/Bruno_Garcia_Resume.zip', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'blob',
-        },
-      }).then((response) => response.blob());
-
-      const blob = new Blob([response], { type: 'application/zip' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'Bruno_Garcia_Resume.zip';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error downloading ZIP file', error);
-    }
-  };
-
   const submitForm = async (data: FormEvent<HTMLFormElement>) => {
     data.preventDefault();
     const formData = new FormData(data.currentTarget);
@@ -82,7 +60,9 @@ export default function AboutMe() {
 
     const validateAndSubmit = async () => {
       try {
-        const response = await fetch('/', {
+        // Netlify Forms only accepts submissions posted to a static file.
+        // A POST to / reaches the Next.js server and the message is lost.
+        const response = await fetch('/contact.html', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams(formDataParsed).toString(),
@@ -116,7 +96,11 @@ export default function AboutMe() {
     };
     callValidateFields(formDataParsed);
 
-    if (Object.values(formDataParsed).every((item) => !isEmpty(item))) {
+    // Only the visitor's fields are required. The form also sends form-name
+    // and the bot-field honeypot, which stays empty.
+    if (
+      Object.keys(errorsState).every((field) => !isEmpty(formDataParsed[field]))
+    ) {
       setSubmitting(true);
       validateAndSubmit();
     }
@@ -180,7 +164,8 @@ export default function AboutMe() {
               <a
                 className="bp-nav__item bp-icon bp-icon--archive"
                 style={{ transition: '0.5s', cursor: 'pointer' }}
-                onClick={downloadZIP}
+                href="/documents/cv/Bruno_Garcia_Resume.zip"
+                download="Bruno_Garcia_Resume.zip"
                 data-info="Download CV"
               >
                 <span>Download CV</span>
@@ -223,24 +208,6 @@ export default function AboutMe() {
           errorsState={errorsState}
         />
       </ModalComponent>
-
-      <Form
-        hidden
-        submitForm={submitForm}
-        isSubmitting={isSubmitting}
-        formData={{
-          emailValue,
-          feedbackValue,
-          fullNameValue,
-          setEmailValue,
-          setFeedbackValue,
-          setFullNameValue,
-        }}
-        validateField={validateField}
-        onClose={() => setVisible(false)}
-        actionButtonDisabled={isSubmitting}
-        errorsState={errorsState}
-      />
     </div>
   );
 }

@@ -11,9 +11,7 @@ import { loadScript } from './load';
 import { navItems, socialLinks } from './content';
 
 export default function Header() {
-  useEffect(() => {
-    loadScript();
-  }, []);
+  useEffect(() => loadScript(), []);
 
   return (
     <>
@@ -37,6 +35,7 @@ export default function Header() {
               className="link link--social link--faded"
               href={link.href}
               target="_blank"
+              rel="noopener noreferrer"
             >
               <FontAwesomeIcon icon={link.icon} />
               <span className="text-hidden">{link.text}</span>

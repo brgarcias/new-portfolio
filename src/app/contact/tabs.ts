@@ -9,7 +9,9 @@ import {
 import { faAngellist, faMailchimp } from '@fortawesome/free-brands-svg-icons';
 import { calculateAge } from '@/src/app/contact/age.utils';
 
-export const tabs = [
+// A function, so the age is computed on every render instead of once when
+// the module loads.
+export const getTabs = () => [
   {
     id: 'tab-1',
     icon: faUserNinja,

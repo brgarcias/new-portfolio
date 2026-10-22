@@ -3,7 +3,7 @@ import './styles.css';
 // TAB COMPONENT
 import Tab from './Tab';
 // TABS DATA
-import { tabs } from './tabs';
+import { getTabs } from './tabs';
 
 export default function Contact() {
   return (
@@ -15,6 +15,7 @@ export default function Contact() {
           <a
             href="https://api.whatsapp.com/send?phone=5511996969301&text=Hello,%20Bruno!%20Really%20liked%20your%20portfolio."
             target="_blank"
+            rel="noopener noreferrer"
           >
             text me
           </a>
@@ -33,7 +34,7 @@ export default function Contact() {
         <div className="left">
           <div className="app">
             <div className="app_inner">
-              {tabs.map((tab) => (
+              {getTabs().map((tab) => (
                 <Tab key={tab.id} {...tab} checked={tab.id === 'tab-1'} />
               ))}
             </div>
