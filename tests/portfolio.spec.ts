@@ -26,6 +26,9 @@ test('carrega o portfólio sem erros e sem rolagem horizontal', async ({
   expect(response?.status()).toBe(200);
   await expect(page).toHaveTitle('Bruno Garcia — Dev. Full-Stack');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(
+    page.locator('meta[name="google-site-verification"]'),
+  ).toHaveAttribute('content', 'zE-A_JWezHcTY0RPEAiraoj-ORR540i46tyJwSk0T3s');
   await expect(page.locator('#about-me h1')).toHaveText('Full-Stack Developer');
   await expect(page.locator('.pages-stack > .page')).toHaveCount(
     sections.length,
