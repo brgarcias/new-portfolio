@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
 // HOOKS
-import { useState } from "react";
+import { useState } from 'react';
 // MODAL
-import ModalComponent from "@/src/components/Modal";
+import ModalComponent from '@/src/components/Modal';
 // DATA COURSES
-import { courses } from "./courses";
+import { courses } from './courses';
 
 export default function Course(data: (typeof courses)[0]) {
   const [visible, setVisible] = useState(false);
@@ -26,14 +26,7 @@ export default function Course(data: (typeof courses)[0]) {
     >
       <h3>{title}</h3>
       <span className="rb-temp">{subtitle}</span>
-      <ModalComponent
-        visible={visible}
-        setVisible={setVisible}
-        size="5xl"
-        actionForm={async () => {return}}
-        actionButtonDisabled={false}
-        hideActionButton={true}
-      >
+      <ModalComponent visible={visible} setVisible={setVisible} size="5xl">
         <div className="rb-week">
           <p className="description-title">{descriptionTitle}</p>
           <p className="description-subtitle">{descriptionSubtitle}</p>

@@ -9,8 +9,9 @@ html.js,
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  font-feature-settings: "cv11", "salt", "ss01", "ss03", "cv01", "cv02", "cv03",
-    "cv04", "cv05", "cv06", "cv09", "cv10";
+  font-feature-settings:
+    'cv11', 'salt', 'ss01', 'ss03', 'cv01', 'cv02', 'cv03', 'cv04', 'cv05',
+    'cv06', 'cv09', 'cv10';
 }
 
 img {
@@ -48,8 +49,12 @@ img {
   pointer-events: none;
   opacity: 0;
   background: transparent;
-  -webkit-transition: -webkit-transform 1.2s, opacity 1.2s;
-  transition: transform 1.2s, opacity 1.2s;
+  -webkit-transition:
+    -webkit-transform 1.2s,
+    opacity 1.2s;
+  transition:
+    transform 1.2s,
+    opacity 1.2s;
   -webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
   transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
   -webkit-transform: translate3d(0, 150px, 0);
@@ -74,8 +79,12 @@ img {
 
 .pages-nav .pages-nav__item--social {
   width: 100%;
-  -webkit-transition: -webkit-transform 1.2s, opacity 1.2s;
-  transition: transform 1.2s, opacity 1.2s;
+  -webkit-transition:
+    -webkit-transform 1.2s,
+    opacity 1.2s;
+  transition:
+    transform 1.2s,
+    opacity 1.2s;
   -webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
   transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
   -webkit-transform: translate3d(0, 20px, 0);
@@ -109,7 +118,7 @@ img {
 }
 
 .link--page:not(.link--faded)::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 100%;
   left: 50%;
@@ -179,8 +188,12 @@ img {
 
 .js .pages-stack--open .page {
   cursor: pointer;
-  -webkit-transition: -webkit-transform 0.45s, opacity 0.45s;
-  transition: transform 0.45s, opacity 0.45s;
+  -webkit-transition:
+    -webkit-transform 0.45s,
+    opacity 0.45s;
+  transition:
+    transform 0.45s,
+    opacity 0.45s;
   -webkit-transition-timing-function: cubic-bezier(0.6, 0, 0.4, 1);
   transition-timing-function: cubic-bezier(0.6, 0, 0.4, 1);
 }
@@ -241,7 +254,7 @@ img {
 
 .menu-button::before,
 .menu-button::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 50%;
   left: 0;
@@ -350,15 +363,16 @@ img {
 /* General Blueprint Style */
 
 @font-face {
-  font-family: "bpicons";
+  font-family: 'bpicons';
   font-weight: normal;
   font-style: normal;
-  src: url("../../public/fonts/bpicons/bpicons.eot");
-  src: url("../../public/fonts/bpicons/bpicons.eot?#iefix")
-      format("embedded-opentype"),
-    url("../../public/fonts/bpicons/bpicons.woff") format("woff"),
-    url("../../public/fonts/bpicons/bpicons.ttf") format("truetype"),
-    url("../../public/fonts/bpicons/bpicons.svg#bpicons") format("svg");
+  src: url('../../public/fonts/bpicons/bpicons.eot');
+  src:
+    url('../../public/fonts/bpicons/bpicons.eot?#iefix')
+      format('embedded-opentype'),
+    url('../../public/fonts/bpicons/bpicons.woff') format('woff'),
+    url('../../public/fonts/bpicons/bpicons.ttf') format('truetype'),
+    url('../../public/fonts/bpicons/bpicons.svg#bpicons') format('svg');
 }
 
 /* Made with http://icomoon.io/ */
@@ -375,7 +389,7 @@ img {
 
 .cf:before,
 .cf:after {
-  content: " ";
+  content: ' ';
   display: table;
 }
 
@@ -386,8 +400,9 @@ img {
 /* Main styles */
 
 body {
-  font-family: "Avenir Next", Avenir, "Helvetica Neue", "Lato", "Segoe UI",
-    Helvetica, Arial, sans-serif;
+  font-family:
+    'Avenir Next', Avenir, 'Helvetica Neue', 'Lato', 'Segoe UI', Helvetica,
+    Arial, sans-serif;
   margin: 0;
   color: #cecece;
   background: #1d1e21;
@@ -517,7 +532,7 @@ a:hover {
 }
 
 .bp-icon:after {
-  font-family: "bpicons";
+  font-family: 'bpicons';
   font-weight: normal;
   font-style: normal;
   font-variant: normal;
@@ -543,23 +558,23 @@ a:hover {
 }
 
 .bp-icon--next:after {
-  content: "\e000";
+  content: '\e000';
 }
 
 .bp-icon--drop:after {
-  content: "\e001";
+  content: '\e001';
 }
 
 .bp-icon--archive:after {
-  content: "\e002";
+  content: '\e002';
 }
 
 .bp-icon--about:after {
-  content: "\e003";
+  content: '\e003';
 }
 
 .bp-icon--prev:after {
-  content: "\e004";
+  content: '\e004';
 }
 
 @media screen and (max-width: 40em) {
@@ -588,12 +603,3 @@ a:hover {
   background-color: #999;
   border-radius: 6px;
 }
-
-/* Estilização da barra de rolagem em navegadores Firefox */
-/* Observe que isso pode não funcionar em versões mais recentes do Firefox */
-scrollbar-color: #999 transparent;
-
-/* Estilização da barra de rolagem em navegadores Firefox em sistemas MacOS */
-/* Isso pode ser necessário para obter a aparência desejada em sistemas MacOS */
-/* Observe que isso pode não funcionar em versões mais recentes do Firefox */
-scrollbar-width: thin;
