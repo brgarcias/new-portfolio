@@ -112,6 +112,10 @@ export const metadata: Metadata = {
     follow: true,
   },
   description: 'Bruno Garcia: An inspired Full-Stack Developer',
+  // Google Search Console, URL-prefix property for the netlify.app address.
+  verification: {
+    google: 'zE-A_JWezHcTY0RPEAiraoj-ORR540i46tyJwSk0T3s',
+  },
 };
 
 export const viewport: Viewport = {
