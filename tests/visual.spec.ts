@@ -38,12 +38,15 @@ async function settle(page: Page, scope = 'body') {
 }
 
 // Values computed from today's date change over time, so they are masked.
+// Every section stays in the DOM, so only the active one is masked: the
+// others sit behind it and their masks would cover the visible page.
 function timeDependent(page: Page) {
+  const active = '.pages-stack > .page:not(.page--inactive)';
   return [
     page.locator(
-      '#professional-experience .cbp_tmtimeline > li:first-child .cbp_tmtime > span:first-child',
+      `${active} .cbp_tmtimeline > li:first-child .cbp_tmtime > span:first-child`,
     ),
-    page.locator('#contact label[for="tab-1"] .tab_right p').last(),
+    page.locator(`${active} label[for="tab-1"] .tab_right p`).last(),
   ];
 }
 
