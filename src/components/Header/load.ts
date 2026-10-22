@@ -1,30 +1,30 @@
 export const loadScript = () => {
-  const supportsTransitions = "transition" in document.documentElement.style;
+  const supportsTransitions = 'transition' in document.documentElement.style;
 
   function onEndTransition(el: HTMLElement, callback: () => void) {
     function onEndCallbackFn(ev: TransitionEvent) {
       if (supportsTransitions) {
         if (ev.target !== el) return;
-        el.removeEventListener("transitionend", onEndCallbackFn);
+        el.removeEventListener('transitionend', onEndCallbackFn);
       }
-      if (callback && typeof callback === "function") {
+      if (callback && typeof callback === 'function') {
         callback.call(el);
       }
     }
     if (supportsTransitions) {
-      el.addEventListener("transitionend", onEndCallbackFn);
+      el.addEventListener('transitionend', onEndCallbackFn);
     } else {
       onEndCallbackFn({} as TransitionEvent);
     }
   }
 
-  const stack: HTMLElement | null = document.querySelector(".pages-stack");
-  const pages: any = Array.from(stack?.children || []);
+  const stack: HTMLElement | null = document.querySelector('.pages-stack');
+  const pages = Array.from(stack?.children ?? []) as HTMLElement[];
   const pagesTotal = pages.length;
   let current = 0;
-  const menuCtrl = document.querySelector("button.menu-button");
-  const nav = document.querySelector(".pages-nav");
-  const navItems = Array.from(nav?.querySelectorAll(".link--page") || []);
+  const menuCtrl = document.querySelector('button.menu-button');
+  const nav = document.querySelector('.pages-nav');
+  const navItems = Array.from(nav?.querySelectorAll('.link--page') || []);
   let isMenuOpen = false;
 
   function init() {
@@ -39,48 +39,48 @@ export const loadScript = () => {
       const posIdx = stackPagesIdxs.indexOf(i);
 
       if (current !== i) {
-        page.classList.add("page--inactive");
+        page.classList.add('page--inactive');
 
         if (posIdx !== -1) {
           page.style.transform = `translate3d(
             0,
-            ${posIdx === 0 ? "0" : "75%"},
+            ${posIdx === 0 ? '0' : '75%'},
             ${-200 - 50 * posIdx}px
           )`;
         } else {
-          page.style.transform = "translate3d(0,75%,-300px)";
+          page.style.transform = 'translate3d(0,75%,-300px)';
         }
       } else {
-        page.classList.remove("page--inactive");
+        page.classList.remove('page--inactive');
       }
 
       page.style.zIndex =
-        i < current ? current - i + "" : pagesTotal + current - i + "";
+        i < current ? current - i + '' : pagesTotal + current - i + '';
 
       if (posIdx !== -1) {
         page.style.opacity = (1 - 0.1 * posIdx).toFixed(2);
       } else {
-        page.style.opacity = "0";
+        page.style.opacity = '0';
       }
     });
   }
 
   function initEvents() {
-    menuCtrl?.addEventListener("click", toggleMenu);
+    menuCtrl?.addEventListener('click', toggleMenu);
 
     navItems.forEach((item) => {
-      const pageid = item.getAttribute("href")?.slice(1);
+      const pageid = item.getAttribute('href')?.slice(1);
       if (!pageid) return;
-      item.addEventListener("click", (ev) => {
+      item.addEventListener('click', (ev) => {
         ev.preventDefault();
         openPage(pageid);
       });
     });
 
     pages.forEach((page: HTMLElement) => {
-      const pageid = page.getAttribute("id");
+      const pageid = page.getAttribute('id');
       if (!pageid) return;
-      page.addEventListener("click", (ev) => {
+      page.addEventListener('click', (ev) => {
         if (isMenuOpen) {
           ev.preventDefault();
           openPage(pageid);
@@ -88,7 +88,7 @@ export const loadScript = () => {
       });
     });
 
-    document.addEventListener("keydown", (ev) => {
+    document.addEventListener('keydown', (ev) => {
       if (!isMenuOpen) return;
       const keyCode = ev.keyCode || ev.which;
       if (keyCode === 27) {
@@ -107,9 +107,9 @@ export const loadScript = () => {
   }
 
   function openMenu() {
-    menuCtrl?.classList.add("menu-button--open");
-    stack?.classList.add("pages-stack--open");
-    nav?.classList.add("pages-nav--open");
+    menuCtrl?.classList.add('menu-button--open');
+    stack?.classList.add('pages-stack--open');
+    nav?.classList.add('pages-nav--open');
 
     const stackPagesIdxs = getStackPagesIdxs();
     stackPagesIdxs.forEach((pageIndex, posIdx) => {
@@ -134,8 +134,8 @@ export const loadScript = () => {
     const futureCurrent = pages.indexOf(futurePage);
 
     if (futurePage) {
-      futurePage.style.transform = "translate3d(0, 0, 0)";
-      futurePage.style.opacity = "1";
+      futurePage.style.transform = 'translate3d(0, 0, 0)';
+      futurePage.style.opacity = '1';
     }
 
     if (id) {
@@ -144,11 +144,11 @@ export const loadScript = () => {
 
     buildStack();
 
-    menuCtrl?.classList.remove("menu-button--open");
-    nav?.classList.remove("pages-nav--open");
+    menuCtrl?.classList.remove('menu-button--open');
+    nav?.classList.remove('pages-nav--open');
 
-    onEndTransition(futurePage || document.createElement("div"), () => {
-      stack?.classList.remove("pages-stack--open");
+    onEndTransition(futurePage || document.createElement('div'), () => {
+      stack?.classList.remove('pages-stack--open');
       buildStack();
       isMenuOpen = false;
     });
@@ -173,22 +173,4 @@ export const loadScript = () => {
   }
 
   init();
-
-  (window as any).openPageNoTransition = function (id?: string) {
-    const futurePage = id ? document.getElementById(id) : pages[current];
-    if (!futurePage) return;
-    const futureCurrent = pages.indexOf(futurePage);
-
-    if (futurePage) {
-      futurePage.style.transform = "translate3d(0, 0, 0)";
-      futurePage.style.opacity = "1";
-      futurePage.classList.remove("page--inactive");
-    }
-
-    if (id) {
-      current = futureCurrent;
-    }
-
-    buildStack();
-  };
 };

@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { useEffect, useRef, useState, useCallback } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from 'next/image';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faArrowLeft,
   faSearch,
   faArrowRight,
   faTimesCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import "./styles.css";
-import { projectsData } from "./projects.data";
+} from '@fortawesome/free-solid-svg-icons';
+import './styles.css';
+import { projectsData } from './projects.data';
 
 /* ─── types ─────────────────────────────────────────────── */
 type Project = (typeof projectsData)[number];
@@ -28,10 +28,10 @@ export default function Projects() {
 
   /* ── navigation ─────────────────────────────────────────── */
   const navigate = useCallback(
-    (dir: "left" | "right") => {
+    (dir: 'left' | 'right') => {
       if (isOpen) return;
       setCurrent((prev) =>
-        dir === "right"
+        dir === 'right'
           ? prev < total - 1
             ? prev + 1
             : 0
@@ -47,16 +47,16 @@ export default function Projects() {
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (isOpen) return;
-      if (e.key === "ArrowLeft") navigate("left");
-      if (e.key === "ArrowRight") navigate("right");
+      if (e.key === 'ArrowLeft') navigate('left');
+      if (e.key === 'ArrowRight') navigate('right');
     }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen, navigate]);
 
   /* ── zoom / open ────────────────────────────────────────── */
   function applyZoomerTransform(el: HTMLDivElement) {
-    const area = el.querySelector<HTMLElement>(".zoomer__area");
+    const area = el.querySelector<HTMLElement>('.zoomer__area');
     if (!area) return;
     const { width: aw, height: ah } = area.getBoundingClientRect();
     const { left, top } = area.getBoundingClientRect();
@@ -74,27 +74,27 @@ export default function Projects() {
     if (!zoomer) return;
 
     setIsOpen(true);
-    zoomer.classList.add("zoomer--active");
+    zoomer.classList.add('zoomer--active');
     applyZoomerTransform(zoomer);
 
     // After zoom transition ends, show content panel
     function onEnd(e: TransitionEvent) {
       if (e.target !== zoomer) return;
-      zoomer!.removeEventListener("transitionend", onEnd);
+      zoomer!.removeEventListener('transitionend', onEnd);
 
       // reset zoomer silently
-      zoomer!.classList.add("zoomer--notrans");
-      zoomer!.style.transform = "translate3d(0,0,0) scale3d(1,1,1)";
+      zoomer!.classList.add('zoomer--notrans');
+      zoomer!.style.transform = 'translate3d(0,0,0) scale3d(1,1,1)';
 
       // open content
-      contentRef.current?.classList.add("content--open");
+      contentRef.current?.classList.add('content--open');
       const contentItem = document.getElementById(
         projectsData[current].contentId,
       );
-      contentItem?.classList.add("content__item--current");
-      setTimeout(() => contentItem?.classList.add("content__item--reset"), 0);
+      contentItem?.classList.add('content__item--current');
+      setTimeout(() => contentItem?.classList.add('content__item--reset'), 0);
     }
-    zoomer.addEventListener("transitionend", onEnd);
+    zoomer.addEventListener('transitionend', onEnd);
   }
 
   /* ── close ──────────────────────────────────────────────── */
@@ -103,18 +103,18 @@ export default function Projects() {
     setIsClosing(true);
 
     const contentItem = contentRef.current?.querySelector<HTMLElement>(
-      ".content__item--current",
+      '.content__item--current',
     );
     const zoomer = zoomerRefs.current[current];
 
-    contentRef.current?.classList.remove("content--open");
-    contentItem?.classList.remove("content__item--current");
+    contentRef.current?.classList.remove('content--open');
+    contentItem?.classList.remove('content__item--current');
 
     // wait for content fade out, then animate zoomer back
     function onContentEnd(e: TransitionEvent) {
       if (e.target !== contentItem) return;
-      contentItem?.removeEventListener("transitionend", onContentEnd);
-      contentItem?.classList.remove("content__item--reset");
+      contentItem?.removeEventListener('transitionend', onContentEnd);
+      contentItem?.classList.remove('content__item--reset');
 
       if (!zoomer) {
         setIsOpen(false);
@@ -123,21 +123,21 @@ export default function Projects() {
       }
 
       // bring zoomer back to fill position silently first
-      zoomer.classList.add("zoomer--notrans");
+      zoomer.classList.add('zoomer--notrans');
       applyZoomerTransform(zoomer);
 
       // then animate it back to natural size
       setTimeout(() => {
-        zoomer.classList.remove("zoomer--notrans");
-        zoomer.classList.remove("zoomer--active");
-        zoomer.style.transform = "translate3d(0,0,0) scale3d(1,1,1)";
+        zoomer.classList.remove('zoomer--notrans');
+        zoomer.classList.remove('zoomer--active');
+        zoomer.style.transform = 'translate3d(0,0,0) scale3d(1,1,1)';
         setIsOpen(false);
         setIsClosing(false);
       }, 25);
     }
 
     if (contentItem) {
-      contentItem.addEventListener("transitionend", onContentEnd);
+      contentItem.addEventListener('transitionend', onContentEnd);
     } else {
       setIsOpen(false);
       setIsClosing(false);
@@ -146,11 +146,11 @@ export default function Projects() {
 
   /* ── slide size class per project ───────────────────────── */
   const sizeClasses = [
-    "zoomer__area--size-2", // iPhone
-    "zoomer__area--size-4", // iPad
-    "zoomer__area--size-3", // MacBook
-    "zoomer__area--size-5", // iMac
-    "zoomer__area--size-1", // Apple Watch
+    'zoomer__area--size-2', // iPhone
+    'zoomer__area--size-4', // iPad
+    'zoomer__area--size-3', // MacBook
+    'zoomer__area--size-5', // iMac
+    'zoomer__area--size-1', // Apple Watch
   ];
 
   return (
@@ -168,7 +168,7 @@ export default function Projects() {
           {projectsData.map((project: Project, index: number) => (
             <div
               key={project.contentId}
-              className={`slide${index === current ? " slide--current" : ""}`}
+              className={`slide${index === current ? ' slide--current' : ''}`}
               data-content={project.contentId}
             >
               <div className="slide__mover">
@@ -177,7 +177,7 @@ export default function Projects() {
                   ref={(el) => {
                     zoomerRefs.current[index] = el;
                   }}
-                  style={{ transform: "translate3d(0,0,0) scale3d(1,1,1)" }}
+                  style={{ transform: 'translate3d(0,0,0) scale3d(1,1,1)' }}
                 >
                   <Image
                     className="zoomer__image"
@@ -197,7 +197,7 @@ export default function Projects() {
                     />
                     <div
                       className={`zoomer__area ${
-                        sizeClasses[index] ?? "zoomer__area--size-2"
+                        sizeClasses[index] ?? 'zoomer__area--size-2'
                       }`}
                     />
                   </div>
@@ -214,7 +214,7 @@ export default function Projects() {
           <nav className="slider__nav">
             <button
               className="button button--nav-prev"
-              onClick={() => navigate("left")}
+              onClick={() => navigate('left')}
               aria-label="Previous Project"
             >
               <FontAwesomeIcon icon={faArrowLeft} />
@@ -232,7 +232,7 @@ export default function Projects() {
 
             <button
               className="button button--nav-next"
-              onClick={() => navigate("right")}
+              onClick={() => navigate('right')}
               aria-label="Next Project"
             >
               <FontAwesomeIcon icon={faArrowRight} />
@@ -259,7 +259,7 @@ export default function Projects() {
                 <h2>{project.insideTitle}</h2>
                 <h3>{project.insideSubtitle}</h3>
                 <p>{project.description}</p>
-                <p style={{ marginTop: "15px" }}>
+                <p style={{ marginTop: '15px' }}>
                   <a
                     href={project.websiteLink}
                     target="_blank"

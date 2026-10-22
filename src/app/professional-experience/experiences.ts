@@ -3,20 +3,20 @@ import {
   faDesktopAlt,
   faMobileRetro,
   faUsers,
-} from "@fortawesome/free-solid-svg-icons";
+} from '@fortawesome/free-solid-svg-icons';
 import {
   calculateDuration,
   formatDateRange,
-} from "@/src/app/professional-experience/date-format";
+} from '@/src/app/professional-experience/date-format';
 
 export const experiences = [
   {
     id: 1,
-    date: formatDateRange("2025-10"),
-    duration: calculateDuration("2025-10"),
-    company: "PayPal",
+    date: formatDateRange('2025-10'),
+    duration: calculateDuration('2025-10'),
+    company: 'PayPal',
     icon: faCode,
-    title: "Software Engineer (Node.js / GraphQL Platform)",
+    title: 'Software Engineer (Node.js / GraphQL Platform)',
     description: `
       <ul>
         <li>Designed and evolved GraphQL schemas powering scalable data access across multiple platform services and frontend applications</li>
@@ -29,11 +29,11 @@ export const experiences = [
   },
   {
     id: 2,
-    date: formatDateRange("2025-02", "2026-03"),
-    duration: calculateDuration("2025-02", "2026-03"),
-    company: "Ab Inbev",
+    date: formatDateRange('2025-02', '2026-03'),
+    duration: calculateDuration('2025-02', '2026-03'),
+    company: 'Ab Inbev',
     icon: faCode,
-    title: "Full Stack Developer",
+    title: 'Full Stack Developer',
     description: `
     <ul>
       <li>Developing and maintaining scalable RESTful APIs and GraphQL services using NestJS.</li>  
@@ -47,11 +47,11 @@ export const experiences = [
   },
   {
     id: 3,
-    date: formatDateRange("2024-09", "2025-02"),
-    duration: calculateDuration("2024-09", "2025-02"),
-    company: "Serasa",
+    date: formatDateRange('2024-09', '2025-02'),
+    duration: calculateDuration('2024-09', '2025-02'),
+    company: 'Serasa',
     icon: faCode,
-    title: "Backend Developer",
+    title: 'Backend Developer',
     description: `
     <ul>
       <li>Focused on developing unit and end-to-end (E2E) tests using Jest, ensuring the reliability and quality of delivered applications.</li>  
@@ -65,11 +65,11 @@ export const experiences = [
   },
   {
     id: 4,
-    date: formatDateRange("2024-06", "2025-02"),
-    duration: calculateDuration("2024-06", "2025-02"),
-    company: "Domy",
+    date: formatDateRange('2024-06', '2025-02'),
+    duration: calculateDuration('2024-06', '2025-02'),
+    company: 'Domy',
     icon: faCode,
-    title: "Backend Developer",
+    title: 'Backend Developer',
     description: `
     <ul>
       <li>Backend Development: Designing and implementing server-side logic to ensure high performance and responsiveness to front-end requests.</li>
@@ -84,11 +84,11 @@ export const experiences = [
   },
   {
     id: 5,
-    date: formatDateRange("2021-03", "2024-07"),
-    duration: calculateDuration("2021-03", "2024-07"),
-    company: "Trocafone",
+    date: formatDateRange('2021-03', '2024-07'),
+    duration: calculateDuration('2021-03', '2024-07'),
+    company: 'Trocafone',
     icon: faCode,
-    title: "Full Stack Developer",
+    title: 'Full Stack Developer',
     description: `
     <ul>
       <h3>Full Stack Developer</h3>
@@ -149,11 +149,11 @@ export const experiences = [
   },
   {
     id: 6,
-    date: formatDateRange("2020-09", "2021-03"),
-    duration: calculateDuration("2020-09", "2021-03"),
-    company: "Art Seven",
+    date: formatDateRange('2020-09', '2021-03'),
+    duration: calculateDuration('2020-09', '2021-03'),
+    company: 'Art Seven',
     icon: faDesktopAlt,
-    title: "Jr. Frontend Developer",
+    title: 'Jr. Frontend Developer',
     description: `
     <ul>
       <li>Engage in in-depth discussions and thorough analysis of new customer
@@ -177,11 +177,11 @@ export const experiences = [
   },
   {
     id: 7,
-    date: formatDateRange("2018-04", "2020-04"),
-    duration: calculateDuration("2018-04", "2020-04"),
-    company: "Ingenico",
+    date: formatDateRange('2018-04', '2020-04'),
+    duration: calculateDuration('2018-04', '2020-04'),
+    company: 'Ingenico',
     icon: faMobileRetro,
-    title: "Intern Software Developer",
+    title: 'Intern Software Developer',
     description: `
     <ul>
     <li>Gained foundational experience in WEB infrastructure, including a
@@ -203,11 +203,11 @@ export const experiences = [
   },
   {
     id: 8,
-    date: formatDateRange("2017-05", "2018-04"),
-    duration: calculateDuration("2017-05", "2018-04"),
-    company: "Ingenico",
+    date: formatDateRange('2017-05', '2018-04'),
+    duration: calculateDuration('2017-05', '2018-04'),
+    company: 'Ingenico',
     icon: faUsers,
-    title: "Young HR Apprentice",
+    title: 'Young HR Apprentice',
     description: `
     <ul>
       <li>Learning the Basics: Begin by grasping fundamental HR concepts such as

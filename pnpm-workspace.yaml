@@ -1,0 +1,12 @@
+# @heroui/shared-utils copies its React 19 build into dist on install.
+allowBuilds:
+  '@heroui/shared-utils': true
+  unrs-resolver: true
+
+# Next 16.4 supplies the ESLint 10 compatibility adapters for these plugins.
+# Their upstream peer declarations still stop at ESLint 9.
+peerDependencyRules:
+  allowedVersions:
+    'eslint-plugin-import>eslint': '10'
+    'eslint-plugin-jsx-a11y>eslint': '10'
+    'eslint-plugin-react>eslint': '10'

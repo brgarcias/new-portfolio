@@ -1,26 +1,26 @@
 // HANDLERS
-import { ChangeEventHandler, FocusEventHandler } from "react";
-// NEXTUI
-import { Input, Textarea } from "@nextui-org/react";
+import { ChangeEventHandler, FocusEventHandler } from 'react';
+// HEROUI
+import { Input, Textarea } from '@heroui/react';
 // FONTAWESOME
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 // HELPER TEXT COMPONENT
-import { HelperText } from "./HelperText";
+import { HelperText } from './HelperText';
 
 interface InputControlProps {
   icon: IconProp;
   label: string;
   name: string;
   placeholder: string;
-  variant: "flat" | "faded" | "bordered" | "underlined" | undefined;
+  variant: 'flat' | 'faded' | 'bordered' | 'underlined' | undefined;
   type: string;
   isTextarea?: boolean;
   error: boolean;
   helperText: string;
   onChangeHandler: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
-  onFocusHandler: FocusEventHandler;
-  onBlurHandler: any;
+  onFocusHandler: FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  onBlurHandler: FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   disabled: boolean;
 }
 

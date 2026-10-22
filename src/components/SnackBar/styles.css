@@ -1,0 +1,59 @@
+.snackbar {
+  position: fixed;
+  z-index: 5500;
+  display: flex;
+  bottom: 16px;
+  right: 16px;
+  max-width: 560px;
+  min-width: 300px;
+}
+
+.snackbar__content {
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+  background-color: #f6f8fa;
+  border-radius: 8px;
+  border: 1px solid #d0d7de;
+  box-shadow: 0 2px 16px #d0d7de;
+  padding: 0.75rem;
+  color: #24292f;
+  font-family:
+    IBM Plex Sans,
+    sans-serif;
+  font-weight: 500;
+  text-align: start;
+  position: relative;
+  transform: translateX(0);
+  transition: transform 300ms ease;
+  animation: snackbar-enter 300ms ease;
+}
+
+.snackbar__content--exiting {
+  transform: translateX(500px);
+}
+
+@keyframes snackbar-enter {
+  from {
+    transform: translateX(500px);
+  }
+}
+
+.snackbar__content .snackbar-message {
+  flex: 1 1 0%;
+  max-width: 100%;
+}
+
+.snackbar__content .snackbar-title {
+  margin: 0;
+  line-height: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.snackbar__content .snackbar-description {
+  margin: 0;
+  line-height: 1.5rem;
+  font-weight: 400;
+  text-transform: none;
+  color: #32383f;
+}

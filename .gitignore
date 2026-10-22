@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/.pnpm-store/
 /.pnp
 .pnp.js
 
@@ -9,7 +10,7 @@
 /coverage
 
 # next.js
-/.next/
+.next/
 /out/
 
 # production
@@ -23,6 +24,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
 # local env files
 .env*.local
@@ -30,9 +32,16 @@ yarn-error.log*
 # vercel
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# eslint
+.eslintcache
 
-# idea
+# Local Netlify folder
+.netlify
+
+# TypeScript and browser checks
+*.tsbuildinfo
+/playwright-report/
+/test-results/
+
+# IDE
 /.idea/

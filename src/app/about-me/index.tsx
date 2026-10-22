@@ -1,43 +1,43 @@
-"use client";
+'use client';
 
 // NEXT
-import Image from "next/image";
+import Image from 'next/image';
 // HOOKS
-import { FormEvent, useState } from "react";
+import { FormEvent, useState } from 'react';
 // LODASH
-import { isEmpty } from "lodash";
+import { isEmpty } from 'lodash';
 // FONTAWESOME
 import {
   faCheck,
   faCircleExclamation,
-} from "@fortawesome/free-solid-svg-icons";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+} from '@fortawesome/free-solid-svg-icons';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 // IMAGES
-import AboutMeImg from "@/public/images/about-me/about-me.png";
+import AboutMeImg from '@/public/images/about-me/about-me.png';
 // COMPONENTS
-import ModalComponent from "@/src/components/Modal";
-import Form from "@/src/components/Form";
-import SnackbarFeedback from "@/src/components/SnackBar";
+import ModalComponent from '@/src/components/Modal';
+import Form from '@/src/components/Form';
+import SnackbarFeedback from '@/src/components/SnackBar';
 
 export default function AboutMe() {
   const [visible, setVisible] = useState(false);
-  const [fullNameValue, setFullNameValue] = useState("");
-  const [emailValue, setEmailValue] = useState("");
-  const [feedbackValue, setFeedbackValue] = useState("");
+  const [fullNameValue, setFullNameValue] = useState('');
+  const [emailValue, setEmailValue] = useState('');
+  const [feedbackValue, setFeedbackValue] = useState('');
   const [isSubmitting, setSubmitting] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState({
     open: false,
-    title: "",
-    description: "",
+    title: '',
+    description: '',
     icon: faCheck as IconProp,
-    colorIcon: "",
+    colorIcon: '',
   });
   const [errorsState, setErrorsState] = useState({
     fullName: false,
     email: false,
     feedback: false,
   });
-  const validateField = (fieldName: string, value: any) => {
+  const validateField = (fieldName: string, value: string | null) => {
     setErrorsState((prevState) => ({
       ...prevState,
       [fieldName]: isEmpty(value),
@@ -51,23 +51,23 @@ export default function AboutMe() {
 
   const downloadZIP = async () => {
     try {
-      const response = await fetch("documents/cv/Bruno_Garcia_Resume.zip", {
-        method: "GET",
+      const response = await fetch('documents/cv/Bruno_Garcia_Resume.zip', {
+        method: 'GET',
         headers: {
-          "Content-Type": "blob",
+          'Content-Type': 'blob',
         },
       }).then((response) => response.blob());
 
-      const blob = new Blob([response], { type: "application/zip" });
+      const blob = new Blob([response], { type: 'application/zip' });
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
+      const a = document.createElement('a');
       a.href = url;
-      a.download = "Bruno_Garcia_Resume.zip";
+      a.download = 'Bruno_Garcia_Resume.zip';
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error downloading ZIP file", error);
+      console.error('Error downloading ZIP file', error);
     }
   };
 
@@ -82,32 +82,32 @@ export default function AboutMe() {
 
     const validateAndSubmit = async () => {
       try {
-        const response = await fetch("/", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams(formDataParsed).toString(),
         });
 
         if (response.ok) {
           setOpenSnackbar({
             open: true,
-            title: "Message Submitted",
-            description: "Thank you very much for your feedback!",
+            title: 'Message Submitted',
+            description: 'Thank you very much for your feedback!',
             icon: faCheck,
-            colorIcon: "#66bb6a",
+            colorIcon: '#66bb6a',
           });
         } else {
-          console.error("Error on sending forms: ", response);
-          throw new Error("An error occurred while sending your message");
+          console.error('Error on sending forms: ', response);
+          throw new Error('An error occurred while sending your message');
         }
       } catch (error) {
-        console.error("Error submitting form:", error);
+        console.error('Error submitting form:', error);
         setOpenSnackbar({
           open: true,
-          title: "We had a problem",
-          description: "An error occurred while sending your message!",
+          title: 'We had a problem',
+          description: 'An error occurred while sending your message!',
           icon: faCircleExclamation,
-          colorIcon: "rgb(230, 154, 147)",
+          colorIcon: 'rgb(230, 154, 147)',
         });
       } finally {
         setSubmitting(false);
@@ -171,7 +171,7 @@ export default function AboutMe() {
             <nav className="bp-nav">
               <a
                 className="bp-nav__item bp-icon bp-icon--drop open-options"
-                style={{ transition: "0.5s", cursor: "pointer" }}
+                style={{ transition: '0.5s', cursor: 'pointer' }}
                 onClick={openModalFeedback}
                 data-info="Leave Feedback"
               >
@@ -179,7 +179,7 @@ export default function AboutMe() {
               </a>
               <a
                 className="bp-nav__item bp-icon bp-icon--archive"
-                style={{ transition: "0.5s", cursor: "pointer" }}
+                style={{ transition: '0.5s', cursor: 'pointer' }}
                 onClick={downloadZIP}
                 data-info="Download CV"
               >
@@ -201,14 +201,10 @@ export default function AboutMe() {
       <ModalComponent
         title="Welcome!"
         subtitle="Please share your thoughts and feedback to help me improve my portfolio."
-        actionText="Send"
         visible={visible}
         setVisible={setVisible}
         size="md"
-        actionForm={submitForm}
-        actionButtonDisabled={isSubmitting}
         hideCloseButton
-        hideActionButton
       >
         <Form
           submitForm={submitForm}

@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Nunito:400,900");
+@import url('https://fonts.googleapis.com/css?family=Nunito:400,900');
 body
   .progress_inner
   #step-1:checked
@@ -483,23 +483,23 @@ body
 }
 
 body .progress_inner__step:nth-of-type(1):before {
-  content: "1";
+  content: '1';
 }
 
 body .progress_inner__step:nth-of-type(2):before {
-  content: "2";
+  content: '2';
 }
 
 body .progress_inner__step:nth-of-type(3):before {
-  content: "3";
+  content: '3';
 }
 
 body .progress_inner__step:nth-of-type(4):before {
-  content: "4";
+  content: '4';
 }
 
 body .progress_inner__step:nth-of-type(5):before {
-  content: "5";
+  content: '5';
 }
 
 body .progress_inner__bar--set {
@@ -642,7 +642,7 @@ body .progress_inner__status .box_string {
   transform: rotate(-39deg) translateX(-22px) translateY(-12px);
 }
 
-body .progress_inner input[type="radio"] {
+body .progress_inner input[type='radio'] {
   display: none;
 }
 

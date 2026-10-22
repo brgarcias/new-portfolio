@@ -1,15 +1,15 @@
 export const formatEmail = (
   input: string,
-  validateField: (input: string, value: any) => void
+  validateField: (input: string, value: string | null) => void,
 ) => {
   const inputFormatted = input.trim();
   const regex =
     /^(([^<>()\\[\]\\.,;:\s@"]+(\.[^<>()\\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
   if (regex.test(inputFormatted)) {
-    validateField("email", inputFormatted);
+    validateField('email', inputFormatted);
   } else {
-    validateField("email", null);
+    validateField('email', null);
   }
   return inputFormatted;
 };

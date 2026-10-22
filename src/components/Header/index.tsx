@@ -1,14 +1,14 @@
-"use client";
+'use client';
 // NEXT
-import Link from "next/link";
+import Link from 'next/link';
 // HOOKS
-import { useEffect } from "react";
+import { useEffect } from 'react';
 // FONT AWESOME
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // SCRIPT
-import { loadScript } from "./load";
+import { loadScript } from './load';
 // CONTENT
-import { navItems, socialLinks } from "./content";
+import { navItems, socialLinks } from './content';
 
 export default function Header() {
   useEffect(() => {

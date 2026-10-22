@@ -33,7 +33,7 @@
 }
 
 .bp-icon:after {
-  font-family: "bpicons", sans-serif;
+  font-family: 'bpicons', sans-serif;
   speak: never;
   font-style: normal;
   font-weight: normal;
@@ -45,23 +45,23 @@
 }
 
 .bp-icon-next:after {
-  content: "\e000";
+  content: '\e000';
 }
 
 .bp-icon-drop:after {
-  content: "\e001";
+  content: '\e001';
 }
 
 .bp-icon-archive:after {
-  content: "\e002";
+  content: '\e002';
 }
 
 .bp-icon-about:after {
-  content: "\e003";
+  content: '\e003';
 }
 
 .bp-icon-prev:after {
-  content: "\e004";
+  content: '\e004';
 }
 
 /* Made with https://icomoon.io/ */
@@ -76,7 +76,7 @@
 /* The line */
 
 .cbp_tmtimeline:before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   bottom: 0;
@@ -99,7 +99,7 @@
 
 .cbp_tmtimeline > li:before,
 .cbp_tmtimeline > li:after {
-  content: " ";
+  content: ' ';
   display: table;
 }
 
@@ -162,7 +162,7 @@
 .cbp_tmtimeline > li .cbp_tmlabel:after {
   right: 100%;
   border: solid transparent;
-  content: " ";
+  content: ' ';
   height: 0;
   width: 0;
   position: absolute;
@@ -181,7 +181,7 @@
 .cbp_tmtimeline > li .cbp_tmicon {
   width: 40px;
   height: 40px;
-  font-family: "ecoico", sans-serif;
+  font-family: 'ecoico', sans-serif;
   speak: never;
   font-style: normal;
   font-weight: normal;

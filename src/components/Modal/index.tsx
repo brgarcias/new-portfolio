@@ -6,107 +6,89 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react";
-import { FormEvent } from "react";
+} from '@heroui/react';
 
 interface ModalProps {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   title?: string;
   subtitle?: string;
-  actionText?: string;
   size?:
-    | "xs"
-    | "sm"
-    | "md"
-    | "lg"
-    | "xl"
-    | "2xl"
-    | "3xl"
-    | "4xl"
-    | "5xl"
-    | "full"
+    | 'xs'
+    | 'sm'
+    | 'md'
+    | 'lg'
+    | 'xl'
+    | '2xl'
+    | '3xl'
+    | '4xl'
+    | '5xl'
+    | 'full'
     | undefined;
-  children: JSX.Element;
-  actionForm: (data: FormEvent<HTMLFormElement>) => Promise<void>;
-  hideActionButton?: boolean;
-  actionButtonDisabled: boolean;
+  children: React.ReactNode;
   hideCloseButton?: boolean;
 }
 
 export default function ModalComponent({
   visible,
   setVisible,
-  title = "",
-  subtitle = "",
-  actionText = "",
+  title = '',
+  subtitle = '',
   children,
-  size = "md",
-  actionForm,
-  hideActionButton = false,
-  actionButtonDisabled,
+  size = 'md',
   hideCloseButton = false,
 }: Readonly<ModalProps>) {
   const { onOpenChange } = useDisclosure();
   const closeHandler = () => setVisible(false);
-  const actionButtonForm = (data: any) => actionForm(data);
 
   return (
     <Modal
-        closeButton
-        isDismissable
-        backdrop="blur"
-        aria-labelledby="modal-title"
-        isOpen={visible}
-        onClose={closeHandler}
-        size={size}
-        onOpenChange={onOpenChange}
-        scrollBehavior="inside"
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                <p
-                  id="modal-title"
-                  style={{ fontSize: 26, fontWeight: "semibold" }}
-                >
-                  {title}
-                </p>
-                <p id="modal-subtitle" style={{ fontSize: 14 }}>
-                  {subtitle}
-                </p>
-              </ModalHeader>
-              <ModalBody>{children}</ModalBody>
-              <ModalFooter
-                style={{
-                      display: hideActionButton && hideCloseButton ? "none" : "flex",
-                    }}
+      closeButton
+      isDismissable
+      backdrop="blur"
+      aria-labelledby="modal-title"
+      isOpen={visible}
+      onClose={closeHandler}
+      size={size}
+      onOpenChange={onOpenChange}
+      scrollBehavior="inside"
+      // Keeps the height limit NextUI used before HeroUI changed it to 8rem.
+      classNames={{ base: 'max-h-[calc(100%_-_7.5rem)]' }}
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">
+              <p
+                id="modal-title"
+                style={{ fontSize: 26, fontWeight: 'semibold' }}
               >
-                <Button
-                  style={{
-                    display: hideCloseButton ? "none" : "block",
-                  }}
-                  color="default"
-                  variant="light"
-                  onPress={onClose}
-                >
-                  Close
-                </Button>
-                <Button
-                  style={{
-                    display: hideActionButton ? "none" : "block",
-                    backgroundColor: "#5c5edc",
-                  }}
-                  onPress={actionButtonForm}
-                  disabled={actionButtonDisabled}
-                >
-                  {actionText}
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+                {title}
+              </p>
+              <p id="modal-subtitle" style={{ fontSize: 14 }}>
+                {subtitle}
+              </p>
+            </ModalHeader>
+            <ModalBody>{children}</ModalBody>
+            <ModalFooter
+              style={{
+                display: hideCloseButton ? 'none' : 'flex',
+              }}
+            >
+              <Button
+                style={{
+                  display: hideCloseButton ? 'none' : 'block',
+                }}
+                color="default"
+                variant="light"
+                onPress={onClose}
+              >
+                Close
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 }

@@ -1,15 +1,15 @@
 // FORM PROPS
-import { Dispatch, FC, FormEvent, SetStateAction } from "react";
-// NEXTUI
-import { Spacer, Button } from "@nextui-org/react";
+import { Dispatch, FC, FocusEvent, FormEvent, SetStateAction } from 'react';
+// HEROUI
+import { Spacer, Button } from '@heroui/react';
 // FONTAWESOME
-import { faEnvelope, faUserAlt } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faUserAlt } from '@fortawesome/free-solid-svg-icons';
 // COMPONENT
-import InputControl from "./InputControl";
+import InputControl from './InputControl';
 // CSS
-import "./styles.css";
+import './styles.css';
 // UTILS
-import { formatEmail } from "./utils";
+import { formatEmail } from './utils';
 
 interface FormDataValue {
   emailValue: string;
@@ -25,7 +25,7 @@ interface FormProps {
   isSubmitting: boolean;
   formData: FormDataValue;
   errorsState: Record<string, boolean>;
-  validateField: (input: string, value: any) => void;
+  validateField: (input: string, value: string | null) => void;
   onClose: () => void;
   actionButtonDisabled: boolean;
   hidden?: boolean;
@@ -44,19 +44,22 @@ const Form: FC<FormProps> = ({
   const handleInputChange = (inputName: string, value: string) => {
     validateField(inputName, value);
     switch (inputName) {
-      case "fullName":
+      case 'fullName':
         formData.setFullNameValue(value);
         break;
-      case "email":
+      case 'email':
         formData.setEmailValue(formatEmail(value, validateField));
         break;
-      case "feedback":
+      case 'feedback':
         formData.setFeedbackValue(value);
         break;
     }
   };
 
-  const handleInputFocus = (inputName: string, e: any) => {
+  const handleInputFocus = (
+    inputName: string,
+    e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     validateField(inputName, e.target.value);
   };
 
@@ -80,9 +83,9 @@ const Form: FC<FormProps> = ({
         type="text"
         variant="bordered"
         disabled={isSubmitting}
-        onChangeHandler={(e) => handleInputChange("fullName", e.target.value)}
-        onFocusHandler={(e) => handleInputFocus("fullName", e)}
-        onBlurHandler={(e: any) => handleInputBlur("fullName", e.target.value)}
+        onChangeHandler={(e) => handleInputChange('fullName', e.target.value)}
+        onFocusHandler={(e) => handleInputFocus('fullName', e)}
+        onBlurHandler={(e) => handleInputBlur('fullName', e.target.value)}
         error={errorsState.fullName}
         helperText="Please, write your name."
       />
@@ -95,9 +98,9 @@ const Form: FC<FormProps> = ({
         type="email"
         variant="bordered"
         disabled={isSubmitting}
-        onChangeHandler={(e) => handleInputChange("email", e.target.value)}
-        onFocusHandler={(e) => handleInputFocus("email", e)}
-        onBlurHandler={(e: any) => handleInputBlur("email", e.target.value)}
+        onChangeHandler={(e) => handleInputChange('email', e.target.value)}
+        onFocusHandler={(e) => handleInputFocus('email', e)}
+        onBlurHandler={(e) => handleInputBlur('email', e.target.value)}
         error={errorsState.email}
         helperText="Please, tell me your email."
       />
@@ -111,19 +114,19 @@ const Form: FC<FormProps> = ({
         type="text"
         isTextarea
         disabled={isSubmitting}
-        onChangeHandler={(e) => handleInputChange("feedback", e.target.value)}
-        onFocusHandler={(e) => handleInputFocus("feedback", e)}
-        onBlurHandler={(e: any) => handleInputBlur("feedback", e.target.value)}
+        onChangeHandler={(e) => handleInputChange('feedback', e.target.value)}
+        onFocusHandler={(e) => handleInputFocus('feedback', e)}
+        onBlurHandler={(e) => handleInputBlur('feedback', e.target.value)}
         error={errorsState.feedback}
         helperText="Please, give me your feedback."
       />
       <div
         style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "end",
-          marginTop: "20px",
-          marginBottom: "5px",
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'end',
+          marginTop: '20px',
+          marginBottom: '5px',
         }}
       >
         <Button color="default" variant="light" onPress={onClose}>

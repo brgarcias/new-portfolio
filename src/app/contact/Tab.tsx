@@ -1,8 +1,8 @@
 // FONT AWESOME
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // FONTS
-import { Roboto_Condensed } from "next/font/google";
+import { Roboto_Condensed } from 'next/font/google';
 
 interface TabProps {
   id: string;
@@ -15,8 +15,8 @@ interface TabProps {
 }
 
 const robotoCondensed = Roboto_Condensed({
-  weight: "400",
-  subsets: ["latin"],
+  weight: '400',
+  subsets: ['latin'],
 });
 
 export default function Tab({

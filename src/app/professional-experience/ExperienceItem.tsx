@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
 // FONT AWESOME
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 interface ExperienceItemProps {
   date: string;
@@ -51,12 +51,12 @@ export default function ExperienceItem({
 
           <FontAwesomeIcon
             icon={faChevronDown}
-            className={`chevron ${isOpen ? "open" : ""}`}
+            className={`chevron ${isOpen ? 'open' : ''}`}
           />
         </button>
 
         {/* collapsible body */}
-        <div className={`experience-body ${isOpen ? "open" : ""}`}>
+        <div className={`experience-body ${isOpen ? 'open' : ''}`}>
           <div
             className="description"
             dangerouslySetInnerHTML={{ __html: description }}

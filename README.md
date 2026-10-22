@@ -4,12 +4,30 @@ Portfólio profissional de Bruno Garcia, desenvolvedor full-stack. O site é uma
 
 ## Executar localmente
 
+Pré-requisitos: nvm e Corepack ou pnpm 11.
+
 ```sh
+nvm install
+nvm use
+corepack enable
+corepack prepare pnpm@11.3.0 --activate
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Abra <http://localhost:3000>. Para o build de produção, use `pnpm build` e `pnpm start`.
+Abra <http://localhost:3000>. O projeto usa Node.js 24 LTS, Next.js 16 com App Router, React 19, TypeScript estrito, Tailwind CSS 3 e HeroUI. O pnpm é o gerenciador oficial; mantenha somente `pnpm-lock.yaml` atualizado. O npm que acompanha o Node é suficiente para instalar o pnpm, se Corepack não estiver disponível: `npm install --global pnpm@11.3.0`.
+
+## Verificar e compilar
+
+```sh
+pnpm check
+pnpm build
+pnpm start
+```
+
+Os comandos de lint, tipos e formatação também podem ser executados individualmente: `pnpm lint`, `pnpm typecheck` e `pnpm format`. Para aplicar a formatação: `pnpm format:fix`. O hook de pre-commit formata os arquivos preparados com o Prettier.
+
+`pnpm dev` e `pnpm build` usam o webpack, e não o Turbopack. O minificador de CSS do Turbopack, o Lightning CSS, troca transformações 3D como `translate3d(0, 150px, 0)` por equivalentes 2D. A geometria é a mesma, mas o navegador deixa de criar camadas próprias para esses elementos, e imagens reduzidas, como as prévias da seção de projetos, passam a ser desenhadas com outra filtragem. Com o webpack, o CSS publicado continua igual ao de antes.
 
 ## Publicação
 
