@@ -1,34 +1,39 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Bruno Garcia — portfólio
 
-## Getting Started
+Portfólio profissional de Bruno Garcia, desenvolvedor full-stack. O site é uma página única em inglês, feita com Next.js, publicada no Netlify em <https://brgarcias-portfolio.netlify.app>.
 
-First, run the development server:
+## Executar localmente
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
+```sh
+pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra <http://localhost:3000>. Para o build de produção, use `pnpm build` e `pnpm start`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Publicação
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+O site é publicado pelo Netlify, no site `brgarcias-portfolio`, a cada merge em `main`.
 
-## Learn More
+### Fluxo de branches e Netlify
 
-To learn more about Next.js, take a look at the following resources:
+`main` é a única branch permanente do repositório e a branch de produção do site `brgarcias-portfolio` no Netlify. Cada merge em `main` publica o site.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Para qualquer alteração, crie uma branch de trabalho a partir de `main` e abra um pull request com destino a `main`. O Netlify gera um Deploy Preview para cada PR, com endereço próprio, para validar a mudança antes da publicação.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```sh
+git switch main && git pull
+git switch -c feat/minha-alteracao
+# faça commits assinados
+git push -u origin feat/minha-alteracao
+gh pr create --base main --fill
+# após a aprovação dos checks
+gh pr merge --squash --delete-branch
+git switch main && git pull --prune
+```
 
-## Deploy on Vercel
+A branch `main` exige pull request, histórico linear, commits com assinatura verificada pelo GitHub, PR atualizado em relação a `main` e os checks do Netlify. Antes do merge, confira os resultados no PR. Use **Squash and merge**: o GitHub assina o commit gerado, o que atende à exigência de assinatura. Se o PR ficar desatualizado, use **Update branch** ou faça rebase da branch de trabalho sobre `main`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Não use uma segunda branch permanente, como `develop`, para promover alterações a `main`. Com histórico linear obrigatório, cada squash ou rebase cria em `main` um commit que não existe na outra branch, e as duas divergem a cada publicação. No painel do Netlify, em **Branches and deploy contexts**, somente `main` tem deploy de branch; os Deploy Previews de PRs continuam ativos.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Para assinaturas SSH, a chave pública usada pelo Git deve estar cadastrada no GitHub como **Signing Key**. Uma chave cadastrada apenas para autenticação não basta para verificar a assinatura dos commits.
