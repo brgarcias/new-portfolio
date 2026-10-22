@@ -9,9 +9,9 @@ export default defineConfig({
   // Screenshots only match the Linux container where CI runs, so they live
   // in one folder per device instead of one per operating system.
   snapshotPathTemplate: '{testDir}/snapshots/{projectName}/{arg}{ext}',
-  // CI never writes screenshots: a missing or different one fails the job,
-  // and the new image is kept in test-results as *-actual.png.
-  updateSnapshots: process.env.CI ? 'none' : 'missing',
+  // A missing screenshot is written to tests/snapshots and still fails the
+  // test, so CI publishes it as an artifact to be reviewed and committed.
+  updateSnapshots: 'missing',
   expect: {
     toHaveScreenshot: {
       animations: 'disabled',
