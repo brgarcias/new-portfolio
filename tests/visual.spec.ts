@@ -131,6 +131,10 @@ test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
 });
 
 test('slider e detalhes de projeto', { tag: '@visual' }, async ({ page }) => {
+  // With reduced motion the arrows jump instead of gliding. While a scroll
+  // animates, Chrome draws images with a cheaper filter and redraws them a
+  // moment later, so a capture right after a glide was not always the same.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await scrollTo(page, '#projects .projects__track');
   // As with the education steps, a click while the cards finish entering
