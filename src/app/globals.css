@@ -603,3 +603,27 @@ a:hover {
   background-color: #999;
   border-radius: 6px;
 }
+
+/* Not found page. These rules live here because a CSS file imported by
+   not-found.tsx would be preloaded, unused, on every page. */
+
+/* The stacked-pages menu only works on the home page, so it is hidden on the
+   404 page, which links back to the portfolio instead. */
+body:has(.not-found) .menu-button,
+body:has(.not-found) .pages-nav {
+  display: none;
+}
+
+/* .blue comes with the academic education section, which the 404 page does
+   not load. */
+.not-found .blue {
+  color: #2e6c8e;
+}
+
+.not-found .bp-nav {
+  margin-top: 1.5em;
+}
+
+.not-found .bp-nav__item {
+  transition: 0.5s;
+}

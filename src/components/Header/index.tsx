@@ -1,6 +1,7 @@
 'use client';
 // NEXT
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 // HOOKS
 import { useEffect } from 'react';
 // FONT AWESOME
@@ -11,7 +12,10 @@ import { loadScript } from './load';
 import { navItems, socialLinks } from './content';
 
 export default function Header() {
-  useEffect(() => loadScript(), []);
+  const pathname = usePathname();
+  // The header stays mounted across client-side navigations, such as the
+  // 404 page's link home, so the menu is set up again for the new pages.
+  useEffect(() => loadScript(), [pathname]);
 
   return (
     <>
