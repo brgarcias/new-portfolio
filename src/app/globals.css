@@ -114,7 +114,20 @@ button:focus-visible {
 
 ::-webkit-scrollbar-thumb {
   border-radius: 6px;
-  background-color: #999;
+  background-color: rgb(144 145 247 / 0.35);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(144 145 247 / 0.6);
+}
+
+/* Firefox has no ::-webkit-scrollbar. Chrome would drop the rules above if
+   it saw scrollbar-color, so only browsers without them get it. */
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-color: rgb(144 145 247 / 0.35) transparent;
+    scrollbar-width: thin;
+  }
 }
 
 /* ─── Helpers ───────────────────────────────────────────── */
@@ -135,16 +148,6 @@ button:focus-visible {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-}
-
-.cf::before,
-.cf::after {
-  content: ' ';
-  display: table;
-}
-
-.cf::after {
-  clear: both;
 }
 
 /* ─── Buttons ───────────────────────────────────────────── */

@@ -29,7 +29,7 @@ Os comandos de lint, tipos e formatação também podem ser executados individua
 
 ## Testes
 
-Os testes de navegador rodam em desktop (1440 px) e em celular (iPhone 13) sobre o build de produção. Eles cobrem a navegação pela barra e pelo menu em pilha, o fechamento com Esc, a preferência por reduzir movimento, as experiências, as etapas da formação, inclusive pelo teclado, os detalhes dos cursos, o carrossel e os detalhes dos projetos, as contribuições, as abas de contato, o download do currículo, os links de contato, a validação e o envio do feedback, a página 404 e as páginas de erro.
+Os testes de navegador rodam em desktop (1440 px) e em celular (iPhone 13) sobre o build de produção. Eles cobrem a navegação pela barra e pelo menu em pilha, o fechamento com Esc, a preferência por reduzir movimento, as experiências, as etapas da formação, inclusive pelo teclado, os detalhes dos cursos, o carrossel e os detalhes dos projetos, as fotos das contribuições, os cartões de contato, o rodapé, o download do currículo, os links de contato, a validação e o envio do feedback, a página 404 e as páginas de erro.
 
 ```sh
 pnpm exec playwright install chromium

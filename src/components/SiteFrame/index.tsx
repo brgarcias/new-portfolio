@@ -16,6 +16,8 @@ import {
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
+// COMPONENTS
+import SiteFooter from './SiteFooter';
 // CONTENT
 import { navItems, resume, socialLinks, type SectionId } from './content';
 // CSS
@@ -47,7 +49,8 @@ function headerHeight() {
 
 export default function SiteFrame({
   children,
-}: Readonly<{ children: ReactNode }>) {
+  year,
+}: Readonly<{ children: ReactNode; year: number }>) {
   const pathname = usePathname();
   const isHome = pathname === '/';
   const [menu, setMenu] = useState<MenuState>('closed');
@@ -349,6 +352,7 @@ export default function SiteFrame({
           inert={locked}
         >
           {children}
+          <SiteFooter isHome={isHome} year={year} />
         </div>
       </div>
     </>

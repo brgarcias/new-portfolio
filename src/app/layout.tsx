@@ -191,7 +191,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <Providers>
-          <SiteFrame>{children}</SiteFrame>
+          <SiteFrame year={new Date().getUTCFullYear()}>{children}</SiteFrame>
         </Providers>
       </body>
     </html>

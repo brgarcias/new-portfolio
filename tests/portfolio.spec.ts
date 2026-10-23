@@ -303,31 +303,77 @@ test('navega pelos projetos e abre os detalhes', async ({ page }) => {
   await expect(current).toHaveText('Malka RH');
 });
 
-test('destaca as iniciativas de contribuição', async ({ page }) => {
+test('abre as fotos das iniciativas de contribuição', async ({ page }) => {
   await page.goto('/');
   await openSection(page, 'contributing');
-  const cards = page.locator('#contributing .c-card');
-  await expect(cards).toHaveCount(4);
+  const photos = page.locator('#contributing .contrib-card__button');
+  await expect(photos).toHaveCount(4);
   await scrollTo(page, '#contributing .contrib-grid');
-  await expect(page.locator('#contributing .contrib-gallery')).toHaveClass(
-    /is-visible/,
-  );
-  await cards.first().hover();
-  await expect(cards.first()).toHaveClass(/c-card--active/);
-  await expect(cards.first().locator('.c-card__overlay-title')).toHaveText(
-    'Easter donation campaigns',
-  );
+  await photos.first().click();
+  // The viewer is named after the initiative and tells what it was about.
+  await expect(
+    page.getByRole('dialog', { name: 'Easter donation campaigns' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('dialog').getByText(/^Delivering gifts, food/),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Next photo' }).click();
+  await expect(
+    page.getByRole('dialog', { name: "Children's Day events" }),
+  ).toBeVisible();
+  // The arrow keys browse the photos too, and go around.
+  await page.keyboard.press('ArrowLeft');
+  await page.keyboard.press('ArrowLeft');
+  await expect(
+    page.getByRole('dialog', { name: 'General donation drives' }),
+  ).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toBeHidden();
+  await expect(photos.first()).toBeFocused();
 });
 
-test('alterna as abas de contato', async ({ page }) => {
+test('mostra os dados de contato', async ({ page }) => {
   await page.goto('/');
   await openSection(page, 'contact');
-  await expect(page.locator('#tab-1')).toBeChecked();
-  await page.locator('#contact label[for="tab-3"]').click();
-  await expect(page.locator('#tab-3')).toBeChecked();
-  await expect(page.locator('#contact label[for="tab-3"]')).toContainText(
+  const cards = page.locator('#contact .contact-card');
+  await expect(cards.getByRole('heading', { level: 3 })).toHaveText([
+    'Bruno Garcia da Silva',
+    'Bachelor of Computer Science',
     'bruno-151299@hotmail.com',
+    'Advanced English',
+  ]);
+  const contact = page.locator('#contact .contact-card--contact');
+  await expect(
+    contact.getByRole('link', { name: 'bruno-151299@hotmail.com' }),
+  ).toHaveAttribute('href', 'mailto:bruno-151299@hotmail.com');
+  await expect(
+    contact.getByRole('link', { name: '+55 (11) 99696-9301' }),
+  ).toHaveAttribute('href', 'tel:+5511996969301');
+  await expect(page.locator('#contact .contact-card--profile')).toContainText(
+    /\d+ years/,
   );
+  const links = page.locator('#contact .contact-links a');
+  await expect(links).toHaveText(['Email', 'LinkedIn', 'WhatsApp', 'GitHub']);
+  for (const link of await links.all()) {
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  }
+});
+
+test('fecha a página com o rodapé', async ({ page }) => {
+  await page.goto('/');
+  const footer = page.locator('.site-footer');
+  await expect(footer.locator('.social-links a')).toHaveCount(4);
+  await expect(footer.locator('.site-footer__year')).toHaveText(
+    String(new Date().getUTCFullYear()),
+  );
+  await page.evaluate(() =>
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'instant',
+    }),
+  );
+  await footer.getByRole('link', { name: 'Back to top' }).click();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 });
 
 test('oferece o currículo e os canais de contato', async ({
@@ -442,7 +488,10 @@ test('envia o feedback ao Netlify Forms e confirma o envio', async ({
   const dialog = await fillFeedback(page);
   await dialog.getByRole('button', { name: 'Send' }).click();
   await expect(dialog).toBeHidden();
-  await expect(page.getByText('Message Submitted')).toBeVisible();
+  // A status, so screen readers announce it.
+  await expect(
+    page.getByRole('status').getByText('Message Submitted'),
+  ).toBeVisible();
   await expect(
     page.getByText('Thank you very much for your feedback!'),
   ).toBeVisible();
@@ -499,6 +548,8 @@ test('avisa quando o envio do feedback falha', async ({ page }) => {
   await expect(
     page.getByText('An error occurred while sending your message!'),
   ).toBeVisible();
+  await page.getByRole('button', { name: 'Close notification' }).click();
+  await expect(page.getByText('We had a problem')).toBeHidden();
 });
 
 test('mostra a página 404 no estilo do site e volta ao portfólio', async ({
@@ -568,7 +619,7 @@ test('aplica os cabeçalhos de segurança sem bloquear o site', async ({
   expect(headers['permissions-policy']).toContain('camera=()');
   expect(headers['x-powered-by']).toBeUndefined();
 
-  // Exercises every section, both modals, the project details and the form.
+  // Exercises every section, every dialog and the form.
   const dialog = await fillFeedback(page);
   await dialog.getByRole('button', { name: 'Send' }).click();
   await expect(page.getByText('Message Submitted')).toBeVisible();
@@ -581,6 +632,11 @@ test('aplica os cabeçalhos de segurança sem bloquear o site', async ({
     .first()
     .getByRole('button')
     .click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toBeHidden();
+  await openSection(page, 'contributing');
+  await page.locator('#contributing .contrib-card__button').first().click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toBeHidden();
@@ -664,7 +720,7 @@ test('mostra a página de erro e recupera o site com Try again', async ({
   page,
 }) => {
   // On the first load only, a browser without IntersectionObserver breaks the
-  // contributing section.
+  // sections that enter as they scroll into view.
   await page.addInitScript(() => {
     if (sessionStorage.getItem('broken')) return;
     sessionStorage.setItem('broken', '1');
