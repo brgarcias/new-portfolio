@@ -20,6 +20,14 @@ const inter = Inter({ subsets: ['latin'] });
 const title = 'Bruno Garcia — Dev. Full-Stack';
 const description = 'Bruno Garcia: An inspired Full-Stack Developer';
 
+// On *.netlify.app, Netlify adds a line break and an HTML comment after
+// <meta charset> in production. React 19 cannot hydrate that line break, a
+// text node inside <head>, and would render the whole document again, so this
+// script removes it while the page is still being parsed.
+const removeHeadWhitespace =
+  'for(const node of [...document.head.childNodes])' +
+  'if(node.nodeType===3&&!node.textContent.trim())node.remove()';
+
 // Only facts the page already shows: name, role, e-mail and profiles.
 const personJsonLd = {
   '@context': 'https://schema.org',
@@ -167,6 +175,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="js csstransitions dark">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: removeHeadWhitespace }} />
         <script
           type="application/ld+json"
           // Escapes "<" so the JSON can never close the script element.

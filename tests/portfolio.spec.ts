@@ -470,3 +470,28 @@ test('publica os metadados de busca e compartilhamento', async ({
   const sitemap = await (await request.get('/sitemap.xml')).text();
   expect(sitemap).toContain(`<loc>${siteUrl}/</loc>`);
 });
+
+test('hidrata a página com o comentário que o Netlify injeta no head', async ({
+  page,
+}) => {
+  // On *.netlify.app, production pages get a line break and an HTML comment
+  // right after <meta charset>. React 19 cannot hydrate that text node.
+  await page.route(
+    (url) => url.pathname === '/',
+    async (route) => {
+      const response = await route.fetch();
+      const html = (await response.text()).replace(
+        '<meta charSet="utf-8"/>',
+        '<meta charSet="utf-8"/>\n<!-- This site is hosted on Netlify. -->',
+      );
+      await route.fulfill({ response, body: html });
+    },
+  );
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/');
+  await expect(page.locator('#about-me h1')).toBeVisible();
+  await page.waitForFunction(() => document.readyState === 'complete');
+  await openSection(page, 'contact');
+  expect(errors).toEqual([]);
+});
