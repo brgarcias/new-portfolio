@@ -1,20 +1,20 @@
 // PRODUCT IMAGES
-import iPhoneImg from '@/public/images/projects/iphone.png';
-import iPadImg from '@/public/images/projects/ipad.png';
-import MacbookImg from '@/public/images/projects/macbook.png';
-import iMacImg from '@/public/images/projects/imac.png';
-import AppleWatchImg from '@/public/images/projects/apple-watch.png';
+import iPhoneImg from '@/public/images/projects/iphone.webp';
+import iPadImg from '@/public/images/projects/ipad.webp';
+import MacbookImg from '@/public/images/projects/macbook.webp';
+import iMacImg from '@/public/images/projects/imac.webp';
+import AppleWatchImg from '@/public/images/projects/apple-watch.webp';
 // PREVIEW IMAGES
-import CssPreviewImg from '@/public/images/projects/css-solucoes-preview.png';
-import SenseiPreviewImg from '@/public/images/projects/sensei-contabil-preview.png';
-import ReparofonePreviewImg from '@/public/images/projects/trocafone_reparos_preview.png';
-import SaldofonePreviewImg from '@/public/images/projects/saldofone-dashboard-preview.png';
-import MalkaPreviewImg from '@/public/images/projects/malka-preview.png';
+import CssPreviewImg from '@/public/images/projects/css-solucoes-preview.webp';
+import SenseiPreviewImg from '@/public/images/projects/sensei-contabil-preview.webp';
+import ReparofonePreviewImg from '@/public/images/projects/trocafone_reparos_preview.webp';
+import SaldofonePreviewImg from '@/public/images/projects/saldofone-dashboard-preview.webp';
+import MalkaPreviewImg from '@/public/images/projects/malka-preview.webp';
 // INSIDER IMAGES
-import CssSolucoesImg from '@/public/images/projects/css-solucoes.png';
-import SenseiContabilImg from '@/public/images/projects/sensei-contabil.png';
-import ReparofoneImg from '@/public/images/projects/trocafone_reparos.png';
-import MalkaImg from '@/public/images/projects/malka.png';
+import CssSolucoesImg from '@/public/images/projects/css-solucoes.webp';
+import SenseiContabilImg from '@/public/images/projects/sensei-contabil.webp';
+import ReparofoneImg from '@/public/images/projects/trocafone_reparos.webp';
+import MalkaImg from '@/public/images/projects/malka.webp';
 
 export const projectsData = [
   {
