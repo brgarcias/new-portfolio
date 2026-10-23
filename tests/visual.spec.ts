@@ -133,6 +133,9 @@ test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
 test('slider e detalhes de projeto', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
   await scrollTo(page, '#projects .projects__track');
+  // As with the education steps, a click while the cards finish entering
+  // sometimes scrolled the page first, which moved the whole capture.
+  await expect(page.locator('#projects .projects')).toHaveCSS('opacity', '1');
   await page.getByRole('button', { name: 'Next Project' }).click();
   await page.getByRole('button', { name: 'Next Project' }).click();
   await expect(
