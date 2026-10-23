@@ -41,6 +41,7 @@ Antes de considerar uma mudança pronta, rode `pnpm check`, `pnpm build` e `pnpm
 - `src/components/Modal`, `Form` e `SnackBar` são o modal do HeroUI usado pelo feedback e pelos cursos, o formulário de feedback e o aviso de envio.
 - `src/app/globals.css` tem as diretivas do Tailwind, o menu, a pilha de páginas, o cabeçalho das seções e a fonte de ícones `bpicons`.
 - `src/app/not-found.tsx` e `src/app/error.tsx` são as páginas de erro.
+- `next.config.mjs` desliga o `agentRules`, esconde o `X-Powered-By` e define os cabeçalhos de segurança: Content Security Policy, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` e `Permissions-Policy`. A CSP só aceita recursos do próprio site. Não carregue scripts, estilos, fontes ou imagens de outros domínios. Se isso for inevitável, ajuste a política e explique o motivo no PR.
 - `public/` guarda favicon, imagens, a fonte `bpicons`, o currículo em `documents/cv/Bruno_Garcia_Resume.zip` e `contact.html`, que declara o formulário para o Netlify Forms.
 - `src/emails/feedback/index.html` é um modelo de e-mail do SendGrid mantido fora do build. O site não o usa e o Prettier o ignora.
 - `tests/portfolio.spec.ts` tem os testes funcionais, `tests/visual.spec.ts` os testes visuais, `tests/helpers.ts` a navegação compartilhada e `tests/snapshots/` as imagens de referência.
@@ -71,6 +72,7 @@ O projeto usa o App Router. As seções são componentes de servidor quando não
 - Remova metadados, como localização, de qualquer foto antes de publicá-la. As fotos de contribuição tinham coordenadas GPS no EXIF. Uma forma de converter uma foto com o `sharp` é `sharp(origem).resize({ width: 1200 }).keepIccProfile().webp({ quality: 82, effort: 6 }).toFile(destino)`, que descarta o EXIF. Use `height` no lugar de `width` para fotos na horizontal.
 - No celular, as páginas empilhadas ficam dentro da área de carregamento antecipado do navegador, e todas as imagens do site baixam na abertura da página. Mantenha as imagens leves.
 - O projeto tem poucas dependências de produção. Evite adicionar novas e justifique no PR quando for necessário.
+- Fontes são servidas pelo próprio projeto, pelo `next/font` ou por arquivos em `public/fonts/`. Não use CDNs de fontes, estilos ou scripts, que a CSP bloqueia.
 - Não edite `next-env.d.ts`, que é gerado pelo Next.js. Não versione `.next/`, `test-results/`, `playwright-report/` nem `tsconfig.tsbuildinfo`.
 
 ### Versões que não devem subir sem cuidado
@@ -90,6 +92,7 @@ Os testes de navegador são o contrato de qualidade do site. Eles exigem:
 - Download do currículo e links de contato corretos.
 - Validação, aviso de sucesso e aviso de erro do formulário de feedback.
 - Página 404.
+- Cabeçalhos de segurança presentes e nenhuma violação da Content Security Policy ao navegar, abrir os modais e enviar o feedback.
 - Aparência idêntica às imagens de `tests/snapshots/`, em desktop e em celular.
 
 Os testes procuram textos visíveis, como títulos de seções e cargos. Se mudar esses textos a pedido, atualize os testes na mesma mudança. Nunca enfraqueça ou remova um teste para fazê-lo passar.
