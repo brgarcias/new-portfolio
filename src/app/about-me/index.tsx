@@ -4,8 +4,6 @@
 import Image from 'next/image';
 // HOOKS
 import { FormEvent, useState } from 'react';
-// LODASH
-import { isEmpty } from 'lodash';
 // FONTAWESOME
 import {
   faCheck,
@@ -13,11 +11,15 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 // IMAGES
-import AboutMeImg from '@/public/images/about-me/about-me.png';
+import AboutMeImg from '@/public/images/about-me/about-me.webp';
 // COMPONENTS
 import ModalComponent from '@/src/components/Modal';
 import Form from '@/src/components/Form';
 import SnackbarFeedback from '@/src/components/SnackBar';
+
+// The form only checks strings, and lodash's isEmpty for a string or null
+// is the same as this test.
+const isEmpty = (value: string | null | undefined) => !value;
 
 export default function AboutMe() {
   const [visible, setVisible] = useState(false);

@@ -67,7 +67,9 @@ O projeto usa o App Router. As seções são componentes de servidor quando não
 - Prettier com aspas simples e vírgula final. Indentação de dois espaços e quebras de linha LF.
 - Os estilos ficam no `styles.css` de cada seção e no `globals.css`, com as classes do template original. Não converta CSS para Tailwind, não reorganize as folhas de estilo e não troque valores por equivalentes "mais limpos": até mudanças de mesma geometria podem alterar a renderização. O Tailwind serve ao HeroUI e a poucas classes utilitárias.
 - Ícones vêm do FontAwesome 6, com `@fortawesome/react-fontawesome`.
-- Imagens são importadas estaticamente e exibidas com `next/image`. Remova metadados, como localização, de qualquer foto antes de publicá-la.
+- Imagens são importadas estaticamente e exibidas com `next/image`, com `unoptimized`, e ficam em WebP dentro de `public/images/`. Capturas de tela, mockups e ilustrações usam WebP sem perdas, que mantém cada pixel do PNG original. Fotos usam WebP com qualidade 82 e lado menor de 1200 px, o bastante para os cartões em telas de alta densidade, mantendo o perfil de cor (as fotos de celular vêm em Display P3).
+- Remova metadados, como localização, de qualquer foto antes de publicá-la. As fotos de contribuição tinham coordenadas GPS no EXIF. Uma forma de converter uma foto com o `sharp` é `sharp(origem).resize({ width: 1200 }).keepIccProfile().webp({ quality: 82, effort: 6 }).toFile(destino)`, que descarta o EXIF. Use `height` no lugar de `width` para fotos na horizontal.
+- No celular, as páginas empilhadas ficam dentro da área de carregamento antecipado do navegador, e todas as imagens do site baixam na abertura da página. Mantenha as imagens leves.
 - O projeto tem poucas dependências de produção. Evite adicionar novas e justifique no PR quando for necessário.
 - Não edite `next-env.d.ts`, que é gerado pelo Next.js. Não versione `.next/`, `test-results/`, `playwright-report/` nem `tsconfig.tsbuildinfo`.
 

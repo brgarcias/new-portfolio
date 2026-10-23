@@ -1,7 +1,7 @@
-import EasterCampaignImg from '@/public/images/contributing/easter-campaign.png';
-import ElderlyVisitImg from '@/public/images/contributing/elderly-visit.png';
-import ChildrenDayCampaignImg from '@/public/images/contributing/children-day-campaign.png';
-import DonationCampaignImg from '@/public/images/contributing/donate-campaign.png';
+import EasterCampaignImg from '@/public/images/contributing/easter-campaign.webp';
+import ElderlyVisitImg from '@/public/images/contributing/elderly-visit.webp';
+import ChildrenDayCampaignImg from '@/public/images/contributing/children-day-campaign.webp';
+import DonationCampaignImg from '@/public/images/contributing/donate-campaign.webp';
 
 export const items = [
   {
