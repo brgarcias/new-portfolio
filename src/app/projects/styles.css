@@ -65,8 +65,8 @@
   border-color: rgb(92 94 220 / 0.45);
 }
 
-/* The scale leaves the device's box at full size, so the single cell keeps
-   the stage's size and the device stays centered when it is larger. */
+/* The single cell keeps the stage's size, so the device stays centered
+   even when it is larger than the stage. */
 .project-card__stage {
   position: relative;
   display: grid;
@@ -103,7 +103,10 @@
   align-items: center;
   justify-content: center;
   filter: drop-shadow(0 24px 30px rgb(0 0 0 / 0.45));
-  transform: scale(var(--device-scale));
+  /* zoom, not a scale transform: the device is drawn at its final size with
+     the rest of the page. Scaled through a layer, the screenshot inside was
+     resampled differently from one frame to the next. */
+  zoom: var(--device-scale);
 }
 
 .project-card__frame {

@@ -141,6 +141,10 @@ test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
 });
 
 test('slider e detalhes de projeto', { tag: '@visual' }, async ({ page }) => {
+  // With reduced motion the arrows jump straight to the card. After a
+  // glide, the previews inside the devices did not always come out the
+  // same, by a pixel or two.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await scrollTo(page, '#projects .projects__track');
   // As with the education steps, a click while the cards finish entering
@@ -152,17 +156,6 @@ test('slider e detalhes de projeto', { tag: '@visual' }, async ({ page }) => {
     page.locator('#projects [aria-current="true"] .project-card__title'),
   ).toHaveText('Reparofone');
   await waitForProjectsTrack(page);
-  // The glide can stop a fraction of a pixel short, and the previews, which
-  // sit on half pixels, then come out differently. The capture puts the
-  // track exactly on the card.
-  await page.locator('#projects .projects__track').evaluate((track) => {
-    const first = track.firstElementChild as HTMLElement;
-    const card = track.querySelector<HTMLElement>('[aria-current="true"]')!;
-    track.scrollTo({
-      left: card.offsetLeft - first.offsetLeft,
-      behavior: 'instant',
-    });
-  });
   await expectScreenshot(page, 'projects-slider.png', '#projects');
   await page
     .getByRole('button', { name: 'See details about Reparofone' })
