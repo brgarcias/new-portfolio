@@ -100,6 +100,9 @@ test('experiência expandida', { tag: '@visual' }, async ({ page }) => {
 test('etapa da formação', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
   await scrollTo(page, '#education .edu');
+  // A click as the steps finished entering sometimes scrolled the page
+  // before clicking, which moved the steps to the bottom of the screen.
+  await expect(page.locator('#education .edu-wrap')).toHaveCSS('opacity', '1');
   await page
     .locator('#education')
     .getByRole('tab', { name: 'University Education' })
