@@ -1,6 +1,6 @@
 /* Layers: the stage sits at 10 while the menu is open, then the click
-   catcher (20), the menu (30) and the bar (40). HeroUI dialogs (50) and the
-   project details (1000) cover the bar. */
+   catcher (20), the menu (30) and the bar (40). HeroUI dialogs (50), such
+   as the course and project details, cover the bar. */
 
 /* ─── Fixed bar ─────────────────────────────────────────── */
 .site-header {
@@ -325,8 +325,8 @@
   position: relative;
 }
 
-/* Without a z-index, the sheet does not trap fixed layers inside it, such as
-   the project details, which must cover the bar. */
+/* Without a z-index, the sheet does not trap the fixed layers inside it
+   below the bar. */
 .stage__sheet {
   position: relative;
   min-height: 100vh;

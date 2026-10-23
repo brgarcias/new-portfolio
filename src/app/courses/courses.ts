@@ -3,7 +3,6 @@ export const courses = [
     id: 1,
     title: 'Full-Stack Developer',
     subtitle: 'ReactJS',
-    isLarger: '',
     descriptionTitle: 'Full-Stack Developer - IGTI',
     descriptionSubtitle:
       'JavaScript, Node.js, React.js, MongoDB, GitHub e Heroku',
@@ -38,7 +37,6 @@ export const courses = [
     id: 2,
     title: 'JavaScript - Udemy',
     subtitle: 'JavaScript',
-    isLarger: '',
     descriptionTitle: 'Modern Web Course - Udemy',
     descriptionSubtitle:
       'JavaScript, Node.js, HTML5, CSS3, Ajax, jQuery, Bootstrap, React.js, Express',
@@ -67,7 +65,6 @@ export const courses = [
     id: 3,
     title: 'C Language - Udemy',
     subtitle: 'C',
-    isLarger: '',
     descriptionTitle: 'Concepts',
     descriptionSubtitle: 'Fundamentals of the programming language',
     description: [
@@ -93,7 +90,6 @@ export const courses = [
     id: 4,
     title: 'Advanced English',
     subtitle: 'Number One',
-    isLarger: '',
     descriptionTitle: 'Corporate English',
     descriptionSubtitle: 'Grammar and Conversation.',
     description: [
@@ -123,7 +119,8 @@ export const courses = [
     id: 5,
     title: 'Succeeding in Web Development',
     subtitle: 'Becoming a Web Developer',
-    isLarger: 'rb-span-2',
+    // Takes two columns of the grid.
+    wide: true,
     descriptionTitle: 'Web Development',
     descriptionSubtitle: 'LinkedIn',
     description: [
@@ -167,7 +164,8 @@ export const courses = [
     id: 6,
     title: 'Advanced Physics - ICTP Saifr',
     subtitle: 'Relativity, Gravitation, and Quantum Mechanics',
-    isLarger: 'rb-span-2',
+    // Takes two columns of the grid.
+    wide: true,
     descriptionTitle: 'Advanced Physics',
     descriptionSubtitle: 'Relativity, Gravitation, and Quantum Mechanics',
     description: [

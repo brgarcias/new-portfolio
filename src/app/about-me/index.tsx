@@ -17,7 +17,7 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 // IMAGES
 import AboutMeImg from '@/public/images/about-me/about-me.webp';
 // COMPONENTS
-import ModalComponent from '@/src/components/Modal';
+import ModalComponent, { openOnKey } from '@/src/components/Modal';
 import Form from '@/src/components/Form';
 import SnackbarFeedback from '@/src/components/SnackBar';
 import Section from '@/src/components/Section';
@@ -212,6 +212,7 @@ export default function AboutMe({ currentRole }: Readonly<AboutMeProps>) {
                 type="button"
                 className="btn btn--text"
                 onClick={openModalFeedback}
+                onKeyDown={openOnKey(openModalFeedback)}
               >
                 <FontAwesomeIcon icon={faComment} />
                 Leave Feedback

@@ -7,6 +7,18 @@ import {
   Button,
   useDisclosure,
 } from '@heroui/react';
+import { KeyboardEvent } from 'react';
+
+// Opens a dialog on Enter or Space themselves. The click the browser makes
+// from those keys looks virtual to react-aria, which then waits for every
+// transition on the page to end before moving the focus into the dialog.
+export function openOnKey(open: () => void) {
+  return (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    if (!event.repeat) open();
+  };
+}
 
 interface ModalProps {
   visible: boolean;
@@ -58,16 +70,18 @@ export default function ModalComponent({
       <ModalContent>
         {(onClose) => (
           <>
+            {/* HeroUI names the dialog after this header. */}
             <ModalHeader className="flex flex-col gap-1">
-              <p
-                id="modal-title"
-                style={{ fontSize: 26, fontWeight: 'semibold' }}
-              >
-                {title}
-              </p>
-              <p id="modal-subtitle" style={{ fontSize: 14 }}>
-                {subtitle}
-              </p>
+              {title && (
+                <h2 id="modal-title" className="modal-title">
+                  {title}
+                </h2>
+              )}
+              {subtitle && (
+                <p id="modal-subtitle" className="modal-subtitle">
+                  {subtitle}
+                </p>
+              )}
             </ModalHeader>
             <ModalBody>{children}</ModalBody>
             <ModalFooter
