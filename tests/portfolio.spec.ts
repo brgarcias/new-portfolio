@@ -380,3 +380,53 @@ test('mostra a página 404', async ({ page }) => {
     '/',
   );
 });
+
+test('aplica os cabeçalhos de segurança sem bloquear o site', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const violations: string[] = [];
+    Object.assign(window, { cspViolations: violations });
+    document.addEventListener('securitypolicyviolation', (event) =>
+      violations.push(`${event.violatedDirective} ${event.blockedURI}`),
+    );
+  });
+  await page.route('**/*', (route) =>
+    route.request().method() === 'POST'
+      ? route.fulfill({ status: 200, body: '' })
+      : route.continue(),
+  );
+  const response = await page.goto('/');
+  const headers = response!.headers();
+  expect(headers['content-security-policy']).toContain(
+    "frame-ancestors 'none'",
+  );
+  expect(headers['content-security-policy']).toContain("object-src 'none'");
+  expect(headers['x-frame-options']).toBe('DENY');
+  expect(headers['x-content-type-options']).toBe('nosniff');
+  expect(headers['permissions-policy']).toContain('camera=()');
+  expect(headers['x-powered-by']).toBeUndefined();
+
+  // Exercises every section, both modals, the project details and the form.
+  const dialog = await fillFeedback(page);
+  await dialog.getByRole('button', { name: 'Send' }).click();
+  await expect(page.getByText('Message Submitted')).toBeVisible();
+  for (const id of sections.slice(1)) {
+    await openSection(page, id);
+  }
+  await openSection(page, 'courses');
+  await page.locator('#rb-grid > li').first().click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await openSection(page, 'projectsData');
+  await page.getByRole('button', { name: 'See Details' }).click();
+  await expect(page.locator('#projectsData .content')).toHaveClass(
+    /content--open/,
+  );
+  await page.evaluate(() => document.fonts.ready);
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { cspViolations: string[] }).cspViolations,
+    ),
+  ).toEqual([]);
+});
