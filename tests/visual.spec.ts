@@ -125,6 +125,12 @@ test('faixa de tecnologias', { tag: '@visual' }, async ({ page }) => {
 test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
   await scrollTo(page, '#courses .course-card:first-child');
+  // Like the other captures that click, it waits for the cards to finish
+  // entering, so the page behind the dialog is always in the same place.
+  await expect(page.locator('#courses .course-grid-wrap')).toHaveCSS(
+    'opacity',
+    '1',
+  );
   await page
     .locator('#courses .course-card')
     .first()
@@ -135,10 +141,6 @@ test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
 });
 
 test('slider e detalhes de projeto', { tag: '@visual' }, async ({ page }) => {
-  // With reduced motion the arrows jump instead of gliding. While a scroll
-  // animates, Chrome draws images with a cheaper filter and redraws them a
-  // moment later, so a capture right after a glide was not always the same.
-  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await scrollTo(page, '#projects .projects__track');
   // As with the education steps, a click while the cards finish entering
