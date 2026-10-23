@@ -1,14 +1,54 @@
 'use client';
-import { useState } from 'react';
+
+// HOOKS
+import { CSSProperties, KeyboardEvent, useId, useRef, useState } from 'react';
+// FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-solid-svg-icons';
-import './styles.css';
-import { tabsContent } from './sections';
+import { faGraduationCap, faHeart } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import Section from '@/src/components/Section';
+import Reveal from '@/src/components/Reveal';
+// CONTENT
+import { steps } from './sections';
+// CSS
+import './styles.css';
+
+const last = steps.length - 1;
+// Past the last finished step, the rail turns dashed.
+const finished = steps.filter((step) => !step.upcoming).length - 1;
+
+// Arrow keys move to the next or previous step, wrapping around, and Home
+// and End jump to the ends, as in any list of tabs.
+const keyMoves: Record<string, (index: number) => number> = {
+  ArrowDown: (index) => (index === last ? 0 : index + 1),
+  ArrowRight: (index) => (index === last ? 0 : index + 1),
+  ArrowUp: (index) => (index === 0 ? last : index - 1),
+  ArrowLeft: (index) => (index === 0 ? last : index - 1),
+  Home: () => 0,
+  End: () => last,
+};
 
 export default function AcademicEducation() {
-  const [activeTab, setActiveTab] = useState(0);
+  const [active, setActive] = useState(0);
+  const id = useId();
+  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    const move = keyMoves[event.key];
+    if (!move) return;
+    event.preventDefault();
+    const next = move(active);
+    setActive(next);
+    tabs.current[next]?.focus();
+  };
+
+  // The marker and the filled part of the rail follow the chosen step.
+  const railStyle = {
+    '--count': steps.length,
+    '--step': active,
+    '--progress': active / last,
+    '--finished': finished / last,
+  } as CSSProperties;
 
   return (
     <Section
@@ -24,64 +64,69 @@ export default function AcademicEducation() {
         author: 'Albert Einstein',
       }}
     >
-      <div className="time-line">
-        <div className="progress">
-          <div className="progress_inner">
-            <div className="progress_inner__step">
-              <label htmlFor="step-1">Elementary School</label>
-            </div>
-            <div className="progress_inner__step">
-              <label htmlFor="step-2">High school</label>
-            </div>
-            <div className="progress_inner__step">
-              <label htmlFor="step-3">University Education</label>
-            </div>
-            <div className="progress_inner__step">
-              <label htmlFor="step-4">Postgraduate</label>
-            </div>
-            <div className="progress_inner__step">
-              <label htmlFor="step-5">Doctorate Degree</label>
-            </div>
-            {tabsContent.map((_, index) => (
-              <input
-                key={index}
-                value={index}
-                id={`step-${index + 1}`}
-                name="step"
-                type="radio"
-                checked={activeTab === index}
-                onChange={() => setActiveTab(index)}
-              />
+      <Reveal className="edu-wrap">
+        <div className="edu" style={railStyle}>
+          <div
+            className="edu__steps"
+            role="tablist"
+            aria-label="Education"
+            aria-orientation="vertical"
+          >
+            <span className="edu__rail" aria-hidden="true">
+              <span className="edu__rail-fill" />
+            </span>
+            <span className="edu__marker" aria-hidden="true">
+              <FontAwesomeIcon icon={faGraduationCap} />
+            </span>
+            {steps.map((step, index) => (
+              <button
+                key={step.label}
+                ref={(element) => {
+                  tabs.current[index] = element;
+                }}
+                type="button"
+                role="tab"
+                id={`${id}-tab-${index}`}
+                className={[
+                  'edu-step',
+                  step.upcoming && 'edu-step--upcoming',
+                  index < active && 'is-passed',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                aria-selected={active === index}
+                aria-controls={`${id}-panel-${index}`}
+                tabIndex={active === index ? 0 : -1}
+                onClick={() => setActive(index)}
+                onKeyDown={onKeyDown}
+              >
+                <span className="edu-step__number" aria-hidden="true">
+                  {index + 1}
+                </span>
+                {step.label}
+              </button>
             ))}
-            <div className="progress_inner__bar"></div>
-            <div className="progress_inner__bar--set"></div>
-            <div className="progress_inner__tabs">
-              {tabsContent.map((tab, index) => (
-                <div
-                  key={index}
-                  className={`tab tab-${index}`}
-                  style={{ display: activeTab === index ? 'block' : 'none' }}
-                >
-                  <h3>{tab.title}</h3>
-                  <p>{tab.content}</p>
-                </div>
-              ))}
-            </div>
-            <div className="progress_inner__status">
-              <div className="box_base"></div>
-              <div className="box_lid"></div>
-              <div className="box_ribbon"></div>
-              <div className="box_bow">
-                <div className="box_bow__left"></div>
-                <div className="box_bow__right"></div>
-              </div>
-              <div className="box_item"></div>
-              <div className="box_tag"></div>
-              <div className="box_string"></div>
-            </div>
           </div>
+
+          {steps.map((step, index) => (
+            <div
+              key={step.label}
+              id={`${id}-panel-${index}`}
+              className="edu-panel"
+              role="tabpanel"
+              aria-labelledby={`${id}-tab-${index}`}
+              tabIndex={0}
+              hidden={active !== index}
+            >
+              <p className="edu-panel__step">
+                {String(index + 1).padStart(2, '0')} · {step.label}
+              </p>
+              <h3 className="edu-panel__title">{step.title}</h3>
+              <p className="edu-panel__text">{step.content}</p>
+            </div>
+          ))}
         </div>
-      </div>
+      </Reveal>
     </Section>
   );
 }

@@ -53,6 +53,8 @@ test('carrega o portfólio sem erros e sem rolagem horizontal', async ({
 test('navega por todas as seções pelo menu e fecha o menu com Escape', async ({
   page,
 }) => {
+  // Seven trips through the animated menu take most of the default timeout.
+  test.slow();
   await page.goto('/');
   for (const id of [...sections.slice(1), sections[0]]) {
     await openSection(page, id);
@@ -117,6 +119,15 @@ test('respeita a preferência por reduzir movimento', async ({ page }) => {
     'animation-name',
     'none',
   );
+  // The timeline is drawn at once and the ribbon stands still.
+  await expect(page.locator('.xp__rail-fill')).toHaveCSS(
+    'animation-name',
+    'none',
+  );
+  await expect(page.locator('.tech-ribbon__row').first()).toHaveCSS(
+    'animation-name',
+    'none',
+  );
   await openSection(page, 'projects');
   await openSection(page, 'about');
 });
@@ -124,47 +135,92 @@ test('respeita a preferência por reduzir movimento', async ({ page }) => {
 test('abre e recolhe as experiências profissionais', async ({ page }) => {
   await page.goto('/');
   await openSection(page, 'experience');
-  const items = page.locator('#experience .cbp_tmtimeline > li');
+  const items = page.locator('#experience .xp-item');
   await expect(items).toHaveCount(8);
-  await expect(items.first().locator('h2')).toHaveText(
+  await expect(items.first().getByRole('heading', { level: 3 })).toHaveText(
     'Software Engineer (Node.js / GraphQL Platform)',
   );
   // Months must not depend on the time zone of the machine that builds.
-  await expect(items.first().locator('.cbp_tmtime')).toContainText(
+  await expect(items.first().locator('.xp-item__period')).toContainText(
     'Oct 2025 — Present',
   );
-  await expect(items.nth(1).locator('.cbp_tmtime')).toContainText(
+  await expect(items.nth(1).locator('.xp-item__period')).toHaveText(
     'Feb 2025 — Mar 2026 · 1y 1m',
   );
-  await expect(items.last().locator('.cbp_tmtime')).toContainText(
+  await expect(items.last().locator('.xp-item__period')).toHaveText(
     'May 2017 — Apr 2018 · 11m',
   );
-  await expect(items.first().locator('.experience-body')).toHaveClass(
-    /\bopen\b/,
+  // The tags and the ribbon repeat technologies that the descriptions name.
+  await expect(
+    items.nth(1).getByRole('list', { name: 'Technologies' }),
+  ).toContainText('Azure DevOps');
+  await expect(page.locator('#experience .tech-ribbon')).toHaveAttribute(
+    'aria-hidden',
+    'true',
+  );
+  await expect(page.locator('#experience .tech-ribbon')).toContainText(
+    'Step Functions',
+  );
+
+  // The current role starts open; the others open and close on a click.
+  await expect(items.first().locator('.xp-card__toggle')).toHaveAttribute(
+    'aria-expanded',
+    'true',
   );
   const second = items.nth(1);
-  await expect(second.locator('.experience-body')).not.toHaveClass(/\bopen\b/);
-  await second.locator('.experience-header').click();
-  await expect(second.locator('.experience-body')).toHaveClass(/\bopen\b/);
+  const toggle = second.locator('.xp-card__toggle');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(second.getByText('Microsoft SQL Server')).toBeHidden();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
   await expect(second.getByText('Microsoft SQL Server')).toBeVisible();
-  await second.locator('.experience-header').click();
-  await expect(second.locator('.experience-body')).not.toHaveClass(/\bopen\b/);
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(second.getByText('Microsoft SQL Server')).toBeHidden();
 });
 
 test('alterna as etapas da formação acadêmica', async ({ page }) => {
   await page.goto('/');
   await openSection(page, 'education');
-  const tabs = page.locator('#education .progress_inner__tabs .tab');
-  await expect(tabs).toHaveCount(5);
-  await expect(tabs.first()).toBeVisible();
-  await scrollTo(page, '#education .progress');
-  await page.locator('#education label[for="step-3"]').click();
-  await expect(page.locator('#step-3')).toBeChecked();
-  await expect(tabs.nth(2)).toBeVisible();
-  await expect(tabs.nth(2).locator('h3')).toHaveText(
+  const education = page.locator('#education');
+  const tab = (name: string) => education.getByRole('tab', { name });
+  // Only the chosen step's panel is shown.
+  const panel = education.getByRole('tabpanel');
+  await expect(education.getByRole('tab')).toHaveCount(5);
+  await expect(panel).toHaveCount(1);
+  await expect(panel.getByRole('heading', { level: 3 })).toHaveText(
+    'Colégio Salesiano Santa Teresinha',
+  );
+  await scrollTo(page, '#education .edu');
+  await tab('University Education').click();
+  await expect(tab('University Education')).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await expect(tab('Elementary School')).toHaveAttribute(
+    'aria-selected',
+    'false',
+  );
+  await expect(panel.getByRole('heading', { level: 3 })).toHaveText(
     'Universidade São Judas Tadeu',
   );
-  await expect(tabs.first()).toBeHidden();
+  // The arrow keys, Home and End move between the steps, as in any tabs.
+  await page.keyboard.press('ArrowDown');
+  await expect(tab('Postgraduate')).toBeFocused();
+  await expect(panel.getByRole('heading', { level: 3 })).toHaveText(
+    'Which course?',
+  );
+  await page.keyboard.press('End');
+  await expect(tab('Doctorate Degree')).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await page.keyboard.press('ArrowDown');
+  await expect(tab('Elementary School')).toBeFocused();
+  await expect(tab('Elementary School')).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
 });
 
 test('mostra os detalhes de um curso em um modal', async ({ page }) => {

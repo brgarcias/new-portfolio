@@ -39,9 +39,7 @@ async function settle(page: Page, scope = 'body') {
 // Values computed from today's date change over time, so they are masked.
 function timeDependent(page: Page) {
   return [
-    page.locator(
-      '#experience .cbp_tmtimeline > li:first-child .cbp_tmtime > span:first-child',
-    ),
+    page.locator('#experience .xp-item:first-child .xp-item__duration'),
     // The age only shows while its tab is open. Collapsed, its box overlaps
     // the open tab.
     page.locator('#contact #tab-1:checked + label .tab_right p').last(),
@@ -92,18 +90,30 @@ for (const id of sections) {
 
 test('experiência expandida', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  const second = '#experience .cbp_tmtimeline > li:nth-child(2)';
+  const second = '#experience .xp-item:nth-child(2)';
   await scrollTo(page, second);
-  await page.locator(`${second} .experience-header`).click();
+  await page.locator(`${second} .xp-card__toggle`).click();
   await scrollTo(page, second);
   await expectScreenshot(page, 'experience-expanded.png', '#experience');
 });
 
 test('etapa da formação', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await scrollTo(page, '#education .progress');
-  await page.locator('#education label[for="step-3"]').click();
+  await scrollTo(page, '#education .edu');
+  // A click as the steps finished entering sometimes scrolled the page
+  // before clicking, which moved the steps to the bottom of the screen.
+  await expect(page.locator('#education .edu-wrap')).toHaveCSS('opacity', '1');
+  await page
+    .locator('#education')
+    .getByRole('tab', { name: 'University Education' })
+    .click();
   await expectScreenshot(page, 'education-university.png', '#education');
+});
+
+test('faixa de tecnologias', { tag: '@visual' }, async ({ page }) => {
+  await page.goto('/');
+  await scrollTo(page, '#experience .tech-ribbon');
+  await expectScreenshot(page, 'tech-ribbon.png', '#experience');
 });
 
 test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {

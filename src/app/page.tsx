@@ -13,9 +13,7 @@ export const revalidate = 86400;
 
 export default function Home() {
   // The experience without an end date is the current one.
-  const current = getExperiences().find((experience) =>
-    experience.date.endsWith('Present'),
-  );
+  const current = getExperiences().find((experience) => !experience.end);
 
   return (
     <main>
@@ -24,7 +22,7 @@ export default function Home() {
           current && {
             // "Software Engineer (Node.js / GraphQL Platform)" reads as
             // "Software Engineer" in the short line under the name.
-            title: current.title.replace(/\s*\(.*\)$/, ''),
+            title: current.title.split(' (')[0],
             company: current.company,
           }
         }

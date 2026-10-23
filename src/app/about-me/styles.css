@@ -495,32 +495,6 @@
   font-weight: 600;
 }
 
-.tag-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.tag {
-  padding: 0.45rem 0.85rem;
-  border: 1px solid var(--color-border-strong);
-  border-radius: 999px;
-  background: rgb(255 255 255 / 0.03);
-  color: var(--color-text);
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    transform 0.3s var(--ease-out);
-}
-
-.tag:hover {
-  border-color: rgb(92 94 220 / 0.6);
-  background: rgb(92 94 220 / 0.14);
-  transform: translateY(-2px);
-}
-
 @media (max-width: 899px) {
   .about__grid {
     grid-template-columns: minmax(0, 1fr);

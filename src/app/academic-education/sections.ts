@@ -1,5 +1,14 @@
-export const tabsContent = [
+interface EducationStep {
+  label: string;
+  title: string;
+  content: string;
+  // Steps that are still ahead.
+  upcoming?: boolean;
+}
+
+export const steps: EducationStep[] = [
   {
+    label: 'Elementary School',
     title: 'Colégio Salesiano Santa Teresinha',
     content: `I began my education at the age of 3 in 2002 at Salesian School Santa Teresinha.
       My mother worked as a teaching assistant at the school, which made it possible for 
@@ -8,6 +17,7 @@ export const tabsContent = [
       for a child's growth.`,
   },
   {
+    label: 'High school',
     title: 'Colégio Salesiano Santa Teresinha',
     content: `I continued my high school studies at Salesian School Santa Teresinha, which greatly aided
       me in preparing for exams and practice tests, including the ENEM and FUVEST. After completing
@@ -15,6 +25,7 @@ export const tabsContent = [
       phase of the FUVEST, but unfortunately, I didn't make it through the second phase.`,
   },
   {
+    label: 'University Education',
     title: 'Universidade São Judas Tadeu',
     content: `Although I completed my studies at São Judas Tadeu University, I began my undergraduate education in
       2018 at Anhembi Morumbi University, majoring in Computer Engineering. I really enjoyed the program and
@@ -24,11 +35,15 @@ export const tabsContent = [
       ultimately graduating in the first semester of 2022.`,
   },
   {
+    label: 'Postgraduate',
     title: 'Which course?',
     content: `A dream to come true...`,
+    upcoming: true,
   },
   {
+    label: 'Doctorate Degree',
     title: 'When will be?',
     content: `But I don't want to be called a doctor!`,
+    upcoming: true,
   },
 ];
