@@ -104,7 +104,7 @@ export default function Contributing() {
                   >
                     <Image
                       className="contrib-card__image"
-                      src={item.src}
+                      src={item.thumb}
                       alt={item.alt}
                       unoptimized
                     />

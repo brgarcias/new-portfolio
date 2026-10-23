@@ -12,7 +12,8 @@
   --color-border-strong: rgb(255 255 255 / 0.14);
   --color-text: #f0f0f5;
   --color-text-muted: #a9abbb;
-  --color-text-subtle: #7d7f92;
+  /* At least 4.5:1 on the surfaces and dialogs, for small text. */
+  --color-text-subtle: #8c8ea3;
   --color-brand: #5c5edc;
   --color-brand-light: #9091f7;
   --color-violet: #8b5cf6;
