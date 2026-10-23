@@ -4,6 +4,7 @@ import {
   openMenu,
   scrollTo,
   sections,
+  waitForProjectsTrack,
   waitForTransitions,
   type Section,
 } from './helpers';
@@ -118,23 +119,31 @@ test('faixa de tecnologias', { tag: '@visual' }, async ({ page }) => {
 
 test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await scrollTo(page, '#rb-grid > li:first-child');
-  await page.locator('#rb-grid > li').first().click();
+  await scrollTo(page, '#courses .course-card:first-child');
+  await page
+    .locator('#courses .course-card')
+    .first()
+    .getByRole('button')
+    .click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await expectScreenshot(page, 'course-details.png');
 });
 
 test('slider e detalhes de projeto', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await scrollTo(page, '#projects .slider');
+  await scrollTo(page, '#projects .projects__track');
   await page.getByRole('button', { name: 'Next Project' }).click();
   await page.getByRole('button', { name: 'Next Project' }).click();
+  await expect(
+    page.locator('#projects [aria-current="true"] .project-card__title'),
+  ).toHaveText('Reparofone');
+  await waitForProjectsTrack(page);
   await expectScreenshot(page, 'projects-slider.png', '#projects');
-  await page.getByRole('button', { name: 'See Details' }).click();
-  await expect(page.locator('#content-3')).toHaveClass(
-    /content__item--current/,
-  );
-  await expectScreenshot(page, 'project-details.png', '#projects');
+  await page
+    .getByRole('button', { name: 'See details about Reparofone' })
+    .click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expectScreenshot(page, 'project-details.png', '[role="dialog"]');
 });
 
 test('galeria de contribuições', { tag: '@visual' }, async ({ page }) => {

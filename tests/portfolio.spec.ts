@@ -6,6 +6,7 @@ import {
   openSection,
   scrollTo,
   sections,
+  waitForProjectsTrack,
   waitForTransitions,
 } from './helpers';
 
@@ -226,55 +227,80 @@ test('alterna as etapas da formação acadêmica', async ({ page }) => {
 test('mostra os detalhes de um curso em um modal', async ({ page }) => {
   await page.goto('/');
   await openSection(page, 'courses');
-  await expect(page.locator('#rb-grid > li')).toHaveCount(6);
-  await page.locator('#rb-grid > li').first().click();
-  const dialog = page.getByRole('dialog');
-  await expect(dialog.getByText('Full-Stack Developer - IGTI')).toBeVisible();
+  const courses = page.locator('#courses .course-card');
+  await expect(courses).toHaveCount(6);
+  await courses.first().getByRole('button').click();
+  // The dialog is named after the course.
+  const dialog = page.getByRole('dialog', {
+    name: 'Full-Stack Developer - IGTI',
+  });
+  await expect(dialog).toBeVisible();
   await expect(dialog.getByText('Second Module - Node.js')).toBeVisible();
   await dialog.locator('footer').getByRole('button', { name: 'Close' }).click();
   await expect(dialog).toBeHidden();
 
-  await page.locator('#rb-grid > li').last().click();
-  await expect(dialog.getByText('Advanced Physics')).toBeVisible();
+  // The cards open from the keyboard too. The focus goes into the dialog
+  // and back to the card when it closes.
+  const last = courses.last().getByRole('button');
+  await last.focus();
+  await page.keyboard.press('Enter');
+  const physics = page.getByRole('dialog', { name: 'Advanced Physics' });
+  await expect(physics).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        Boolean(document.activeElement?.closest('[role="dialog"]')),
+      ),
+    )
+    .toBe(true);
   await page.keyboard.press('Escape');
-  await expect(dialog).toBeHidden();
+  await expect(physics).toBeHidden();
+  await expect(last).toBeFocused();
 });
 
 test('navega pelos projetos e abre os detalhes', async ({ page }) => {
   await page.goto('/');
   await openSection(page, 'projects');
-  const title = page.locator('#projects .slide--current .slide__title');
-  await expect(title).toContainText('CSS');
-  await page.getByRole('button', { name: 'Next Project' }).click();
-  await expect(title).toContainText('Sensei');
-  await page.getByRole('button', { name: 'Previous Project' }).click();
-  await expect(title).toContainText('CSS');
-  await page.getByRole('button', { name: 'Previous Project' }).click();
-  await expect(title).toContainText('Malka RH');
+  const projects = page.locator('#projects');
+  await expect(projects.locator('.project-card')).toHaveCount(5);
+  const current = projects.locator(
+    '.project-card[aria-current="true"] .project-card__title',
+  );
+  await expect(current).toHaveText('CSS');
+  await projects.getByRole('button', { name: 'Next Project' }).click();
+  await expect(current).toHaveText('Sensei');
+  await projects.getByRole('button', { name: 'Previous Project' }).click();
+  await expect(current).toHaveText('CSS');
+  // The arrows go around.
+  await projects.getByRole('button', { name: 'Previous Project' }).click();
+  await expect(current).toHaveText('Malka RH');
+  await waitForProjectsTrack(page);
 
-  await page.getByRole('button', { name: 'See Details' }).click();
-  const content = page.locator('#projects .content');
-  await expect(content).toHaveClass(/content--open/);
-  const detail = page.locator('#content-5');
-  await expect(detail).toHaveClass(/content__item--current/);
-  await expect(detail.locator('h2')).toHaveText('Malka RH');
-  const link = detail.getByRole('link', { name: /See more about the website/ });
+  await projects
+    .getByRole('button', { name: 'See details about Malka RH' })
+    .click();
+  const dialog = page.getByRole('dialog', { name: 'Malka RH' });
+  await expect(dialog).toBeVisible();
+  const link = dialog.getByRole('link', { name: /See more about the website/ });
   await expect(link).toHaveAttribute(
     'href',
     'http://malkarh.com.br/lp/recrutamento-e-selecao/',
   );
   await expect(link).toHaveAttribute('target', '_blank');
   await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  await dialog.locator('footer').getByRole('button', { name: 'Close' }).click();
+  await expect(dialog).toBeHidden();
+  await projects.getByRole('button', { name: 'Next Project' }).click();
+  await expect(current).toHaveText('CSS');
+  await waitForProjectsTrack(page);
 
-  await page.getByRole('button', { name: 'Close content' }).click();
-  await expect(content).not.toHaveClass(/content--open/);
-  await expect(detail).not.toHaveClass(/content__item--current/);
-  // The slider ignores navigation until the zoom-out animation ends.
-  await expect(
-    page.locator('#projects .slide--current .zoomer'),
-  ).not.toHaveClass(/zoomer--active/);
-  await page.getByRole('button', { name: 'Next Project' }).click();
-  await expect(title).toContainText('CSS');
+  // A swipe scrolls the track, and the current project follows it.
+  await projects
+    .locator('.projects__track')
+    .evaluate((track) =>
+      track.scrollTo({ left: track.scrollWidth, behavior: 'instant' }),
+    );
+  await expect(current).toHaveText('Malka RH');
 });
 
 test('destaca as iniciativas de contribuição', async ({ page }) => {
@@ -550,12 +576,17 @@ test('aplica os cabeçalhos de segurança sem bloquear o site', async ({
     await openSection(page, id);
   }
   await openSection(page, 'courses');
-  await page.locator('#rb-grid > li').first().click();
+  await page
+    .locator('#courses .course-card')
+    .first()
+    .getByRole('button')
+    .click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toBeHidden();
   await openSection(page, 'projects');
-  await page.getByRole('button', { name: 'See Details' }).click();
-  await expect(page.locator('#projects .content')).toHaveClass(/content--open/);
+  await page.getByRole('button', { name: 'See details about CSS' }).click();
+  await expect(page.getByRole('dialog', { name: 'CSS' })).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
   expect(
     await page.evaluate(

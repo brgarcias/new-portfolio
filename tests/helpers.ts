@@ -62,6 +62,20 @@ export async function openSection(page: Page, id: Section) {
     .toBe(true);
 }
 
+// The projects track glides to the card chosen with the arrows. Like a
+// visitor, the tests wait for it to arrive before using the card: a click
+// while it moves would scroll the track and stop it halfway.
+export async function waitForProjectsTrack(page: Page) {
+  await page.waitForFunction(() => {
+    const track = document.querySelector('#projects .projects__track')!;
+    const first = track.firstElementChild as HTMLElement;
+    const card = track.querySelector<HTMLElement>('[aria-current="true"]')!;
+    return (
+      Math.abs(track.scrollLeft - (card.offsetLeft - first.offsetLeft)) < 1
+    );
+  });
+}
+
 // Scrolls the page so an element sits in the middle of the screen.
 export async function scrollTo(page: Page, selector: string) {
   await page.locator(selector).evaluate((element) => {

@@ -1,11 +1,11 @@
-// CSS
-import './styles.css';
-// COMPONENT
-import Course from './Course';
-// DATA
-import { courses } from './courses';
 // COMPONENTS
 import Section from '@/src/components/Section';
+import Reveal from '@/src/components/Reveal';
+import Course from './Course';
+// CONTENT
+import { courses } from './courses';
+// CSS
+import './styles.css';
 
 export default function Courses() {
   return (
@@ -22,13 +22,13 @@ export default function Courses() {
         author: 'Isaac Asimov',
       }}
     >
-      <div className="cursos wrapper">
-        <ul id="rb-grid" className="rb-grid clearfix">
+      <Reveal className="course-grid-wrap">
+        <ul className="course-grid">
           {courses.map((course, index) => (
-            <Course key={index} {...course} />
+            <Course key={course.id} index={index} {...course} />
           ))}
         </ul>
-      </div>
+      </Reveal>
     </Section>
   );
 }

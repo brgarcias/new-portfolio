@@ -1,284 +1,250 @@
 'use client';
 
+// NEXT
 import Image from 'next/image';
-import { useEffect, useRef, useState, useCallback } from 'react';
+// HOOKS
+import { PointerEvent, useEffect, useRef, useState } from 'react';
+// FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faArrowLeft,
-  faSearch,
   faArrowRight,
-  faTimesCircle,
+  faArrowUpRightFromSquare,
 } from '@fortawesome/free-solid-svg-icons';
-import './styles.css';
-import { projectsData } from './projects.data';
+// COMPONENTS
 import Section from '@/src/components/Section';
+import Reveal from '@/src/components/Reveal';
+import ModalComponent, { openOnKey } from '@/src/components/Modal';
+// CONTENT
+import { projectsData } from './projects.data';
+// CSS
+import './styles.css';
 
-/* ─── types ─────────────────────────────────────────────── */
-type Project = (typeof projectsData)[number];
+const total = projectsData.length;
+const pad = (value: number) => String(value).padStart(2, '0');
 
-/* ─── component ─────────────────────────────────────────── */
+// The device leans towards the mouse, with a light following it. Touch and
+// pen leave it still, and "reduce motion" turns the effect off in CSS.
+function tilt(event: PointerEvent<HTMLElement>) {
+  if (event.pointerType !== 'mouse') return;
+  const card = event.currentTarget;
+  const rect = card.getBoundingClientRect();
+  const x = (event.clientX - rect.left) / rect.width - 0.5;
+  const y = (event.clientY - rect.top) / rect.height - 0.5;
+  card.style.setProperty('--tilt-x', `${(-y * 10).toFixed(2)}deg`);
+  card.style.setProperty('--tilt-y', `${(x * 14).toFixed(2)}deg`);
+  card.style.setProperty('--glare-x', `${((x + 0.5) * 100).toFixed(1)}%`);
+  card.style.setProperty('--glare-y', `${((y + 0.5) * 100).toFixed(1)}%`);
+}
+
+function untilt(event: PointerEvent<HTMLElement>) {
+  for (const name of ['--tilt-x', '--tilt-y', '--glare-x', '--glare-y']) {
+    event.currentTarget.style.removeProperty(name);
+  }
+}
+
 export default function Projects() {
+  const trackRef = useRef<HTMLUListElement>(null);
   const [current, setCurrent] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
+  const [selected, setSelected] = useState(0);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const project = projectsData[selected];
 
-  const zoomerRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const contentRef = useRef<HTMLDivElement | null>(null);
+  // The card the arrows sent the track to, while it glides there.
+  const gliding = useRef<{ index: number; until: number } | null>(null);
 
-  const total = projectsData.length;
-
-  /* ── navigation ─────────────────────────────────────────── */
-  const navigate = useCallback(
-    (dir: 'left' | 'right') => {
-      if (isOpen) return;
-      setCurrent((prev) =>
-        dir === 'right'
-          ? prev < total - 1
-            ? prev + 1
-            : 0
-          : prev > 0
-            ? prev - 1
-            : total - 1,
-      );
-    },
-    [isOpen, total],
-  );
-
-  /* ── keyboard ───────────────────────────────────────────── */
+  // The card at the start of the track is the current one, whether the
+  // visitor swiped, scrolled or used the arrows. While the track glides to a
+  // card, the positions on the way do not count, until the scroll ends.
   useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (isOpen) return;
-      if (e.key === 'ArrowLeft') navigate('left');
-      if (e.key === 'ArrowRight') navigate('right');
-    }
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isOpen, navigate]);
-
-  /* ── zoom / open ────────────────────────────────────────── */
-  function applyZoomerTransform(el: HTMLDivElement) {
-    const area = el.querySelector<HTMLElement>('.zoomer__area');
-    if (!area) return;
-    const { width: aw, height: ah } = area.getBoundingClientRect();
-    const { left, top } = area.getBoundingClientRect();
-    const ww = window.innerWidth;
-    const wh = window.innerHeight;
-    const scale = aw / ah < ww / wh ? (ww / aw) * (1 / 3) : (wh / ah) * (1 / 3);
-    const tx = ww / 2 - (left + aw / 2);
-    const ty = wh / 2 - (top + ah / 2);
-    el.style.transform = `translate3d(${tx}px,${ty}px,0) scale3d(${scale},${scale},1)`;
-  }
-
-  function openItem() {
-    if (isOpen) return;
-    const zoomer = zoomerRefs.current[current];
-    if (!zoomer) return;
-
-    setIsOpen(true);
-    zoomer.classList.add('zoomer--active');
-    applyZoomerTransform(zoomer);
-
-    // After zoom transition ends, show content panel
-    function onEnd(e: TransitionEvent) {
-      if (e.target !== zoomer) return;
-      zoomer!.removeEventListener('transitionend', onEnd);
-
-      // reset zoomer silently
-      zoomer!.classList.add('zoomer--notrans');
-      zoomer!.style.transform = 'translate3d(0,0,0) scale3d(1,1,1)';
-
-      // open content
-      contentRef.current?.classList.add('content--open');
-      const contentItem = document.getElementById(
-        projectsData[current].contentId,
-      );
-      contentItem?.classList.add('content__item--current');
-      setTimeout(() => contentItem?.classList.add('content__item--reset'), 0);
-    }
-    zoomer.addEventListener('transitionend', onEnd);
-  }
-
-  /* ── close ──────────────────────────────────────────────── */
-  function closeContent() {
-    if (isClosing) return;
-    setIsClosing(true);
-
-    const contentItem = contentRef.current?.querySelector<HTMLElement>(
-      '.content__item--current',
-    );
-    const zoomer = zoomerRefs.current[current];
-
-    contentRef.current?.classList.remove('content--open');
-    contentItem?.classList.remove('content__item--current');
-
-    // wait for content fade out, then animate zoomer back
-    function onContentEnd(e: TransitionEvent) {
-      if (e.target !== contentItem) return;
-      contentItem?.removeEventListener('transitionend', onContentEnd);
-      contentItem?.classList.remove('content__item--reset');
-
-      if (!zoomer) {
-        setIsOpen(false);
-        setIsClosing(false);
+    const track = trackRef.current;
+    if (!track) return;
+    let frame = 0;
+    let recheck = 0;
+    const update = (ended: boolean) => {
+      frame = 0;
+      const glide = gliding.current;
+      const left = glide ? glide.until - performance.now() : 0;
+      if (glide && !ended && left > 0) {
+        // Looks again when the glide is over, in case no scrollend comes,
+        // as when a swipe interrupts the glide.
+        window.clearTimeout(recheck);
+        recheck = window.setTimeout(() => update(true), left);
         return;
       }
+      window.clearTimeout(recheck);
+      gliding.current = null;
+      const first = track.firstElementChild as HTMLElement | null;
+      if (!first) return;
+      const step =
+        first.offsetWidth +
+        Number.parseFloat(getComputedStyle(track).columnGap);
+      const index = Math.round(track.scrollLeft / step);
+      setCurrent(Math.min(Math.max(index, 0), total - 1));
+    };
+    const onScroll = () => {
+      frame ||= requestAnimationFrame(() => update(false));
+    };
+    const onScrollEnd = () => update(true);
+    track.addEventListener('scroll', onScroll, { passive: true });
+    track.addEventListener('scrollend', onScrollEnd);
+    return () => {
+      track.removeEventListener('scroll', onScroll);
+      track.removeEventListener('scrollend', onScrollEnd);
+      cancelAnimationFrame(frame);
+      window.clearTimeout(recheck);
+    };
+  }, []);
 
-      // bring zoomer back to fill position silently first
-      zoomer.classList.add('zoomer--notrans');
-      applyZoomerTransform(zoomer);
+  // The arrows go around: past the last project comes the first. Quick
+  // clicks count from the card the track is still gliding to.
+  const go = (step: number) => {
+    const track = trackRef.current;
+    const first = track?.firstElementChild as HTMLElement | null;
+    if (!track || !first) return;
+    const glide = gliding.current;
+    const from =
+      glide && performance.now() < glide.until ? glide.index : current;
+    const target = (from + step + total) % total;
+    const card = track.children[target] as HTMLElement;
+    const reduced = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    gliding.current = { index: target, until: performance.now() + 1000 };
+    track.scrollTo({
+      left: card.offsetLeft - first.offsetLeft,
+      behavior: reduced ? 'auto' : 'smooth',
+    });
+    setCurrent(target);
+  };
 
-      // then animate it back to natural size
-      setTimeout(() => {
-        zoomer.classList.remove('zoomer--notrans');
-        zoomer.classList.remove('zoomer--active');
-        zoomer.style.transform = 'translate3d(0,0,0) scale3d(1,1,1)';
-        setIsOpen(false);
-        setIsClosing(false);
-      }, 25);
-    }
-
-    if (contentItem) {
-      contentItem.addEventListener('transitionend', onContentEnd);
-    } else {
-      setIsOpen(false);
-      setIsClosing(false);
-    }
-  }
-
-  /* ── slide size class per project ───────────────────────── */
-  const sizeClasses = [
-    'zoomer__area--size-2', // iPhone
-    'zoomer__area--size-4', // iPad
-    'zoomer__area--size-3', // MacBook
-    'zoomer__area--size-5', // iMac
-    'zoomer__area--size-1', // Apple Watch
-  ];
+  const openDetails = (index: number) => {
+    setSelected(index);
+    setDetailsOpen(true);
+  };
 
   return (
     <Section
       id="projects"
       description="Some of the projects carried out throughout my career!"
     >
-      <div className="container-slider">
-        {/* ── Slider ───────────────────────────────────────── */}
-        <section className="slider">
-          {projectsData.map((project: Project, index: number) => (
-            <div
-              key={project.contentId}
-              className={`slide${index === current ? ' slide--current' : ''}`}
-              data-content={project.contentId}
+      <Reveal className="projects">
+        {/* Swiping scrolls the track. With the keyboard, each card's button
+            scrolls its card into view when it gets focus. */}
+        <ul ref={trackRef} className="projects__track" aria-label="Projects">
+          {projectsData.map((item, index) => (
+            <li
+              key={item.contentId}
+              className="project-card"
+              aria-current={index === current ? 'true' : undefined}
+              onPointerMove={tilt}
+              onPointerLeave={untilt}
             >
-              <div className="slide__mover">
-                <div
-                  className="zoomer flex-center"
-                  ref={(el) => {
-                    zoomerRefs.current[index] = el;
-                  }}
-                  style={{ transform: 'translate3d(0,0,0) scale3d(1,1,1)' }}
-                >
-                  <Image
-                    className="zoomer__image"
-                    src={project.image}
-                    alt={project.title}
-                    unoptimized
-                  />
-                  <div className="preview w-max">
+              <div className="project-card__stage">
+                <div className="project-card__float">
+                  <div className="project-card__device">
                     <Image
-                      src={project.previewImage}
-                      alt={project.title}
+                      className="project-card__frame"
+                      src={item.image}
+                      alt=""
                       unoptimized
-                      style={{
-                        width: project.imageWidth,
-                        height: project.heightWidth,
-                      }}
                     />
-                    <div
-                      className={`zoomer__area ${
-                        sizeClasses[index] ?? 'zoomer__area--size-2'
-                      }`}
-                    />
+                    <div className="project-card__screen">
+                      <Image
+                        src={item.previewImage}
+                        alt={item.title}
+                        unoptimized
+                        style={{
+                          width: item.imageWidth,
+                          height: item.heightWidth,
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
+                <span className="project-card__glare" aria-hidden="true" />
               </div>
 
-              <h2 className="slide__title">
-                <span>{project.titleSpan}</span> {project.title}
-              </h2>
-            </div>
+              <div className="project-card__body">
+                <p className="project-card__eyebrow">
+                  <span aria-hidden="true">{pad(index + 1)}</span>
+                  {item.titleSpan}
+                </p>
+                <h3 className="project-card__title">{item.title}</h3>
+                {/* The button covers the whole card. */}
+                <button
+                  type="button"
+                  className="project-card__cta"
+                  aria-haspopup="dialog"
+                  onClick={() => openDetails(index)}
+                  onKeyDown={openOnKey(() => openDetails(index))}
+                >
+                  See details
+                  <span className="visually-hidden"> about {item.title}</span>
+                  <FontAwesomeIcon icon={faArrowRight} />
+                </button>
+              </div>
+            </li>
           ))}
+        </ul>
 
-          {/* ── Nav buttons ─────────────────────────────── */}
-          <nav className="slider__nav">
+        <div className="projects__controls">
+          <p className="projects__counter" aria-hidden="true">
+            <span>{pad(current + 1)}</span> / {pad(total)}
+          </p>
+          <span className="projects__progress" aria-hidden="true">
+            <span style={{ transform: `scaleX(${(current + 1) / total})` }} />
+          </span>
+          <div className="projects__arrows">
             <button
-              className="button button--nav-prev"
-              onClick={() => navigate('left')}
+              type="button"
+              className="projects__arrow"
               aria-label="Previous Project"
+              onClick={() => go(-1)}
             >
               <FontAwesomeIcon icon={faArrowLeft} />
-              <span className="text-hidden">Previous Project</span>
             </button>
-
             <button
-              className="button button--zoom"
-              onClick={openItem}
-              aria-label="See Details"
-            >
-              <FontAwesomeIcon icon={faSearch} />
-              <span className="text-hidden">See Details</span>
-            </button>
-
-            <button
-              className="button button--nav-next"
-              onClick={() => navigate('right')}
+              type="button"
+              className="projects__arrow"
               aria-label="Next Project"
+              onClick={() => go(1)}
             >
               <FontAwesomeIcon icon={faArrowRight} />
-              <span className="text-hidden">Next Project</span>
             </button>
-          </nav>
-        </section>
+          </div>
+        </div>
+      </Reveal>
 
-        {/* ── Content panel ────────────────────────────────── */}
-        <section className="content" ref={contentRef}>
-          {projectsData.map((project: Project) => (
-            <div
-              className="content__item"
-              id={project.contentId}
-              key={project.contentId}
+      {/* Rendered only while open, so its large image loads on demand. */}
+      <ModalComponent
+        visible={detailsOpen}
+        setVisible={setDetailsOpen}
+        size="5xl"
+        title={project.insideTitle}
+        subtitle={project.insideSubtitle}
+      >
+        <div className="project-details">
+          <Image
+            className="project-details__image"
+            src={project.insideImage}
+            alt={project.insideTitle}
+            unoptimized
+          />
+          <div className="project-details__text">
+            <p>{project.description}</p>
+            <a
+              className="btn btn--primary btn--small"
+              href={project.websiteLink}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <Image
-                className="content__item-img rounded-right"
-                src={project.insideImage}
-                alt={project.insideTitle}
-                unoptimized
-              />
-              <div className="content__item-inner">
-                <h2>{project.insideTitle}</h2>
-                <h3>{project.insideSubtitle}</h3>
-                <p>{project.description}</p>
-                <p style={{ marginTop: '15px' }}>
-                  <a
-                    href={project.websiteLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    See more about the website &rarr;
-                  </a>
-                </p>
-              </div>
-            </div>
-          ))}
-
-          <button
-            className="button button--close"
-            onClick={closeContent}
-            aria-label="Close content"
-          >
-            <FontAwesomeIcon icon={faTimesCircle} />
-            <span className="text-hidden">Close content</span>
-          </button>
-        </section>
-      </div>
+              See more about the website
+              <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+            </a>
+          </div>
+        </div>
+      </ModalComponent>
     </Section>
   );
 }
