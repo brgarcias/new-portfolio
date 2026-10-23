@@ -10,6 +10,7 @@ import {
 // FONTAWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 // CSS
 import './styles.css';
 
@@ -85,14 +86,15 @@ export default function SnackbarFeedback({
   return (
     <div
       className="snackbar"
-      role="presentation"
       onFocus={pauseTimer}
       onBlur={resumeTimer}
       onMouseEnter={pauseTimer}
       onMouseLeave={resumeTimer}
     >
+      {/* A status, so screen readers announce how the sending went. */}
       <div
         className={`snackbar__content${content.open ? '' : ' snackbar__content--exiting'}`}
+        role="status"
         onTransitionEnd={(event) => {
           if (event.target === event.currentTarget && !content.open) {
             setRendered(false);
@@ -100,21 +102,22 @@ export default function SnackbarFeedback({
         }}
       >
         <FontAwesomeIcon
+          className="snackbar__icon"
           icon={content.icon}
-          style={{
-            color: content.colorIcon,
-            marginTop: '5px',
-          }}
+          style={{ color: content.colorIcon }}
         />
         <div className="snackbar-message">
           <p className="snackbar-title">{content.title}</p>
-          <p className="snackbar-description" style={{ fontSize: '0.8rem' }}>
-            {content.description}
-          </p>
+          <p className="snackbar-description">{content.description}</p>
         </div>
-        <div onClick={close} style={{ cursor: 'pointer' }}>
-          <i className="fa-light fa-xmark"></i>
-        </div>
+        <button
+          type="button"
+          className="snackbar__close"
+          aria-label="Close notification"
+          onClick={close}
+        >
+          <FontAwesomeIcon icon={faXmark} />
+        </button>
       </div>
     </div>
   );

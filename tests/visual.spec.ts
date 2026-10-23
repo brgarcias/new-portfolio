@@ -41,9 +41,10 @@ async function settle(page: Page, scope = 'body') {
 function timeDependent(page: Page) {
   return [
     page.locator('#experience .xp-item:first-child .xp-item__duration'),
-    // The age only shows while its tab is open. Collapsed, its box overlaps
-    // the open tab.
-    page.locator('#contact #tab-1:checked + label .tab_right p').last(),
+    page
+      .locator('#contact .contact-card--profile .contact-card__details li')
+      .last(),
+    page.locator('.site-footer__year'),
   ];
 }
 
@@ -149,17 +150,42 @@ test('slider e detalhes de projeto', { tag: '@visual' }, async ({ page }) => {
 test('galeria de contribuições', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
   await scrollTo(page, '#contributing .contrib-grid');
-  await expect(page.locator('#contributing .contrib-gallery')).toHaveClass(
-    /is-visible/,
+  await expect(page.locator('#contributing .contrib__grid')).toHaveCSS(
+    'opacity',
+    '1',
   );
   await expectScreenshot(page, 'contributing-gallery.png', '#contributing');
 });
 
-test('aba de contato', { tag: '@visual' }, async ({ page }) => {
+test('visualizador de fotos', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await goToSection(page, 'contact');
-  await page.locator('#contact label[for="tab-3"]').click();
-  await expectScreenshot(page, 'contact-email.png', '#contact');
+  await scrollTo(page, '#contributing .contrib-grid');
+  await expect(page.locator('#contributing .contrib__grid')).toHaveCSS(
+    'opacity',
+    '1',
+  );
+  await page.locator('#contributing .contrib-card__button').nth(1).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expectScreenshot(page, 'photo-viewer.png', '[role="dialog"]');
+});
+
+test('cartões de contato', { tag: '@visual' }, async ({ page }) => {
+  await page.goto('/');
+  await scrollTo(page, '#contact .contact-grid');
+  await expect(page.locator('#contact .contact')).toHaveCSS('opacity', '1');
+  await expectScreenshot(page, 'contact-cards.png', '#contact');
+});
+
+test('rodapé', { tag: '@visual' }, async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() =>
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'instant',
+    }),
+  );
+  await expect(page.locator('#contact .contact')).toHaveCSS('opacity', '1');
+  await expectScreenshot(page, 'footer.png', '.site-footer');
 });
 
 test(
@@ -192,7 +218,8 @@ test('aviso de feedback enviado', { tag: '@visual' }, async ({ page }) => {
 });
 
 test('página de erro', { tag: '@visual' }, async ({ page }) => {
-  // A browser without IntersectionObserver breaks the contributing section.
+  // A browser without IntersectionObserver breaks the sections that enter as
+  // they scroll into view.
   await page.addInitScript(() =>
     Reflect.deleteProperty(window, 'IntersectionObserver'),
   );

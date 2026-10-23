@@ -1,11 +1,13 @@
-// CSS
-import './styles.css';
-// TAB COMPONENT
-import Tab from './Tab';
-// TABS DATA
-import { getTabs } from './tabs';
+// FONT AWESOME
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // COMPONENTS
 import Section from '@/src/components/Section';
+import Reveal from '@/src/components/Reveal';
+// CONTENT
+import { getContactCards } from './cards';
+import { socialLinks } from '@/src/components/SiteFrame/content';
+// CSS
+import './styles.css';
 
 export default function Contact() {
   return (
@@ -29,19 +31,56 @@ export default function Contact() {
         author: 'Dalai Lama',
       }}
     >
-      {/* The card floats and sits partly outside its box, as in the old
-          full-screen page, so the wrapper clears it and keeps the height. */}
-      <div className="contact__body cf">
-        <div className="left">
-          <div className="app">
-            <div className="app_inner">
-              {getTabs().map((tab) => (
-                <Tab key={tab.id} {...tab} checked={tab.id === 'tab-1'} />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      <Reveal className="contact">
+        <ul className="contact-grid">
+          {getContactCards().map((card) => (
+            <li
+              key={card.id}
+              className={`contact-card contact-card--${card.id}`}
+            >
+              <span className="contact-card__icon" aria-hidden="true">
+                <FontAwesomeIcon icon={card.icon} />
+              </span>
+              <p className="contact-card__label">{card.label}</p>
+              <h3 className="contact-card__title">
+                {card.titleHref ? (
+                  <a href={card.titleHref}>{card.title}</a>
+                ) : (
+                  card.title
+                )}
+              </h3>
+              <p className="contact-card__subtitle">
+                {card.subtitleHref ? (
+                  <a href={card.subtitleHref}>{card.subtitle}</a>
+                ) : (
+                  card.subtitle
+                )}
+              </p>
+              <ul className="contact-card__details">
+                {card.details.map((detail) => (
+                  <li key={detail}>{detail}</li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+
+        <ul className="contact-links" aria-label="Social links">
+          {socialLinks.map(({ icon, href, text }) => (
+            <li key={text}>
+              <a
+                className="btn btn--ghost"
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FontAwesomeIcon icon={icon} />
+                {text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </Reveal>
     </Section>
   );
 }
