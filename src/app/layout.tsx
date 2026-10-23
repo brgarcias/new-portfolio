@@ -12,10 +12,41 @@ config.autoAddCss = false;
 import Header from '@/src/components/Header';
 // PROVIDERS
 import { Providers } from './providers';
+// SITE
+import { siteUrl } from './site';
 
 const inter = Inter({ subsets: ['latin'] });
 
+const title = 'Bruno Garcia — Dev. Full-Stack';
+const description = 'Bruno Garcia: An inspired Full-Stack Developer';
+
+// Only facts the page already shows: name, role, e-mail and profiles.
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Bruno Garcia',
+  alternateName: 'Bruno Garcia da Silva',
+  jobTitle: 'Full-Stack Developer',
+  url: `${siteUrl}/`,
+  email: 'mailto:bruno-151299@hotmail.com',
+  sameAs: [
+    'https://www.linkedin.com/in/bruno-garcia-9854b1161/',
+    'https://github.com/brgarcias',
+  ],
+};
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    url: '/',
+    siteName: 'Bruno Garcia',
+    title,
+    description,
+    locale: 'en_US',
+  },
+  twitter: { card: 'summary', title, description },
   manifest: '/favicon/manifest.json',
   icons: [
     {
@@ -99,19 +130,19 @@ export const metadata: Metadata = {
   ],
   authors: {
     name: 'Bruno Garcia',
-    url: 'https://brgarcias-portfolio.netlify.app/',
+    url: `${siteUrl}/`,
   },
   keywords:
     'bruno-garcia, full-stack, css, next, react, javascript, typescript, html',
   title: {
-    default: 'Bruno Garcia — Dev. Full-Stack',
-    template: '%s | Bruno Garcia — Dev. Full-Stack',
+    default: title,
+    template: `%s | ${title}`,
   },
   robots: {
     index: true,
     follow: true,
   },
-  description: 'Bruno Garcia: An inspired Full-Stack Developer',
+  description,
   // Google Search Console, URL-prefix property for the netlify.app address.
   verification: {
     google: 'zE-A_JWezHcTY0RPEAiraoj-ORR540i46tyJwSk0T3s',
@@ -135,7 +166,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="js csstransitions dark">
-      <head />
+      <head>
+        <script
+          type="application/ld+json"
+          // Escapes "<" so the JSON can never close the script element.
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(personJsonLd).replace(/</g, '\\u003c'),
+          }}
+        />
+      </head>
       <body className={inter.className}>
         <Header />
 
