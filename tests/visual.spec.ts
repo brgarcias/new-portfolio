@@ -175,6 +175,18 @@ test('aviso de feedback enviado', { tag: '@visual' }, async ({ page }) => {
   await expectScreenshot(page, 'feedback-sent.png');
 });
 
+test('página de erro', { tag: '@visual' }, async ({ page }) => {
+  // A browser without IntersectionObserver breaks the contributing section.
+  await page.addInitScript(() =>
+    Reflect.deleteProperty(window, 'IntersectionObserver'),
+  );
+  await page.goto('/');
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Something Went Wrong' }),
+  ).toBeVisible();
+  await expectScreenshot(page, 'error.png');
+});
+
 test('página 404', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/pagina-inexistente');
   await expectScreenshot(page, 'not-found.png');

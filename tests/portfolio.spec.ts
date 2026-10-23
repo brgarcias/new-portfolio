@@ -522,3 +522,40 @@ test('hidrata a página com o comentário que o Netlify injeta no head', async (
   await openSection(page, 'contact');
   expect(errors).toEqual([]);
 });
+
+test('mostra a página de erro e recupera o site com Try again', async ({
+  page,
+}) => {
+  // On the first load only, a browser without IntersectionObserver breaks the
+  // contributing section.
+  await page.addInitScript(() => {
+    if (sessionStorage.getItem('broken')) return;
+    sessionStorage.setItem('broken', '1');
+    Reflect.deleteProperty(window, 'IntersectionObserver');
+  });
+  await page.goto('/');
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Something Went Wrong' }),
+  ).toBeVisible();
+  await expect(page.locator('button.menu-button')).toBeHidden();
+
+  await page.getByRole('button', { name: 'Try again', exact: true }).click();
+  await expect(page.locator('#about-me h1')).toBeVisible();
+  await openSection(page, 'contact');
+});
+
+test('mostra a página de erro quando o próprio layout falha', async ({
+  page,
+}) => {
+  // The menu script in the layout's header needs AbortController.
+  await page.addInitScript(() =>
+    Reflect.deleteProperty(window, 'AbortController'),
+  );
+  await page.goto('/');
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Something Went Wrong' }),
+  ).toBeVisible();
+  // The global error page replaces the layout, header included.
+  await expect(page.locator('button.menu-button')).toHaveCount(0);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+});
