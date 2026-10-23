@@ -4,28 +4,26 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import './styles.css';
 import { tabsContent } from './sections';
+// COMPONENTS
+import Section from '@/src/components/Section';
 
 export default function AcademicEducation() {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div className="page" id="academic-education">
-      <header className="bp-header cf">
-        <h1 className="bp-header__title">Academic Education</h1>
-        <p className="bp-header__desc">
+    <Section
+      id="education"
+      description={
+        <>
           Postgraduate Coming Soon{' '}
           <FontAwesomeIcon icon={faHeart} style={{ color: 'red' }} />
-        </p>
-        <p className="info">
-          &quot;The learned man is a discoverer of facts that already exist -
-          but the wise man is a creator of values that do not exist and that he
-          makes exist.&quot; &mdash;
-          <span className="blue">
-            <em> Albert Einstein</em>
-          </span>
-        </p>
-      </header>
-
+        </>
+      }
+      quote={{
+        text: 'The learned man is a discoverer of facts that already exist - but the wise man is a creator of values that do not exist and that he makes exist.',
+        author: 'Albert Einstein',
+      }}
+    >
       <div className="time-line">
         <div className="progress">
           <div className="progress_inner">
@@ -64,7 +62,7 @@ export default function AcademicEducation() {
                   className={`tab tab-${index}`}
                   style={{ display: activeTab === index ? 'block' : 'none' }}
                 >
-                  <h1>{tab.title}</h1>
+                  <h3>{tab.title}</h3>
                   <p>{tab.content}</p>
                 </div>
               ))}
@@ -84,6 +82,6 @@ export default function AcademicEducation() {
           </div>
         </div>
       </div>
-    </div>
+    </Section>
   );
 }

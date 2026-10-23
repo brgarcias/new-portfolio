@@ -2,7 +2,19 @@
 'use client';
 
 import { HeroUIProvider } from '@heroui/react';
+import { LazyMotion, MotionConfig } from 'framer-motion';
+
+// Loads framer-motion's DOM animation features on demand, as HeroUI does.
+const loadMotionFeatures = () =>
+  import('framer-motion').then((module) => module.domAnimation);
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return <HeroUIProvider>{children}</HeroUIProvider>;
+  return (
+    <HeroUIProvider>
+      <LazyMotion features={loadMotionFeatures}>
+        {/* Honors the visitor's "reduce motion" setting. */}
+        <MotionConfig reducedMotion="user">{children}</MotionConfig>
+      </LazyMotion>
+    </HeroUIProvider>
+  );
 }

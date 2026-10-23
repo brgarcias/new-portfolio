@@ -1,11 +1,11 @@
 import { expect, type Page } from '@playwright/test';
 
 export const sections = [
-  'about-me',
-  'professional-experience',
-  'academic-education',
+  'about',
+  'experience',
+  'education',
   'courses',
-  'projectsData',
+  'projects',
   'contributing',
   'contact',
 ] as const;
@@ -27,39 +27,54 @@ export async function waitForTransitions(page: Page) {
 }
 
 export async function openMenu(page: Page) {
-  await page.locator('button.menu-button').click();
-  await expect(page.locator('.pages-nav')).toHaveClass(/pages-nav--open/);
+  await page.locator('.menu-toggle').click();
+  await expect(page.locator('.stack-menu')).toHaveClass(/stack-menu--open/);
   await waitForTransitions(page);
 }
 
-// Opens a section through the stacked-pages menu and waits for the stack to
-// settle, the same way a visitor does.
-export async function openSection(page: Page, id: Section) {
-  await openMenu(page);
-  await page.locator(`.pages-nav a.link--page[href="#${id}"]`).click();
-  await expect(page.locator(`#${id}`)).not.toHaveClass(/page--inactive/);
-  await expect(page.locator('.pages-stack')).not.toHaveClass(
-    /pages-stack--open/,
+export async function expectMenuClosed(page: Page) {
+  await expect(page.locator('.stage')).not.toHaveClass(/stage--locked/);
+  await expect(page.locator('.menu-toggle')).toHaveAttribute(
+    'aria-expanded',
+    'false',
   );
 }
 
-// Scrolls only the section's own container. Element.scrollIntoView would
-// also scroll the body, which has overflow: hidden and must stay at the top.
-export async function scrollSectionTo(page: Page, selector: string) {
+// Opens a section through the stacked-pages menu, the way a visitor does on
+// any screen size, and waits for it to settle under the fixed header.
+export async function openSection(page: Page, id: Section) {
+  await openMenu(page);
+  await page.locator(`.stack-menu__link[href="#${id}"]`).click();
+  await expectMenuClosed(page);
+  // The section starts right under the header, unless the page ends first.
+  await expect
+    .poll(() =>
+      page.evaluate((sectionId) => {
+        const top =
+          document.getElementById(sectionId)!.getBoundingClientRect().top -
+          document.querySelector<HTMLElement>('.site-header')!.offsetHeight;
+        const atBottom =
+          Math.ceil(window.scrollY + window.innerHeight) >=
+          document.documentElement.scrollHeight;
+        return Math.round(top) === 0 || (top > 0 && atBottom);
+      }, id),
+    )
+    .toBe(true);
+}
+
+// Scrolls the page so an element sits in the middle of the screen.
+export async function scrollTo(page: Page, selector: string) {
   await page.locator(selector).evaluate((element) => {
-    const container = element.closest('.page');
-    if (!container) return;
-    const elementRect = element.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-    container.scrollTop +=
-      elementRect.top -
-      containerRect.top -
-      (container.clientHeight - elementRect.height) / 2;
+    const rect = element.getBoundingClientRect();
+    window.scrollBy({
+      top: rect.top - (window.innerHeight - rect.height) / 2,
+      behavior: 'instant',
+    });
   });
 }
 
 export async function openFeedbackForm(page: Page) {
-  await page.locator('.bp-nav__item.bp-icon--drop').click();
+  await page.getByRole('button', { name: 'Leave Feedback' }).click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
   return dialog;

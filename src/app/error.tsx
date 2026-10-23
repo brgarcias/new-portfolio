@@ -8,8 +8,8 @@ import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import StatusPage from '@/src/components/StatusPage';
 
-// A full reload also sets the stacked-pages menu up again, which re-rendering
-// the segment with reset() would not do.
+// A full reload also hooks the bar up to the new sections again, which
+// re-rendering the segment with reset() would not do.
 const reload = () => window.location.reload();
 
 export default function Error({
@@ -37,15 +37,10 @@ export default function Error({
       }
       quote="Failure is simply the opportunity to begin again, this time more intelligently."
       author="Henry Ford"
-      action={
-        <button
-          className="bp-nav__item"
-          type="button"
-          aria-label="Try again"
-          data-info="Try again"
-          onClick={reload}
-        >
+      actions={
+        <button className="btn btn--primary" type="button" onClick={reload}>
           <FontAwesomeIcon icon={faRotateRight} />
+          Try again
         </button>
       }
     />

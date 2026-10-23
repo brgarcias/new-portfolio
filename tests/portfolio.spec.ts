@@ -1,10 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
 import {
+  expectMenuClosed,
   openFeedbackForm,
   openMenu,
   openSection,
-  scrollSectionTo,
+  scrollTo,
   sections,
+  waitForTransitions,
 } from './helpers';
 
 async function fillFeedback(page: Page) {
@@ -31,10 +33,15 @@ test('carrega o portfólio sem erros e sem rolagem horizontal', async ({
   await expect(
     page.locator('meta[name="google-site-verification"]'),
   ).toHaveAttribute('content', 'zE-A_JWezHcTY0RPEAiraoj-ORR540i46tyJwSk0T3s');
-  await expect(page.locator('#about-me h1')).toHaveText('Full-Stack Developer');
-  await expect(page.locator('.pages-stack > .page')).toHaveCount(
-    sections.length,
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Full-Stack Developer',
   );
+  await expect(page.locator('#top .hero__status')).toHaveText(
+    'Currently Software Engineer at PayPal',
+  );
+  for (const id of sections) {
+    await expect(page.locator(`main > section#${id}`)).toHaveCount(1);
+  }
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -49,40 +56,75 @@ test('navega por todas as seções pelo menu e fecha o menu com Escape', async (
   await page.goto('/');
   for (const id of [...sections.slice(1), sections[0]]) {
     await openSection(page, id);
+    await expect(page).toHaveURL(new RegExp(`#${id}$`));
   }
+  const scrollY = await page.evaluate(() => window.scrollY);
   await openMenu(page);
-  await expect(page.locator('button.menu-button')).toHaveClass(
-    /menu-button--open/,
+  await expect(page.locator('.menu-toggle')).toHaveAttribute(
+    'aria-expanded',
+    'true',
   );
+  await expect(page.locator('.stage')).toHaveClass(/stage--open/);
   await page.keyboard.press('Escape');
-  await expect(page.locator('button.menu-button')).not.toHaveClass(
-    /menu-button--open/,
-  );
-  await expect(page.locator('.pages-stack')).not.toHaveClass(
-    /pages-stack--open/,
-  );
-  await expect(page.locator('#about-me')).not.toHaveClass(/page--inactive/);
+  await expectMenuClosed(page);
+  // Closing without choosing a section keeps the page where it was.
+  expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
+  await expect(page.locator('.menu-toggle')).toBeFocused();
 });
 
-test('mantém o menu funcionando quando ele fecha logo ao abrir', async ({
+test('destaca na barra a seção que está na tela', async ({
   page,
+  isMobile,
 }) => {
+  test.skip(isMobile, 'The section links appear in the bar on wide screens.');
   await page.goto('/');
-  // Opening and closing in the same frame leaves no transition to end.
-  await page.evaluate(() => {
-    document.querySelector<HTMLButtonElement>('button.menu-button')?.click();
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-  });
-  await expect(page.locator('.pages-stack')).not.toHaveClass(
-    /pages-stack--open/,
+  await page
+    .locator('.site-nav')
+    .getByRole('link', { name: 'Projects' })
+    .click();
+  await expect(
+    page.locator('.site-nav').getByRole('link', { name: 'Projects' }),
+  ).toHaveAttribute('aria-current', 'location');
+  await expect(page.locator('.site-header')).toHaveClass(
+    /site-header--scrolled/,
   );
+});
+
+test('mantém o menu funcionando com cliques rápidos', async ({ page }) => {
+  await page.goto('/');
+  // A second click while the page is still moving back is ignored.
+  await page.locator('.menu-toggle').dblclick();
+  await expect(page.locator('.stack-menu')).toHaveClass(/stack-menu--open/);
+  await waitForTransitions(page);
+  await page.locator('.menu-toggle').click();
+  await expectMenuClosed(page);
   await openSection(page, 'courses');
+});
+
+test('volta a página para a frente com um clique nela', async ({ page }) => {
+  await page.goto('/');
+  await openMenu(page);
+  await page.locator('.stage-catcher').click();
+  await expectMenuClosed(page);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+});
+
+test('respeita a preferência por reduzir movimento', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveCSS('scroll-behavior', 'auto');
+  await expect(page.locator('.hero__title-accent')).toHaveCSS(
+    'animation-name',
+    'none',
+  );
+  await openSection(page, 'projects');
+  await openSection(page, 'about');
 });
 
 test('abre e recolhe as experiências profissionais', async ({ page }) => {
   await page.goto('/');
-  await openSection(page, 'professional-experience');
-  const items = page.locator('#professional-experience .cbp_tmtimeline > li');
+  await openSection(page, 'experience');
+  const items = page.locator('#experience .cbp_tmtimeline > li');
   await expect(items).toHaveCount(8);
   await expect(items.first().locator('h2')).toHaveText(
     'Software Engineer (Node.js / GraphQL Platform)',
@@ -111,15 +153,15 @@ test('abre e recolhe as experiências profissionais', async ({ page }) => {
 
 test('alterna as etapas da formação acadêmica', async ({ page }) => {
   await page.goto('/');
-  await openSection(page, 'academic-education');
-  const tabs = page.locator('#academic-education .progress_inner__tabs .tab');
+  await openSection(page, 'education');
+  const tabs = page.locator('#education .progress_inner__tabs .tab');
   await expect(tabs).toHaveCount(5);
   await expect(tabs.first()).toBeVisible();
-  await scrollSectionTo(page, '#academic-education .progress');
-  await page.locator('#academic-education label[for="step-3"]').click();
+  await scrollTo(page, '#education .progress');
+  await page.locator('#education label[for="step-3"]').click();
   await expect(page.locator('#step-3')).toBeChecked();
   await expect(tabs.nth(2)).toBeVisible();
-  await expect(tabs.nth(2).locator('h1')).toHaveText(
+  await expect(tabs.nth(2).locator('h3')).toHaveText(
     'Universidade São Judas Tadeu',
   );
   await expect(tabs.first()).toBeHidden();
@@ -144,8 +186,8 @@ test('mostra os detalhes de um curso em um modal', async ({ page }) => {
 
 test('navega pelos projetos e abre os detalhes', async ({ page }) => {
   await page.goto('/');
-  await openSection(page, 'projectsData');
-  const title = page.locator('#projectsData .slide--current .slide__title');
+  await openSection(page, 'projects');
+  const title = page.locator('#projects .slide--current .slide__title');
   await expect(title).toContainText('CSS');
   await page.getByRole('button', { name: 'Next Project' }).click();
   await expect(title).toContainText('Sensei');
@@ -155,7 +197,7 @@ test('navega pelos projetos e abre os detalhes', async ({ page }) => {
   await expect(title).toContainText('Malka RH');
 
   await page.getByRole('button', { name: 'See Details' }).click();
-  const content = page.locator('#projectsData .content');
+  const content = page.locator('#projects .content');
   await expect(content).toHaveClass(/content--open/);
   const detail = page.locator('#content-5');
   await expect(detail).toHaveClass(/content__item--current/);
@@ -173,7 +215,7 @@ test('navega pelos projetos e abre os detalhes', async ({ page }) => {
   await expect(detail).not.toHaveClass(/content__item--current/);
   // The slider ignores navigation until the zoom-out animation ends.
   await expect(
-    page.locator('#projectsData .slide--current .zoomer'),
+    page.locator('#projects .slide--current .zoomer'),
   ).not.toHaveClass(/zoomer--active/);
   await page.getByRole('button', { name: 'Next Project' }).click();
   await expect(title).toContainText('CSS');
@@ -184,7 +226,7 @@ test('destaca as iniciativas de contribuição', async ({ page }) => {
   await openSection(page, 'contributing');
   const cards = page.locator('#contributing .c-card');
   await expect(cards).toHaveCount(4);
-  await scrollSectionTo(page, '#contributing .contrib-grid');
+  await scrollTo(page, '#contributing .contrib-grid');
   await expect(page.locator('#contributing .contrib-gallery')).toHaveClass(
     /is-visible/,
   );
@@ -211,7 +253,9 @@ test('oferece o currículo e os canais de contato', async ({
   request,
 }) => {
   await page.goto('/');
-  const resumeLink = page.locator('.bp-nav__item.bp-icon--archive');
+  const resumeLink = page
+    .locator('#top')
+    .getByRole('link', { name: 'Download CV', exact: true });
   await expect(resumeLink).toHaveAttribute(
     'href',
     '/documents/cv/Bruno_Garcia_Resume.zip',
@@ -224,7 +268,7 @@ test('oferece o currículo e os canais de contato', async ({
   expect(response.ok()).toBe(true);
   expect((await response.body()).subarray(0, 2).toString()).toBe('PK');
 
-  const social = page.locator('.pages-nav__item--social a');
+  const social = page.locator('.hero__social a');
   await expect(social).toHaveCount(4);
   await expect(social.nth(0)).toHaveAttribute(
     'href',
@@ -246,6 +290,10 @@ test('oferece o currículo e os canais de contato', async ({
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   }
+  await expect(page.locator('.site-header__cv')).toHaveAttribute(
+    'download',
+    'Bruno_Garcia_Resume.zip',
+  );
   await expect(page.getByRole('link', { name: 'text me' })).toHaveAttribute(
     'rel',
     'noopener noreferrer',
@@ -387,11 +435,16 @@ test('mostra a página 404 no estilo do site e volta ao portfólio', async ({
   await expect(
     page.getByRole('heading', { level: 1, name: 'Page Not Found' }),
   ).toBeVisible();
-  // The stacked-pages menu only works on the home page.
-  await expect(page.locator('button.menu-button')).toBeHidden();
   await expect(
     page.getByRole('link', { name: 'Back to the portfolio', exact: true }),
   ).toHaveAttribute('href', '/');
+  // The menu links lead to the sections of the home page.
+  await openMenu(page);
+  await expect(
+    page.locator('.stack-menu__link').filter({ hasText: 'Contact' }),
+  ).toHaveAttribute('href', '/#contact');
+  await page.keyboard.press('Escape');
+  await expectMenuClosed(page);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -402,8 +455,7 @@ test('mostra a página 404 no estilo do site e volta ao portfólio', async ({
     .getByRole('link', { name: 'go back to the portfolio', exact: true })
     .click();
   await expect(page).toHaveURL('/');
-  await expect(page.locator('#about-me h1')).toBeVisible();
-  // The menu is set up again after the client-side navigation.
+  await expect(page.locator('#top h1')).toBeVisible();
   await openSection(page, 'contact');
   expect(errors).toEqual([]);
 });
@@ -445,11 +497,9 @@ test('aplica os cabeçalhos de segurança sem bloquear o site', async ({
   await page.locator('#rb-grid > li').first().click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.keyboard.press('Escape');
-  await openSection(page, 'projectsData');
+  await openSection(page, 'projects');
   await page.getByRole('button', { name: 'See Details' }).click();
-  await expect(page.locator('#projectsData .content')).toHaveClass(
-    /content--open/,
-  );
+  await expect(page.locator('#projects .content')).toHaveClass(/content--open/);
   await page.evaluate(() => document.fonts.ready);
   expect(
     await page.evaluate(
@@ -517,7 +567,7 @@ test('hidrata a página com o comentário que o Netlify injeta no head', async (
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
-  await expect(page.locator('#about-me h1')).toBeVisible();
+  await expect(page.locator('#top h1')).toBeVisible();
   await page.waitForFunction(() => document.readyState === 'complete');
   await openSection(page, 'contact');
   expect(errors).toEqual([]);
@@ -537,25 +587,31 @@ test('mostra a página de erro e recupera o site com Try again', async ({
   await expect(
     page.getByRole('heading', { level: 1, name: 'Something Went Wrong' }),
   ).toBeVisible();
-  await expect(page.locator('button.menu-button')).toBeHidden();
+  // Only the section failed, so the header and its menu remain.
+  await expect(page.locator('.site-header')).toBeVisible();
 
   await page.getByRole('button', { name: 'Try again', exact: true }).click();
-  await expect(page.locator('#about-me h1')).toBeVisible();
+  await expect(page.locator('#top h1')).toBeVisible();
   await openSection(page, 'contact');
 });
 
 test('mostra a página de erro quando o próprio layout falha', async ({
   page,
 }) => {
-  // The menu script in the layout's header needs AbortController.
-  await page.addInitScript(() =>
-    Reflect.deleteProperty(window, 'AbortController'),
-  );
+  // Only the layout's header observes #top, the hero, to highlight the
+  // current section, so this breaks the layout alone.
+  await page.addInitScript(() => {
+    const observe = IntersectionObserver.prototype.observe;
+    IntersectionObserver.prototype.observe = function (target: Element) {
+      if (target.id === 'top') throw new Error('Simulated failure');
+      return observe.call(this, target);
+    };
+  });
   await page.goto('/');
   await expect(
     page.getByRole('heading', { level: 1, name: 'Something Went Wrong' }),
   ).toBeVisible();
   // The global error page replaces the layout, header included.
-  await expect(page.locator('button.menu-button')).toHaveCount(0);
+  await expect(page.locator('.site-header')).toHaveCount(0);
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 });

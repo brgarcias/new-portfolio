@@ -15,7 +15,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Abra <http://localhost:3000>. O projeto usa Node.js 24 LTS, Next.js 16 com App Router, React 19, TypeScript estrito, Tailwind CSS 3 e HeroUI. O pnpm é o gerenciador oficial; mantenha somente `pnpm-lock.yaml` atualizado. O npm que acompanha o Node é suficiente para instalar o pnpm, se Corepack não estiver disponível: `npm install --global pnpm@11.3.0`.
+Abra <http://localhost:3000>. O projeto usa Node.js 24 LTS, Next.js 16 com App Router, React 19, TypeScript estrito, Tailwind CSS 3, HeroUI e framer-motion. O pnpm é o gerenciador oficial; mantenha somente `pnpm-lock.yaml` atualizado. O npm que acompanha o Node é suficiente para instalar o pnpm, se Corepack não estiver disponível: `npm install --global pnpm@11.3.0`.
 
 ## Verificar e compilar
 
@@ -29,7 +29,7 @@ Os comandos de lint, tipos e formatação também podem ser executados individua
 
 ## Testes
 
-Os testes de navegador rodam em desktop (1440 px) e em celular (iPhone 13) sobre o build de produção. Eles cobrem a navegação pelo menu e o fechamento com Esc, as experiências, as etapas da formação, o modal dos cursos, o slider e os detalhes dos projetos, as contribuições, as abas de contato, o download do currículo, os links de contato, a validação e o envio do feedback e a página 404.
+Os testes de navegador rodam em desktop (1440 px) e em celular (iPhone 13) sobre o build de produção. Eles cobrem a navegação pela barra e pelo menu em pilha, o fechamento com Esc, a preferência por reduzir movimento, as experiências, as etapas da formação, o modal dos cursos, o slider e os detalhes dos projetos, as contribuições, as abas de contato, o download do currículo, os links de contato, a validação e o envio do feedback, a página 404 e as páginas de erro.
 
 ```sh
 pnpm exec playwright install chromium

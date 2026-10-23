@@ -3,11 +3,15 @@
 // NEXT
 import Image from 'next/image';
 // HOOKS
-import { FormEvent, useState } from 'react';
+import { CSSProperties, FormEvent, useState } from 'react';
 // FONTAWESOME
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  faArrowDown,
+  faArrowRight,
   faCheck,
   faCircleExclamation,
+  faComment,
 } from '@fortawesome/free-solid-svg-icons';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 // IMAGES
@@ -16,12 +20,44 @@ import AboutMeImg from '@/public/images/about-me/about-me.webp';
 import ModalComponent from '@/src/components/Modal';
 import Form from '@/src/components/Form';
 import SnackbarFeedback from '@/src/components/SnackBar';
+import Section from '@/src/components/Section';
+import Reveal from '@/src/components/Reveal';
+// CONTENT
+import { resume, socialLinks } from '@/src/components/SiteFrame/content';
+// CSS
+import './styles.css';
 
 // The form only checks strings, and lodash's isEmpty for a string or null
 // is the same as this test.
 const isEmpty = (value: string | null | undefined) => !value;
 
-export default function AboutMe() {
+// Technologies named in the second paragraph below.
+const technologies = [
+  'PHP',
+  'CodeIgniter',
+  'Laravel',
+  'GraphQL',
+  'REST APIs',
+  'ReactJS',
+  'NextJS',
+  'NodeJS',
+  'NestJS',
+  'Python',
+  'MySQL',
+  'Postgres',
+  'Jira',
+  'AWS',
+];
+
+// A few of them float around the illustration.
+const highlights = ['ReactJS', 'NextJS', 'NodeJS', 'NestJS', 'GraphQL', 'AWS'];
+
+interface AboutMeProps {
+  // The experience without an end date, shown under the name.
+  currentRole?: { title: string; company: string };
+}
+
+export default function AboutMe({ currentRole }: Readonly<AboutMeProps>) {
   const [visible, setVisible] = useState(false);
   const [fullNameValue, setFullNameValue] = useState('');
   const [emailValue, setEmailValue] = useState('');
@@ -110,22 +146,134 @@ export default function AboutMe() {
 
   const openModalFeedback = () => setVisible(true);
   return (
-    <div className="bp-header page" id="about-me">
+    <>
       <SnackbarFeedback content={openSnackbar} setOpen={setOpenSnackbar} />
-      <header className="cf">
-        <span className="bp-header__present">
-          Bruno Garcia
-          <span
-            className="bp-tooltip bp-icon bp-icon--about"
-            data-content="Passionate about development, eager for new experiences and constantly seeking fresh challenges"
-          />
-        </span>
 
-        <h1 className="bp-header__title">Full-Stack Developer</h1>
+      <section id="top" className="hero" aria-labelledby="hero-title">
+        <div className="hero__backdrop" aria-hidden="true">
+          <span className="hero__glow hero__glow--brand" />
+          <span className="hero__glow hero__glow--violet" />
+          <span className="hero__glow hero__glow--cyan" />
+          <span className="hero__grid" />
+        </div>
 
-        <div className="bp-header__div_desc">
-          <div className="bp-header__desc">
-            <p>
+        <div className="hero__inner">
+          <div className="hero__content">
+            {currentRole && (
+              <p className="hero__status hero__reveal">
+                <span className="hero__status-dot" aria-hidden="true" />
+                Currently {currentRole.title} at {currentRole.company}
+              </p>
+            )}
+            <p
+              className="hero__name hero__reveal"
+              style={{ '--i': 1 } as CSSProperties}
+            >
+              Bruno Garcia
+            </p>
+            <h1 id="hero-title" className="hero__title">
+              <span
+                className="hero__title-line hero__reveal"
+                style={{ '--i': 2 } as CSSProperties}
+              >
+                <span className="hero__title-accent">Full-Stack</span>
+              </span>{' '}
+              <span
+                className="hero__title-line hero__reveal"
+                style={{ '--i': 3 } as CSSProperties}
+              >
+                Developer
+              </span>
+            </h1>
+            <p
+              className="hero__tagline hero__reveal"
+              style={{ '--i': 4 } as CSSProperties}
+            >
+              Passionate about development, eager for new experiences and
+              constantly seeking fresh challenges.
+            </p>
+            <div
+              className="hero__actions hero__reveal"
+              style={{ '--i': 5 } as CSSProperties}
+            >
+              <a className="btn btn--primary" href="#contact">
+                Contact me
+                <FontAwesomeIcon icon={faArrowRight} />
+              </a>
+              <a
+                className="btn btn--ghost"
+                href={resume.href}
+                download={resume.fileName}
+              >
+                <FontAwesomeIcon icon={faArrowDown} />
+                Download CV
+              </a>
+              <button
+                type="button"
+                className="btn btn--text"
+                onClick={openModalFeedback}
+              >
+                <FontAwesomeIcon icon={faComment} />
+                Leave Feedback
+              </button>
+            </div>
+            <ul
+              className="social-links hero__social hero__reveal"
+              style={{ '--i': 6 } as CSSProperties}
+            >
+              {socialLinks.map(({ icon, href, text }) => (
+                <li key={text}>
+                  <a
+                    className="social-links__link"
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={text}
+                  >
+                    <FontAwesomeIcon icon={icon} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="hero__visual">
+            <div className="hero__halo" aria-hidden="true" />
+            <div className="hero__float">
+              <Image
+                className="hero__image"
+                src={AboutMeImg}
+                alt="Bruno Garcia"
+                unoptimized
+                priority
+              />
+            </div>
+            <ul className="hero__chips" aria-hidden="true">
+              {highlights.map((name, index) => (
+                <li
+                  key={name}
+                  className="hero__chip"
+                  style={{ '--i': index } as CSSProperties}
+                >
+                  {name}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <a className="hero__scroll" href="#about">
+          <span className="hero__mouse" aria-hidden="true">
+            <span />
+          </span>
+          <span className="visually-hidden">Scroll to About Me</span>
+        </a>
+      </section>
+
+      <Section id="about" className="about">
+        <div className="about__grid">
+          <Reveal className="about__text">
+            <p className="about__lead">
               Passionate and experienced Full Stack Developer with a solid track
               record spanning several years in programming, coordinating, and
               supervising various types of projects. I am an enthusiast for
@@ -137,7 +285,6 @@ export default function AboutMe() {
               members, always with a total focus on customer satisfaction and
               project success.
             </p>
-
             <p>
               My proficiency covers a wide range of technologies, including PHP
               with frameworks like CodeIgniter and Laravel, GraphQL and REST
@@ -147,43 +294,24 @@ export default function AboutMe() {
               self-managing effectively in independent projects while also
               collaborating productively in team environments.
             </p>
-
             <p>
               I am committed to driving the success of every project I&apos;m
               involved in, and I&apos;m always eager to explore new
               opportunities and challenges in the field of software development.
             </p>
-
-            <nav className="bp-nav">
-              <a
-                className="bp-nav__item bp-icon bp-icon--drop open-options"
-                style={{ transition: '0.5s', cursor: 'pointer' }}
-                onClick={openModalFeedback}
-                data-info="Leave Feedback"
-              >
-                <span> Leave Feedback</span>
-              </a>
-              <a
-                className="bp-nav__item bp-icon bp-icon--archive"
-                style={{ transition: '0.5s', cursor: 'pointer' }}
-                href="/documents/cv/Bruno_Garcia_Resume.zip"
-                download="Bruno_Garcia_Resume.zip"
-                data-info="Download CV"
-              >
-                <span>Download CV</span>
-              </a>
-            </nav>
-          </div>
-
-          <Image
-            className="poster"
-            src={AboutMeImg}
-            alt="Bruno Garcia"
-            unoptimized
-            priority
-          />
+          </Reveal>
+          <Reveal className="about__stack" delay={0.12}>
+            <h3 className="about__stack-title">Technologies &amp; tools</h3>
+            <ul className="tag-list">
+              {technologies.map((name) => (
+                <li key={name} className="tag">
+                  {name}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         </div>
-      </header>
+      </Section>
 
       <ModalComponent
         title="Welcome!"
@@ -210,6 +338,6 @@ export default function AboutMe() {
           errorsState={errorsState}
         />
       </ModalComponent>
-    </div>
+    </>
   );
 }

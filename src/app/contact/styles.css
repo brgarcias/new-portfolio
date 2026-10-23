@@ -460,3 +460,7 @@ a.follow:hover {
     display: none;
   }
 }
+
+.contact__body {
+  min-height: calc(50vh + 6rem);
+}

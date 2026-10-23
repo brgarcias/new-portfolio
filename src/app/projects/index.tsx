@@ -11,6 +11,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import './styles.css';
 import { projectsData } from './projects.data';
+import Section from '@/src/components/Section';
 
 /* ─── types ─────────────────────────────────────────────── */
 type Project = (typeof projectsData)[number];
@@ -154,14 +155,10 @@ export default function Projects() {
   ];
 
   return (
-    <div className="page" id="projectsData">
-      <header className="bp-header cf">
-        <h1 className="bp-header__title">My Projects</h1>
-        <p className="bp-header__desc">
-          Some of the projects carried out throughout my career!
-        </p>
-      </header>
-
+    <Section
+      id="projects"
+      description="Some of the projects carried out throughout my career!"
+    >
       <div className="container-slider">
         {/* ── Slider ───────────────────────────────────────── */}
         <section className="slider">
@@ -282,6 +279,6 @@ export default function Projects() {
           </button>
         </section>
       </div>
-    </div>
+    </Section>
   );
 }
