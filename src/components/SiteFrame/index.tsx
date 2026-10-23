@@ -209,6 +209,10 @@ export default function SiteFrame({
 
   return (
     <>
+      {/* Hidden until it gets focus, so keyboards can jump past the bar. */}
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
       <header
         className={[
           'site-header',

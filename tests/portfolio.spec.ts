@@ -75,6 +75,16 @@ test('navega por todas as seções pelo menu e fecha o menu com Escape', async (
   await expect(page.locator('.menu-toggle')).toBeFocused();
 });
 
+test('pula a barra com o primeiro Tab', async ({ page }) => {
+  await page.goto('/');
+  await page.keyboard.press('Tab');
+  const skip = page.getByRole('link', { name: 'Skip to content' });
+  await expect(skip).toBeFocused();
+  await expect(skip).toBeInViewport();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('main')).toBeFocused();
+});
+
 test('destaca na barra a seção que está na tela', async ({
   page,
   isMobile,
@@ -236,6 +246,11 @@ test('mostra os detalhes de um curso em um modal', async ({ page }) => {
   });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByText('Second Module - Node.js')).toBeVisible();
+  // Only text inside, so the body takes focus to scroll from the keyboard.
+  await expect(dialog.locator('.modal-body--focusable')).toHaveAttribute(
+    'tabindex',
+    '0',
+  );
   await dialog.locator('footer').getByRole('button', { name: 'Close' }).click();
   await expect(dialog).toBeHidden();
 
@@ -565,6 +580,7 @@ test('mostra a página 404 no estilo do site e volta ao portfólio', async ({
   for (const robots of await page.locator('meta[name="robots"]').all()) {
     await expect(robots).toHaveAttribute('content', /noindex/);
   }
+  await expect(page.getByRole('main')).toContainText('Page Not Found');
   await expect(
     page.getByRole('heading', { level: 1, name: 'Page Not Found' }),
   ).toBeVisible();

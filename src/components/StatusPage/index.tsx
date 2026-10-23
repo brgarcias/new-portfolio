@@ -11,7 +11,8 @@ interface StatusPageProps {
   actions: ReactNode;
 }
 
-// Shared by the 404 and error pages, in the style of the hero.
+// Shared by the 404 and error pages, in the style of the hero. It is the
+// page's main landmark, where the skip link leads.
 export default function StatusPage({
   label,
   code,
@@ -22,7 +23,7 @@ export default function StatusPage({
   actions,
 }: Readonly<StatusPageProps>) {
   return (
-    <div className="status-page">
+    <main id="main" className="status-page" tabIndex={-1}>
       <div className="status-page__backdrop" aria-hidden="true" />
       <div className="status-page__inner">
         <p className="eyebrow">{label}</p>
@@ -39,6 +40,6 @@ export default function StatusPage({
         </blockquote>
         <div className="status-page__actions">{actions}</div>
       </div>
-    </div>
+    </main>
   );
 }
