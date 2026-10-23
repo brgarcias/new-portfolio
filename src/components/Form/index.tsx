@@ -28,7 +28,6 @@ interface FormProps {
   validateField: (input: string, value: string | null) => void;
   onClose: () => void;
   actionButtonDisabled: boolean;
-  hidden?: boolean;
 }
 
 const Form: FC<FormProps> = ({
@@ -39,7 +38,6 @@ const Form: FC<FormProps> = ({
   errorsState,
   onClose,
   actionButtonDisabled,
-  hidden = false,
 }) => {
   const handleInputChange = (inputName: string, value: string) => {
     validateField(inputName, value);
@@ -69,12 +67,18 @@ const Form: FC<FormProps> = ({
 
   return (
     <form
-      hidden={hidden}
       name="contact"
       className="contact-form"
       method="post"
       onSubmit={submitForm}
     >
+      {/* Must match the form in public/contact.html, which Netlify reads. */}
+      <input type="hidden" name="form-name" value="contact" />
+      <p hidden>
+        <label>
+          Don&apos;t fill this out: <input name="bot-field" />
+        </label>
+      </p>
       <InputControl
         icon={faUserAlt}
         label="Full Name"

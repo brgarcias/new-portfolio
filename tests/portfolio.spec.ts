@@ -24,6 +24,8 @@ test('carrega o portfólio sem erros e sem rolagem horizontal', async ({
   page.on('pageerror', (error) => errors.push(error.message));
   const response = await page.goto('/');
   expect(response?.status()).toBe(200);
+  // Regenerated daily, so the durations and the age stay current.
+  expect(response?.headers()['cache-control']).toContain('s-maxage=86400');
   await expect(page).toHaveTitle('Bruno Garcia — Dev. Full-Stack');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(
@@ -62,6 +64,21 @@ test('navega por todas as seções pelo menu e fecha o menu com Escape', async (
   await expect(page.locator('#about-me')).not.toHaveClass(/page--inactive/);
 });
 
+test('mantém o menu funcionando quando ele fecha logo ao abrir', async ({
+  page,
+}) => {
+  await page.goto('/');
+  // Opening and closing in the same frame leaves no transition to end.
+  await page.evaluate(() => {
+    document.querySelector<HTMLButtonElement>('button.menu-button')?.click();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+  });
+  await expect(page.locator('.pages-stack')).not.toHaveClass(
+    /pages-stack--open/,
+  );
+  await openSection(page, 'courses');
+});
+
 test('abre e recolhe as experiências profissionais', async ({ page }) => {
   await page.goto('/');
   await openSection(page, 'professional-experience');
@@ -69,6 +86,16 @@ test('abre e recolhe as experiências profissionais', async ({ page }) => {
   await expect(items).toHaveCount(8);
   await expect(items.first().locator('h2')).toHaveText(
     'Software Engineer (Node.js / GraphQL Platform)',
+  );
+  // Months must not depend on the time zone of the machine that builds.
+  await expect(items.first().locator('.cbp_tmtime')).toContainText(
+    'Oct 2025 — Present',
+  );
+  await expect(items.nth(1).locator('.cbp_tmtime')).toContainText(
+    'Feb 2025 — Mar 2026 · 1y 1m',
+  );
+  await expect(items.last().locator('.cbp_tmtime')).toContainText(
+    'May 2017 — Apr 2018 · 11m',
   );
   await expect(items.first().locator('.experience-body')).toHaveClass(
     /\bopen\b/,
@@ -184,8 +211,13 @@ test('oferece o currículo e os canais de contato', async ({
   request,
 }) => {
   await page.goto('/');
+  const resumeLink = page.locator('.bp-nav__item.bp-icon--archive');
+  await expect(resumeLink).toHaveAttribute(
+    'href',
+    '/documents/cv/Bruno_Garcia_Resume.zip',
+  );
   const downloadPromise = page.waitForEvent('download');
-  await page.locator('.bp-nav__item.bp-icon--archive').click();
+  await resumeLink.click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('Bruno_Garcia_Resume.zip');
   const response = await request.get('/documents/cv/Bruno_Garcia_Resume.zip');
@@ -210,6 +242,40 @@ test('oferece o currículo e os canais de contato', async ({
     'href',
     'https://github.com/brgarcias',
   );
+  for (const link of await social.all()) {
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  }
+  await expect(page.getByRole('link', { name: 'text me' })).toHaveAttribute(
+    'rel',
+    'noopener noreferrer',
+  );
+});
+
+test('publica ícones e manifesto que existem', async ({ page, request }) => {
+  await page.goto('/');
+  const manifestHref = await page
+    .locator('link[rel="manifest"]')
+    .getAttribute('href');
+  expect(manifestHref).toBe('/favicon/manifest.json');
+  const manifest = await (await request.get(manifestHref!)).json();
+  expect(manifest.name).toBe('Bruno Garcia');
+  const icons = await page
+    .locator('link[rel="icon"], link[rel="apple-touch-icon"]')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+  const tileImage = await page
+    .locator('meta[name="msapplication-TileImage"]')
+    .getAttribute('content');
+  for (const src of [
+    ...icons,
+    ...manifest.icons.map((icon: { src: string }) => icon.src),
+    tileImage,
+  ]) {
+    expect(src).toMatch(/^\/favicon\//);
+    const response = await request.get(src!);
+    expect(response.ok(), src!).toBe(true);
+    expect(response.headers()['content-type']).toContain('image/png');
+  }
 });
 
 test('valida os campos do formulário de feedback', async ({ page }) => {
@@ -231,10 +297,14 @@ test('valida os campos do formulário de feedback', async ({ page }) => {
   await expect(dialog).toBeHidden();
 });
 
-test('envia o feedback e confirma o envio', async ({ page }) => {
+test('envia o feedback ao Netlify Forms e confirma o envio', async ({
+  page,
+}) => {
   let payload: URLSearchParams | undefined;
+  let url: string | undefined;
   await page.route('**/*', async (route) => {
     if (route.request().method() !== 'POST') return route.continue();
+    url = route.request().url();
     payload = new URLSearchParams(route.request().postData() ?? '');
     await route.fulfill({ status: 200, body: '' });
   });
@@ -246,12 +316,44 @@ test('envia o feedback e confirma o envio', async ({ page }) => {
   await expect(
     page.getByText('Thank you very much for your feedback!'),
   ).toBeVisible();
+  // Netlify Forms only accepts submissions posted to a static file.
+  expect(new URL(url!).pathname).toBe('/contact.html');
+  expect(payload?.get('form-name')).toBe('contact');
+  expect(payload?.get('bot-field')).toBe('');
   expect(payload?.get('fullName')).toBe('Visitante de Teste');
   expect(payload?.get('email')).toBe('visitante@example.com');
   expect(payload?.get('feedback')).toBe('Gostei muito do portfólio.');
 
   await page.keyboard.press('Escape');
   await expect(page.getByText('Message Submitted')).toBeHidden();
+});
+
+test('declara ao Netlify todos os campos do feedback', async ({
+  page,
+  request,
+}) => {
+  const html = await (await request.get('/contact.html')).text();
+  await page.setContent(html);
+  const declared = await page
+    .locator('form[name="contact"][data-netlify="true"]')
+    .evaluate((form) =>
+      [...(form as HTMLFormElement).elements]
+        .map((field) => field.getAttribute('name'))
+        .sort(),
+    );
+  await expect(page.locator('form[name="contact"]')).toHaveAttribute(
+    'netlify-honeypot',
+    'bot-field',
+  );
+
+  await page.goto('/');
+  const dialog = await openFeedbackForm(page);
+  const sent = await dialog
+    .locator('form[name="contact"]')
+    .evaluate((form) =>
+      [...new FormData(form as HTMLFormElement).keys()].sort(),
+    );
+  expect(sent).toEqual(declared);
 });
 
 test('avisa quando o envio do feedback falha', async ({ page }) => {

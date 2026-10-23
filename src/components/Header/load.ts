@@ -1,20 +1,33 @@
+// Pages move in 0.45s. The timer below only has to outlast that.
+const PAGE_TRANSITION_TIMEOUT = 1000;
+
 export const loadScript = () => {
+  // Aborting removes every listener when the header unmounts.
+  const controller = new AbortController();
+  const { signal } = controller;
   const supportsTransitions = 'transition' in document.documentElement.style;
 
   function onEndTransition(el: HTMLElement, callback: () => void) {
-    function onEndCallbackFn(ev: TransitionEvent) {
+    let fallback: number | undefined;
+    function onEndCallbackFn(ev?: TransitionEvent) {
+      if (signal.aborted) return;
       if (supportsTransitions) {
-        if (ev.target !== el) return;
+        if (ev && ev.target !== el) return;
         el.removeEventListener('transitionend', onEndCallbackFn);
+        window.clearTimeout(fallback);
       }
       if (callback && typeof callback === 'function') {
         callback.call(el);
       }
     }
     if (supportsTransitions) {
-      el.addEventListener('transitionend', onEndCallbackFn);
+      el.addEventListener('transitionend', onEndCallbackFn, { signal });
+      // No transition runs when the page already is where it is going, for
+      // example when the menu closes in the same frame it opened. Without
+      // this timer the stack would stay open and the menu would stop working.
+      fallback = window.setTimeout(onEndCallbackFn, PAGE_TRANSITION_TIMEOUT);
     } else {
-      onEndCallbackFn({} as TransitionEvent);
+      onEndCallbackFn();
     }
   }
 
@@ -66,35 +79,46 @@ export const loadScript = () => {
   }
 
   function initEvents() {
-    menuCtrl?.addEventListener('click', toggleMenu);
+    menuCtrl?.addEventListener('click', toggleMenu, { signal });
 
     navItems.forEach((item) => {
       const pageid = item.getAttribute('href')?.slice(1);
       if (!pageid) return;
-      item.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        openPage(pageid);
-      });
+      item.addEventListener(
+        'click',
+        (ev) => {
+          ev.preventDefault();
+          openPage(pageid);
+        },
+        { signal },
+      );
     });
 
     pages.forEach((page: HTMLElement) => {
       const pageid = page.getAttribute('id');
       if (!pageid) return;
-      page.addEventListener('click', (ev) => {
-        if (isMenuOpen) {
-          ev.preventDefault();
-          openPage(pageid);
-        }
-      });
+      page.addEventListener(
+        'click',
+        (ev) => {
+          if (isMenuOpen) {
+            ev.preventDefault();
+            openPage(pageid);
+          }
+        },
+        { signal },
+      );
     });
 
-    document.addEventListener('keydown', (ev) => {
-      if (!isMenuOpen) return;
-      const keyCode = ev.keyCode || ev.which;
-      if (keyCode === 27) {
-        closeMenu();
-      }
-    });
+    document.addEventListener(
+      'keydown',
+      (ev) => {
+        if (!isMenuOpen) return;
+        if (ev.key === 'Escape') {
+          closeMenu();
+        }
+      },
+      { signal },
+    );
   }
 
   function toggleMenu() {
@@ -173,4 +197,6 @@ export const loadScript = () => {
   }
 
   init();
+
+  return () => controller.abort();
 };
