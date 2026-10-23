@@ -371,14 +371,41 @@ test('avisa quando o envio do feedback falha', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('mostra a página 404', async ({ page }) => {
+test('mostra a página 404 no estilo do site e volta ao portfólio', async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
   const response = await page.goto('/pagina-inexistente');
   expect(response?.status()).toBe(404);
-  await expect(page.getByRole('heading', { name: 'Not Found' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Return Home' })).toHaveAttribute(
-    'href',
-    '/',
+  await expect(page).toHaveTitle(
+    'Page Not Found | Bruno Garcia — Dev. Full-Stack',
   );
+  for (const robots of await page.locator('meta[name="robots"]').all()) {
+    await expect(robots).toHaveAttribute('content', /noindex/);
+  }
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Page Not Found' }),
+  ).toBeVisible();
+  // The stacked-pages menu only works on the home page.
+  await expect(page.locator('button.menu-button')).toBeHidden();
+  await expect(
+    page.getByRole('link', { name: 'Back to the portfolio', exact: true }),
+  ).toHaveAttribute('href', '/');
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+
+  await page
+    .getByRole('link', { name: 'go back to the portfolio', exact: true })
+    .click();
+  await expect(page).toHaveURL('/');
+  await expect(page.locator('#about-me h1')).toBeVisible();
+  // The menu is set up again after the client-side navigation.
+  await openSection(page, 'contact');
+  expect(errors).toEqual([]);
 });
 
 test('aplica os cabeçalhos de segurança sem bloquear o site', async ({
