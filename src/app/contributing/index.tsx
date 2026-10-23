@@ -5,6 +5,8 @@ import './styles.css';
 import { RefObject, useEffect, useRef } from 'react';
 import { items } from '@/src/app/contributing/contributing';
 import ContributingItem from '@/src/app/contributing/ContributingItem';
+// COMPONENTS
+import Section from '@/src/components/Section';
 
 function useReveal(threshold = 0.15) {
   const ref = useRef<HTMLElement>(null);
@@ -32,23 +34,19 @@ export default function Contributing() {
   const closingRef = useReveal(0.1) as RefObject<HTMLElement>;
 
   return (
-    <div className="page" id="contributing">
-      {/* ── HERO ──────────────────────────────────────────── */}
-      <header className="bp-header cf">
-        <h1 className="bp-header__title">Contributing</h1>
-        <p className="bp-header__desc">
-          Developing the community side
-          <span className="purple"> the most important</span>!
-        </p>
-        <p className="info">
-          &quot;Our lives begin to end the day we remain silent about the things
-          that matter.&quot; &mdash;
-          <span className="blue">
-            <em> Martin Luther King Jr.</em>
-          </span>
-        </p>
-      </header>
-
+    <Section
+      id="contributing"
+      description={
+        <>
+          Developing the community side{' '}
+          <span className="text-gradient">the most important</span>!
+        </>
+      }
+      quote={{
+        text: 'Our lives begin to end the day we remain silent about the things that matter.',
+        author: 'Martin Luther King Jr.',
+      }}
+    >
       {/* ── NARRATIVE ─────────────────────────────────────── */}
       <section
         className="contrib-section contrib-narrative reveal"
@@ -130,6 +128,6 @@ export default function Contributing() {
           </div>
         </div>
       </section>
-    </div>
+    </Section>
   );
 }

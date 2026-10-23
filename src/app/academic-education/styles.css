@@ -523,7 +523,7 @@ body .progress_inner__tabs .tab {
   min-width: 100%;
 }
 
-body .progress_inner__tabs .tab h1 {
+body .progress_inner__tabs .tab h3 {
   margin: 0;
   color: #2e6c8e;
   font-size: 2em;
@@ -664,10 +664,29 @@ body .progress_inner input[type='radio'] {
   body .progress_inner__step label {
     font-size: 10px;
   }
-  body .progress_inner__tabs .tab h1 {
+  body .progress_inner__tabs .tab h3 {
     font-size: 18px;
   }
   body .progress_inner__tabs .tab p {
     font-size: 14px;
   }
+}
+
+/* In the scrolling page the stepper flows below the section header. It used
+   to be centered with absolute positioning inside a full-screen page. */
+#education .time-line {
+  top: auto;
+  padding-bottom: 2rem;
+}
+
+#education .progress_inner {
+  position: relative;
+  top: auto;
+  display: flow-root;
+  margin-top: 7rem;
+  transform: none;
+}
+
+#education .progress_inner__tabs .tab {
+  position: relative;
 }

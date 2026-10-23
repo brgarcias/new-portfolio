@@ -2,8 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import {
   openFeedbackForm,
   openMenu,
-  openSection,
-  scrollSectionTo,
+  scrollTo,
   sections,
   waitForTransitions,
   type Section,
@@ -38,17 +37,14 @@ async function settle(page: Page, scope = 'body') {
 }
 
 // Values computed from today's date change over time, so they are masked.
-// Every section stays in the DOM, so only the active one is masked: the
-// others sit behind it and their masks would cover the visible page.
 function timeDependent(page: Page) {
-  const active = '.pages-stack > .page:not(.page--inactive)';
   return [
     page.locator(
-      `${active} .cbp_tmtimeline > li:first-child .cbp_tmtime > span:first-child`,
+      '#experience .cbp_tmtimeline > li:first-child .cbp_tmtime > span:first-child',
     ),
     // The age only shows while its tab is open. Collapsed, its box overlaps
     // the open tab.
-    page.locator(`${active} #tab-1:checked + label .tab_right p`).last(),
+    page.locator('#contact #tab-1:checked + label .tab_right p').last(),
   ];
 }
 
@@ -57,59 +53,62 @@ async function expectScreenshot(page: Page, name: string, scope = 'body') {
   await expect(page).toHaveScreenshot(name, { mask: timeDependent(page) });
 }
 
-test('página inicial', { tag: '@visual' }, async ({ page }) => {
+// Scrolls a section to the top, under the fixed header, and waits for its
+// header to finish entering.
+async function goToSection(page: Page, id: Section) {
+  await page.evaluate((sectionId) => {
+    const section = document.getElementById(sectionId)!;
+    const header = document.querySelector<HTMLElement>('.site-header')!;
+    window.scrollTo({
+      top: section.offsetTop - header.offsetHeight,
+      behavior: 'instant',
+    });
+  }, id);
+  await expect(page.locator(`#${id} .section__header`)).toHaveCSS(
+    'opacity',
+    '1',
+  );
+}
+
+test('topo da página', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await expectScreenshot(page, 'about-me.png', '#about-me');
+  await expectScreenshot(page, 'hero.png', '#top');
 });
 
 test('menu aberto', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
+  await goToSection(page, 'experience');
   await openMenu(page);
   await expectScreenshot(page, 'menu.png');
 });
 
-for (const id of sections.slice(1) as Section[]) {
+for (const id of sections) {
   test(`seção ${id}`, { tag: '@visual' }, async ({ page }) => {
     await page.goto('/');
-    await openSection(page, id);
+    await goToSection(page, id);
     await expectScreenshot(page, `${id}.png`, `#${id}`);
   });
 }
 
 test('experiência expandida', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await openSection(page, 'professional-experience');
-  const second = page.locator(
-    '#professional-experience .cbp_tmtimeline > li:nth-child(2)',
-  );
-  await second.locator('.experience-header').click();
-  await scrollSectionTo(
-    page,
-    '#professional-experience .cbp_tmtimeline > li:nth-child(2)',
-  );
-  await expectScreenshot(
-    page,
-    'professional-experience-expanded.png',
-    '#professional-experience',
-  );
+  const second = '#experience .cbp_tmtimeline > li:nth-child(2)';
+  await scrollTo(page, second);
+  await page.locator(`${second} .experience-header`).click();
+  await scrollTo(page, second);
+  await expectScreenshot(page, 'experience-expanded.png', '#experience');
 });
 
 test('etapa da formação', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await openSection(page, 'academic-education');
-  await scrollSectionTo(page, '#academic-education .progress');
-  await page.locator('#academic-education label[for="step-3"]').click();
-  await expectScreenshot(
-    page,
-    'academic-education-university.png',
-    '#academic-education',
-  );
+  await scrollTo(page, '#education .progress');
+  await page.locator('#education label[for="step-3"]').click();
+  await expectScreenshot(page, 'education-university.png', '#education');
 });
 
 test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await openSection(page, 'courses');
-  await scrollSectionTo(page, '#rb-grid > li:first-child');
+  await scrollTo(page, '#rb-grid > li:first-child');
   await page.locator('#rb-grid > li').first().click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await expectScreenshot(page, 'course-details.png');
@@ -117,22 +116,20 @@ test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
 
 test('slider e detalhes de projeto', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await openSection(page, 'projectsData');
-  await scrollSectionTo(page, '#projectsData .slider');
+  await scrollTo(page, '#projects .slider');
   await page.getByRole('button', { name: 'Next Project' }).click();
   await page.getByRole('button', { name: 'Next Project' }).click();
-  await expectScreenshot(page, 'projects-slider.png', '#projectsData');
+  await expectScreenshot(page, 'projects-slider.png', '#projects');
   await page.getByRole('button', { name: 'See Details' }).click();
   await expect(page.locator('#content-3')).toHaveClass(
     /content__item--current/,
   );
-  await expectScreenshot(page, 'project-details.png', '#projectsData');
+  await expectScreenshot(page, 'project-details.png', '#projects');
 });
 
 test('galeria de contribuições', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await openSection(page, 'contributing');
-  await scrollSectionTo(page, '#contributing .contrib-grid');
+  await scrollTo(page, '#contributing .contrib-grid');
   await expect(page.locator('#contributing .contrib-gallery')).toHaveClass(
     /is-visible/,
   );
@@ -141,7 +138,7 @@ test('galeria de contribuições', { tag: '@visual' }, async ({ page }) => {
 
 test('aba de contato', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await openSection(page, 'contact');
+  await goToSection(page, 'contact');
   await page.locator('#contact label[for="tab-3"]').click();
   await expectScreenshot(page, 'contact-email.png', '#contact');
 });

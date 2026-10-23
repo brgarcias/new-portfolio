@@ -1,6 +1,9 @@
 // NEXT
 import type { Metadata } from 'next';
 import Link from 'next/link';
+// FONT AWESOME
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import StatusPage from '@/src/components/StatusPage';
 
@@ -15,6 +18,7 @@ export default function NotFound() {
   return (
     <StatusPage
       label="Error 404"
+      code="404"
       title="Page Not Found"
       description={
         <>
@@ -24,14 +28,10 @@ export default function NotFound() {
       }
       quote="Not all those who wander are lost."
       author="J.R.R. Tolkien"
-      action={
-        <Link
-          className="bp-nav__item bp-icon bp-icon--prev"
-          href="/"
-          aria-label="Back to the portfolio"
-          data-info="Back to the portfolio"
-        >
-          <span>Back to the portfolio</span>
+      actions={
+        <Link className="btn btn--primary" href="/">
+          Back to the portfolio
+          <FontAwesomeIcon icon={faArrowRight} />
         </Link>
       }
     />

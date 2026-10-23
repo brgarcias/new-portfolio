@@ -1,0 +1,442 @@
+/* Layers: the stage sits at 10 while the menu is open, then the click
+   catcher (20), the menu (30) and the bar (40). HeroUI dialogs (50) and the
+   project details (1000) cover the bar. */
+
+/* ─── Fixed bar ─────────────────────────────────────────── */
+.site-header {
+  position: fixed;
+  z-index: 40;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: var(--header-height);
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.site-header--scrolled {
+  border-bottom-color: var(--color-border);
+  background: color-mix(in srgb, var(--color-bg) 72%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+.site-header--menu {
+  border-bottom-color: transparent;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: var(--container-wide);
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-text);
+}
+
+.site-brand:hover {
+  color: var(--color-text);
+}
+
+.site-brand__mark {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: 0.75rem;
+  background: var(--gradient-brand);
+  box-shadow: 0 8px 24px -8px rgb(92 94 220 / 0.8);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.site-brand__name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+}
+
+.site-nav {
+  margin-left: auto;
+}
+
+.site-nav ul {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.site-nav__link {
+  display: block;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.site-nav__link:hover,
+.site-nav__link:focus-visible {
+  background: rgb(255 255 255 / 0.06);
+  color: var(--color-text);
+}
+
+.site-nav__link.is-active {
+  background: rgb(92 94 220 / 0.18);
+  box-shadow: inset 0 0 0 1px rgb(92 94 220 / 0.4);
+  color: var(--color-text);
+}
+
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.site-nav + .site-header__actions {
+  margin-left: 0;
+}
+
+.site-header--menu .site-nav,
+.site-header--menu .site-header__cv {
+  visibility: hidden;
+  opacity: 0;
+}
+
+@media (max-width: 1099px) {
+  .site-nav {
+    display: none;
+  }
+
+  .site-nav + .site-header__actions {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 479px) {
+  .site-header__cv {
+    display: none;
+  }
+}
+
+/* ─── Menu button ───────────────────────────────────────── */
+.menu-toggle {
+  position: relative;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.04);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.menu-toggle:hover,
+.menu-toggle:focus-visible {
+  border-color: rgb(92 94 220 / 0.6);
+  background: rgb(92 94 220 / 0.16);
+}
+
+.menu-toggle__line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.1rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-text);
+  transition: transform 0.35s var(--ease-out);
+}
+
+.menu-toggle__line:first-child {
+  transform: translate(-50%, calc(-50% - 4px));
+}
+
+.menu-toggle__line:last-child {
+  transform: translate(-50%, calc(-50% + 4px));
+}
+
+.menu-toggle.is-open .menu-toggle__line:first-child {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.menu-toggle.is-open .menu-toggle__line:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* ─── Stacked-pages menu ────────────────────────────────── */
+/* The menu fills the space above the page, which sits back in 3D. */
+.stack-menu {
+  position: fixed;
+  z-index: 30;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  height: var(--stack-top);
+  max-width: var(--container-wide);
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.75rem;
+  margin: 0 auto;
+  padding: calc(var(--header-height) + 0.5rem) var(--gutter) 1.5rem;
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 0.25s ease,
+    visibility 0s linear 0.25s;
+}
+
+.stack-menu--open {
+  visibility: visible;
+  pointer-events: auto;
+  opacity: 1;
+  transition:
+    opacity 0.25s ease 0.15s,
+    visibility 0s;
+}
+
+.stack-menu__list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.25rem 2rem;
+}
+
+.stack-menu__item {
+  opacity: 0;
+  transform: translate3d(0, 0.75rem, 0);
+  transition:
+    opacity 0.4s ease,
+    transform 0.5s var(--ease-out);
+}
+
+.stack-menu--open .stack-menu__item {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(0.2s + var(--i) * 45ms);
+}
+
+.stack-menu__link {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  color: var(--color-text);
+}
+
+.stack-menu__index {
+  color: var(--color-brand-light);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.stack-menu__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 1.9vw, 1.6rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: color 0.2s ease;
+}
+
+.stack-menu__title-short {
+  display: none;
+}
+
+.stack-menu__link:hover .stack-menu__title,
+.stack-menu__link:focus-visible .stack-menu__title {
+  color: var(--color-brand-light);
+}
+
+.stack-menu__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+
+@media (max-width: 899px) {
+  .stack-menu__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.5rem;
+  }
+}
+
+@media (max-width: 559px) {
+  .stack-menu {
+    gap: 1.25rem;
+  }
+
+  .stack-menu__list {
+    gap: 0 1rem;
+  }
+
+  .stack-menu__link {
+    padding: 0.45rem 0;
+  }
+
+  .stack-menu__title {
+    font-size: 1.15rem;
+  }
+
+  .stack-menu__title-full {
+    display: none;
+  }
+
+  .stack-menu__title-short {
+    display: inline;
+  }
+
+  .stack-menu__footer {
+    gap: 0.75rem;
+  }
+
+  .stack-menu__footer .social-links__link {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+/* ─── Stage: the page and the sheets stacked behind it ──── */
+.stage {
+  position: relative;
+}
+
+/* Without a z-index, the sheet does not trap fixed layers inside it, such as
+   the project details, which must cover the bar. */
+.stage__sheet {
+  position: relative;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.stage--locked {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  overflow: hidden;
+  background: var(--color-stage);
+  perspective: 1200px;
+  perspective-origin: 50% -50%;
+}
+
+.stage--locked .stage__sheet {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  left: 0;
+  transition:
+    transform 0.6s var(--ease-stack),
+    clip-path 0.6s var(--ease-stack);
+}
+
+.stage--open .stage__sheet {
+  transform: translate3d(0, var(--stack-push), -200px);
+}
+
+.stage__ghost {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 100vh;
+  border-radius: 1.25rem 1.25rem 0 0;
+  opacity: 0;
+  transform: translate3d(0, var(--stack-push), -300px);
+  transition:
+    transform 0.6s var(--ease-stack),
+    opacity 0.6s var(--ease-stack);
+}
+
+.stage__ghost--middle {
+  background: #23242b;
+}
+
+.stage__ghost--back {
+  background: #1d1e24;
+}
+
+.stage--open .stage__ghost--middle {
+  opacity: 1;
+  transform: translate3d(0, var(--stack-push), -250px);
+}
+
+.stage--open .stage__ghost--back {
+  opacity: 1;
+  transform: translate3d(0, var(--stack-push), -300px);
+}
+
+/* Covers the page while it sits back, so a click brings it forward. */
+.stage-catcher {
+  position: fixed;
+  z-index: 20;
+  top: var(--stack-top);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage--locked .stage__sheet,
+  .stage__ghost,
+  .stack-menu,
+  .stack-menu__item {
+    transition: none;
+  }
+}
+
+/* ─── Social links ──────────────────────────────────────── */
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.social-links__link {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.3s var(--ease-out);
+}
+
+.social-links__link:hover,
+.social-links__link:focus-visible {
+  border-color: rgb(92 94 220 / 0.6);
+  background: rgb(92 94 220 / 0.16);
+  color: var(--color-text);
+  transform: translateY(-2px);
+}

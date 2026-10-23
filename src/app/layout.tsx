@@ -1,7 +1,7 @@
 // NEXT METADATA
 import type { Metadata, Viewport } from 'next';
 // NEXT GOOGLE FONT
-import { Inter } from 'next/font/google';
+import { Inter, Space_Grotesk } from 'next/font/google';
 // GLOBAL CSS
 import './globals.css';
 // FONT AWESOME CONFIGS
@@ -9,13 +9,18 @@ import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 config.autoAddCss = false;
 // COMPONENTS
-import Header from '@/src/components/Header';
+import SiteFrame from '@/src/components/SiteFrame';
 // PROVIDERS
 import { Providers } from './providers';
 // SITE
 import { siteUrl } from './site';
 
 const inter = Inter({ subsets: ['latin'] });
+// Display font for headings, exposed as --font-display.
+const display = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-display',
+});
 
 const title = 'Bruno Garcia — Dev. Full-Stack';
 const description = 'Bruno Garcia: An inspired Full-Stack Developer';
@@ -173,7 +178,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="js csstransitions dark">
+    <html lang="en" className={`dark ${display.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: removeHeadWhitespace }} />
         <script
@@ -185,9 +190,9 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <Header />
-
-        <Providers>{children}</Providers>
+        <Providers>
+          <SiteFrame>{children}</SiteFrame>
+        </Providers>
       </body>
     </html>
   );
