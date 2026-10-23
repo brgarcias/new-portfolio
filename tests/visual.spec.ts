@@ -94,7 +94,11 @@ test('experiência expandida', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
   const second = '#experience .xp-item:nth-child(2)';
   await scrollTo(page, second);
+  // The click waits for the card to finish entering, and the centring below
+  // for the details to finish opening. Otherwise the capture moved around.
+  await expect(page.locator(`${second} .xp-card`)).toHaveCSS('opacity', '1');
   await page.locator(`${second} .xp-card__toggle`).click();
+  await waitForTransitions(page);
   await scrollTo(page, second);
   await expectScreenshot(page, 'experience-expanded.png', '#experience');
 });
