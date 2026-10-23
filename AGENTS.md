@@ -33,7 +33,7 @@ Antes de considerar uma mudança pronta, rode `pnpm check`, `pnpm build` e `pnpm
 
 ## Estrutura
 
-- `src/app/layout.tsx` define `lang="en"`, as classes `js csstransitions dark` no `<html>`, das quais dependem o CSS do template e o tema escuro do HeroUI, a fonte Inter, os metadados, os ícones de `public/favicon/`, o `Header` e os `Providers`.
+- `src/app/layout.tsx` define `lang="en"`, as classes `js csstransitions dark` no `<html>`, das quais dependem o CSS do template e o tema escuro do HeroUI, a fonte Inter, os metadados, os ícones de `public/favicon/`, o `Header` e os `Providers`. O primeiro script do `<head>` remove a quebra de linha que o Netlify injeta, junto com um comentário, logo depois do `<meta charset>` nas páginas de produção em `*.netlify.app`. Sem ele, o React 19 falha na hidratação (erro #418) e renderiza a página inteira de novo. Não remova esse script; um teste simula a injeção.
 - `src/app/providers.tsx` envolve as seções no `HeroUIProvider`.
 - `src/app/page.tsx` monta as seções nesta ordem: About Me, Professional Experience, Academic Education, Courses & Certifications, Projects, Contributing e Contact. Cada seção é um `div.page` dentro de `div.pages-stack`.
 - `src/components/Header/` é o menu em pilha de páginas, adaptado de um template da Codrops. `load.ts` manipula o DOM diretamente: alterna `pages-stack--open`, `pages-nav--open`, `menu-button--open` e `page--inactive` e aplica transformações 3D inline em cada página. As transições terminam por `transitionend`. `content.ts` tem os links do menu e das redes sociais.
