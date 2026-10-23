@@ -40,7 +40,7 @@ Antes de considerar uma mudança pronta, rode `pnpm check`, `pnpm build` e `pnpm
 - `src/app/<seção>/` tem o componente da seção, os dados (`experiences.ts`, `sections.ts`, `courses.ts`, `projects.data.ts`, `contributing.ts`, `tabs.ts`) e o `styles.css` próprio.
 - `src/components/Modal`, `Form` e `SnackBar` são o modal do HeroUI usado pelo feedback e pelos cursos, o formulário de feedback e o aviso de envio.
 - `src/app/globals.css` tem as diretivas do Tailwind, o menu, a pilha de páginas, o cabeçalho das seções e a fonte de ícones `bpicons`.
-- `src/app/not-found.tsx` é a página 404, no estilo das seções: rótulo, título, descrição, citação e o botão de voltar com ícone. O menu de páginas só funciona na home, então fica oculto nela por regras no fim do `globals.css`. As regras da 404 ficam no `globals.css` porque um CSS importado pelo `not-found.tsx` seria pré-carregado, sem uso, em todas as páginas. `src/app/error.tsx` é a página de erro inesperado.
+- `src/app/not-found.tsx` (404), `src/app/error.tsx` (erro na página) e `src/app/global-error.tsx` (erro no próprio layout, com `<html>` e `<body>` próprios) usam `src/components/StatusPage`, no estilo dos cabeçalhos das seções: rótulo, título, descrição, citação e um botão redondo de ação. O menu de páginas só funciona na home, então fica oculto nessas páginas por regras no fim do `globals.css`. Essas regras ficam no `globals.css` porque um CSS importado pelo `not-found.tsx` seria pré-carregado, sem uso, em todas as páginas. O "Try again" da página de erro recarrega a página inteira, porque o `reset()` do Next não reconfiguraria o menu.
 - O `Header` fica montado entre navegações no cliente, como o link da 404 para a home, então o menu é configurado de novo a cada mudança de rota (`usePathname`).
 - `next.config.mjs` desliga o `agentRules`, esconde o `X-Powered-By` e define os cabeçalhos de segurança: Content Security Policy, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` e `Permissions-Policy`. A CSP só aceita recursos do próprio site. Não carregue scripts, estilos, fontes ou imagens de outros domínios. Se isso for inevitável, ajuste a política e explique o motivo no PR.
 - `public/` guarda favicon, imagens, a fonte `bpicons`, o currículo em `documents/cv/Bruno_Garcia_Resume.zip` e `contact.html`, que declara o formulário para o Netlify Forms.
@@ -94,6 +94,7 @@ Os testes de navegador são o contrato de qualidade do site. Eles exigem:
 - Download do currículo e links de contato corretos.
 - Validação, aviso de sucesso e aviso de erro do formulário de feedback.
 - Página 404 com status 404, `noindex`, menu oculto e link de volta, depois do qual o menu da home funciona.
+- Páginas de erro que aparecem quando uma seção ou o layout falham (os testes simulam um navegador sem `IntersectionObserver` ou sem `AbortController`), com "Try again" que recupera o site.
 - Cabeçalhos de segurança presentes e nenhuma violação da Content Security Policy ao navegar, abrir os modais e enviar o feedback.
 - Aparência idêntica às imagens de `tests/snapshots/`, em desktop e em celular.
 

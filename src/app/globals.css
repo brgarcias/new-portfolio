@@ -604,26 +604,49 @@ a:hover {
   border-radius: 6px;
 }
 
-/* Not found page. These rules live here because a CSS file imported by
+/* 404 and error pages. These rules live here because a CSS file imported by
    not-found.tsx would be preloaded, unused, on every page. */
 
-/* The stacked-pages menu only works on the home page, so it is hidden on the
-   404 page, which links back to the portfolio instead. */
-body:has(.not-found) .menu-button,
-body:has(.not-found) .pages-nav {
+/* The stacked-pages menu only works on the home page, so it is hidden on
+   these pages, which link back to the portfolio instead. */
+body:has(.status-page) .menu-button,
+body:has(.status-page) .pages-nav {
   display: none;
 }
 
-/* .blue comes with the academic education section, which the 404 page does
-   not load. */
-.not-found .blue {
+/* .blue comes with the academic education section, which these pages do not
+   load. */
+.status-page .blue {
   color: #2e6c8e;
 }
 
-.not-found .bp-nav {
+.status-page .bp-nav {
   margin-top: 1.5em;
 }
 
-.not-found .bp-nav__item {
+.status-page .bp-nav__item {
   transition: 0.5s;
+}
+
+/* A button that reads like the site's links. */
+.status-page__link {
+  color: #5c5edc;
+}
+
+.status-page__link:hover {
+  color: #fff;
+}
+
+/* Font Awesome icons centered in the round action button, colored like the
+   bpicons glyphs. */
+.status-page .bp-nav__item svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: #5c5edc;
+  transform: translate(-50%, -50%);
+}
+
+.status-page .bp-nav__item:hover svg {
+  color: #fff;
 }
