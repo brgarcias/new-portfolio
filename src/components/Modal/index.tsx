@@ -39,6 +39,9 @@ interface ModalProps {
     | undefined;
   children: React.ReactNode;
   hideCloseButton?: boolean;
+  // For content with nothing to focus: the body then takes focus itself, so
+  // the keyboard can scroll it when it is taller than the dialog.
+  focusableBody?: boolean;
 }
 
 export default function ModalComponent({
@@ -49,6 +52,7 @@ export default function ModalComponent({
   children,
   size = 'md',
   hideCloseButton = false,
+  focusableBody = false,
 }: Readonly<ModalProps>) {
   const { onOpenChange } = useDisclosure();
   const closeHandler = () => setVisible(false);
@@ -83,7 +87,12 @@ export default function ModalComponent({
                 </p>
               )}
             </ModalHeader>
-            <ModalBody>{children}</ModalBody>
+            <ModalBody
+              className={focusableBody ? 'modal-body--focusable' : undefined}
+              tabIndex={focusableBody ? 0 : undefined}
+            >
+              {children}
+            </ModalBody>
             <ModalFooter
               style={{
                 display: hideCloseButton ? 'none' : 'flex',

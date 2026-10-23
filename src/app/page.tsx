@@ -16,7 +16,7 @@ export default function Home() {
   const current = getExperiences().find((experience) => !experience.end);
 
   return (
-    <main>
+    <main id="main" tabIndex={-1}>
       <AboutMe
         currentRole={
           current && {

@@ -68,6 +68,7 @@ export default function Course({
         size="3xl"
         title={descriptionTitle}
         subtitle={descriptionSubtitle}
+        focusableBody
       >
         <ol className="course-modules" style={accent}>
           {description.map((item, position) => (
