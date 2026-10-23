@@ -430,3 +430,43 @@ test('aplica os cabeçalhos de segurança sem bloquear o site', async ({
     ),
   ).toEqual([]);
 });
+
+test('publica os metadados de busca e compartilhamento', async ({
+  page,
+  request,
+}) => {
+  const siteUrl = 'https://brgarcias-portfolio.netlify.app';
+  await page.goto('/');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    'href',
+    siteUrl,
+  );
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+    'content',
+    siteUrl,
+  );
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+    'content',
+    'Bruno Garcia — Dev. Full-Stack',
+  );
+  const person = JSON.parse(
+    (await page.locator('script[type="application/ld+json"]').textContent()) ??
+      '{}',
+  );
+  expect(person).toMatchObject({
+    '@type': 'Person',
+    name: 'Bruno Garcia',
+    jobTitle: 'Full-Stack Developer',
+    url: `${siteUrl}/`,
+  });
+  expect(person.sameAs).toEqual([
+    'https://www.linkedin.com/in/bruno-garcia-9854b1161/',
+    'https://github.com/brgarcias',
+  ]);
+
+  const robots = await (await request.get('/robots.txt')).text();
+  expect(robots).toContain('Allow: /');
+  expect(robots).toContain(`Sitemap: ${siteUrl}/sitemap.xml`);
+  const sitemap = await (await request.get('/sitemap.xml')).text();
+  expect(sitemap).toContain(`<loc>${siteUrl}/</loc>`);
+});

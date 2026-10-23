@@ -53,6 +53,10 @@ O GitHub Actions roda `pnpm check`, `pnpm build` e `pnpm test:e2e` em cada pull 
 
 `pnpm dev` e `pnpm build` usam o webpack, e não o Turbopack. O minificador de CSS do Turbopack, o Lightning CSS, troca transformações 3D como `translate3d(0, 150px, 0)` por equivalentes 2D. A geometria é a mesma, mas o navegador deixa de criar camadas próprias para esses elementos, e imagens reduzidas, como as prévias da seção de projetos, passam a ser desenhadas com outra filtragem. Com o webpack, o CSS publicado continua igual ao de antes.
 
+## Busca e compartilhamento
+
+O site é verificado no Google Search Console como propriedade de prefixo do URL, pela meta tag `google-site-verification`. A página publica URL canônica, Open Graph para a prévia em WhatsApp e LinkedIn, dados estruturados `Person`, `robots.txt` e `sitemap.xml`. No Search Console, envie `https://brgarcias-portfolio.netlify.app/sitemap.xml` em **Sitemaps**. O endereço do site fica em `src/app/site.ts`.
+
 ## Formulário de feedback
 
 O botão **Leave Feedback** abre o formulário, que envia nome, e-mail e mensagem ao Netlify Forms, no formulário `contact`. As mensagens chegam ao painel do Netlify, em **Forms → contact**, e também por e-mail, se a notificação estiver configurada em **Site configuration → Notifications → Emails and webhooks → Form submission notifications**. O Netlify filtra spam, e o campo oculto `bot-field` descarta robôs que o preenchem.
