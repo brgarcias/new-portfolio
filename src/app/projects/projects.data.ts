@@ -9,8 +9,6 @@ import CssPreviewImg from '@/public/images/projects/css-solucoes-preview.webp';
 import SenseiPreviewImg from '@/public/images/projects/sensei-contabil-preview.webp';
 import ReparofonePreviewImg from '@/public/images/projects/trocafone_reparos_preview.webp';
 import SaldofonePreviewImg from '@/public/images/projects/saldofone-dashboard-preview.webp';
-// A smaller copy for the card. The details show the full screenshot.
-import SaldofoneCardImg from '@/public/images/projects/saldofone-dashboard-preview-card.webp';
 import MalkaPreviewImg from '@/public/images/projects/malka-preview.webp';
 // INSIDER IMAGES
 import CssSolucoesImg from '@/public/images/projects/css-solucoes.webp';
@@ -91,7 +89,7 @@ export const projectsData = [
     image: iMacImg,
     imageWidth: '321px',
     heightWidth: 'auto',
-    previewImage: SaldofoneCardImg,
+    previewImage: SaldofonePreviewImg,
     insideImage: SaldofonePreviewImg,
     insideTitle: 'Saldofone',
     insideSubtitle: 'Sale of Scrap',
