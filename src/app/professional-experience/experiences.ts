@@ -1,3 +1,4 @@
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import {
   faCode,
   faDesktopAlt,
@@ -9,16 +10,27 @@ import {
   formatDateRange,
 } from '@/src/app/professional-experience/date-format';
 
-// A function, so the current role's duration is computed on every render
-// instead of once when the module loads.
-export const getExperiences = () => [
+interface Experience {
+  id: number;
+  // "YYYY-MM". The role without an end date is the current one.
+  start: string;
+  end?: string;
+  company: string;
+  icon: IconProp;
+  title: string;
+  // Technologies the description names, shown as tags.
+  stack: string[];
+  description: string;
+}
+
+const experiences: Experience[] = [
   {
     id: 1,
-    date: formatDateRange('2025-10'),
-    duration: calculateDuration('2025-10'),
+    start: '2025-10',
     company: 'PayPal',
     icon: faCode,
     title: 'Software Engineer (Node.js / GraphQL Platform)',
+    stack: ['Node.js', 'GraphQL'],
     description: `
       <ul>
         <li>Designed and evolved GraphQL schemas powering scalable data access across multiple platform services and frontend applications</li>
@@ -31,11 +43,20 @@ export const getExperiences = () => [
   },
   {
     id: 2,
-    date: formatDateRange('2025-02', '2026-03'),
-    duration: calculateDuration('2025-02', '2026-03'),
+    start: '2025-02',
+    end: '2026-03',
     company: 'Ab Inbev',
     icon: faCode,
     title: 'Full Stack Developer',
+    stack: [
+      'NestJS',
+      'Next.js',
+      'GraphQL',
+      'REST APIs',
+      'SQL Server',
+      'Azure',
+      'Azure DevOps',
+    ],
     description: `
     <ul>
       <li>Developing and maintaining scalable RESTful APIs and GraphQL services using NestJS.</li>  
@@ -49,11 +70,23 @@ export const getExperiences = () => [
   },
   {
     id: 3,
-    date: formatDateRange('2024-09', '2025-02'),
-    duration: calculateDuration('2024-09', '2025-02'),
+    start: '2024-09',
+    end: '2025-02',
     company: 'Serasa',
     icon: faCode,
     title: 'Backend Developer',
+    stack: [
+      'Node.js',
+      'NestJS',
+      'Jest',
+      'AWS Lambda',
+      'SQS',
+      'SNS',
+      'Step Functions',
+      'API Gateway',
+      'Microservices',
+      'REST APIs',
+    ],
     description: `
     <ul>
       <li>Focused on developing unit and end-to-end (E2E) tests using Jest, ensuring the reliability and quality of delivered applications.</li>  
@@ -67,11 +100,19 @@ export const getExperiences = () => [
   },
   {
     id: 4,
-    date: formatDateRange('2024-06', '2025-02'),
-    duration: calculateDuration('2024-06', '2025-02'),
+    start: '2024-06',
+    end: '2025-02',
     company: 'Domy',
     icon: faCode,
     title: 'Backend Developer',
+    stack: [
+      'Node.js',
+      'NestJS',
+      'AWS',
+      'REST APIs',
+      'Microservices',
+      'API Gateway',
+    ],
     description: `
     <ul>
       <li>Backend Development: Designing and implementing server-side logic to ensure high performance and responsiveness to front-end requests.</li>
@@ -86,14 +127,28 @@ export const getExperiences = () => [
   },
   {
     id: 5,
-    date: formatDateRange('2021-03', '2024-07'),
-    duration: calculateDuration('2021-03', '2024-07'),
+    start: '2021-03',
+    end: '2024-07',
     company: 'Trocafone',
     icon: faCode,
     title: 'Full Stack Developer',
+    stack: [
+      'React',
+      'Next.js',
+      'Node.js',
+      'NestJS',
+      'TypeScript',
+      'PHP',
+      'Laravel',
+      'GraphQL',
+      'PostgreSQL',
+      'MySQL',
+      'Redis',
+      'AWS',
+    ],
     description: `
     <ul>
-      <h3>Full Stack Developer</h3>
+      <h4>Full Stack Developer</h4>
       <li>Productively collaborated with the Product team to understand portfolio
       management, analysis, and risk-related business requirements and specifications.</li>
       <li>Actively participated in creating strategic initiatives to design, code,
@@ -112,7 +167,7 @@ export const getExperiences = () => [
       <li>Actively participated in collaborative projects emphasizing information sharing,
       interdisciplinary networking, and continuous communication, demonstrating
       resilience and adaptability.</li>
-      <h3>Backend Developer</h3>
+      <h4>Backend Developer</h4>
       <li>Developing scalable and efficient web applications using Node.js, TypeScript,
       and Next.js.</li>
       <li>Implementing business logic and front-end to back-end integration using
@@ -129,7 +184,7 @@ export const getExperiences = () => [
       issue tracking.</li>
       <li>Continuous learning and improvement of technical skills, staying updated
       with the latest industry practices and technologies.</li>
-      <h3>Frontend Developer</h3>
+      <h4>Frontend Developer</h4>
       <li>Development of responsive and intuitive user interfaces using React.js,
       Material- UI, and Bootstrap.</li>
       <li>Implementation of application logic and state management using
@@ -151,11 +206,21 @@ export const getExperiences = () => [
   },
   {
     id: 6,
-    date: formatDateRange('2020-09', '2021-03'),
-    duration: calculateDuration('2020-09', '2021-03'),
+    start: '2020-09',
+    end: '2021-03',
     company: 'Art Seven',
     icon: faDesktopAlt,
     title: 'Jr. Frontend Developer',
+    stack: [
+      'JavaScript',
+      'React',
+      'jQuery',
+      'PHP',
+      'Node.js',
+      'MySQL',
+      'WordPress',
+      'HTML/CSS',
+    ],
     description: `
     <ul>
       <li>Engage in in-depth discussions and thorough analysis of new customer
@@ -179,11 +244,12 @@ export const getExperiences = () => [
   },
   {
     id: 7,
-    date: formatDateRange('2018-04', '2020-04'),
-    duration: calculateDuration('2018-04', '2020-04'),
+    start: '2018-04',
+    end: '2020-04',
     company: 'Ingenico',
     icon: faMobileRetro,
     title: 'Intern Software Developer',
+    stack: ['Java', 'Android', 'C', 'C++'],
     description: `
     <ul>
     <li>Gained foundational experience in WEB infrastructure, including a
@@ -205,11 +271,12 @@ export const getExperiences = () => [
   },
   {
     id: 8,
-    date: formatDateRange('2017-05', '2018-04'),
-    duration: calculateDuration('2017-05', '2018-04'),
+    start: '2017-05',
+    end: '2018-04',
     company: 'Ingenico',
     icon: faUsers,
     title: 'Young HR Apprentice',
+    stack: [],
     description: `
     <ul>
       <li>Learning the Basics: Begin by grasping fundamental HR concepts such as
@@ -247,3 +314,12 @@ export const getExperiences = () => [
     </ul>`,
   },
 ];
+
+// A function, so the current role's duration is computed on every render
+// instead of once when the module loads.
+export const getExperiences = () =>
+  experiences.map((experience) => ({
+    ...experience,
+    date: formatDateRange(experience.start, experience.end),
+    duration: calculateDuration(experience.start, experience.end),
+  }));
