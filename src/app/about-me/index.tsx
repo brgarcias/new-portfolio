@@ -25,6 +25,9 @@ import SnackbarFeedback from '@/src/components/SnackBar';
 import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
 import { markup } from '@/src/components/Markup';
+// I18N
+import { useI18n } from '@/src/i18n/I18nProvider';
+import { format } from '@/src/i18n/messages';
 // CONTENT
 import { resume, socialIcons } from '@/src/components/SiteFrame/content';
 import type {
@@ -64,6 +67,9 @@ export default function AboutMe({
   social,
   currentRole,
 }: Readonly<AboutMeProps>) {
+  const { messages } = useI18n();
+  const t = messages.hero;
+  const tf = messages.feedback;
   const [visible, setVisible] = useState(false);
   const [fullNameValue, setFullNameValue] = useState('');
   const [emailValue, setEmailValue] = useState('');
@@ -117,8 +123,8 @@ export default function AboutMe({
         if (response.ok) {
           setOpenSnackbar({
             open: true,
-            title: 'Message Submitted',
-            description: 'Thank you very much for your feedback!',
+            title: tf.sentTitle,
+            description: tf.sentText,
             icon: faCheck,
             colorIcon: 'var(--color-success)',
           });
@@ -130,8 +136,8 @@ export default function AboutMe({
         console.error('Error submitting form:', error);
         setOpenSnackbar({
           open: true,
-          title: 'We had a problem',
-          description: 'An error occurred while sending your message!',
+          title: tf.failedTitle,
+          description: tf.failedText,
           icon: faCircleExclamation,
           colorIcon: 'var(--color-error)',
         });
@@ -170,7 +176,10 @@ export default function AboutMe({
             {currentRole && (
               <p className="hero__status hero__reveal">
                 <span className="hero__status-dot" aria-hidden="true" />
-                Currently {currentRole.title} at {currentRole.company}
+                {format(t.currently, {
+                  role: currentRole.title,
+                  company: currentRole.company,
+                })}
               </p>
             )}
             <p
@@ -205,7 +214,7 @@ export default function AboutMe({
               style={{ '--i': 5 } as CSSProperties}
             >
               <a className="btn btn--primary" href="#contact">
-                Contact me
+                {t.contact}
                 <FontAwesomeIcon icon={faArrowRight} />
               </a>
               <a
@@ -214,7 +223,7 @@ export default function AboutMe({
                 download={resume.fileName}
               >
                 <FontAwesomeIcon icon={faArrowDown} />
-                Download CV
+                {t.downloadCv}
               </a>
               <button
                 type="button"
@@ -223,7 +232,7 @@ export default function AboutMe({
                 onKeyDown={openOnKey(openModalFeedback)}
               >
                 <FontAwesomeIcon icon={faComment} />
-                Leave Feedback
+                {t.feedback}
               </button>
             </div>
             <ul
@@ -275,7 +284,7 @@ export default function AboutMe({
           <span className="hero__mouse" aria-hidden="true">
             <span />
           </span>
-          <span className="visually-hidden">Scroll to About Me</span>
+          <span className="visually-hidden">{t.scrollToAbout}</span>
         </a>
       </section>
 
@@ -301,8 +310,8 @@ export default function AboutMe({
       </Section>
 
       <ModalComponent
-        title="Welcome!"
-        subtitle="Please share your thoughts and feedback to help me improve my portfolio."
+        title={tf.title}
+        subtitle={tf.subtitle}
         visible={visible}
         setVisible={setVisible}
         size="md"

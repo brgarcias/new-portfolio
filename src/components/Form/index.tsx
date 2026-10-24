@@ -6,6 +6,8 @@ import { Spacer, Button } from '@heroui/react';
 import { faEnvelope, faUserAlt } from '@fortawesome/free-solid-svg-icons';
 // COMPONENT
 import InputControl from './InputControl';
+// I18N
+import { useI18n } from '@/src/i18n/I18nProvider';
 // CSS
 import './styles.css';
 // UTILS
@@ -39,6 +41,8 @@ const Form: FC<FormProps> = ({
   onClose,
   actionButtonDisabled,
 }) => {
+  const t = useI18n().messages.feedback;
+
   const handleInputChange = (inputName: string, value: string) => {
     validateField(inputName, value);
     switch (inputName) {
@@ -76,14 +80,14 @@ const Form: FC<FormProps> = ({
       <input type="hidden" name="form-name" value="contact" />
       <p hidden>
         <label>
-          Don&apos;t fill this out: <input name="bot-field" />
+          {t.botField} <input name="bot-field" />
         </label>
       </p>
       <InputControl
         icon={faUserAlt}
-        label="Full Name"
+        label={t.nameLabel}
         name="fullName"
-        placeholder="Let me know you"
+        placeholder={t.namePlaceholder}
         type="text"
         variant="bordered"
         disabled={isSubmitting}
@@ -91,14 +95,14 @@ const Form: FC<FormProps> = ({
         onFocusHandler={(e) => handleInputFocus('fullName', e)}
         onBlurHandler={(e) => handleInputBlur('fullName', e.target.value)}
         error={errorsState.fullName}
-        helperText="Please, write your name."
+        helperText={t.nameError}
       />
       <Spacer y={2} />
       <InputControl
         icon={faEnvelope}
-        label="Email"
+        label={t.emailLabel}
         name="email"
-        placeholder="Enter your email"
+        placeholder={t.emailPlaceholder}
         type="email"
         variant="bordered"
         disabled={isSubmitting}
@@ -106,12 +110,12 @@ const Form: FC<FormProps> = ({
         onFocusHandler={(e) => handleInputFocus('email', e)}
         onBlurHandler={(e) => handleInputBlur('email', e.target.value)}
         error={errorsState.email}
-        helperText="Please, tell me your email."
+        helperText={t.emailError}
       />
       <Spacer y={2} />
       <InputControl
-        label="Feedback"
-        placeholder="Leave your feedback"
+        label={t.feedbackLabel}
+        placeholder={t.feedbackPlaceholder}
         variant="bordered"
         name="feedback"
         icon={faEnvelope}
@@ -122,7 +126,7 @@ const Form: FC<FormProps> = ({
         onFocusHandler={(e) => handleInputFocus('feedback', e)}
         onBlurHandler={(e) => handleInputBlur('feedback', e.target.value)}
         error={errorsState.feedback}
-        helperText="Please, give me your feedback."
+        helperText={t.feedbackError}
       />
       <div
         style={{
@@ -134,7 +138,7 @@ const Form: FC<FormProps> = ({
         }}
       >
         <Button color="default" variant="light" onPress={onClose}>
-          Close
+          {t.close}
         </Button>
         <Spacer x={2} />
         <button
@@ -142,7 +146,7 @@ const Form: FC<FormProps> = ({
           disabled={actionButtonDisabled}
           type="submit"
         >
-          Send
+          {t.send}
         </button>
       </div>
     </form>

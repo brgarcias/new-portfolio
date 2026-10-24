@@ -1,11 +1,15 @@
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
+// I18N
+import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
 import { socialIcons } from './content';
 import type { SocialLink } from '@/src/content';
 
 interface SiteFooterProps {
+  // The address of the home page in the page's language.
+  home: string;
   isHome: boolean;
   name: string;
   role: string;
@@ -15,17 +19,20 @@ interface SiteFooterProps {
 }
 
 export default function SiteFooter({
+  home,
   isHome,
   name,
   role,
   social,
   year,
 }: Readonly<SiteFooterProps>) {
+  const t = useI18n().messages.frame;
+
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
         <div>
-          <a className="site-brand" href={isHome ? '#top' : '/'}>
+          <a className="site-brand" href={isHome ? '#top' : home}>
             <span className="site-brand__mark" aria-hidden="true">
               BG
             </span>
@@ -33,7 +40,7 @@ export default function SiteFooter({
           </a>
           <p className="site-footer__role">{role}</p>
         </div>
-        <ul className="social-links" aria-label="Social links">
+        <ul className="social-links" aria-label={t.socialLinks}>
           {social.map(({ id, href, text }) => (
             <li key={id}>
               <a
@@ -56,7 +63,7 @@ export default function SiteFooter({
         </p>
         {isHome && (
           <a className="site-footer__top" href="#top">
-            Back to top
+            {t.backToTop}
             <FontAwesomeIcon icon={faArrowUp} />
           </a>
         )}

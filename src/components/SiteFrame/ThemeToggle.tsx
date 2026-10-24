@@ -5,6 +5,8 @@ import { MouseEvent, useEffect } from 'react';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+// I18N
+import { useI18n } from '@/src/i18n/I18nProvider';
 // THEME
 import {
   applyTheme,
@@ -79,6 +81,8 @@ function switchTheme(theme: Theme, origin?: HTMLElement) {
 }
 
 export default function ThemeToggle() {
+  const t = useI18n().messages.frame;
+
   // The browser bar takes the theme's color, and the page follows the
   // system while the visitor has not chosen a theme.
   useEffect(() => {
@@ -110,10 +114,10 @@ export default function ThemeToggle() {
         icon={faMoon}
       />
       <span className="visually-hidden theme-toggle__label--to-light">
-        Switch to light theme
+        {t.toLightTheme}
       </span>
       <span className="visually-hidden theme-toggle__label--to-dark">
-        Switch to dark theme
+        {t.toDarkTheme}
       </span>
     </button>
   );

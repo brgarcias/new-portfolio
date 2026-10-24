@@ -7,6 +7,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import StatusPage from '@/src/components/StatusPage';
+// I18N
+import { useI18n } from '@/src/i18n/I18nProvider';
+import { splitLink } from '@/src/i18n/messages';
 
 // A full reload also hooks the bar up to the new sections again, which
 // re-rendering the segment with reset() would not do.
@@ -17,6 +20,9 @@ export default function Error({
 }: {
   error: Error & { digest?: string };
 }) {
+  const t = useI18n().messages.error;
+  const { before, link, after } = splitLink(t.text);
+
   useEffect(() => {
     // Log the error to an error reporting service
     console.error(error);
@@ -24,23 +30,23 @@ export default function Error({
 
   return (
     <StatusPage
-      label="Unexpected Error"
-      title="Something Went Wrong"
+      label={t.label}
+      title={t.heading}
       description={
         <>
-          Sorry, this page stopped working. Please{' '}
+          {before}
           <button className="status-page__link" type="button" onClick={reload}>
-            try again
+            {link}
           </button>
-          !
+          {after}
         </>
       }
-      quote="Failure is simply the opportunity to begin again, this time more intelligently."
-      author="Henry Ford"
+      quote={t.quote}
+      author={t.author}
       actions={
         <button className="btn btn--primary" type="button" onClick={reload}>
           <FontAwesomeIcon icon={faRotateRight} />
-          Try again
+          {t.retry}
         </button>
       }
     />

@@ -26,12 +26,15 @@ interface ContactProps {
   header: SectionHeader;
   cards: readonly ContactCard[];
   social: readonly SocialLink[];
+  // The name of the list of social buttons, for screen readers.
+  socialLabel: string;
 }
 
 export default function Contact({
   header,
   cards,
   social,
+  socialLabel,
 }: Readonly<ContactProps>) {
   return (
     <Section header={header}>
@@ -69,7 +72,7 @@ export default function Contact({
           ))}
         </ul>
 
-        <ul className="contact-links" aria-label="Social links">
+        <ul className="contact-links" aria-label={socialLabel}>
           {social.map(({ id, href, text }) => (
             <li key={id}>
               <a

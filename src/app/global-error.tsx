@@ -11,7 +11,7 @@ import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 config.autoAddCss = false;
 // COMPONENTS
-import ErrorPage from './error';
+import ErrorPage from './[lang]/error';
 // THEME
 import { currentTheme, type Theme } from './theme';
 

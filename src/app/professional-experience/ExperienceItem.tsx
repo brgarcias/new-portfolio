@@ -13,6 +13,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import Reveal from '@/src/components/Reveal';
+// I18N
+import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
 import type { Experience } from '@/src/content';
 
@@ -48,6 +50,7 @@ export default function ExperienceItem({
   current = false,
   defaultOpen = false,
 }: Readonly<ExperienceItemProps>) {
+  const t = useI18n().messages.experience;
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const detailsId = useId();
 
@@ -88,7 +91,7 @@ export default function ExperienceItem({
         </h3>
 
         {stack.length > 0 && (
-          <ul className="tag-list xp-card__stack" aria-label="Technologies">
+          <ul className="tag-list xp-card__stack" aria-label={t.technologies}>
             {stack.map((name) => (
               <li key={name} className="tag">
                 {name}

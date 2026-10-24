@@ -22,10 +22,19 @@ const nextConfig = {
   agentRules: false,
   poweredByHeader: false,
   reactStrictMode: true,
-  // The home page reads content/, and the size of the images it names, when
-  // it is generated again on the server once a day.
+  // The pages read content/, and the size of the images it names, when they
+  // are generated on the server: the home page once a day, and the 404
+  // pages, which share its layout, on request.
   outputFileTracingIncludes: {
-    '/*': ['content/**/*.json', 'public/images/**/*'],
+    '/**': ['content/**/*.json', 'public/images/**/*'],
+  },
+  // English, the default language, lives at / without a prefix: / serves
+  // the /en page, and /en itself sends visitors to /.
+  async redirects() {
+    return [{ source: '/en', destination: '/', permanent: true }];
+  },
+  async rewrites() {
+    return { beforeFiles: [{ source: '/', destination: '/en' }] };
   },
   async headers() {
     return [

@@ -8,6 +8,8 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import ModalComponent from '@/src/components/Modal/Lazy';
 import { openOnKey } from '@/src/components/Modal/openOnKey';
+// I18N
+import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
 import type { Course as CourseContent } from '@/src/content';
 
@@ -27,6 +29,7 @@ interface CourseProps {
 }
 
 export default function Course({ course, index }: Readonly<CourseProps>) {
+  const t = useI18n().messages.courses;
   const { title, subtitle, wide, dialogTitle, dialogSubtitle, modules } =
     course;
   const [visible, setVisible] = useState(false);
@@ -56,7 +59,7 @@ export default function Course({ course, index }: Readonly<CourseProps>) {
       </h3>
       <p className="course-card__subtitle">{subtitle}</p>
       <span className="course-card__more" aria-hidden="true">
-        View details
+        {t.details}
         <FontAwesomeIcon icon={faArrowRight} />
       </span>
 

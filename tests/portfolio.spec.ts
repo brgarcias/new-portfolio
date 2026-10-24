@@ -52,6 +52,18 @@ test('carrega o portfólio sem erros e sem rolagem horizontal', async ({
   expect(errors).toEqual([]);
 });
 
+test('mostra o inglês em / e leva quem abre /en para /', async ({
+  request,
+}) => {
+  const response = await request.get('/en', { maxRedirects: 0 });
+  expect(response.status()).toBe(308);
+  expect(
+    new URL(response.headers()['location'], 'http://localhost').pathname,
+  ).toBe('/');
+  // Addresses outside the languages have no page.
+  expect((await request.get('/en/anything')).status()).toBe(404);
+});
+
 test('navega por todas as seções pelo menu e fecha o menu com Escape', async ({
   page,
 }) => {
@@ -185,6 +197,11 @@ test('alterna o tema pelo botão e lembra a escolha', async ({ page }) => {
     ),
   ).toMatch(/\blight\b/);
   await expect(html).toHaveClass(/\blight\b/);
+  // Once React starts, the browser's bar takes the stored theme too, and the
+  // button answers clicks.
+  for (const meta of await page.locator('meta[name="theme-color"]').all()) {
+    await expect(meta).toHaveAttribute('content', '#f6f6fb');
+  }
 
   // Going back to the system's theme forgets the choice.
   await page.getByRole('button', { name: 'Switch to dark theme' }).click();

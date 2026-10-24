@@ -19,6 +19,9 @@ import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import SiteFooter from './SiteFooter';
 import ThemeToggle from './ThemeToggle';
+// I18N
+import { homePath } from '@/src/i18n/config';
+import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
 import { resume, socialIcons, type NavItem } from './content';
 import type { SocialLink } from '@/src/content';
@@ -67,8 +70,13 @@ export default function SiteFrame({
   role,
   year,
 }: Readonly<SiteFrameProps>) {
+  const { locale, messages } = useI18n();
+  const t = messages.frame;
   const pathname = usePathname();
-  const isHome = pathname === '/';
+  const home = homePath(locale);
+  // The server renders the English home page as /en, which / rewrites to,
+  // while the browser reads /. Both are the home page.
+  const isHome = pathname === home || pathname === `/${locale}`;
   const [menu, setMenu] = useState<MenuState>('closed');
   const [scroll, setScroll] = useState({ saved: 0, target: 0 });
   const [targetId, setTargetId] = useState<SectionId | null>(null);
@@ -221,13 +229,13 @@ export default function SiteFrame({
       }
     : undefined;
 
-  const sectionHref = (id: SectionId) => (isHome ? `#${id}` : `/#${id}`);
+  const sectionHref = (id: SectionId) => (isHome ? `#${id}` : `${home}#${id}`);
 
   return (
     <>
       {/* Hidden until it gets focus, so keyboards can jump past the bar. */}
       <a className="skip-link" href="#main">
-        Skip to content
+        {t.skipToContent}
       </a>
       <header
         className={[
@@ -239,14 +247,14 @@ export default function SiteFrame({
           .join(' ')}
       >
         <div className="site-header__inner">
-          <a className="site-brand" href={isHome ? '#top' : '/'}>
+          <a className="site-brand" href={isHome ? '#top' : home}>
             <span className="site-brand__mark" aria-hidden="true">
               BG
             </span>
             <span className="site-brand__name">{name}</span>
           </a>
 
-          <nav className="site-nav" aria-label="Sections">
+          <nav className="site-nav" aria-label={t.sections}>
             <ul>
               {nav.map(({ id, label }) => (
                 <li key={id}>
@@ -270,7 +278,7 @@ export default function SiteFrame({
               download={resume.fileName}
             >
               <FontAwesomeIcon icon={faArrowDown} />
-              CV
+              {t.cv}
             </a>
             <button
               ref={toggleRef}
@@ -278,7 +286,7 @@ export default function SiteFrame({
               className={`menu-toggle${locked ? ' is-open' : ''}`}
               aria-expanded={open}
               aria-controls="stack-menu"
-              aria-label={locked ? 'Close menu' : 'Open menu'}
+              aria-label={locked ? t.closeMenu : t.openMenu}
               onClick={toggleMenu}
             >
               <span className="menu-toggle__line" />
@@ -291,7 +299,7 @@ export default function SiteFrame({
       <nav
         id="stack-menu"
         className={`stack-menu${open ? ' stack-menu--open' : ''}`}
-        aria-label="Menu"
+        aria-label={t.menu}
         inert={!open}
       >
         <ol className="stack-menu__list">
@@ -340,7 +348,7 @@ export default function SiteFrame({
             download={resume.fileName}
           >
             <FontAwesomeIcon icon={faArrowDown} />
-            Download CV
+            {t.downloadCv}
           </a>
         </div>
       </nav>
@@ -349,7 +357,7 @@ export default function SiteFrame({
         <button
           type="button"
           className="stage-catcher"
-          aria-label="Back to the page"
+          aria-label={t.backToPage}
           tabIndex={-1}
           onClick={() => closeMenu()}
         />
@@ -374,6 +382,7 @@ export default function SiteFrame({
         >
           {children}
           <SiteFooter
+            home={home}
             isHome={isHome}
             name={name}
             role={role}
