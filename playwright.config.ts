@@ -5,9 +5,6 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
-  // Playwright uses half the cores by default. In CI the machine only runs
-  // the tests and the site's server, so each core runs a worker.
-  workers: process.env.CI ? '100%' : undefined,
   reporter: 'list',
   // Screenshots only match the Linux container where CI runs, so they live
   // in one folder per device instead of one per operating system.
