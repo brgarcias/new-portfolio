@@ -70,6 +70,7 @@
   font-weight: 700;
   letter-spacing: 0.35em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .site-nav {
@@ -83,11 +84,12 @@
 
 .site-nav__link {
   display: block;
-  padding: 0.5rem 0.85rem;
+  padding: 0.5rem 0.7rem;
   border-radius: 999px;
   color: var(--color-text-muted);
   font-size: 0.875rem;
   font-weight: 500;
+  white-space: nowrap;
   transition:
     color 0.2s ease,
     background-color 0.2s ease,
@@ -124,14 +126,9 @@
   opacity: 0;
 }
 
-/* Just past 1200px, tighter links leave the name room on one line. */
+/* The links need the bar's full width, which the longer names of the
+   Spanish ones fill. Narrower screens reach the sections by the menu. */
 @media (max-width: 1279px) {
-  .site-nav__link {
-    padding-inline: 0.55rem;
-  }
-}
-
-@media (max-width: 1199px) {
   .site-nav {
     display: none;
   }
@@ -275,7 +272,7 @@
   height: 2.75rem;
   align-items: center;
   gap: 0.45rem;
-  padding: 0 0.95rem;
+  padding: 0 0.8rem;
   border: 1px solid var(--color-border-strong);
   border-radius: 999px;
   background: var(--color-fill-strong);
