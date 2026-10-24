@@ -1,0 +1,241 @@
+/* The GitHub status card of the content panel (public/admin/panel.js), in
+   the colors and type of Decap's interface. */
+.pr-status {
+  --pr-status-ink: #313d3e;
+  --pr-status-muted: #798291;
+  --pr-status-line: #eff0f4;
+  --pr-status-link: #3a69c7;
+
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 250;
+  display: flex;
+  flex-direction: column;
+  width: min(340px, calc(100vw - 32px));
+  max-height: calc(100vh - 96px);
+  overflow: hidden;
+  border-radius: 5px;
+  background-color: #fff;
+  color: var(--pr-status-ink);
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow:
+    0 4px 12px 0 rgba(68, 74, 87, 0.15),
+    0 1px 3px 0 rgba(68, 74, 87, 0.25);
+}
+
+.pr-status[hidden],
+.pr-status [hidden] {
+  display: none;
+}
+
+.pr-status__toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pr-status__toggle:focus-visible,
+.pr-status a:focus-visible,
+.pr-status__actions button:focus-visible {
+  outline: 2px solid var(--pr-status-link);
+  outline-offset: 2px;
+}
+
+.pr-status__toggle:focus-visible {
+  outline-offset: -2px;
+}
+
+.pr-status__chevron {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin: 0 2px 3px auto;
+  border-right: 2px solid var(--pr-status-muted);
+  border-bottom: 2px solid var(--pr-status-muted);
+  transform: rotate(45deg);
+}
+
+.pr-status__toggle[aria-expanded='false'] .pr-status__chevron {
+  margin-bottom: -3px;
+  transform: rotate(-135deg);
+}
+
+.pr-status__body {
+  overflow-y: auto;
+  padding: 0 16px 14px;
+  border-top: 1px solid var(--pr-status-line);
+}
+
+/* States: green and success pass, pending waits, behind needs an update, and
+   failure and conflict need a fix. */
+.pr-status [data-state] {
+  --pr-status-dot: #a3a9b5;
+  --pr-status-text: var(--pr-status-muted);
+}
+
+.pr-status [data-state='green'],
+.pr-status [data-state='success'] {
+  --pr-status-dot: #18a849;
+  --pr-status-text: #005614;
+}
+
+.pr-status [data-state='pending'] {
+  --pr-status-dot: #e8a400;
+  --pr-status-text: #754e00;
+}
+
+.pr-status [data-state='behind'] {
+  --pr-status-dot: var(--pr-status-link);
+  --pr-status-text: var(--pr-status-link);
+}
+
+.pr-status [data-state='failure'],
+.pr-status [data-state='conflict'] {
+  --pr-status-dot: #ff003b;
+  --pr-status-text: #d60032;
+}
+
+.pr-status__dot {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: var(--pr-status-dot);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pr-status__dot[data-state='pending'],
+  .pr-status [data-state='pending'] > .pr-status__dot {
+    animation: pr-status-pulse 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes pr-status-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.pr-status__pr + .pr-status__pr {
+  margin-top: 14px;
+  padding-top: 2px;
+  border-top: 1px solid var(--pr-status-line);
+}
+
+.pr-status__name {
+  margin: 12px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pr-status__name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.pr-status__name a:hover {
+  color: var(--pr-status-link);
+}
+
+.pr-status__summary {
+  margin: 12px 0 0;
+  color: var(--pr-status-text);
+}
+
+.pr-status__name + .pr-status__summary {
+  margin-top: 4px;
+}
+
+.pr-status__checks {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pr-status__checks li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  font-size: 13px;
+}
+
+.pr-status__checks a,
+.pr-status__checks li > span:nth-child(2) {
+  overflow: hidden;
+  color: var(--pr-status-ink);
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pr-status__checks a:hover {
+  color: var(--pr-status-link);
+  text-decoration: underline;
+}
+
+.pr-status__result {
+  margin-left: auto;
+  color: var(--pr-status-text);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.pr-status__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+
+.pr-status__actions:empty {
+  display: none;
+}
+
+.pr-status__actions a {
+  color: var(--pr-status-link);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pr-status__actions a:hover {
+  text-decoration: underline;
+}
+
+.pr-status__actions button {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 5px;
+  background-color: var(--pr-status-link);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pr-status__actions button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.pr-status-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
