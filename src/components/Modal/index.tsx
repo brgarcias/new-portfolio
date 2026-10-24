@@ -7,6 +7,8 @@ import {
   Button,
   useDisclosure,
 } from '@heroui/react';
+// I18N
+import { useI18n } from '@/src/i18n/I18nProvider';
 
 export interface ModalProps {
   visible: boolean;
@@ -42,6 +44,7 @@ export default function ModalComponent({
   hideCloseButton = false,
   focusableBody = false,
 }: Readonly<ModalProps>) {
+  const t = useI18n().messages.dialog;
   const { onOpenChange } = useDisclosure();
   const closeHandler = () => setVisible(false);
 
@@ -94,7 +97,7 @@ export default function ModalComponent({
                 variant="light"
                 onPress={onClose}
               >
-                Close
+                {t.close}
               </Button>
             </ModalFooter>
           </>

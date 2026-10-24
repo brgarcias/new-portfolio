@@ -8,6 +8,8 @@ import { faGraduationCap, faHeart } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
+// I18N
+import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
 import type { EducationStep, SectionHeader } from '@/src/content';
 // CSS
@@ -33,6 +35,7 @@ export default function AcademicEducation({
   header,
   steps,
 }: Readonly<AcademicEducationProps>) {
+  const t = useI18n().messages.education;
   const [active, setActive] = useState(0);
   const id = useId();
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -72,7 +75,7 @@ export default function AcademicEducation({
           <div
             className="edu__steps"
             role="tablist"
-            aria-label="Education"
+            aria-label={t.steps}
             aria-orientation="vertical"
           >
             <span className="edu__rail" aria-hidden="true">

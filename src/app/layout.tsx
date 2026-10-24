@@ -1,163 +1,106 @@
 // NEXT METADATA
 import type { Metadata, Viewport } from 'next';
-// NEXT GOOGLE FONT
-import { Inter, Space_Grotesk } from 'next/font/google';
-// GLOBAL CSS
-import './globals.css';
-// FONT AWESOME CONFIGS
-import { config } from '@fortawesome/fontawesome-svg-core';
-import '@fortawesome/fontawesome-svg-core/styles.css';
-config.autoAddCss = false;
-// COMPONENTS
-import SiteFrame from '@/src/components/SiteFrame';
-// PROVIDERS
-import { Providers } from './providers';
 // SITE
 import { siteUrl } from './site';
-import { applyStoredTheme, themeColors } from './theme';
-// CONTENT
-import { getProfile, getSections, getSocialLinks } from '@/src/content';
-import { sectionIds } from '@/src/content/sections';
+import { themeColors } from './theme';
 
-const inter = Inter({ subsets: ['latin'] });
-// Display font for headings, exposed as --font-display.
-const display = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-display',
-});
+const icons: Metadata['icons'] = [
+  {
+    rel: 'icon',
+    type: 'image/png',
+    sizes: '192x192',
+    url: '/favicon/android-icon-192x192.png',
+  },
+  {
+    rel: 'icon',
+    type: 'image/png',
+    sizes: '32x32',
+    url: '/favicon/favicon-32x32.png',
+  },
+  {
+    rel: 'icon',
+    type: 'image/png',
+    sizes: '96x96',
+    url: '/favicon/favicon-96x96.png',
+  },
+  {
+    rel: 'icon',
+    type: 'image/png',
+    sizes: '16x16',
+    url: '/favicon/favicon-16x16.png',
+  },
+  {
+    rel: 'apple-touch-icon',
+    sizes: '57x57',
+    url: '/favicon/apple-icon-57x57.png',
+    type: 'image/png',
+  },
+  {
+    rel: 'apple-touch-icon',
+    sizes: '60x60',
+    url: '/favicon/apple-icon-60x60.png',
+    type: 'image/png',
+  },
+  {
+    rel: 'apple-touch-icon',
+    sizes: '72x72',
+    url: '/favicon/apple-icon-72x72.png',
+    type: 'image/png',
+  },
+  {
+    rel: 'apple-touch-icon',
+    sizes: '76x76',
+    url: '/favicon/apple-icon-76x76.png',
+    type: 'image/png',
+  },
+  {
+    rel: 'apple-touch-icon',
+    sizes: '114x114',
+    url: '/favicon/apple-icon-114x114.png',
+    type: 'image/png',
+  },
+  {
+    rel: 'apple-touch-icon',
+    sizes: '120x120',
+    url: '/favicon/apple-icon-120x120.png',
+    type: 'image/png',
+  },
+  {
+    rel: 'apple-touch-icon',
+    sizes: '144x144',
+    url: '/favicon/apple-icon-144x144.png',
+    type: 'image/png',
+  },
+  {
+    rel: 'apple-touch-icon',
+    sizes: '152x152',
+    url: '/favicon/apple-icon-152x152.png',
+    type: 'image/png',
+  },
+  {
+    rel: 'apple-touch-icon',
+    sizes: '180x180',
+    url: '/favicon/apple-icon-180x180.png',
+    type: 'image/png',
+  },
+];
 
-const title = 'Bruno Garcia — Dev. Full-Stack';
-const description = 'Bruno Garcia: An inspired Full-Stack Developer';
-
-// On *.netlify.app, Netlify adds a line break and an HTML comment after
-// <meta charset> in production. React 19 cannot hydrate that line break, a
-// text node inside <head>, and would render the whole document again, so this
-// script removes it while the page is still being parsed.
-const removeHeadWhitespace =
-  'for(const node of [...document.head.childNodes])' +
-  'if(node.nodeType===3&&!node.textContent.trim())node.remove()';
-
-// Only facts the page already shows: name, role, e-mail and profiles.
-const personJsonLd = (profile: ReturnType<typeof getProfile>) => ({
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: profile.name,
-  alternateName: profile.fullName,
-  jobTitle: profile.role,
-  url: `${siteUrl}/`,
-  email: `mailto:${profile.email}`,
-  sameAs: [profile.linkedin, profile.github],
-});
-
+// What every page shares, in any language. The title, the description and
+// the sharing tags come from [lang]/layout.tsx, in the page's language.
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  alternates: { canonical: '/' },
-  openGraph: {
-    type: 'website',
-    url: '/',
-    siteName: 'Bruno Garcia',
-    title,
-    description,
-    locale: 'en_US',
-  },
-  // The image comes from opengraph-image.jpg, next to this file.
-  twitter: { card: 'summary_large_image', title, description },
   manifest: '/favicon/manifest.json',
-  icons: [
-    {
-      rel: 'icon',
-      type: 'image/png',
-      sizes: '192x192',
-      url: '/favicon/android-icon-192x192.png',
-    },
-    {
-      rel: 'icon',
-      type: 'image/png',
-      sizes: '32x32',
-      url: '/favicon/favicon-32x32.png',
-    },
-    {
-      rel: 'icon',
-      type: 'image/png',
-      sizes: '96x96',
-      url: '/favicon/favicon-96x96.png',
-    },
-    {
-      rel: 'icon',
-      type: 'image/png',
-      sizes: '16x16',
-      url: '/favicon/favicon-16x16.png',
-    },
-    {
-      rel: 'apple-touch-icon',
-      sizes: '57x57',
-      url: '/favicon/apple-icon-57x57.png',
-      type: 'image/png',
-    },
-    {
-      rel: 'apple-touch-icon',
-      sizes: '60x60',
-      url: '/favicon/apple-icon-60x60.png',
-      type: 'image/png',
-    },
-    {
-      rel: 'apple-touch-icon',
-      sizes: '72x72',
-      url: '/favicon/apple-icon-72x72.png',
-      type: 'image/png',
-    },
-    {
-      rel: 'apple-touch-icon',
-      sizes: '76x76',
-      url: '/favicon/apple-icon-76x76.png',
-      type: 'image/png',
-    },
-    {
-      rel: 'apple-touch-icon',
-      sizes: '114x114',
-      url: '/favicon/apple-icon-114x114.png',
-      type: 'image/png',
-    },
-    {
-      rel: 'apple-touch-icon',
-      sizes: '120x120',
-      url: '/favicon/apple-icon-120x120.png',
-      type: 'image/png',
-    },
-    {
-      rel: 'apple-touch-icon',
-      sizes: '144x144',
-      url: '/favicon/apple-icon-144x144.png',
-      type: 'image/png',
-    },
-    {
-      rel: 'apple-touch-icon',
-      sizes: '152x152',
-      url: '/favicon/apple-icon-152x152.png',
-      type: 'image/png',
-    },
-    {
-      rel: 'apple-touch-icon',
-      sizes: '180x180',
-      url: '/favicon/apple-icon-180x180.png',
-      type: 'image/png',
-    },
-  ],
+  icons,
   authors: {
     name: 'Bruno Garcia',
     url: `${siteUrl}/`,
   },
   keywords:
     'bruno-garcia, full-stack, css, next, react, javascript, typescript, html',
-  title: {
-    default: title,
-    template: `%s | ${title}`,
-  },
   robots: {
     index: true,
     follow: true,
   },
-  description,
   // Google Search Console, URL-prefix property for the netlify.app address.
   verification: {
     google: 'zE-A_JWezHcTY0RPEAiraoj-ORR540i46tyJwSk0T3s',
@@ -178,53 +121,11 @@ export const viewport: Viewport = {
   width: 'device-width',
 };
 
+// The layout that renders <html>, in the page's language, is
+// [lang]/layout.tsx. This one only passes the page through, so the 404 of
+// not-found.tsx, next to it, can render that layout too.
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const profile = getProfile('en');
-  const sections = getSections('en', profile);
-  const nav = sectionIds.map((id) => {
-    const { label, title } = sections[id];
-    return { id, label, title };
-  });
-
-  return (
-    // The theme script swaps the dark class before React starts, which is
-    // why the class on <html> may differ from the server's.
-    <html
-      lang="en"
-      className={`dark ${display.variable}`}
-      suppressHydrationWarning
-    >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: removeHeadWhitespace }} />
-        <script dangerouslySetInnerHTML={{ __html: applyStoredTheme }} />
-        <script
-          type="application/ld+json"
-          // Escapes "<" so the JSON can never close the script element.
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(personJsonLd(profile)).replace(
-              /</g,
-              '\\u003c',
-            ),
-          }}
-        />
-      </head>
-      <body className={inter.className}>
-        <Providers>
-          <SiteFrame
-            nav={nav}
-            social={getSocialLinks(profile)}
-            name={profile.name}
-            role={profile.role}
-            year={new Date().getUTCFullYear()}
-          >
-            {children}
-          </SiteFrame>
-        </Providers>
-      </body>
-    </html>
-  );
+}: Readonly<{ children: React.ReactNode }>) {
+  return children;
 }

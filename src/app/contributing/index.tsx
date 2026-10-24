@@ -17,6 +17,8 @@ import Reveal from '@/src/components/Reveal';
 import ModalComponent from '@/src/components/Modal/Lazy';
 import { openOnKey } from '@/src/components/Modal/openOnKey';
 import { markup } from '@/src/components/Markup';
+// I18N
+import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
 import type {
   Contributing as ContributingContent,
@@ -42,6 +44,7 @@ export default function Contributing({
   content,
   initiatives,
 }: Readonly<ContributingProps>) {
+  const t = useI18n().messages.contributing;
   const [selected, setSelected] = useState(0);
   const [viewerOpen, setViewerOpen] = useState(false);
   const total = initiatives.length;
@@ -169,7 +172,7 @@ export default function Contributing({
               <button
                 type="button"
                 className="photo-viewer__arrow"
-                aria-label="Previous photo"
+                aria-label={t.previous}
                 onClick={() => go(-1)}
               >
                 <FontAwesomeIcon icon={faArrowLeft} />
@@ -177,7 +180,7 @@ export default function Contributing({
               <button
                 type="button"
                 className="photo-viewer__arrow"
-                aria-label="Next photo"
+                aria-label={t.next}
                 onClick={() => go(1)}
               >
                 <FontAwesomeIcon icon={faArrowRight} />

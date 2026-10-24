@@ -11,6 +11,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+// I18N
+import { useI18n } from '@/src/i18n/I18nProvider';
 // CSS
 import './styles.css';
 
@@ -33,6 +35,7 @@ export default function SnackbarFeedback({
   content,
   setOpen,
 }: Readonly<SnackbarProps>) {
+  const t = useI18n().messages.dialog;
   // Stays rendered after closing until the slide-out transition ends.
   const [rendered, setRendered] = useState(content.open);
   const timerAutoHide = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -122,7 +125,7 @@ export default function SnackbarFeedback({
         <button
           type="button"
           className="snackbar__close"
-          aria-label="Close notification"
+          aria-label={t.closeNotice}
           onClick={close}
         >
           <FontAwesomeIcon icon={faXmark} />

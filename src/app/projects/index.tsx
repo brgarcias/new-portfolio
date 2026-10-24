@@ -22,6 +22,9 @@ import iPadImg from '@/public/images/projects/ipad.webp';
 import MacbookImg from '@/public/images/projects/macbook.webp';
 import iMacImg from '@/public/images/projects/imac.webp';
 import AppleWatchImg from '@/public/images/projects/apple-watch.webp';
+// I18N
+import { useI18n } from '@/src/i18n/I18nProvider';
+import { format } from '@/src/i18n/messages';
 // CONTENT
 import type { Project, SectionHeader } from '@/src/content';
 // CSS
@@ -68,6 +71,7 @@ export default function Projects({
   header,
   projects,
 }: Readonly<ProjectsProps>) {
+  const t = useI18n().messages.projects;
   const trackRef = useRef<HTMLUListElement>(null);
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState(0);
@@ -153,7 +157,7 @@ export default function Projects({
       <Reveal className="projects">
         {/* Swiping scrolls the track. With the keyboard, each card's button
             scrolls its card into view when it gets focus. */}
-        <ul ref={trackRef} className="projects__track" aria-label="Projects">
+        <ul ref={trackRef} className="projects__track" aria-label={t.list}>
           {projects.map((item, index) => (
             <li
               key={item.slug}
@@ -203,8 +207,10 @@ export default function Projects({
                   onClick={() => openDetails(index)}
                   onKeyDown={openOnKey(() => openDetails(index))}
                 >
-                  See details
-                  <span className="visually-hidden"> about {item.title}</span>
+                  {t.details}
+                  <span className="visually-hidden">
+                    {format(t.detailsAbout, { title: item.title })}
+                  </span>
                   <FontAwesomeIcon icon={faArrowRight} />
                 </button>
               </div>
@@ -223,7 +229,7 @@ export default function Projects({
             <button
               type="button"
               className="projects__arrow"
-              aria-label="Previous Project"
+              aria-label={t.previous}
               onClick={() => go(-1)}
             >
               <FontAwesomeIcon icon={faArrowLeft} />
@@ -231,7 +237,7 @@ export default function Projects({
             <button
               type="button"
               className="projects__arrow"
-              aria-label="Next Project"
+              aria-label={t.next}
               onClick={() => go(1)}
             >
               <FontAwesomeIcon icon={faArrowRight} />
@@ -265,7 +271,7 @@ export default function Projects({
               target="_blank"
               rel="noopener noreferrer"
             >
-              See more about the website
+              {t.website}
               <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
             </a>
           </div>

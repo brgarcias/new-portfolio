@@ -4,6 +4,7 @@
 
 // I18N
 import type { Locale } from '@/src/i18n/config';
+import { format, type Messages } from '@/src/i18n/messages';
 // DATES
 import {
   calculateDuration,
@@ -72,9 +73,13 @@ export type Profile = ReturnType<typeof getProfile>;
 
 // The channels shown as icons in the top, the menu and the footer, and as
 // buttons in the contact section.
-export function getSocialLinks(profile: Profile) {
+export function getSocialLinks(profile: Profile, messages: Messages) {
   return [
-    { id: 'email', href: `mailto:${profile.email}`, text: 'Email' },
+    {
+      id: 'email',
+      href: `mailto:${profile.email}`,
+      text: messages.frame.email,
+    },
     { id: 'linkedin', href: profile.linkedin, text: 'LinkedIn' },
     { id: 'whatsapp', href: profile.whatsapp, text: 'WhatsApp' },
     { id: 'github', href: profile.github, text: 'GitHub' },
@@ -141,7 +146,9 @@ function detailsHtml(details: ExperienceEntry['details']) {
 
 // From the most recent role. A function, so the current role's duration is
 // computed on every render instead of once when the module loads.
-export function getExperiences(locale: Locale) {
+export function getExperiences(locale: Locale, messages: Messages) {
+  const { present, years, months } = messages.experience;
+  const { dateLocale } = messages.meta;
   return readCollection<ExperienceEntry>('experiences', locale)
     .sort((a, b) => b.start.localeCompare(a.start))
     .map(({ slug, company, title, start, end, icon, stack, details }) => ({
@@ -151,8 +158,8 @@ export function getExperiences(locale: Locale) {
       icon,
       current: !end,
       stack: splitList(stack),
-      date: formatDateRange(start, end || undefined),
-      duration: calculateDuration(start, end || undefined),
+      date: formatDateRange(start, end || undefined, { dateLocale, present }),
+      duration: calculateDuration(start, end || undefined, { years, months }),
       details: detailsHtml(details),
     }));
 }
@@ -209,7 +216,11 @@ export type Initiative = ReturnType<typeof getInitiatives>[number];
 
 // A function, so the age is computed on every render instead of once when
 // the module loads.
-export function getContactCards(locale: Locale, profile: Profile) {
+export function getContactCards(
+  locale: Locale,
+  profile: Profile,
+  messages: Messages,
+) {
   const {
     profile: personal,
     education,
@@ -222,7 +233,10 @@ export function getContactCards(locale: Locale, profile: Profile) {
       label: personal.label,
       title: profile.fullName,
       subtitle: profile.role,
-      details: [personal.status, calculateAge(profile.birthDate)],
+      details: [
+        personal.status,
+        format(messages.contact.age, { age: calculateAge(profile.birthDate) }),
+      ],
     },
     { id: 'education', ...education },
     {

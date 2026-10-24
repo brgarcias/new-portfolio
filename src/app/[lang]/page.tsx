@@ -1,10 +1,13 @@
-import AboutMe from './about-me';
-import ProfessionalExperience from './professional-experience';
-import AcademicEducation from './academic-education';
-import Projects from './projects';
-import Contact from './contact';
-import Contributing from './contributing';
-import Courses from './courses';
+// NEXT
+import { notFound } from 'next/navigation';
+// SECTIONS
+import AboutMe from '../about-me';
+import ProfessionalExperience from '../professional-experience';
+import AcademicEducation from '../academic-education';
+import Projects from '../projects';
+import Contact from '../contact';
+import Contributing from '../contributing';
+import Courses from '../courses';
 // CONTENT
 import {
   getAbout,
@@ -20,17 +23,33 @@ import {
   getSections,
   getSocialLinks,
 } from '@/src/content';
+// I18N
+import { isLocale, locales } from '@/src/i18n/config';
+import { getMessages } from '@/src/i18n/messages';
 
 // Regenerates the page once a day, so the current role's duration and the
 // age in the contact section do not stay frozen at the last deploy.
 export const revalidate = 86400;
 
-export default function Home() {
-  const locale = 'en';
+// One page per language, built ahead. "/" serves the English one, through
+// a rewrite in next.config.mjs. Any other first segment is an address with
+// no page, which src/app/not-found.tsx answers.
+export function generateStaticParams() {
+  return locales.map((lang) => ({ lang }));
+}
+
+export const dynamicParams = false;
+
+export default async function Home({ params }: PageProps<'/[lang]'>) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+
+  const locale = lang;
+  const messages = getMessages(locale);
   const profile = getProfile(locale);
-  const social = getSocialLinks(profile);
+  const social = getSocialLinks(profile, messages);
   const sections = getSections(locale, profile);
-  const experiences = getExperiences(locale);
+  const experiences = getExperiences(locale, messages);
   // The experience without an end date is the current one.
   const current = experiences.find((experience) => experience.current);
 
@@ -68,8 +87,9 @@ export default function Home() {
       />
       <Contact
         header={sections.contact}
-        cards={getContactCards(locale, profile)}
+        cards={getContactCards(locale, profile, messages)}
         social={social}
+        socialLabel={messages.frame.socialLinks}
       />
     </main>
   );

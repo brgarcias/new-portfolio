@@ -1,6 +1,6 @@
 // A date like "1999-12-15" is parsed as midnight UTC, so it is compared in
 // UTC to give the same age on any server.
-export function calculateAge(birthDate: string | Date): string {
+export function calculateAge(birthDate: string | Date): number {
   const today = new Date();
   const birth = new Date(birthDate);
 
@@ -15,5 +15,5 @@ export function calculateAge(birthDate: string | Date): string {
     age--;
   }
 
-  return `${age} years`;
+  return age;
 }

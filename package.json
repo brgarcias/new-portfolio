@@ -14,7 +14,7 @@
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "lint:write": "eslint . --fix",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "check": "pnpm lint && pnpm typecheck && pnpm format",
