@@ -5,10 +5,12 @@ import path from 'node:path';
 import { defaultLocale, type Locale } from '@/src/i18n/config';
 
 // The tests build with a fixed copy, in tests/fixtures/content, so edits
-// made in the panel do not change what they check (CONTENT_DIR).
+// made in the panel do not change what they check (TEST_CONTENT=1). Both
+// folders are written out: from a path the build cannot read, Next.js would
+// copy the whole project, .git included, into the server function.
 const contentDir = path.join(
   process.cwd(),
-  process.env.CONTENT_DIR ?? 'content',
+  process.env.TEST_CONTENT ? 'tests/fixtures/content' : 'content',
 );
 
 // A content file holds a block per language, as the panel (Decap CMS) saves

@@ -48,6 +48,10 @@ const nextConfig = {
   outputFileTracingIncludes: {
     '/**': ['content/**/*.json', 'public/images/**/*'],
   },
+  // The copy of the content for the tests is not needed in production.
+  outputFileTracingExcludes: {
+    '/**': ['tests/**/*'],
+  },
   // English, the default language, lives at / without a prefix: / serves
   // the /en page, and /en itself sends visitors to /.
   async redirects() {

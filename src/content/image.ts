@@ -65,13 +65,18 @@ function readSize(data: Buffer, name: string): Size {
 
 const sizes = new Map<string, Size>();
 
+// Content images live in public/images. The path is built from that folder,
+// so the server bundle takes only it, and not the rest of public/.
+const imagesDir = path.join(process.cwd(), 'public', 'images');
+
 export function contentImage(src: string): ContentImage {
+  if (!src.startsWith('/images/')) {
+    throw new Error(`Content images go in public/images: ${src}`);
+  }
   let size = sizes.get(src);
   if (!size) {
-    size = readSize(
-      fs.readFileSync(path.join(process.cwd(), 'public', src)),
-      src,
-    );
+    const file = path.join(imagesDir, src.slice('/images/'.length));
+    size = readSize(fs.readFileSync(file), src);
     sizes.set(src, size);
   }
   return { src, ...size };

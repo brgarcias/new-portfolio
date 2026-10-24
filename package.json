@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
-    "build:test": "CONTENT_DIR=tests/fixtures/content next build --webpack",
+    "build:test": "TEST_CONTENT=1 next build --webpack",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "lint:write": "eslint . --fix",
