@@ -96,7 +96,7 @@
 
 .site-nav__link:hover,
 .site-nav__link:focus-visible {
-  background: rgb(255 255 255 / 0.06);
+  background: rgb(var(--rgb-veil) / 0.06);
   color: var(--color-text);
 }
 
@@ -123,6 +123,13 @@
   opacity: 0;
 }
 
+/* Just past 1100px, tighter links leave the name room on one line. */
+@media (max-width: 1199px) {
+  .site-nav__link {
+    padding-inline: 0.55rem;
+  }
+}
+
 @media (max-width: 1099px) {
   .site-nav {
     display: none;
@@ -139,6 +146,19 @@
   }
 }
 
+/* On the narrowest phones the mark stands for the name, which stays for
+   screen readers, so the theme and menu buttons fit beside it. */
+@media (max-width: 359px) {
+  .site-header .site-brand__name {
+    position: absolute;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
 /* ─── Menu button ───────────────────────────────────────── */
 .menu-toggle {
   position: relative;
@@ -147,7 +167,7 @@
   flex: none;
   border: 1px solid var(--color-border-strong);
   border-radius: 999px;
-  background: rgb(255 255 255 / 0.04);
+  background: var(--color-fill-strong);
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease;
@@ -184,6 +204,55 @@
 
 .menu-toggle.is-open .menu-toggle__line:last-child {
   transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* ─── Theme button ──────────────────────────────────────── */
+/* Shows the theme it switches to: the sun in the dark theme, the moon in
+   the light one. The new icon turns in while the theme changes. */
+.theme-toggle {
+  position: relative;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  place-items: center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  background: var(--color-fill-strong);
+  color: var(--color-text);
+  font-size: 1rem;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  border-color: rgb(92 94 220 / 0.6);
+  background: rgb(92 94 220 / 0.16);
+}
+
+.theme-toggle__icon {
+  grid-area: 1 / 1;
+}
+
+.dark .theme-toggle__icon--moon,
+.light .theme-toggle__icon--sun,
+.dark .theme-toggle__label--to-dark,
+.light .theme-toggle__label--to-light {
+  display: none;
+}
+
+.theme-switching .theme-toggle__icon {
+  animation: theme-icon-in 0.6s var(--ease-out);
+}
+
+@keyframes theme-icon-in {
+  from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.4);
+  }
 }
 
 /* ─── Stacked-pages menu ────────────────────────────────── */
@@ -373,11 +442,11 @@
 }
 
 .stage__ghost--middle {
-  background: #23242b;
+  background: var(--color-sheet-middle);
 }
 
 .stage__ghost--back {
-  background: #1d1e24;
+  background: var(--color-sheet-back);
 }
 
 .stage--open .stage__ghost--middle {
@@ -407,6 +476,10 @@
   .stack-menu,
   .stack-menu__item {
     transition: none;
+  }
+
+  .theme-switching .theme-toggle__icon {
+    animation: none;
   }
 }
 

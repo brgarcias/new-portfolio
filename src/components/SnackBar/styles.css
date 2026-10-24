@@ -74,7 +74,7 @@
 
 .snackbar__close:hover,
 .snackbar__close:focus-visible {
-  background: rgb(255 255 255 / 0.08);
+  background: rgb(var(--rgb-veil) / 0.08);
   color: var(--color-text);
 }
 
@@ -90,4 +90,9 @@
     opacity: 0;
     transform: none;
   }
+}
+
+/* ─── Light theme ───────────────────────────────────────── */
+.light .snackbar__content {
+  box-shadow: 0 24px 50px -20px rgb(31 33 74 / 0.35);
 }

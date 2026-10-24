@@ -121,7 +121,7 @@ export default function AboutMe({ currentRole }: Readonly<AboutMeProps>) {
             title: 'Message Submitted',
             description: 'Thank you very much for your feedback!',
             icon: faCheck,
-            colorIcon: '#66bb6a',
+            colorIcon: 'var(--color-success)',
           });
         } else {
           console.error('Error on sending forms: ', response);
@@ -134,7 +134,7 @@ export default function AboutMe({ currentRole }: Readonly<AboutMeProps>) {
           title: 'We had a problem',
           description: 'An error occurred while sending your message!',
           icon: faCircleExclamation,
-          colorIcon: 'rgb(230, 154, 147)',
+          colorIcon: 'var(--color-error)',
         });
       } finally {
         setSubmitting(false);

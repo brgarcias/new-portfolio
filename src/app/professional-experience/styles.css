@@ -74,7 +74,7 @@
   grid-row: 1;
   margin-top: var(--xp-node-top);
   place-items: center;
-  border: 1px solid rgb(144 145 247 / 0.7);
+  border: 1px solid rgb(var(--rgb-brand-light) / 0.7);
   border-radius: 50%;
   background: var(--color-bg);
   box-shadow:
@@ -161,7 +161,7 @@
     linear-gradient(
         140deg,
         rgb(92 94 220 / 0.8),
-        rgb(255 255 255 / 0.06) 45%,
+        rgb(var(--rgb-veil) / 0.06) 45%,
         rgb(34 211 238 / 0.45)
       )
       border-box;
@@ -448,7 +448,7 @@
 
 .tech-ribbon__item:nth-child(even) {
   color: transparent;
-  -webkit-text-stroke: 1px rgb(240 240 245 / 0.4);
+  -webkit-text-stroke: 1px rgb(var(--rgb-text) / 0.4);
 }
 
 .tech-ribbon__item::after {
@@ -477,5 +477,16 @@
   .xp-item--current .xp-item__node::after,
   .tech-ribbon__row {
     animation: none;
+  }
+}
+
+/* ─── Light theme ───────────────────────────────────────── */
+.light .xp-item--current .xp-card {
+  box-shadow: 0 30px 60px -32px rgb(92 94 220 / 0.4);
+}
+
+@media (hover: hover) {
+  .light .xp-card:hover {
+    box-shadow: 0 24px 50px -30px rgb(92 94 220 / 0.45);
   }
 }

@@ -14,6 +14,7 @@ import SiteFrame from '@/src/components/SiteFrame';
 import { Providers } from './providers';
 // SITE
 import { siteUrl } from './site';
+import { applyStoredTheme, themeColors } from './theme';
 
 const inter = Inter({ subsets: ['latin'] });
 // Display font for headings, exposed as --font-display.
@@ -168,7 +169,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#ffffff',
+  // The theme toggle sets both to the chosen theme.
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: themeColors.light },
+    { media: '(prefers-color-scheme: dark)', color: themeColors.dark },
+  ],
   initialScale: 1,
   width: 'device-width',
 };
@@ -179,9 +184,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark ${display.variable}`}>
+    // The theme script swaps the dark class before React starts, which is
+    // why the class on <html> may differ from the server's.
+    <html
+      lang="en"
+      className={`dark ${display.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: removeHeadWhitespace }} />
+        <script dangerouslySetInnerHTML={{ __html: applyStoredTheme }} />
         <script
           type="application/ld+json"
           // Escapes "<" so the JSON can never close the script element.

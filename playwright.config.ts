@@ -21,6 +21,9 @@ export default defineConfig({
   },
   use: {
     baseURL: 'http://127.0.0.1:4173',
+    // The site follows the system's theme. Tests use the dark one, the
+    // original look, unless they ask for the light one.
+    colorScheme: 'dark',
     trace: 'retain-on-failure',
     launchOptions: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
       ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH }

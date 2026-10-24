@@ -61,8 +61,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+    linear-gradient(rgb(var(--rgb-veil) / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--rgb-veil) / 0.04) 1px, transparent 1px);
   background-size: 64px 64px;
   -webkit-mask-image: radial-gradient(
     ellipse 75% 60% at 50% 40%,
@@ -101,7 +101,7 @@
   padding: 0.45rem 0.95rem 0.45rem 0.75rem;
   border: 1px solid var(--color-border-strong);
   border-radius: 999px;
-  background: rgb(255 255 255 / 0.04);
+  background: var(--color-fill-strong);
   color: var(--color-text-muted);
   font-size: 0.8125rem;
   font-weight: 500;
@@ -479,7 +479,7 @@
     linear-gradient(
         140deg,
         rgb(92 94 220 / 0.6),
-        rgb(255 255 255 / 0.06) 40%,
+        rgb(var(--rgb-veil) / 0.06) 40%,
         rgb(34 211 238 / 0.35)
       )
       border-box;
@@ -499,4 +499,47 @@
   .about__grid {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* ─── Light theme ───────────────────────────────────────── */
+.light .hero__glow--brand {
+  background: radial-gradient(circle, rgb(92 94 220 / 0.3) 0%, transparent 62%);
+}
+
+.light .hero__glow--violet {
+  background: radial-gradient(
+    circle,
+    rgb(139 92 246 / 0.2) 0%,
+    transparent 62%
+  );
+}
+
+.light .hero__glow--cyan {
+  background: radial-gradient(
+    circle,
+    rgb(34 211 238 / 0.18) 0%,
+    transparent 60%
+  );
+}
+
+.light .hero__halo {
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgb(92 94 220 / 0.24) 0%,
+    rgb(139 92 246 / 0.08) 45%,
+    transparent 70%
+  );
+}
+
+.light .hero__image {
+  filter: drop-shadow(0 30px 40px rgb(31 33 74 / 0.2));
+}
+
+.light .hero__chip {
+  background: rgb(255 255 255 / 0.85);
+  box-shadow: 0 12px 30px -14px rgb(31 33 74 / 0.35);
+}
+
+.light .about__stack {
+  box-shadow: 0 30px 60px -30px rgb(31 33 74 / 0.25);
 }
