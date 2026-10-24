@@ -14,7 +14,8 @@ import {
 // COMPONENTS
 import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
-import ModalComponent, { openOnKey } from '@/src/components/Modal';
+import ModalComponent from '@/src/components/Modal/Lazy';
+import { openOnKey } from '@/src/components/Modal/openOnKey';
 // CONTENT
 import { projectsData } from './projects.data';
 // CSS
