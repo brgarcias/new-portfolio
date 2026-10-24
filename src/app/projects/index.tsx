@@ -1,9 +1,15 @@
 'use client';
 
 // NEXT
-import Image from 'next/image';
+import Image, { type StaticImageData } from 'next/image';
 // HOOKS
-import { PointerEvent, useEffect, useRef, useState } from 'react';
+import {
+  CSSProperties,
+  PointerEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -30,15 +36,37 @@ import type { Project, SectionHeader } from '@/src/content';
 // CSS
 import './styles.css';
 
-// The frame of each device a project can be shown in, and the size of the
-// site's preview on its screen, as in the old slider.
+// The frame of each device a project can be shown in, and where its screen
+// sits in the frame's image, in that image's pixels: left, top, width and
+// height, and the radius of the watch's rounded screen.
 const devices = {
-  iphone: { frame: iPhoneImg, width: '117px', height: 'auto' },
-  ipad: { frame: iPadImg, width: '152px', height: 'auto' },
-  macbook: { frame: MacbookImg, width: '321px', height: '203px' },
-  imac: { frame: iMacImg, width: '321px', height: 'auto' },
-  watch: { frame: AppleWatchImg, width: '100px', height: '120px' },
-};
+  iphone: { frame: iPhoneImg, screen: [35, 80, 114, 200], radius: 0 },
+  ipad: { frame: iPadImg, screen: [46, 80, 151, 201], radius: 0 },
+  macbook: { frame: MacbookImg, screen: [52, 80, 319, 201], radius: 0 },
+  imac: { frame: iMacImg, screen: [64, 84, 318, 190], radius: 0 },
+  watch: { frame: AppleWatchImg, screen: [22, 117, 107, 126], radius: 12 },
+} satisfies Record<
+  string,
+  {
+    frame: StaticImageData;
+    screen: [number, number, number, number];
+    radius: number;
+  }
+>;
+
+// The preview fills the screen, which the device's box frames exactly.
+function screenStyle(device: keyof typeof devices): CSSProperties {
+  const { frame, screen, radius } = devices[device];
+  const [left, top, width, height] = screen;
+  const percent = (value: number, total: number) => `${(value / total) * 100}%`;
+  return {
+    left: percent(left, frame.width),
+    top: percent(top, frame.height),
+    width: percent(width, frame.width),
+    height: percent(height, frame.height),
+    borderRadius: radius || undefined,
+  };
+}
 
 const pad = (value: number) => String(value).padStart(2, '0');
 
@@ -175,17 +203,16 @@ export default function Projects({
                       alt=""
                       unoptimized
                     />
-                    <div className="project-card__screen">
+                    <div
+                      className="project-card__screen"
+                      style={screenStyle(item.device)}
+                    >
                       <Image
                         src={item.preview.src}
                         width={item.preview.width}
                         height={item.preview.height}
                         alt={item.title}
                         unoptimized
-                        style={{
-                          width: devices[item.device].width,
-                          height: devices[item.device].height,
-                        }}
                       />
                     </div>
                   </div>
