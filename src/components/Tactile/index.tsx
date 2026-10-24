@@ -3,10 +3,11 @@
 // HOOKS
 import { useEffect } from 'react';
 
-// Cards that a button covers shrink as a whole, and less than a button.
-const cards = '.project-card, .course-card, .contrib-card';
+// Cards that a button covers shrink as a whole.
 const pressable = [
-  cards,
+  '.project-card',
+  '.course-card',
+  '.contrib-card',
   '.btn',
   '.theme-toggle',
   '.menu-toggle',
@@ -23,10 +24,17 @@ const pressable = [
   '.snackbar__close',
 ].join(', ');
 
+// How far the edges of what is pressed move in, at most. With a mouse, the
+// release lands where the pointer is, so an edge that moved further could
+// leave the pointer outside, and the click would be lost: a press on the
+// arrow at the end of a wide title did nothing.
+const travel = 2;
+
 // Buttons, and the links that work as buttons, shrink a little under the
-// finger and spring back when it lifts, as on the iPhone. The individual
-// scale property adds to their transforms, such as a hover lift. With
-// "reduce motion" nothing moves.
+// finger and spring back when it lifts, as on the iPhone. A small button
+// shrinks to 94%; a large one, like a wide title or a card, barely does,
+// as on the iPhone too. The individual scale property adds to their
+// transforms, such as a hover lift. With "reduce motion" nothing moves.
 export default function Tactile() {
   useEffect(() => {
     const motion = window.matchMedia('(prefers-reduced-motion: no-preference)');
@@ -53,7 +61,8 @@ export default function Tactile() {
       const element = target?.closest<HTMLElement>(pressable);
       if (!element || element.matches(':disabled')) return;
       release();
-      const depth = element.matches(cards) ? 0.98 : 0.94;
+      const { width, height } = element.getBoundingClientRect();
+      const depth = Math.max(0.94, 1 - (2 * travel) / Math.max(width, height));
       pressed = {
         element,
         animation: element.animate(
