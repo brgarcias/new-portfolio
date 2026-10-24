@@ -685,6 +685,27 @@ test('publica os metadados de busca e compartilhamento', async ({
     'content',
     'Bruno Garcia — Dev. Full-Stack',
   );
+  // Links shared on WhatsApp and LinkedIn show the large image.
+  const ogImage = page.locator('meta[property="og:image"]');
+  await expect(ogImage).toHaveAttribute(
+    'content',
+    new RegExp(`^${siteUrl}/opengraph-image`),
+  );
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute(
+    'content',
+    '1200',
+  );
+  await expect(
+    page.locator('meta[property="og:image:height"]'),
+  ).toHaveAttribute('content', '630');
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+    'content',
+    'summary_large_image',
+  );
+  const imageUrl = new URL((await ogImage.getAttribute('content'))!);
+  const image = await request.get(imageUrl.pathname + imageUrl.search);
+  expect(image.ok()).toBe(true);
+  expect(image.headers()['content-type']).toBe('image/jpeg');
   const person = JSON.parse(
     (await page.locator('script[type="application/ld+json"]').textContent()) ??
       '{}',

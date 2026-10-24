@@ -94,7 +94,11 @@ test('experiência expandida', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
   const second = '#experience .xp-item:nth-child(2)';
   await scrollTo(page, second);
+  // The click waits for the card to finish entering, and the centring below
+  // for the details to finish opening. Otherwise the capture moved around.
+  await expect(page.locator(`${second} .xp-card`)).toHaveCSS('opacity', '1');
   await page.locator(`${second} .xp-card__toggle`).click();
+  await waitForTransitions(page);
   await scrollTo(page, second);
   await expectScreenshot(page, 'experience-expanded.png', '#experience');
 });
@@ -121,6 +125,12 @@ test('faixa de tecnologias', { tag: '@visual' }, async ({ page }) => {
 test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
   await scrollTo(page, '#courses .course-card:first-child');
+  // Like the other captures that click, it waits for the cards to finish
+  // entering, so the page behind the dialog is always in the same place.
+  await expect(page.locator('#courses .course-grid-wrap')).toHaveCSS(
+    'opacity',
+    '1',
+  );
   await page
     .locator('#courses .course-card')
     .first()
@@ -131,8 +141,15 @@ test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
 });
 
 test('slider e detalhes de projeto', { tag: '@visual' }, async ({ page }) => {
+  // With reduced motion the arrows jump straight to the card. After a
+  // glide, the previews inside the devices did not always come out the
+  // same, by a pixel or two.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await scrollTo(page, '#projects .projects__track');
+  // As with the education steps, a click while the cards finish entering
+  // sometimes scrolled the page first, which moved the whole capture.
+  await expect(page.locator('#projects .projects')).toHaveCSS('opacity', '1');
   await page.getByRole('button', { name: 'Next Project' }).click();
   await page.getByRole('button', { name: 'Next Project' }).click();
   await expect(

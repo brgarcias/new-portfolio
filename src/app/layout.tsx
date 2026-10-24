@@ -59,7 +59,8 @@ export const metadata: Metadata = {
     description,
     locale: 'en_US',
   },
-  twitter: { card: 'summary', title, description },
+  // The image comes from opengraph-image.jpg, next to this file.
+  twitter: { card: 'summary_large_image', title, description },
   manifest: '/favicon/manifest.json',
   icons: [
     {
