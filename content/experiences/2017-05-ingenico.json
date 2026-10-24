@@ -25,5 +25,59 @@
         ]
       }
     ]
+  },
+  "pt": {
+    "company": "Ingenico",
+    "title": "Jovem Aprendiz de RH",
+    "start": "2017-05",
+    "end": "2018-04",
+    "icon": "users",
+    "stack": "",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Aprendendo o básico: compreender conceitos fundamentais de RH, como recrutamento, relações com os funcionários, treinamento e políticas de RH.",
+          "Acompanhando profissionais de RH: observar profissionais experientes para entender suas funções e responsabilidades em situações reais.",
+          "Apoio em tarefas administrativas: ajudar com documentos, digitação de dados e agendamento de entrevistas para entender o lado operacional do RH.",
+          "Participação em processos seletivos: ajudar na busca de candidatos, na triagem de currículos e na organização de entrevistas, com a orientação da equipe sênior de RH.",
+          "Apoio à integração de funcionários: colaborar com os programas de integração, preparar materiais e garantir que os novos contratados se sintam acolhidos e informados sobre as políticas da empresa.",
+          "Aprendendo softwares e sistemas de RH: ganhar domínio de sistemas de informação de RH (HRIS) e de outros softwares usados para folha de pagamento, controle de ponto e gestão de desempenho.",
+          "Entendendo a conformidade legal: conhecer as leis trabalhistas, as normas e as políticas da empresa para garantir que as práticas de RH estejam de acordo com as exigências legais.",
+          "Participação em atividades de treinamento e desenvolvimento: frequentar workshops, webinars e seminários para ampliar o conhecimento em temas como resolução de conflitos, diversidade e desenvolvimento de liderança.",
+          "Apoio nas relações com os funcionários: atender dúvidas, reclamações e conflitos simples, aprendendo a manter um ambiente de trabalho justo e acolhedor.",
+          "Acompanhando a estratégia de RH: observar reuniões e discussões de planejamento estratégico para entender como o RH se alinha aos objetivos gerais da organização.",
+          "Buscando feedback e mentoria: pedir feedback com frequência a mentores e supervisores para identificar pontos de melhoria e de crescimento pessoal.",
+          "Construindo uma rede profissional: participar de eventos do setor, entrar em associações de RH e se conectar com profissionais para ampliar a rede de contatos e acompanhar as tendências do mercado."
+        ]
+      }
+    ]
+  },
+  "es": {
+    "company": "Ingenico",
+    "title": "Joven Aprendiz de Recursos Humanos",
+    "start": "2017-05",
+    "end": "2018-04",
+    "icon": "users",
+    "stack": "",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Aprender lo básico: comprender conceptos fundamentales de RR. HH., como reclutamiento, relaciones laborales, formación y políticas de RR. HH.",
+          "Acompañar a profesionales de RR. HH.: observar a profesionales con experiencia para entender sus funciones y responsabilidades en situaciones reales.",
+          "Apoyar en tareas administrativas: ayudar con la documentación, la carga de datos y la programación de entrevistas para entender el lado operativo de RR. HH.",
+          "Participar en procesos de selección: ayudar a buscar candidatos, revisar currículos y coordinar entrevistas con la orientación del equipo sénior de RR. HH.",
+          "Apoyar la incorporación de empleados: colaborar en los programas de bienvenida, preparar materiales y asegurar que las nuevas incorporaciones se sientan bien recibidas e informadas sobre las políticas de la empresa.",
+          "Aprender software y sistemas de RR. HH.: dominar los sistemas de información de RR. HH. (HRIS) y otros programas de nómina, control de asistencia y gestión del desempeño.",
+          "Entender el cumplimiento legal: conocer las leyes laborales, las normas y las políticas de la empresa para que las prácticas de RR. HH. cumplan los requisitos legales.",
+          "Participar en actividades de formación y desarrollo: asistir a talleres, webinars y seminarios para ampliar conocimientos en áreas como la resolución de conflictos, la diversidad y el desarrollo del liderazgo.",
+          "Apoyar en las relaciones laborales: atender consultas, quejas y conflictos sencillos, aprendiendo a mantener un entorno de trabajo justo y de apoyo.",
+          "Observar el desarrollo de la estrategia de RR. HH.: asistir a reuniones y debates de planificación estratégica para entender cómo RR. HH. se alinea con los objetivos generales de la organización.",
+          "Buscar feedback y mentoría: pedir feedback con regularidad a mentores y supervisores para identificar áreas de mejora y de crecimiento personal.",
+          "Construir una red profesional: asistir a eventos del sector, unirse a asociaciones de RR. HH. y conectar con profesionales para ampliar la red de contactos y estar al día de las tendencias del sector."
+        ]
+      }
+    ]
   }
 }

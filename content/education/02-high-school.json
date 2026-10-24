@@ -5,5 +5,19 @@
     "title": "Colégio Salesiano Santa Teresinha",
     "text": "I continued my high school studies at Salesian School Santa Teresinha, which greatly aided me in preparing for exams and practice tests, including the ENEM and FUVEST. After completing high school, I spent one year in a preparatory course at ETAPA. I successfully passed the first phase of the FUVEST, but unfortunately, I didn't make it through the second phase.",
     "upcoming": false
+  },
+  "pt": {
+    "order": 2,
+    "label": "Ensino médio",
+    "title": "Colégio Salesiano Santa Teresinha",
+    "text": "Fiz o ensino médio no Colégio Salesiano Santa Teresinha, que me ajudou muito a me preparar para provas e simulados, incluindo o ENEM e a FUVEST. Depois de concluir o ensino médio, passei um ano no cursinho pré-vestibular do ETAPA. Passei na primeira fase da FUVEST, mas, infelizmente, não fui aprovado na segunda.",
+    "upcoming": false
+  },
+  "es": {
+    "order": 2,
+    "label": "Educación secundaria",
+    "title": "Colégio Salesiano Santa Teresinha",
+    "text": "Cursé la secundaria en el Colegio Salesiano Santa Teresinha, que me ayudó mucho a prepararme para exámenes y simulacros, incluidos el ENEM y la FUVEST. Después de terminar la secundaria, pasé un año en un curso preparatorio en ETAPA. Aprobé la primera fase de la FUVEST, pero, por desgracia, no superé la segunda.",
+    "upcoming": false
   }
 }

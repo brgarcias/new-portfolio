@@ -10,5 +10,29 @@
     "dialogSubtitle": "Sale of Scrap",
     "description": "With more experience in Full-Stack development, this project was built using Node.js and NestJS for the backend, and ReactJS and NextJS for the frontend. It marked my first experience with the AWS cloud platform. I utilized various features, such as hosting the frontend in a serverless environment, building some microservices with Lambda, using SQS queues, reading logs in CloudWatch, establishing connections with the REDIS database, creating worker lambdas, and integrating with Nuvemshop to receive orders generated on the Saldofone e-commerce platform through a webhook. It was a remarkably successful project.",
     "link": "http://www.saldofone.com.br/"
+  },
+  "pt": {
+    "order": 4,
+    "eyebrow": "Venda de sucata",
+    "title": "Saldofone",
+    "device": "imac",
+    "preview": "/images/projects/saldofone-dashboard-preview-card.webp",
+    "image": "/images/projects/saldofone-dashboard-preview.webp",
+    "dialogTitle": "Saldofone",
+    "dialogSubtitle": "Venda de sucata",
+    "description": "Com mais experiência em desenvolvimento Full-Stack, construí este projeto com Node.js e NestJS no backend e ReactJS e NextJS no frontend. Foi minha primeira experiência com a plataforma de nuvem da AWS. Usei vários recursos, como hospedar o frontend em um ambiente serverless, construir alguns microsserviços com Lambda, usar filas do SQS, ler logs no CloudWatch, conectar ao banco de dados REDIS, criar lambdas de processamento e integrar com a Nuvemshop para receber, por meio de um webhook, os pedidos gerados no e-commerce da Saldofone. Foi um projeto de muito sucesso.",
+    "link": "http://www.saldofone.com.br/"
+  },
+  "es": {
+    "order": 4,
+    "eyebrow": "Venta de chatarra",
+    "title": "Saldofone",
+    "device": "imac",
+    "preview": "/images/projects/saldofone-dashboard-preview-card.webp",
+    "image": "/images/projects/saldofone-dashboard-preview.webp",
+    "dialogTitle": "Saldofone",
+    "dialogSubtitle": "Venta de chatarra",
+    "description": "Con más experiencia en desarrollo Full-Stack, construí este proyecto con Node.js y NestJS en el backend y ReactJS y NextJS en el frontend. Fue mi primera experiencia con la plataforma en la nube de AWS. Utilicé varios recursos, como alojar el frontend en un entorno serverless, construir algunos microservicios con Lambda, usar colas de SQS, leer logs en CloudWatch, conectarme a la base de datos REDIS, crear lambdas de procesamiento e integrarme con Nuvemshop para recibir, mediante un webhook, los pedidos generados en el e-commerce de Saldofone. Fue un proyecto muy exitoso.",
+    "link": "http://www.saldofone.com.br/"
   }
 }

@@ -10,5 +10,29 @@
     "dialogSubtitle": "Recruitment and Selection",
     "description": "On this website, I created my first modal. Inside it, I embedded an iframe that connected to a customer service page within the client's system. Given that the company operates in the field of recruitment and selection and provides rapid customer service, I had to implement a condition for the modal to appear only during specific hours (from 8 a.m. to 6 p.m. on weekdays), and I achieved this using JavaScript.",
     "link": "http://malkarh.com.br/lp/recrutamento-e-selecao/"
+  },
+  "pt": {
+    "order": 5,
+    "eyebrow": "Recrutamento e seleção",
+    "title": "Malka RH",
+    "device": "watch",
+    "preview": "/images/projects/malka-preview.webp",
+    "image": "/images/projects/malka.webp",
+    "dialogTitle": "Malka RH",
+    "dialogSubtitle": "Recrutamento e seleção",
+    "description": "Neste site, criei meu primeiro modal. Dentro dele, incorporei um iframe conectado a uma página de atendimento no sistema do cliente. Como a empresa atua em recrutamento e seleção e oferece um atendimento rápido, precisei implementar uma condição para o modal aparecer só em horários específicos (das 8h às 18h, em dias úteis), o que fiz com JavaScript.",
+    "link": "http://malkarh.com.br/lp/recrutamento-e-selecao/"
+  },
+  "es": {
+    "order": 5,
+    "eyebrow": "Reclutamiento y selección",
+    "title": "Malka RH",
+    "device": "watch",
+    "preview": "/images/projects/malka-preview.webp",
+    "image": "/images/projects/malka.webp",
+    "dialogTitle": "Malka RH",
+    "dialogSubtitle": "Reclutamiento y selección",
+    "description": "En este sitio web, creé mi primer modal. Dentro de él, integré un iframe conectado a una página de atención al cliente del sistema del cliente. Como la empresa se dedica al reclutamiento y la selección y ofrece una atención rápida, tuve que implementar una condición para que el modal apareciera solo en horarios específicos (de 8 a 18 h, en días laborables), y lo logré con JavaScript.",
+    "link": "http://malkarh.com.br/lp/recrutamento-e-selecao/"
   }
 }

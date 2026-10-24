@@ -169,6 +169,32 @@ for (const theme of ['dark', 'light'] as const) {
   });
 }
 
+// Portuguese and Spanish, in the views where the texts change the layout
+// the most. The English captures cover the rest.
+for (const locale of ['pt', 'es'] as const) {
+  test.describe(locale === 'pt' ? 'português' : 'espanhol', () => {
+    test('topo da página', { tag: '@visual' }, async ({ page }) => {
+      await page.goto(`/${locale}`);
+      await expectScreenshot(page, `${locale}-hero.png`, '#top');
+    });
+
+    test('menu aberto', { tag: '@visual' }, async ({ page }) => {
+      await page.goto(`/${locale}`);
+      await goToSection(page, 'experience');
+      await openMenu(page);
+      await expectScreenshot(page, `${locale}-menu.png`);
+    });
+
+    for (const id of ['experience', 'contact'] as const) {
+      test(`seção ${id}`, { tag: '@visual' }, async ({ page }) => {
+        await page.goto(`/${locale}`);
+        await goToSection(page, id);
+        await expectScreenshot(page, `${locale}-${id}.png`, `#${id}`);
+      });
+    }
+  });
+}
+
 // The other views, in the dark theme only.
 test('experiência expandida', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');

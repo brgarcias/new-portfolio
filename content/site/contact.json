@@ -29,5 +29,67 @@
         "An exchange soon"
       ]
     }
+  },
+  "pt": {
+    "profile": {
+      "label": "Perfil",
+      "status": "Casado"
+    },
+    "education": {
+      "label": "Formação",
+      "title": "Bacharelado em Ciência da Computação",
+      "subtitle": "Universidade São Judas Tadeu - USJT",
+      "details": [
+        "Concluído",
+        "06/2018 - 06/2022"
+      ]
+    },
+    "contact": {
+      "label": "Contato",
+      "details": [
+        "Vila Nova Cachoeirinha - Limão",
+        "São Paulo, SP - Brasil"
+      ]
+    },
+    "languages": {
+      "label": "Idiomas",
+      "title": "Inglês avançado",
+      "subtitle": "Curso de inglês - Number One",
+      "details": [
+        "Disponível para viagens e mudança",
+        "Intercâmbio em breve"
+      ]
+    }
+  },
+  "es": {
+    "profile": {
+      "label": "Perfil",
+      "status": "Casado"
+    },
+    "education": {
+      "label": "Formación",
+      "title": "Licenciatura en Ciencias de la Computación",
+      "subtitle": "Universidade São Judas Tadeu - USJT",
+      "details": [
+        "Concluido",
+        "06/2018 - 06/2022"
+      ]
+    },
+    "contact": {
+      "label": "Contacto",
+      "details": [
+        "Vila Nova Cachoeirinha - Limão",
+        "São Paulo, SP - Brasil"
+      ]
+    },
+    "languages": {
+      "label": "Idiomas",
+      "title": "Inglés avanzado",
+      "subtitle": "Curso de inglés - Number One",
+      "details": [
+        "Disponible para viajar y mudarme",
+        "Un intercambio muy pronto"
+      ]
+    }
   }
 }

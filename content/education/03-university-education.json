@@ -5,5 +5,19 @@
     "title": "Universidade São Judas Tadeu",
     "text": "Although I completed my studies at São Judas Tadeu University, I began my undergraduate education in 2018 at Anhembi Morumbi University, majoring in Computer Engineering. I really enjoyed the program and the university's excellent facilities, and my studies were progressing well. However, after the first semester, the tuition fees became prohibitively high, and I didn't have the financial resources to continue. So, in mid-2018, I transferred to São Judas Tadeu University and switched to the Computer Science program, ultimately graduating in the first semester of 2022.",
     "upcoming": false
+  },
+  "pt": {
+    "order": 3,
+    "label": "Ensino superior",
+    "title": "Universidade São Judas Tadeu",
+    "text": "Embora eu tenha me formado na Universidade São Judas Tadeu, comecei a graduação em 2018 na Universidade Anhembi Morumbi, em Engenharia da Computação. Eu gostava muito do curso e da excelente estrutura da universidade, e os estudos iam bem. Porém, depois do primeiro semestre, as mensalidades ficaram altas demais e eu não tinha condições financeiras de continuar. Então, no meio de 2018, me transferi para a Universidade São Judas Tadeu e mudei para o curso de Ciência da Computação, concluindo a graduação no primeiro semestre de 2022.",
+    "upcoming": false
+  },
+  "es": {
+    "order": 3,
+    "label": "Educación universitaria",
+    "title": "Universidade São Judas Tadeu",
+    "text": "Aunque me gradué en la Universidad São Judas Tadeu, comencé la carrera en 2018 en la Universidad Anhembi Morumbi, en Ingeniería Informática. Me gustaba mucho la carrera y las excelentes instalaciones de la universidad, y mis estudios avanzaban bien. Sin embargo, después del primer semestre, las mensualidades se volvieron demasiado altas y no tenía los recursos para continuar. Así que, a mediados de 2018, me trasladé a la Universidad São Judas Tadeu y cambié a la carrera de Ciencias de la Computación, y me gradué en el primer semestre de 2022.",
+    "upcoming": false
   }
 }

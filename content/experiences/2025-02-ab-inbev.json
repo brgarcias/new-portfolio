@@ -20,5 +20,49 @@
         ]
       }
     ]
+  },
+  "pt": {
+    "company": "Ab Inbev",
+    "title": "Desenvolvedor Full Stack",
+    "start": "2025-02",
+    "end": "2026-03",
+    "icon": "code",
+    "stack": "NestJS, Next.js, GraphQL, REST APIs, SQL Server, Azure, Azure DevOps",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Desenvolvimento e manutenção de APIs RESTful e serviços GraphQL escaláveis com NestJS.",
+          "Criação de aplicações web de alto desempenho com Next.js, garantindo a melhor experiência e desempenho para o usuário.",
+          "Modelagem e otimização de bancos de dados relacionais com Microsoft SQL Server para sustentar aplicações críticas para o negócio.",
+          "Implantação e gestão de soluções em nuvem no Microsoft Azure, usando o Azure DevOps Services para automação de CI/CD.",
+          "Aplicação de boas práticas de qualidade de código, segurança e desempenho para garantir um software robusto e fácil de manter.",
+          "Colaboração com times multidisciplinares para alinhar as soluções de software aos objetivos do negócio.",
+          "Gestão do controle de versão, de pipelines e de deploys com o Azure DevOps Server."
+        ]
+      }
+    ]
+  },
+  "es": {
+    "company": "Ab Inbev",
+    "title": "Desarrollador Full Stack",
+    "start": "2025-02",
+    "end": "2026-03",
+    "icon": "code",
+    "stack": "NestJS, Next.js, GraphQL, REST APIs, SQL Server, Azure, Azure DevOps",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Desarrollo y mantenimiento de APIs RESTful y servicios GraphQL escalables con NestJS.",
+          "Creación de aplicaciones web de alto rendimiento con Next.js, garantizando la mejor experiencia y rendimiento para el usuario.",
+          "Diseño y optimización de bases de datos relacionales con Microsoft SQL Server para sostener aplicaciones críticas para el negocio.",
+          "Despliegue y gestión de soluciones en la nube en Microsoft Azure, utilizando Azure DevOps Services para la automatización de CI/CD.",
+          "Aplicación de buenas prácticas de calidad de código, seguridad y rendimiento para garantizar un software robusto y fácil de mantener.",
+          "Colaboración con equipos multifuncionales para alinear las soluciones de software con los objetivos del negocio.",
+          "Gestión del control de versiones, de pipelines y de despliegues con Azure DevOps Server."
+        ]
+      }
+    ]
   }
 }

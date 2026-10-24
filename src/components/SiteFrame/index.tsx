@@ -17,6 +17,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
+import LanguageSwitch from './LanguageSwitch';
 import SiteFooter from './SiteFooter';
 import ThemeToggle from './ThemeToggle';
 // I18N
@@ -86,6 +87,7 @@ export default function SiteFrame({
   const toggleRef = useRef<HTMLButtonElement>(null);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
   const wasLocked = useRef(false);
+  const frozenRef = useRef(false);
 
   const locked = menu !== 'closed';
   const open = menu === 'open';
@@ -174,6 +176,14 @@ export default function SiteFrame({
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [open, closeMenu]);
 
+  // While the menu is open, the page sits back in 3D and other sections
+  // cross the middle of the screen. The one that was there still counts,
+  // for the bar and for the language links. As the menu closes, the page
+  // slides to the section it goes to, which counts again.
+  useLayoutEffect(() => {
+    frozenRef.current = menu === 'locked' || menu === 'open';
+  }, [menu]);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
@@ -190,6 +200,7 @@ export default function SiteFrame({
       .filter((element): element is HTMLElement => element !== null);
     const observer = new IntersectionObserver(
       (entries) => {
+        if (frozenRef.current) return;
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
           const id = entry.target.id;
@@ -271,6 +282,7 @@ export default function SiteFrame({
           </nav>
 
           <div className="site-header__actions">
+            <LanguageSwitch variant="dropdown" section={current} />
             <ThemeToggle />
             <a
               className="btn btn--ghost btn--small site-header__cv"
@@ -327,6 +339,7 @@ export default function SiteFrame({
           ))}
         </ol>
         <div className="stack-menu__footer">
+          <LanguageSwitch variant="inline" section={current} />
           <ul className="social-links">
             {social.map(({ id, href, text }) => (
               <li key={id}>
