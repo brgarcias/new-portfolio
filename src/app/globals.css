@@ -16,6 +16,47 @@
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-stack: cubic-bezier(0.6, 0, 0.4, 1);
+  /* A spring, like the iPhone's, that goes 2% past the end and settles.
+     Browsers without linear() get a curve that settles without going past. */
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    --ease-spring: linear(
+      0,
+      0.038,
+      0.131,
+      0.251,
+      0.38,
+      0.505,
+      0.618,
+      0.716,
+      0.798,
+      0.864,
+      0.915,
+      0.953,
+      0.98,
+      0.998,
+      1.01,
+      1.016,
+      1.019,
+      1.02,
+      1.019,
+      1.017,
+      1.014,
+      1.012,
+      1.009,
+      1.007,
+      1.005,
+      1.004,
+      1.002,
+      1.001,
+      1.001,
+      1,
+      1
+    );
+  }
 }
 
 /* Colors of the dark theme, the site's original look. The class on <html>
