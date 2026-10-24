@@ -1,0 +1,14 @@
+{
+  "en": {
+    "order": 1,
+    "eyebrow": "Integrated Solutions",
+    "title": "CSS",
+    "device": "iphone",
+    "preview": "/images/projects/css-solucoes-preview.webp",
+    "image": "/images/projects/css-solucoes.webp",
+    "dialogTitle": "CSS - Integrated Solutions",
+    "dialogSubtitle": "Specialized services for terminals",
+    "description": "This was the first website I developed entirely on my own, starting from scratch. Since the company offers a wide range of services, I had to create multiple pages to accommodate all the information. The service names were quite lengthy, which challenged me to ensure that the design was responsive and that the layout of the menus (header, footer, and sidebar) was correct in all situations.",
+    "link": "http://csssolucoes.com.br/"
+  }
+}

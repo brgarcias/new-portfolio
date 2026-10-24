@@ -1,0 +1,22 @@
+{
+  "en": {
+    "company": "Art Seven",
+    "title": "Jr. Frontend Developer",
+    "start": "2020-09",
+    "end": "2021-03",
+    "icon": "desktop",
+    "stack": "JavaScript, React, jQuery, PHP, Node.js, MySQL, WordPress, HTML/CSS",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Engage in in-depth discussions and thorough analysis of new customer requirements, strategically crafting websites with a strong focus on conversion optimization. Meticulously enhance SEO strategies while ensuring impeccable responsiveness and optimal site performance. Adapt websites according to evolving customer needs.",
+          "Embark on a journey into framework languages and libraries like React and JQuery, gaining valuable insights into their application and potential.",
+          "Cultivate a proficient understanding of PHP and Node.JS, encompassing their distinct back-end architectures. Develop expertise in MYSQL, delving into its intricacies for efficient database management.",
+          "Take on a pivotal role in constructing diverse online platforms, including websites, captivating landing pages, and dynamic online.",
+          "Working with HTML/CSS, Javascript, PHP, MYSQL, Wordpress, Nodejs, React."
+        ]
+      }
+    ]
+  }
+}

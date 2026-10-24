@@ -1,0 +1,32 @@
+{
+  "en": {
+    "order": 1,
+    "title": "Full-Stack Developer",
+    "subtitle": "ReactJS",
+    "wide": false,
+    "dialogTitle": "Full-Stack Developer - IGTI",
+    "dialogSubtitle": "JavaScript, Node.js, React.js, MongoDB, GitHub e Heroku",
+    "modules": [
+      {
+        "title": "First Module - Pure JavaScript",
+        "description": "Simple application development with pure JavaScript and data persisted in memory."
+      },
+      {
+        "title": "Second Module - Node.js",
+        "description": "Development and Creation of API's with Node.js."
+      },
+      {
+        "title": "Third Module - React.js",
+        "description": "Application development with React, connecting to the API created in the previous module."
+      },
+      {
+        "title": "Fourth Module - GitHub / Heroku",
+        "description": "Data persistence, code versioning and deployment. Publishing the application on Github and deploying it on Heroku."
+      },
+      {
+        "title": "Final Challenge",
+        "description": "Completion of the final application with all the technologies studied."
+      }
+    ]
+  }
+}

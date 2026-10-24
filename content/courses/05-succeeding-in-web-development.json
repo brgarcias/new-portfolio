@@ -1,0 +1,40 @@
+{
+  "en": {
+    "order": 5,
+    "title": "Succeeding in Web Development",
+    "subtitle": "Becoming a Web Developer",
+    "wide": true,
+    "dialogTitle": "Web Development",
+    "dialogSubtitle": "LinkedIn",
+    "modules": [
+      {
+        "title": "Becoming a Web Developer",
+        "description": "Programmer's responsibilities, career, and its technologies."
+      },
+      {
+        "title": "A Developer's Life",
+        "description": "Types of dev's, what a dev's life is like, and where a dev can go."
+      },
+      {
+        "title": "Core Technologies",
+        "description": "Fundamental HTML5, CSS3 design, Interactive JavaScript, and HTTP(S) connection."
+      },
+      {
+        "title": "Core Concepts",
+        "description": "How the internet works, project building, design methods, development skill, and version control."
+      },
+      {
+        "title": "Supporting Technologies",
+        "description": "Server, Back-end, Tools, Frameworks and Libraries, and APIs and Services."
+      },
+      {
+        "title": "Education",
+        "description": "Good code development, BootCamps, online courses."
+      },
+      {
+        "title": "Getting a Job",
+        "description": "How dev's find jobs, the hiring process, compensation, and the best option."
+      }
+    ]
+  }
+}

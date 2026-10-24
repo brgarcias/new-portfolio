@@ -1,0 +1,24 @@
+{
+  "en": {
+    "company": "Ab Inbev",
+    "title": "Full Stack Developer",
+    "start": "2025-02",
+    "end": "2026-03",
+    "icon": "code",
+    "stack": "NestJS, Next.js, GraphQL, REST APIs, SQL Server, Azure, Azure DevOps",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Developing and maintaining scalable RESTful APIs and GraphQL services using NestJS.",
+          "Building high-performance web applications with Next.js, ensuring optimal user experience and performance.",
+          "Designing and optimizing relational databases using Microsoft SQL Server to support business-critical applications.",
+          "Deploying and managing cloud-based solutions on Microsoft Azure, leveraging Azure DevOps Services for CI/CD automation.",
+          "Implementing best practices in code quality, security, and performance to ensure robust and maintainable software.",
+          "Collaborating with cross-functional teams to align software solutions with business objectives.",
+          "Managing source control, pipelines, and deployments using Azure DevOps Server."
+        ]
+      }
+    ]
+  }
+}

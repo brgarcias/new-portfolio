@@ -1,0 +1,28 @@
+{
+  "en": {
+    "storyLabel": "Why this matters",
+    "story": "Alongside my work as a software engineer, I actively participate in volunteer initiatives supporting children, families in vulnerable situations, and elderly communities. These experiences reinforce my belief that technology professionals should generate impact not only through systems — but through people.\n\nContributing to social initiatives keeps me connected with real-world challenges and strengthens values that also shape how I collaborate professionally: empathy, responsibility, and long-term thinking.",
+    "galleryLabel": "Initiatives & Gallery",
+    "galleryTitle": "Initiatives I participated in",
+    "galleryHint": "Open each photo to learn more",
+    "stats": [
+      {
+        "value": "4",
+        "suffix": "+",
+        "label": "initiatives"
+      },
+      {
+        "value": "100",
+        "suffix": "+",
+        "label": "volunteer hours"
+      },
+      {
+        "value": "∞",
+        "suffix": "",
+        "label": "communities"
+      }
+    ],
+    "closing": "Staying involved with community initiatives helps me maintain perspective about the purpose behind everything we build as engineers.",
+    "highlight": "Technology transforms systems — *people transform lives.*"
+  }
+}

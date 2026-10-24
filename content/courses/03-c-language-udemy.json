@@ -1,0 +1,28 @@
+{
+  "en": {
+    "order": 3,
+    "title": "C Language - Udemy",
+    "subtitle": "C",
+    "wide": false,
+    "dialogTitle": "Concepts",
+    "dialogSubtitle": "Fundamentals of the programming language",
+    "modules": [
+      {
+        "title": "Conditions Structures",
+        "description": "If / else / else if / switch"
+      },
+      {
+        "title": "Repeating Structures",
+        "description": "while / do while / for"
+      },
+      {
+        "title": "Functions",
+        "description": "Parameters, return, function types"
+      },
+      {
+        "title": "Libraries",
+        "description": "stdio.h / conio.h"
+      }
+    ]
+  }
+}

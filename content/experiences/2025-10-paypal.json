@@ -1,0 +1,22 @@
+{
+  "en": {
+    "company": "PayPal",
+    "title": "Software Engineer (Node.js / GraphQL Platform)",
+    "start": "2025-10",
+    "end": "",
+    "icon": "code",
+    "stack": "Node.js, GraphQL",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Designed and evolved GraphQL schemas powering scalable data access across multiple platform services and frontend applications",
+          "Implemented resilient APIs supporting service-to-service communication within a distributed architecture",
+          "Improved resolver performance and query efficiency, reducing over-fetching and optimizing client response times",
+          "Applied clean architecture and strong modular design patterns to support maintainability across a growing codebase",
+          "Collaborated cross-functionally with platform engineers, product stakeholders, and frontend teams to deliver secure and production-grade features at scale"
+        ]
+      }
+    ]
+  }
+}

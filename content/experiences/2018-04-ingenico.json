@@ -1,0 +1,22 @@
+{
+  "en": {
+    "company": "Ingenico",
+    "title": "Intern Software Developer",
+    "start": "2018-04",
+    "end": "2020-04",
+    "icon": "mobile",
+    "stack": "Java, Android, C, C++",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Gained foundational experience in WEB infrastructure, including a comprehensive understanding of its key concepts, back-end and front-end structures, as well as databases and servers.",
+          "Acquired introductory knowledge of programming languages such as JAVA, Android, C, and C++.",
+          "Enhanced skills through hands-on project development, particularly within internal systems, involving the implementation of enhancements and maintenance of system components.",
+          "Took charge of tailoring and customizing payment terminals to meet specific requirements.",
+          "Demonstrated expertise in addressing customer needs through interface design, proficiently analyzing application logs, and serving as a pivotal troubleshooter. This role included the creation of development documentation for future reference."
+        ]
+      }
+    ]
+  }
+}

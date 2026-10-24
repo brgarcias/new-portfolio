@@ -16,86 +16,84 @@ import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
 import ModalComponent from '@/src/components/Modal/Lazy';
 import { openOnKey } from '@/src/components/Modal/openOnKey';
+import { markup } from '@/src/components/Markup';
 // CONTENT
-import { items } from './contributing';
+import type {
+  Contributing as ContributingContent,
+  Initiative,
+  SectionHeader,
+} from '@/src/content';
 // CSS
 import './styles.css';
 
-const total = items.length;
 const pad = (value: number) => String(value).padStart(2, '0');
 // The viewer goes around: after the last photo comes the first.
-const move = (index: number, step: number) => (index + step + total) % total;
+const wrap = (index: number, step: number, total: number) =>
+  (index + step + total) % total;
 
-export default function Contributing() {
+interface ContributingProps {
+  header: SectionHeader;
+  content: ContributingContent;
+  initiatives: Initiative[];
+}
+
+export default function Contributing({
+  header,
+  content,
+  initiatives,
+}: Readonly<ContributingProps>) {
   const [selected, setSelected] = useState(0);
   const [viewerOpen, setViewerOpen] = useState(false);
-  const photo = items[selected];
+  const total = initiatives.length;
+  const photo = initiatives[selected];
 
   const open = (index: number) => {
     setSelected(index);
     setViewerOpen(true);
   };
 
-  const go = (step: number) => setSelected((index) => move(index, step));
+  const go = (step: number) => setSelected((index) => wrap(index, step, total));
 
   // The arrow keys browse the photos while the viewer is open.
   useEffect(() => {
     if (!viewerOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'ArrowLeft') setSelected((index) => move(index, -1));
-      if (event.key === 'ArrowRight') setSelected((index) => move(index, 1));
+      if (event.key === 'ArrowLeft') {
+        setSelected((index) => wrap(index, -1, total));
+      }
+      if (event.key === 'ArrowRight') {
+        setSelected((index) => wrap(index, 1, total));
+      }
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [viewerOpen]);
+  }, [viewerOpen, total]);
 
   return (
-    <Section
-      id="contributing"
-      description={
-        <>
-          Developing the community side{' '}
-          <span className="text-gradient">the most important</span>!
-        </>
-      }
-      quote={{
-        text: 'Our lives begin to end the day we remain silent about the things that matter.',
-        author: 'Martin Luther King Jr.',
-      }}
-    >
+    <Section header={header}>
       <div className="contrib">
         <Reveal className="contrib__story">
-          <p className="contrib__label">Why this matters</p>
+          <p className="contrib__label">{content.storyLabel}</p>
           <div className="contrib__story-text">
-            <p>
-              Alongside my work as a software engineer, I actively participate
-              in volunteer initiatives supporting children, families in
-              vulnerable situations, and elderly communities. These experiences
-              reinforce my belief that technology professionals should generate
-              impact not only through systems — but through people.
-            </p>
-            <p>
-              Contributing to social initiatives keeps me connected with
-              real-world challenges and strengthens values that also shape how I
-              collaborate professionally: empathy, responsibility, and long-term
-              thinking.
-            </p>
+            {content.story.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
           </div>
         </Reveal>
 
         <div className="contrib__gallery">
           <Reveal className="contrib__gallery-head">
             <div>
-              <p className="contrib__label">Initiatives &amp; Gallery</p>
-              <h3 className="contrib__title">Initiatives I participated in</h3>
+              <p className="contrib__label">{content.galleryLabel}</p>
+              <h3 className="contrib__title">{content.galleryTitle}</h3>
             </div>
-            <p className="contrib__hint">Open each photo to learn more</p>
+            <p className="contrib__hint">{content.galleryHint}</p>
           </Reveal>
 
           <Reveal className="contrib__grid" delay={0.1}>
             <ul className="contrib-grid">
-              {items.map((item, index) => (
-                <li key={item.number} className="contrib-card">
+              {initiatives.map((item, index) => (
+                <li key={item.slug} className="contrib-card">
                   <button
                     type="button"
                     className="contrib-card__button"
@@ -105,13 +103,15 @@ export default function Contributing() {
                   >
                     <Image
                       className="contrib-card__image"
-                      src={item.thumb}
+                      src={item.thumb.src}
+                      width={item.thumb.width}
+                      height={item.thumb.height}
                       alt={item.alt}
                       unoptimized
                     />
                     <span className="contrib-card__caption">
                       <span className="contrib-card__number">
-                        {item.number}
+                        {pad(index + 1)}
                       </span>
                       {item.label}
                     </span>
@@ -127,32 +127,19 @@ export default function Contributing() {
 
         <Reveal className="contrib__closing">
           <div className="contrib-stats">
-            <div className="contrib-stat">
-              <strong>
-                4<sup>+</sup>
-              </strong>
-              <span>initiatives</span>
-            </div>
-            <div className="contrib-stat">
-              <strong>
-                100<sup>+</sup>
-              </strong>
-              <span>volunteer hours</span>
-            </div>
-            <div className="contrib-stat">
-              <strong>∞</strong>
-              <span>communities</span>
-            </div>
+            {content.stats.map((stat) => (
+              <div key={stat.label} className="contrib-stat">
+                <strong>
+                  {stat.value}
+                  {stat.suffix && <sup>{stat.suffix}</sup>}
+                </strong>
+                <span>{stat.label}</span>
+              </div>
+            ))}
           </div>
           <div className="contrib__closing-text">
-            <p>
-              Staying involved with community initiatives helps me maintain
-              perspective about the purpose behind everything we build as
-              engineers.
-            </p>
-            <p className="contrib__highlight">
-              Technology transforms systems — <em>people transform lives.</em>
-            </p>
+            <p>{content.closing}</p>
+            <p className="contrib__highlight">{markup(content.highlight)}</p>
           </div>
         </Reveal>
       </div>
@@ -167,15 +154,17 @@ export default function Contributing() {
         <div className="photo-viewer">
           <Image
             className="photo-viewer__image"
-            src={photo.src}
+            src={photo.image.src}
+            width={photo.image.width}
+            height={photo.image.height}
             alt={photo.alt}
             unoptimized
           />
           <div className="photo-viewer__text">
             <p className="photo-viewer__count">
-              <span>{photo.number}</span> / {pad(total)}
+              <span>{pad(selected + 1)}</span> / {pad(total)}
             </p>
-            <p className="photo-viewer__desc">{photo.desc}</p>
+            <p className="photo-viewer__desc">{photo.description}</p>
             <div className="photo-viewer__nav">
               <button
                 type="button"

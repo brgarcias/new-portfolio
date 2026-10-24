@@ -3,19 +3,27 @@ import Section from '@/src/components/Section';
 import ExperienceItem from './ExperienceItem';
 import TechRibbon from './TechRibbon';
 // CONTENT
-import { getExperiences } from './experiences';
+import type { Experience, SectionHeader } from '@/src/content';
 // CSS
 import './styles.css';
 
-export default function ProfessionalExperience() {
-  const experiences = getExperiences();
+interface ProfessionalExperienceProps {
+  header: SectionHeader;
+  // From the most recent role.
+  experiences: Experience[];
+}
+
+export default function ProfessionalExperience({
+  header,
+  experiences,
+}: Readonly<ProfessionalExperienceProps>) {
   // Every technology the experiences name, from the most recent role.
   const technologies = [
     ...new Set(experiences.flatMap((experience) => experience.stack)),
   ];
 
   return (
-    <Section id="experience" className="experience">
+    <Section header={header} className="experience">
       <div className="xp">
         {/* The rail draws itself as the page scrolls past the roles. */}
         <span className="xp__rail" aria-hidden="true">
@@ -24,15 +32,15 @@ export default function ProfessionalExperience() {
         <ol className="xp__list">
           {experiences.map((experience, index) => (
             <ExperienceItem
-              key={experience.id}
+              key={experience.slug}
               company={experience.company}
               icon={experience.icon}
               title={experience.title}
               date={experience.date}
               duration={experience.duration}
               stack={experience.stack}
-              description={experience.description}
-              current={!experience.end}
+              details={experience.details}
+              current={experience.current}
               defaultOpen={index === 0}
             />
           ))}

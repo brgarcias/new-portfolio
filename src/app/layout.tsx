@@ -15,6 +15,9 @@ import { Providers } from './providers';
 // SITE
 import { siteUrl } from './site';
 import { applyStoredTheme, themeColors } from './theme';
+// CONTENT
+import { getProfile, getSections, getSocialLinks } from '@/src/content';
+import { sectionIds } from '@/src/content/sections';
 
 const inter = Inter({ subsets: ['latin'] });
 // Display font for headings, exposed as --font-display.
@@ -35,19 +38,16 @@ const removeHeadWhitespace =
   'if(node.nodeType===3&&!node.textContent.trim())node.remove()';
 
 // Only facts the page already shows: name, role, e-mail and profiles.
-const personJsonLd = {
+const personJsonLd = (profile: ReturnType<typeof getProfile>) => ({
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: 'Bruno Garcia',
-  alternateName: 'Bruno Garcia da Silva',
-  jobTitle: 'Full-Stack Developer',
+  name: profile.name,
+  alternateName: profile.fullName,
+  jobTitle: profile.role,
   url: `${siteUrl}/`,
-  email: 'mailto:bruno-151299@hotmail.com',
-  sameAs: [
-    'https://www.linkedin.com/in/bruno-garcia-9854b1161/',
-    'https://github.com/brgarcias',
-  ],
-};
+  email: `mailto:${profile.email}`,
+  sameAs: [profile.linkedin, profile.github],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -183,6 +183,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const profile = getProfile('en');
+  const sections = getSections('en', profile);
+  const nav = sectionIds.map((id) => {
+    const { label, title } = sections[id];
+    return { id, label, title };
+  });
+
   return (
     // The theme script swaps the dark class before React starts, which is
     // why the class on <html> may differ from the server's.
@@ -198,13 +205,24 @@ export default function RootLayout({
           type="application/ld+json"
           // Escapes "<" so the JSON can never close the script element.
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(personJsonLd).replace(/</g, '\\u003c'),
+            __html: JSON.stringify(personJsonLd(profile)).replace(
+              /</g,
+              '\\u003c',
+            ),
           }}
         />
       </head>
       <body className={inter.className}>
         <Providers>
-          <SiteFrame year={new Date().getUTCFullYear()}>{children}</SiteFrame>
+          <SiteFrame
+            nav={nav}
+            social={getSocialLinks(profile)}
+            name={profile.name}
+            role={profile.role}
+            year={new Date().getUTCFullYear()}
+          >
+            {children}
+          </SiteFrame>
         </Providers>
       </body>
     </html>

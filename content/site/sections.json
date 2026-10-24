@@ -1,0 +1,45 @@
+{
+  "en": {
+    "about": {
+      "label": "About",
+      "title": "About Me"
+    },
+    "experience": {
+      "label": "Experience",
+      "title": "Professional Experience"
+    },
+    "education": {
+      "label": "Education",
+      "title": "Academic Education",
+      "description": "Postgraduate Coming Soon",
+      "quote": "The learned man is a discoverer of facts that already exist - but the wise man is a creator of values that do not exist and that he makes exist.",
+      "author": "Albert Einstein"
+    },
+    "courses": {
+      "label": "Courses",
+      "title": "Courses & Certifications",
+      "description": "Continuous development looking for an opportunity to apply my **experience**!",
+      "quote": "The saddest aspect of life today is that science gains in knowledge faster than society in wisdom.",
+      "author": "Isaac Asimov"
+    },
+    "projects": {
+      "label": "Projects",
+      "title": "My Projects",
+      "description": "Some of the projects carried out throughout my career!"
+    },
+    "contributing": {
+      "label": "Contributing",
+      "title": "Contributing",
+      "description": "Developing the community side **the most important**!",
+      "quote": "Our lives begin to end the day we remain silent about the things that matter.",
+      "author": "Martin Luther King Jr."
+    },
+    "contact": {
+      "label": "Contact",
+      "title": "Contact",
+      "description": "My personal information, but if you prefer [text me](whatsapp)!",
+      "quote": "Facing suffering will undoubtedly contribute to the elevation of your spiritual practice, provided that you are able to transform calamity and misfortune into a path.",
+      "author": "Dalai Lama"
+    }
+  }
+}

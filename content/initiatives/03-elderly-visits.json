@@ -1,0 +1,11 @@
+{
+  "en": {
+    "order": 3,
+    "title": "Elderly home visits",
+    "description": "Visits promoting interaction, wellbeing, and emotional support in elderly care homes.",
+    "label": "Elderly visits",
+    "alt": "Elderly care home visit",
+    "image": "/images/contributing/elderly-visit.webp",
+    "thumb": "/images/contributing/elderly-visit-thumb.webp"
+  }
+}

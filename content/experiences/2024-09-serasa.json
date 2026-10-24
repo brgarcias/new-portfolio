@@ -1,0 +1,24 @@
+{
+  "en": {
+    "company": "Serasa",
+    "title": "Backend Developer",
+    "start": "2024-09",
+    "end": "2025-02",
+    "icon": "code",
+    "stack": "Node.js, NestJS, Jest, AWS Lambda, SQS, SNS, Step Functions, API Gateway, Microservices, REST APIs",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Focused on developing unit and end-to-end (E2E) tests using Jest, ensuring the reliability and quality of delivered applications.",
+          "Experience in handling parallelism and concurrency, optimizing the performance of complex systems and ensuring efficiency in executing multiple simultaneous tasks.",
+          "Implementation of solutions with AWS Lambda, SQS, SNS, and Step Functions, leveraging serverless resources to create scalable and highly available systems.",
+          "Node.js: Development of robust and scalable applications using the NestJS framework to create modular and maintainable solutions.",
+          "Development of RESTful APIs to facilitate service integration and meet client needs with high performance and security.",
+          "Utilization of microservices-based architectures, promoting modularity and system resilience in production.",
+          "Experience with API Gateway for request management and ensuring efficient communication between services."
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "en": {
+    "order": 2,
+    "title": "JavaScript - Udemy",
+    "subtitle": "JavaScript",
+    "wide": false,
+    "dialogTitle": "Modern Web Course - Udemy",
+    "dialogSubtitle": "JavaScript, Node.js, HTML5, CSS3, Ajax, jQuery, Bootstrap, React.js, Express",
+    "modules": [
+      {
+        "title": "Javascript",
+        "description": "Fundamentals, Control Structures, Function, Object, Array."
+      },
+      {
+        "title": "Node.js",
+        "description": "Modules System, Read/Write Files, Middleware, API - Express, Postman."
+      },
+      {
+        "title": "Ajax",
+        "description": "XMLHttp, Fetch API, Axios, Ajax with jQuery."
+      },
+      {
+        "title": "React.js",
+        "description": "Functional Components, Hooks."
+      }
+    ]
+  }
+}

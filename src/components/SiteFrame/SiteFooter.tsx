@@ -2,16 +2,23 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
 // CONTENT
-import { socialLinks } from './content';
+import { socialIcons } from './content';
+import type { SocialLink } from '@/src/content';
 
 interface SiteFooterProps {
   isHome: boolean;
+  name: string;
+  role: string;
+  social: readonly SocialLink[];
   // Comes from the server, so the page and the browser show the same year.
   year: number;
 }
 
 export default function SiteFooter({
   isHome,
+  name,
+  role,
+  social,
   year,
 }: Readonly<SiteFooterProps>) {
   return (
@@ -22,13 +29,13 @@ export default function SiteFooter({
             <span className="site-brand__mark" aria-hidden="true">
               BG
             </span>
-            <span className="site-brand__name">Bruno Garcia</span>
+            <span className="site-brand__name">{name}</span>
           </a>
-          <p className="site-footer__role">Full-Stack Developer</p>
+          <p className="site-footer__role">{role}</p>
         </div>
         <ul className="social-links" aria-label="Social links">
-          {socialLinks.map(({ icon, href, text }) => (
-            <li key={text}>
+          {social.map(({ id, href, text }) => (
+            <li key={id}>
               <a
                 className="social-links__link"
                 href={href}
@@ -36,7 +43,7 @@ export default function SiteFooter({
                 rel="noopener noreferrer"
                 aria-label={text}
               >
-                <FontAwesomeIcon icon={icon} />
+                <FontAwesomeIcon icon={socialIcons[id]} />
               </a>
             </li>
           ))}
@@ -45,7 +52,7 @@ export default function SiteFooter({
 
       <div className="site-footer__bottom">
         <p>
-          © <span className="site-footer__year">{year}</span> Bruno Garcia
+          © <span className="site-footer__year">{year}</span> {name}
         </p>
         {isHome && (
           <a className="site-footer__top" href="#top">

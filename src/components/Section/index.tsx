@@ -2,28 +2,28 @@
 import { ReactNode } from 'react';
 // COMPONENTS
 import Reveal from '@/src/components/Reveal';
+import { markup } from '@/src/components/Markup';
 // CONTENT
-import { navItems, type SectionId } from '@/src/components/SiteFrame/content';
+import type { SectionHeader } from '@/src/content/types';
 
 interface SectionProps {
-  id: SectionId;
-  description?: ReactNode;
-  quote?: { text: string; author: string };
+  // From content/site/sections.json, which the menu also reads, so the menu
+  // and the page always agree.
+  header: SectionHeader;
+  // Shown right after the description, such as an icon.
+  descriptionEnd?: ReactNode;
   className?: string;
   children?: ReactNode;
 }
 
-// A home page section with the shared numbered header. The number, label and
-// title come from the navigation, so the menu and the page always agree.
+// A home page section with the shared numbered header.
 export default function Section({
-  id,
-  description,
-  quote,
+  header,
+  descriptionEnd,
   className,
   children,
 }: Readonly<SectionProps>) {
-  const index = navItems.findIndex((item) => item.id === id);
-  const { label, title } = navItems[index];
+  const { id, number, label, title, description, quote } = header;
 
   return (
     <section
@@ -34,15 +34,18 @@ export default function Section({
     >
       <Reveal className="section__header">
         <p className="eyebrow">
-          <span className="eyebrow__index">
-            {String(index + 1).padStart(2, '0')}
-          </span>
+          <span className="eyebrow__index">{number}</span>
           {label}
         </p>
         <h2 id={`${id}-title`} className="section__title">
           {title}
         </h2>
-        {description && <p className="section__description">{description}</p>}
+        {description && (
+          <p className="section__description">
+            {markup(description)}
+            {descriptionEnd}
+          </p>
+        )}
         {quote && (
           <blockquote className="section__quote">
             <p>{`“${quote.text}”`}</p>
