@@ -893,6 +893,9 @@ test('mostra a página 404 no estilo do site e volta ao portfólio', async ({
 test('aplica os cabeçalhos de segurança sem bloquear o site', async ({
   page,
 }) => {
+  // Every section, every dialog and the form, one after the other, take
+  // most of the default timeout.
+  test.slow();
   await page.addInitScript(() => {
     const violations: string[] = [];
     Object.assign(window, { cspViolations: violations });
