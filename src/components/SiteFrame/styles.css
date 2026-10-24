@@ -616,8 +616,6 @@
   perspective-origin: 50% -50%;
 }
 
-/* Pinned a frame before it moves, the page gets its own layer then, so the
-   first frame of the movement does not wait for it. */
 .stage--locked .stage__sheet {
   position: absolute;
   z-index: 2;
@@ -626,7 +624,6 @@
   transition:
     transform 0.7s var(--ease-stack),
     clip-path 0.7s var(--ease-stack);
-  will-change: transform;
 }
 
 .stage--open .stage__sheet {

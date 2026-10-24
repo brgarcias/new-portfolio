@@ -9,6 +9,8 @@ import {
 } from '@heroui/react';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
+// MOTION
+import { spring } from '@/src/components/spring';
 
 // HeroUI's own motion, on springs like the iPhone's: on phones the dialog
 // slides up, and on wider screens it grows a little into place (the
@@ -21,8 +23,8 @@ const motionProps = {
       opacity: 1,
       willChange: 'auto',
       transition: {
-        scale: { type: 'spring', bounce: 0.2, duration: 0.5 },
-        y: { type: 'spring', bounce: 0.15, duration: 0.55 },
+        scale: { duration: 0.5, ease: spring },
+        y: { duration: 0.55, ease: spring },
         opacity: { duration: 0.25, ease: 'easeOut' },
       },
     },
