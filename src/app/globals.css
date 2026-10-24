@@ -262,11 +262,42 @@ button:focus-visible {
   mix-blend-mode: normal;
 }
 
+/* The page, its stacked sheets and the menu only move, so they keep their
+   transitions: the menu can open or close while the theme changes. */
 .theme-switching,
-.theme-switching *,
+.theme-switching
+  *:not(.stage__sheet, .stage__ghost, .stack-menu, .stack-menu__item),
 .theme-switching *::before,
 .theme-switching *::after {
   transition: none !important;
+}
+
+/* With the menu open, the colors fade instead of the circle (ThemeToggle).
+   The page and the sheets fade their background and keep their motion. */
+.theme-fading,
+.theme-fading *,
+.theme-fading *::before,
+.theme-fading *::after {
+  transition-property:
+    color, background-color, border-color, fill, stroke, box-shadow,
+    outline-color, text-decoration-color !important;
+  transition-duration: 0.45s !important;
+  transition-timing-function: ease !important;
+  transition-delay: 0s !important;
+}
+
+.theme-fading .stage__sheet {
+  transition-property: transform, clip-path, background-color !important;
+  transition-duration: 0.7s, 0.7s, 0.45s !important;
+  transition-timing-function:
+    var(--ease-stack), var(--ease-stack), ease !important;
+}
+
+.theme-fading .stage__ghost {
+  transition-property: transform, opacity, background-color !important;
+  transition-duration: 0.7s, 0.7s, 0.45s !important;
+  transition-timing-function:
+    var(--ease-stack), var(--ease-stack), ease !important;
 }
 
 /* Loops wait while their part of the page is off screen (OffscreenPause). */
