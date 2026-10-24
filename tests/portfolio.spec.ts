@@ -378,13 +378,31 @@ test('encolhe os botões sob o dedo e os solta com uma mola', async ({
   for (const meta of await page.locator('meta[name="theme-color"]').all()) {
     await expect(meta).toHaveAttribute('content', '#16171b');
   }
-  const contact = page.locator('#top .btn--primary');
-  const box = (await contact.boundingBox())!;
+  // A small button shrinks to 94%.
+  const theme = page.locator('.site-header .theme-toggle');
+  const box = (await theme.boundingBox())!;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
-  await expect(contact).toHaveCSS('scale', '0.94');
+  await expect(theme).toHaveCSS('scale', '0.94');
   await page.mouse.up();
-  await expect(contact).toHaveCSS('scale', 'none');
+  await expect(theme).toHaveCSS('scale', 'none');
+});
+
+test('abre uma experiência pela seta do título', async ({ page }) => {
+  await page.goto('/');
+  await scrollTo(page, '#experience .xp-item:nth-child(2) .xp-card');
+  const card = page.locator('#experience .xp-item').nth(1).locator('.xp-card');
+  await expect(card).toHaveCSS('opacity', '1');
+  const toggle = card.locator('.xp-card__toggle');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  // A press that lasts, as a person's: the title shrinks meanwhile, and the
+  // release still lands on it.
+  const arrow = (await card.locator('.xp-card__chevron').boundingBox())!;
+  await page.mouse.move(arrow.x + arrow.width / 2, arrow.y + arrow.height / 2);
+  await page.mouse.down();
+  await page.waitForTimeout(200);
+  await page.mouse.up();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
 });
 
 test('pausa as animações em loop fora da tela', async ({ page }) => {
