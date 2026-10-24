@@ -234,18 +234,21 @@
       : name.replace(/ - [\w.-]+$/, '');
   }
 
+  // The integrations that report checks choose their links.
+  const webLink = (url) => (url?.startsWith('https://') ? url : undefined);
+
   function readCheck(node) {
     if (node.__typename === 'StatusContext') {
       return {
         name: checkName(node.context),
-        url: node.targetUrl,
+        url: webLink(node.targetUrl),
         state: outcomes[node.state] ?? 'failure',
       };
     }
     const result = node.status === 'COMPLETED' ? node.conclusion : 'PENDING';
     return {
       name: checkName(node.name),
-      url: node.detailsUrl,
+      url: webLink(node.detailsUrl),
       state: outcomes[result] ?? 'failure',
     };
   }
