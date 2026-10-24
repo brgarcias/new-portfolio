@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import {
+  countViewTransitions,
   expectMenuClosed,
   openFeedbackForm,
   openMenu,
@@ -122,8 +123,80 @@ test('volta a página para a frente com um clique nela', async ({ page }) => {
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 });
 
+test('segue o tema do sistema enquanto o visitante não escolhe', async ({
+  page,
+}) => {
+  const html = page.locator('html');
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.goto('/');
+  await expect(html).toHaveClass(/\blight\b/);
+  await expect(page.locator('body')).toHaveCSS(
+    'background-color',
+    'rgb(246, 246, 251)',
+  );
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await expect(html).toHaveClass(/\bdark\b/);
+  await expect(html).not.toHaveClass(/\blight\b/);
+  await expect(page.locator('body')).toHaveCSS(
+    'background-color',
+    'rgb(22, 23, 27)',
+  );
+});
+
+test('alterna o tema pelo botão e lembra a escolha', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  const viewTransitions = await countViewTransitions(page);
+  // Records the theme as the page is read, before React starts.
+  await page.addInitScript(() =>
+    document.addEventListener('DOMContentLoaded', () =>
+      Object.assign(window, {
+        themeAtStart: document.documentElement.className,
+      }),
+    ),
+  );
+  await page.goto('/');
+  const html = page.locator('html');
+  await expect(html).toHaveClass(/\bdark\b/);
+
+  await page.getByRole('button', { name: 'Switch to light theme' }).click();
+  await expect(html).toHaveClass(/\blight\b/);
+  await expect(html).not.toHaveClass(/\bdark\b/);
+  // The new theme spreads in a circle from the button.
+  expect(await viewTransitions()).toBe(1);
+  await expect(html).not.toHaveClass(/theme-switching/);
+  await expect(page.locator('body')).toHaveCSS(
+    'background-color',
+    'rgb(246, 246, 251)',
+  );
+  // The browser's bar on phones follows the chosen theme.
+  for (const meta of await page.locator('meta[name="theme-color"]').all()) {
+    await expect(meta).toHaveAttribute('content', '#f6f6fb');
+  }
+  expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe(
+    'light',
+  );
+
+  // The next visit starts in the chosen theme, before the page is drawn.
+  await page.reload();
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { themeAtStart: string }).themeAtStart,
+    ),
+  ).toMatch(/\blight\b/);
+  await expect(html).toHaveClass(/\blight\b/);
+
+  // Going back to the system's theme forgets the choice.
+  await page.getByRole('button', { name: 'Switch to dark theme' }).click();
+  await expect(html).toHaveClass(/\bdark\b/);
+  expect(await page.evaluate(() => localStorage.getItem('theme'))).toBeNull();
+  await openSection(page, 'contact');
+  expect(errors).toEqual([]);
+});
+
 test('respeita a preferência por reduzir movimento', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  const viewTransitions = await countViewTransitions(page);
   await page.goto('/');
   await expect(page.locator('html')).toHaveCSS('scroll-behavior', 'auto');
   await expect(page.locator('.hero__title-accent')).toHaveCSS(
@@ -141,6 +214,11 @@ test('respeita a preferência por reduzir movimento', async ({ page }) => {
   );
   await openSection(page, 'projects');
   await openSection(page, 'about');
+  // The theme changes at once, without the circle that spreads from the
+  // button.
+  await page.getByRole('button', { name: 'Switch to light theme' }).click();
+  await expect(page.locator('html')).toHaveClass(/\blight\b/);
+  expect(await viewTransitions()).toBe(0);
 });
 
 test('abre e recolhe as experiências profissionais', async ({ page }) => {
@@ -778,6 +856,8 @@ test('mostra a página de erro e recupera o site com Try again', async ({
 test('mostra a página de erro quando o próprio layout falha', async ({
   page,
 }) => {
+  // The page keeps the theme it was in.
+  await page.emulateMedia({ colorScheme: 'light' });
   // Only the layout's header observes #top, the hero, to highlight the
   // current section, so this breaks the layout alone.
   await page.addInitScript(() => {
@@ -794,4 +874,9 @@ test('mostra a página de erro quando o próprio layout falha', async ({
   // The global error page replaces the layout, header included.
   await expect(page.locator('.site-header')).toHaveCount(0);
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('html')).toHaveClass(/\blight\b/);
+  await expect(page.locator('body')).toHaveCSS(
+    'background-color',
+    'rgb(246, 246, 251)',
+  );
 });

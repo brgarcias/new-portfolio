@@ -18,6 +18,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import SiteFooter from './SiteFooter';
+import ThemeToggle from './ThemeToggle';
 // CONTENT
 import { navItems, resume, socialLinks, type SectionId } from './content';
 // CSS
@@ -247,6 +248,7 @@ export default function SiteFrame({
           </nav>
 
           <div className="site-header__actions">
+            <ThemeToggle />
             <a
               className="btn btn--ghost btn--small site-header__cv"
               href={resume.href}

@@ -122,7 +122,8 @@
   gap: 0.6rem;
   padding: 3rem 1rem 1rem;
   background: linear-gradient(to top, rgb(12 13 16 / 0.92), transparent);
-  color: var(--color-text);
+  /* On the photo, so light in both themes. */
+  color: #f0f0f5;
   font-family: var(--font-display);
   font-size: 1rem;
   font-weight: 600;
@@ -131,7 +132,7 @@
 }
 
 .contrib-card__number {
-  color: var(--color-brand-light);
+  color: #9091f7;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -186,7 +187,7 @@
     linear-gradient(
         140deg,
         rgb(92 94 220 / 0.6),
-        rgb(255 255 255 / 0.06) 45%,
+        rgb(var(--rgb-veil) / 0.06) 45%,
         rgb(34 211 238 / 0.35)
       )
       border-box;
@@ -300,7 +301,7 @@
   place-items: center;
   border: 1px solid var(--color-border-strong);
   border-radius: 50%;
-  background: rgb(255 255 255 / 0.03);
+  background: var(--color-fill);
   color: var(--color-text);
   transition:
     border-color 0.2s ease,
@@ -349,4 +350,14 @@
   .contrib-card__button:focus-visible .contrib-card__image {
     transform: none;
   }
+}
+
+/* ─── Light theme ───────────────────────────────────────── */
+.light .contrib__closing {
+  box-shadow: 0 30px 60px -32px rgb(31 33 74 / 0.25);
+}
+
+.light .contrib-card__button:hover,
+.light .contrib-card__button:focus-visible {
+  box-shadow: 0 24px 50px -30px rgb(92 94 220 / 0.5);
 }

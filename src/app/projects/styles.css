@@ -266,7 +266,7 @@
   place-items: center;
   border: 1px solid var(--color-border-strong);
   border-radius: 50%;
-  background: rgb(255 255 255 / 0.03);
+  background: var(--color-fill);
   color: var(--color-text);
   transition:
     border-color 0.2s ease,
@@ -337,5 +337,28 @@
   .projects__progress span,
   .projects__arrow {
     transition: none;
+  }
+}
+
+/* ─── Light theme ───────────────────────────────────────── */
+/* The devices stand on a light stage, with the same glows. */
+.light .project-card__stage {
+  background:
+    radial-gradient(circle at 50% 45%, rgb(92 94 220 / 0.22), transparent 62%),
+    radial-gradient(
+      circle at 85% 100%,
+      rgb(34 211 238 / 0.16),
+      transparent 55%
+    ),
+    linear-gradient(160deg, #ebebf7, #f8f8fc);
+}
+
+.light .project-card__device {
+  filter: drop-shadow(0 24px 30px rgb(31 33 74 / 0.3));
+}
+
+@media (hover: hover) {
+  .light .project-card:hover {
+    box-shadow: 0 30px 60px -34px rgb(92 94 220 / 0.5);
   }
 }

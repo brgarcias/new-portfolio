@@ -50,7 +50,7 @@
     linear-gradient(
         140deg,
         rgb(92 94 220 / 0.8),
-        rgb(255 255 255 / 0.06) 45%,
+        rgb(var(--rgb-veil) / 0.06) 45%,
         rgb(34 211 238 / 0.45)
       )
       border-box;
@@ -98,7 +98,7 @@
 .contact-card__subtitle a {
   color: inherit;
   text-decoration: underline;
-  text-decoration-color: rgb(144 145 247 / 0.45);
+  text-decoration-color: rgb(var(--rgb-brand-light) / 0.45);
   text-underline-offset: 0.2em;
   transition:
     color 0.2s ease,
@@ -176,5 +176,12 @@
   .contact-card__title a,
   .contact-card__subtitle a {
     transition: none;
+  }
+}
+
+/* ─── Light theme ───────────────────────────────────────── */
+@media (hover: hover) {
+  .light .contact-card:hover {
+    box-shadow: 0 24px 50px -30px rgb(92 94 220 / 0.45);
   }
 }

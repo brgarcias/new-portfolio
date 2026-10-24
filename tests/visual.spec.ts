@@ -73,26 +73,103 @@ async function goToSection(page: Page, id: Section) {
   );
 }
 
-test('topo da página', { tag: '@visual' }, async ({ page }) => {
-  await page.goto('/');
-  await expectScreenshot(page, 'hero.png', '#top');
-});
+// The main views, in both themes. The dark theme, the site's original look,
+// keeps the original names, and the light one adds a prefix.
+for (const theme of ['dark', 'light'] as const) {
+  const name = (file: string) => (theme === 'dark' ? file : `light-${file}`);
 
-test('menu aberto', { tag: '@visual' }, async ({ page }) => {
-  await page.goto('/');
-  await goToSection(page, 'experience');
-  await openMenu(page);
-  await expectScreenshot(page, 'menu.png');
-});
+  test.describe(`tema ${theme === 'dark' ? 'escuro' : 'claro'}`, () => {
+    test.use({ colorScheme: theme });
 
-for (const id of sections) {
-  test(`seção ${id}`, { tag: '@visual' }, async ({ page }) => {
-    await page.goto('/');
-    await goToSection(page, id);
-    await expectScreenshot(page, `${id}.png`, `#${id}`);
+    test('topo da página', { tag: '@visual' }, async ({ page }) => {
+      await page.goto('/');
+      await expectScreenshot(page, name('hero.png'), '#top');
+    });
+
+    test('menu aberto', { tag: '@visual' }, async ({ page }) => {
+      await page.goto('/');
+      await goToSection(page, 'experience');
+      await openMenu(page);
+      await expectScreenshot(page, name('menu.png'));
+    });
+
+    for (const id of sections) {
+      test(`seção ${id}`, { tag: '@visual' }, async ({ page }) => {
+        await page.goto('/');
+        await goToSection(page, id);
+        await expectScreenshot(page, name(`${id}.png`), `#${id}`);
+      });
+    }
+
+    test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
+      await page.goto('/');
+      await scrollTo(page, '#courses .course-card:first-child');
+      // Like the other captures that click, it waits for the cards to finish
+      // entering, so the page behind the dialog is always in the same place.
+      await expect(page.locator('#courses .course-grid-wrap')).toHaveCSS(
+        'opacity',
+        '1',
+      );
+      await page
+        .locator('#courses .course-card')
+        .first()
+        .getByRole('button')
+        .click();
+      await expect(page.getByRole('dialog')).toBeVisible();
+      await expectScreenshot(page, name('course-details.png'));
+    });
+
+    test('rodapé', { tag: '@visual' }, async ({ page }) => {
+      await page.goto('/');
+      await page.evaluate(() =>
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: 'instant',
+        }),
+      );
+      await expect(page.locator('#contact .contact')).toHaveCSS('opacity', '1');
+      await expectScreenshot(page, name('footer.png'), '.site-footer');
+    });
+
+    test(
+      'erros do formulário de feedback',
+      { tag: '@visual' },
+      async ({ page }) => {
+        await page.goto('/');
+        const dialog = await openFeedbackForm(page);
+        await dialog.getByRole('button', { name: 'Send' }).click();
+        await expect(
+          dialog.getByText('Please, write your name.'),
+        ).toBeVisible();
+        await expectScreenshot(page, name('feedback-errors.png'));
+      },
+    );
+
+    test('aviso de feedback enviado', { tag: '@visual' }, async ({ page }) => {
+      await page.route('**/*', (route) =>
+        route.request().method() === 'POST'
+          ? route.fulfill({ status: 200, body: '' })
+          : route.continue(),
+      );
+      await page.goto('/');
+      const dialog = await openFeedbackForm(page);
+      await dialog.locator('input[name="fullName"]').fill('Visitante de Teste');
+      await dialog.locator('input[name="email"]').fill('visitante@example.com');
+      await dialog.locator('textarea[name="feedback"]').fill('Gostei muito.');
+      await dialog.getByRole('button', { name: 'Send' }).click();
+      await expect(dialog).toBeHidden();
+      await expect(page.getByText('Message Submitted')).toBeVisible();
+      await expectScreenshot(page, name('feedback-sent.png'));
+    });
+
+    test('página 404', { tag: '@visual' }, async ({ page }) => {
+      await page.goto('/pagina-inexistente');
+      await expectScreenshot(page, name('not-found.png'));
+    });
   });
 }
 
+// The other views, in the dark theme only.
 test('experiência expandida', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
   const second = '#experience .xp-item:nth-child(2)';
@@ -123,24 +200,6 @@ test('faixa de tecnologias', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
   await scrollTo(page, '#experience .tech-ribbon');
   await expectScreenshot(page, 'tech-ribbon.png', '#experience');
-});
-
-test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
-  await page.goto('/');
-  await scrollTo(page, '#courses .course-card:first-child');
-  // Like the other captures that click, it waits for the cards to finish
-  // entering, so the page behind the dialog is always in the same place.
-  await expect(page.locator('#courses .course-grid-wrap')).toHaveCSS(
-    'opacity',
-    '1',
-  );
-  await page
-    .locator('#courses .course-card')
-    .first()
-    .getByRole('button')
-    .click();
-  await expect(page.getByRole('dialog')).toBeVisible();
-  await expectScreenshot(page, 'course-details.png');
 });
 
 test('slider e detalhes de projeto', { tag: '@visual' }, async ({ page }) => {
@@ -196,47 +255,6 @@ test('cartões de contato', { tag: '@visual' }, async ({ page }) => {
   await expectScreenshot(page, 'contact-cards.png', '#contact');
 });
 
-test('rodapé', { tag: '@visual' }, async ({ page }) => {
-  await page.goto('/');
-  await page.evaluate(() =>
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'instant',
-    }),
-  );
-  await expect(page.locator('#contact .contact')).toHaveCSS('opacity', '1');
-  await expectScreenshot(page, 'footer.png', '.site-footer');
-});
-
-test(
-  'erros do formulário de feedback',
-  { tag: '@visual' },
-  async ({ page }) => {
-    await page.goto('/');
-    const dialog = await openFeedbackForm(page);
-    await dialog.getByRole('button', { name: 'Send' }).click();
-    await expect(dialog.getByText('Please, write your name.')).toBeVisible();
-    await expectScreenshot(page, 'feedback-errors.png');
-  },
-);
-
-test('aviso de feedback enviado', { tag: '@visual' }, async ({ page }) => {
-  await page.route('**/*', (route) =>
-    route.request().method() === 'POST'
-      ? route.fulfill({ status: 200, body: '' })
-      : route.continue(),
-  );
-  await page.goto('/');
-  const dialog = await openFeedbackForm(page);
-  await dialog.locator('input[name="fullName"]').fill('Visitante de Teste');
-  await dialog.locator('input[name="email"]').fill('visitante@example.com');
-  await dialog.locator('textarea[name="feedback"]').fill('Gostei muito.');
-  await dialog.getByRole('button', { name: 'Send' }).click();
-  await expect(dialog).toBeHidden();
-  await expect(page.getByText('Message Submitted')).toBeVisible();
-  await expectScreenshot(page, 'feedback-sent.png');
-});
-
 test('página de erro', { tag: '@visual' }, async ({ page }) => {
   // A browser without IntersectionObserver breaks the sections that enter as
   // they scroll into view.
@@ -248,9 +266,4 @@ test('página de erro', { tag: '@visual' }, async ({ page }) => {
     page.getByRole('heading', { level: 1, name: 'Something Went Wrong' }),
   ).toBeVisible();
   await expectScreenshot(page, 'error.png');
-});
-
-test('página 404', { tag: '@visual' }, async ({ page }) => {
-  await page.goto('/pagina-inexistente');
-  await expectScreenshot(page, 'not-found.png');
 });

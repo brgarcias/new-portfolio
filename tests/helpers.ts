@@ -93,3 +93,25 @@ export async function openFeedbackForm(page: Page) {
   await expect(dialog).toBeVisible();
   return dialog;
 }
+
+// Counts the view transitions the page starts, as the theme button does to
+// spread the new theme from it.
+export async function countViewTransitions(page: Page) {
+  await page.addInitScript(() => {
+    const start = document.startViewTransition?.bind(document);
+    Object.assign(window, { viewTransitions: 0 });
+    if (!start) return;
+    document.startViewTransition = ((update) => {
+      Object.assign(window, {
+        viewTransitions:
+          (window as unknown as { viewTransitions: number }).viewTransitions +
+          1,
+      });
+      return start(update);
+    }) as typeof document.startViewTransition;
+  });
+  return () =>
+    page.evaluate(
+      () => (window as unknown as { viewTransitions: number }).viewTransitions,
+    );
+}
