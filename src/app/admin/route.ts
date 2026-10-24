@@ -1,4 +1,10 @@
-<!doctype html>
+// The content panel (Decap CMS). It is a route, not a file in public/, so
+// it gets the security headers of next.config.mjs: Netlify serves the files
+// in public/ straight from its CDN, without them. Decap itself, and its
+// config.yml, stay in public/admin.
+export const dynamic = 'force-static';
+
+const page = `<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
@@ -6,13 +12,16 @@
     <meta name="robots" content="noindex, nofollow" />
     <title>Painel de conteúdo | Bruno Garcia</title>
     <link rel="icon" href="/favicon/favicon-32x32.png" type="image/png" />
-    <!-- The page answers at /admin, where a relative config.yml would point
-         to the root, so the configuration is named here. -->
     <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
   </head>
   <body>
-    <!-- Decap CMS 3.17.1, served by the site itself, since the security
-         policy only accepts scripts from the site. See AGENTS.md. -->
     <script src="/admin/cms/decap-cms.js"></script>
   </body>
 </html>
+`;
+
+export function GET() {
+  return new Response(page, {
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  });
+}

@@ -843,6 +843,7 @@ test('abre o painel de conteúdo em /admin', async ({ page, request }) => {
   const panelPolicy = response.headers()['content-security-policy'];
   expect(panelPolicy).toContain('https://api.github.com');
   expect(panelPolicy).toContain("frame-ancestors 'none'");
+  expect(response.headers()['x-frame-options']).toBe('DENY');
   const sitePolicy = (await request.get('/')).headers()[
     'content-security-policy'
   ];

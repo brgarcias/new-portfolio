@@ -54,13 +54,7 @@ const nextConfig = {
     return [{ source: '/en', destination: '/', permanent: true }];
   },
   async rewrites() {
-    return {
-      beforeFiles: [
-        { source: '/', destination: '/en' },
-        // The content panel is a static page.
-        { source: '/admin', destination: '/admin/index.html' },
-      ],
-    };
+    return { beforeFiles: [{ source: '/', destination: '/en' }] };
   },
   async headers() {
     return [
