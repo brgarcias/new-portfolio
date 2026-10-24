@@ -14,10 +14,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  quality:
-    name: quality
+  # The browser tests take most of the time, so two machines share them, each
+  # with its own build. The quality job below waits for both: it is the check
+  # that main requires.
+  e2e:
+    name: e2e (${{ matrix.shard }}/2)
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     # The screenshots in tests/snapshots are recorded in this image. Keep its
     # tag equal to the @playwright/test version in package.json.
     container:
@@ -31,7 +38,9 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Lint, types and formatting do not depend on the shard.
       - run: pnpm check
+        if: matrix.shard == 1
       # The tests check a fixed copy of the content, so edits made in the
       # content panel do not fail them. The Netlify Deploy Preview builds
       # the real content.
@@ -42,22 +51,33 @@ jobs:
         run: |
           mkdir -p tests/snapshots
           find tests/snapshots -type f | sort > "$RUNNER_TEMP/snapshots-before.txt"
-      - run: pnpm test:e2e
+      - run: pnpm test:e2e --shard=${{ matrix.shard }}/2
       - name: Fail on new screenshots
         run: |
           find tests/snapshots -type f | sort > "$RUNNER_TEMP/snapshots-after.txt"
           new=$(comm -13 "$RUNNER_TEMP/snapshots-before.txt" "$RUNNER_TEMP/snapshots-after.txt")
           if [ -n "$new" ]; then
             echo "$new"
-            echo "::error::New screenshots were recorded. Review them in the test-results artifact and commit them to tests/snapshots."
+            echo "::error::New screenshots were recorded. Review them in the test-results artifacts and commit them to tests/snapshots."
             exit 1
           fi
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: test-results
+          name: test-results-${{ matrix.shard }}
           path: |
             test-results/
             tests/snapshots/
           retention-days: 7
+
+  quality:
+    name: quality
+    needs: e2e
+    # Runs even when a shard fails, to fail in turn.
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require both shards to pass
+        run: test "${{ needs.e2e.result }}" = success
