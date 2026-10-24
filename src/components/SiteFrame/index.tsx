@@ -54,6 +54,17 @@ function headerHeight() {
   return document.querySelector<HTMLElement>('.site-header')?.offsetHeight ?? 0;
 }
 
+// How far the theme button slides to sit beside the menu button once the
+// résumé button between them fades out. Phones don't show that button.
+function themeShift(resumeButton: HTMLElement | null) {
+  if (!resumeButton?.getClientRects().length) return 0;
+  const actions = resumeButton.parentElement;
+  const gap = actions
+    ? Number.parseFloat(getComputedStyle(actions).columnGap)
+    : 0;
+  return resumeButton.getBoundingClientRect().width + (gap || 0);
+}
+
 interface SiteFrameProps {
   children: ReactNode;
   nav: NavItem[];
@@ -83,7 +94,9 @@ export default function SiteFrame({
   const [targetId, setTargetId] = useState<SectionId | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<SectionId | null>(null);
+  const [shift, setShift] = useState(0);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const resumeRef = useRef<HTMLAnchorElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
   const wasLocked = useRef(false);
@@ -96,6 +109,7 @@ export default function SiteFrame({
   const openMenu = useCallback(() => {
     setScroll({ saved: window.scrollY, target: window.scrollY });
     setTargetId(null);
+    setShift(themeShift(resumeRef.current));
     setMenu('locked');
   }, []);
 
@@ -248,11 +262,15 @@ export default function SiteFrame({
       <a className="skip-link" href="#main">
         {t.skipToContent}
       </a>
+      {/* The bar is see-through while the page is away. Its links and
+          buttons fade out while the menu is open, and come back as it
+          closes. */}
       <header
         className={[
           'site-header',
           scrolled && 'site-header--scrolled',
           locked && 'site-header--menu',
+          open && 'site-header--menu-open',
         ]
           .filter(Boolean)
           .join(' ')}
@@ -281,10 +299,18 @@ export default function SiteFrame({
             </ul>
           </nav>
 
-          <div className="site-header__actions">
+          <div
+            className="site-header__actions"
+            style={
+              locked
+                ? ({ '--theme-shift': `${shift}px` } as CSSProperties)
+                : undefined
+            }
+          >
             <LanguageSwitch variant="dropdown" section={current} />
             <ThemeToggle />
             <a
+              ref={resumeRef}
               className="btn btn--ghost btn--small site-header__cv"
               href={resume.href}
               download={resume.fileName}
@@ -295,7 +321,7 @@ export default function SiteFrame({
             <button
               ref={toggleRef}
               type="button"
-              className={`menu-toggle${locked ? ' is-open' : ''}`}
+              className={`menu-toggle${open ? ' is-open' : ''}`}
               aria-expanded={open}
               aria-controls="stack-menu"
               aria-label={locked ? t.closeMenu : t.openMenu}

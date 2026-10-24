@@ -184,6 +184,34 @@ test('destaca na barra a seção que está na tela', async ({
   );
 });
 
+test('junta o botão de tema ao do menu enquanto o menu está aberto', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'Phones do not show the résumé button in the bar.');
+  await page.goto('/');
+  const resume = page.locator('.site-header__cv');
+  const space = async () => {
+    const theme = await page
+      .locator('.site-header .theme-toggle')
+      .boundingBox();
+    const menu = await page.locator('.menu-toggle').boundingBox();
+    return menu!.x - (theme!.x + theme!.width);
+  };
+  const before = await space();
+  // The résumé button fades out, and the theme button takes its place, with
+  // the bar's usual gap of 0.75rem.
+  await openMenu(page);
+  await expect(resume).toBeHidden();
+  await expect(page.locator('.site-nav')).toBeHidden();
+  expect(await space()).toBeCloseTo(12, 0);
+  await page.keyboard.press('Escape');
+  await expectMenuClosed(page);
+  await waitForTransitions(page);
+  await expect(resume).toBeVisible();
+  expect(await space()).toBeCloseTo(before, 0);
+});
+
 test('mantém o menu funcionando com cliques rápidos', async ({ page }) => {
   await page.goto('/');
   // A second click while the page is still moving back is ignored.

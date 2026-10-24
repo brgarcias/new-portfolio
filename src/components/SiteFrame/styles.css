@@ -119,11 +119,82 @@
   margin-left: 0;
 }
 
+/* While the menu is open, the links, the languages and the résumé button
+   fade out, and the theme button slides into the résumé button's place,
+   beside the menu button, by --theme-shift (measured when the menu opens).
+   They come back as the menu closes and take clicks once the page is back. */
+.site-header--menu-open .site-nav,
+.site-header--menu-open .site-header__cv,
+.site-header--menu-open .lang-switch {
+  visibility: hidden;
+  opacity: 0;
+}
+
 .site-header--menu .site-nav,
 .site-header--menu .site-header__cv,
 .site-header--menu .lang-switch {
-  visibility: hidden;
-  opacity: 0;
+  pointer-events: none;
+}
+
+.site-header--menu-open .theme-toggle {
+  transform: translate3d(var(--theme-shift, 0px), 0, 0);
+}
+
+/* It passes over the résumé button as that one fades. */
+.site-header--menu .theme-toggle {
+  z-index: 1;
+}
+
+/* The way out is quick: they blur, shrink a little and fade. The way back
+   starts once the theme button is on its way, with the spring of the
+   iPhone. */
+@media (prefers-reduced-motion: no-preference) {
+  .site-header .site-nav,
+  .site-header .lang-switch {
+    transition:
+      opacity 0.4s ease 0.12s,
+      filter 0.4s ease 0.12s,
+      transform 0.6s var(--ease-spring) 0.12s,
+      visibility 0s;
+  }
+
+  /* The transitions of .btn, and the fade. */
+  .site-header .site-header__cv {
+    transition:
+      transform 0.3s var(--ease-out),
+      box-shadow 0.3s ease,
+      background-color 0.2s ease,
+      background-position 0.5s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      opacity 0.4s ease 0.12s,
+      filter 0.4s ease 0.12s,
+      visibility 0s;
+  }
+
+  .site-header--menu-open .site-nav,
+  .site-header--menu-open .site-header__cv,
+  .site-header--menu-open .lang-switch {
+    filter: blur(6px);
+    transform: scale(0.94);
+    transition:
+      opacity 0.25s ease,
+      filter 0.25s ease,
+      transform 0.3s ease,
+      visibility 0s linear 0.3s;
+  }
+
+  .site-header .theme-toggle {
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.6s var(--ease-spring);
+  }
+
+  .menu-toggle .menu-toggle__line {
+    transition: transform 0.5s var(--ease-spring);
+  }
 }
 
 /* The links need the bar's full width, which the longer names of the
