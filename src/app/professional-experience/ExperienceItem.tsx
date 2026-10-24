@@ -3,20 +3,36 @@
 // HOOKS
 import { useId, useState } from 'react';
 // FONT AWESOME
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import {
+  faChevronDown,
+  faCode,
+  faDesktopAlt,
+  faMobileRetro,
+  faUsers,
+} from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import Reveal from '@/src/components/Reveal';
+// CONTENT
+import type { Experience } from '@/src/content';
+
+// The icon on the node of each role, as chosen in its content file.
+const icons = {
+  code: faCode,
+  desktop: faDesktopAlt,
+  mobile: faMobileRetro,
+  users: faUsers,
+};
 
 interface ExperienceItemProps {
   company: string;
-  icon: IconProp;
+  icon: Experience['icon'];
   title: string;
   date: string;
   duration: string;
   stack: string[];
-  description: string;
+  // The list the card opens, as HTML built from the content.
+  details: string;
   current?: boolean;
   defaultOpen?: boolean;
 }
@@ -28,7 +44,7 @@ export default function ExperienceItem({
   date,
   duration,
   stack,
-  description,
+  details,
   current = false,
   defaultOpen = false,
 }: Readonly<ExperienceItemProps>) {
@@ -38,7 +54,7 @@ export default function ExperienceItem({
   return (
     <li className={`xp-item${current ? ' xp-item--current' : ''}`}>
       <span className="xp-item__node" aria-hidden="true">
-        <FontAwesomeIcon icon={icon} />
+        <FontAwesomeIcon icon={icons[icon]} />
       </span>
 
       <Reveal className="xp-item__meta">
@@ -89,7 +105,7 @@ export default function ExperienceItem({
         >
           <div
             className="xp-card__details-inner"
-            dangerouslySetInnerHTML={{ __html: description }}
+            dangerouslySetInnerHTML={{ __html: details }}
           />
         </div>
       </Reveal>

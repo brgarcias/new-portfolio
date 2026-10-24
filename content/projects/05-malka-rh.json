@@ -1,0 +1,14 @@
+{
+  "en": {
+    "order": 5,
+    "eyebrow": "Recruitment and Selection",
+    "title": "Malka RH",
+    "device": "watch",
+    "preview": "/images/projects/malka-preview.webp",
+    "image": "/images/projects/malka.webp",
+    "dialogTitle": "Malka RH",
+    "dialogSubtitle": "Recruitment and Selection",
+    "description": "On this website, I created my first modal. Inside it, I embedded an iframe that connected to a customer service page within the client's system. Given that the company operates in the field of recruitment and selection and provides rapid customer service, I had to implement a condition for the modal to appear only during specific hours (from 8 a.m. to 6 p.m. on weekdays), and I achieved this using JavaScript.",
+    "link": "http://malkarh.com.br/lp/recrutamento-e-selecao/"
+  }
+}

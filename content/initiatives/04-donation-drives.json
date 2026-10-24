@@ -1,0 +1,11 @@
+{
+  "en": {
+    "order": 4,
+    "title": "General donation drives",
+    "description": "Campaigns providing food, clothing, and essential items for families in vulnerable conditions.",
+    "label": "Donation drives",
+    "alt": "Community donation campaign",
+    "image": "/images/contributing/donate-campaign.webp",
+    "thumb": "/images/contributing/donate-campaign-thumb.webp"
+  }
+}

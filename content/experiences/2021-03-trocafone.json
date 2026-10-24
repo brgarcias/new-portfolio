@@ -1,0 +1,51 @@
+{
+  "en": {
+    "company": "Trocafone",
+    "title": "Full Stack Developer",
+    "start": "2021-03",
+    "end": "2024-07",
+    "icon": "code",
+    "stack": "React, Next.js, Node.js, NestJS, TypeScript, PHP, Laravel, GraphQL, PostgreSQL, MySQL, Redis, AWS",
+    "details": [
+      {
+        "heading": "Full Stack Developer",
+        "items": [
+          "Productively collaborated with the Product team to understand portfolio management, analysis, and risk-related business requirements and specifications.",
+          "Actively participated in creating strategic initiatives to design, code, and test innovative solutions.",
+          "Implemented and updated application modules under Product team supervision, ensuring alignment with established guidelines.",
+          "Led discussions, analysis, and development of new projects, ensuring their technical feasibility and alignment with business objectives.",
+          "Worked with a wide range of technologies, including PHP (CodeIgniter/Laravel), GraphQl/REST API, ReactJS/NextJS, NodeJS/NestJS, Python, MySQL/PostgreSQL, Jira, Jenkins, and AWS Cloud (RDS, EC2, S3, SQS, SNS, Lambda).",
+          "Led the development of five major projects, three of which focused on information distribution and idea sharing. Utilized Node.js/NestJS and PHP/Laravel for the backend with REST API and GraphQL, and React.js/Next.js and Blade (PHP) for the frontend.",
+          "Actively participated in collaborative projects emphasizing information sharing, interdisciplinary networking, and continuous communication, demonstrating resilience and adaptability."
+        ]
+      },
+      {
+        "heading": "Backend Developer",
+        "items": [
+          "Developing scalable and efficient web applications using Node.js, TypeScript, and Next.js.",
+          "Implementing business logic and front-end to back-end integration using GraphQL and REST APIs.",
+          "Collaborating with designers and other developers to translate business requirements into technical features.",
+          "Utilizing AWS Lambda, SQS, CloudWatch, and S3 to build serverless architectures and ensure scalability and availability.",
+          "Managing PostgreSQL and Redis databases for efficient data storage and retrieval.",
+          "Actively contributing to all stages of the software development lifecycle, from planning to delivery and maintenance.",
+          "Using GitLab and JIRA for source code management, team collaboration, and issue tracking.",
+          "Continuous learning and improvement of technical skills, staying updated with the latest industry practices and technologies."
+        ]
+      },
+      {
+        "heading": "Frontend Developer",
+        "items": [
+          "Development of responsive and intuitive user interfaces using React.js, Material- UI, and Bootstrap.",
+          "Implementation of application logic and state management using Redux.js.",
+          "Writing clean, efficient, and modular code in JavaScript, HTML5, and CSS to ensure desired functionality and appearance.",
+          "Collaborating with designers and other developers to translate business requirements into high-quality software products.",
+          "Troubleshooting and optimizing front-end application performance.",
+          "Integrating external libraries and plugins, such as JQuery, to enhance functionality and user experience.",
+          "Adhering to web development standards and best practices to ensure code scalability and maintainability.",
+          "Actively participating in code reviews and unit testing to ensure software quality and stability.",
+          "Continuous learning and improvement of technical skills, staying updated with trends and advancements in the web development industry."
+        ]
+      }
+    ]
+  }
+}

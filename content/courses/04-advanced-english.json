@@ -1,0 +1,32 @@
+{
+  "en": {
+    "order": 4,
+    "title": "Advanced English",
+    "subtitle": "Number One",
+    "wide": false,
+    "dialogTitle": "Corporate English",
+    "dialogSubtitle": "Grammar and Conversation.",
+    "modules": [
+      {
+        "title": "Tenses",
+        "description": "Simple Past, Past Perfect, Past Continuous."
+      },
+      {
+        "title": "Expressions",
+        "description": "\"For goodness sake!\", \"To have no clue\", \"Never mind\"."
+      },
+      {
+        "title": "Comparison",
+        "description": "Superlative, Comparative."
+      },
+      {
+        "title": "Ancient Customs",
+        "description": "Used to."
+      },
+      {
+        "title": "Reported Speech",
+        "description": "Said x told - Can x Could - Will x Would."
+      }
+    ]
+  }
+}

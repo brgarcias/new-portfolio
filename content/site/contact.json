@@ -1,0 +1,33 @@
+{
+  "en": {
+    "profile": {
+      "label": "Profile",
+      "status": "Married"
+    },
+    "education": {
+      "label": "Education",
+      "title": "Bachelor of Computer Science",
+      "subtitle": "Universidade São Judas Tadeu - USJT",
+      "details": [
+        "Concluded",
+        "06/2018 - 06/2022"
+      ]
+    },
+    "contact": {
+      "label": "Contact",
+      "details": [
+        "Vila Nova Cachoeirinha - Limão",
+        "São Paulo, SP - Brazil"
+      ]
+    },
+    "languages": {
+      "label": "Languages",
+      "title": "Advanced English",
+      "subtitle": "English Course - Number One",
+      "details": [
+        "Available for travel and relocation",
+        "An exchange soon"
+      ]
+    }
+  }
+}

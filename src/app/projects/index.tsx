@@ -16,12 +16,27 @@ import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
 import ModalComponent from '@/src/components/Modal/Lazy';
 import { openOnKey } from '@/src/components/Modal/openOnKey';
+// DEVICES
+import iPhoneImg from '@/public/images/projects/iphone.webp';
+import iPadImg from '@/public/images/projects/ipad.webp';
+import MacbookImg from '@/public/images/projects/macbook.webp';
+import iMacImg from '@/public/images/projects/imac.webp';
+import AppleWatchImg from '@/public/images/projects/apple-watch.webp';
 // CONTENT
-import { projectsData } from './projects.data';
+import type { Project, SectionHeader } from '@/src/content';
 // CSS
 import './styles.css';
 
-const total = projectsData.length;
+// The frame of each device a project can be shown in, and the size of the
+// site's preview on its screen, as in the old slider.
+const devices = {
+  iphone: { frame: iPhoneImg, width: '117px', height: 'auto' },
+  ipad: { frame: iPadImg, width: '152px', height: 'auto' },
+  macbook: { frame: MacbookImg, width: '321px', height: '203px' },
+  imac: { frame: iMacImg, width: '321px', height: 'auto' },
+  watch: { frame: AppleWatchImg, width: '100px', height: '120px' },
+};
+
 const pad = (value: number) => String(value).padStart(2, '0');
 
 // The device leans towards the mouse, with a light following it. Touch and
@@ -44,12 +59,21 @@ function untilt(event: PointerEvent<HTMLElement>) {
   }
 }
 
-export default function Projects() {
+interface ProjectsProps {
+  header: SectionHeader;
+  projects: Project[];
+}
+
+export default function Projects({
+  header,
+  projects,
+}: Readonly<ProjectsProps>) {
   const trackRef = useRef<HTMLUListElement>(null);
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState(0);
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const project = projectsData[selected];
+  const total = projects.length;
+  const project = projects[selected];
 
   // The card the arrows sent the track to, while it glides there.
   const gliding = useRef<{ index: number; until: number } | null>(null);
@@ -95,7 +119,7 @@ export default function Projects() {
       cancelAnimationFrame(frame);
       window.clearTimeout(recheck);
     };
-  }, []);
+  }, [total]);
 
   // The arrows go around: past the last project comes the first. Quick
   // clicks count from the card the track is still gliding to.
@@ -125,17 +149,14 @@ export default function Projects() {
   };
 
   return (
-    <Section
-      id="projects"
-      description="Some of the projects carried out throughout my career!"
-    >
+    <Section header={header}>
       <Reveal className="projects">
         {/* Swiping scrolls the track. With the keyboard, each card's button
             scrolls its card into view when it gets focus. */}
         <ul ref={trackRef} className="projects__track" aria-label="Projects">
-          {projectsData.map((item, index) => (
+          {projects.map((item, index) => (
             <li
-              key={item.contentId}
+              key={item.slug}
               className="project-card"
               aria-current={index === current ? 'true' : undefined}
               onPointerMove={tilt}
@@ -146,18 +167,20 @@ export default function Projects() {
                   <div className="project-card__device">
                     <Image
                       className="project-card__frame"
-                      src={item.image}
+                      src={devices[item.device].frame}
                       alt=""
                       unoptimized
                     />
                     <div className="project-card__screen">
                       <Image
-                        src={item.previewImage}
+                        src={item.preview.src}
+                        width={item.preview.width}
+                        height={item.preview.height}
                         alt={item.title}
                         unoptimized
                         style={{
-                          width: item.imageWidth,
-                          height: item.heightWidth,
+                          width: devices[item.device].width,
+                          height: devices[item.device].height,
                         }}
                       />
                     </div>
@@ -169,7 +192,7 @@ export default function Projects() {
               <div className="project-card__body">
                 <p className="project-card__eyebrow">
                   <span aria-hidden="true">{pad(index + 1)}</span>
-                  {item.titleSpan}
+                  {item.eyebrow}
                 </p>
                 <h3 className="project-card__title">{item.title}</h3>
                 {/* The button covers the whole card. */}
@@ -222,21 +245,23 @@ export default function Projects() {
         visible={detailsOpen}
         setVisible={setDetailsOpen}
         size="5xl"
-        title={project.insideTitle}
-        subtitle={project.insideSubtitle}
+        title={project.dialogTitle}
+        subtitle={project.dialogSubtitle}
       >
         <div className="project-details">
           <Image
             className="project-details__image"
-            src={project.insideImage}
-            alt={project.insideTitle}
+            src={project.image.src}
+            width={project.image.width}
+            height={project.image.height}
+            alt={project.dialogTitle}
             unoptimized
           />
           <div className="project-details__text">
             <p>{project.description}</p>
             <a
               className="btn btn--primary btn--small"
-              href={project.websiteLink}
+              href={project.link}
               target="_blank"
               rel="noopener noreferrer"
             >

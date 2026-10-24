@@ -1,0 +1,25 @@
+{
+  "en": {
+    "company": "Domy",
+    "title": "Backend Developer",
+    "start": "2024-06",
+    "end": "2025-02",
+    "icon": "code",
+    "stack": "Node.js, NestJS, AWS, REST APIs, Microservices, API Gateway",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Backend Development: Designing and implementing server-side logic to ensure high performance and responsiveness to front-end requests.",
+          "Node.js: Leveraging the power of Node.js to build efficient and scalable network applications.",
+          "NestJS: Utilizing NestJS framework to develop maintainable and modular server-side applications.",
+          "AWS: Implementing and managing cloud infrastructure using Amazon Web Services to ensure reliability and scalability.",
+          "API REST: Designing and developing RESTful APIs to enable seamless communication between client and server.",
+          "Microservices: Building and orchestrating microservices architecture to enhance modularity and improve system resilience.",
+          "API Gateway: Managing and routing API requests efficiently with API Gateway to ensure secure and consistent service delivery.",
+          "Passionate about leveraging modern technologies to solve complex problems, I thrive in dynamic environments where innovation and continuous learning are valued."
+        ]
+      }
+    ]
+  }
+}

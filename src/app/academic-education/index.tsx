@@ -9,35 +9,42 @@ import { faGraduationCap, faHeart } from '@fortawesome/free-solid-svg-icons';
 import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
 // CONTENT
-import { steps } from './sections';
+import type { EducationStep, SectionHeader } from '@/src/content';
 // CSS
 import './styles.css';
 
-const last = steps.length - 1;
-// Past the last finished step, the rail turns dashed.
-const finished = steps.filter((step) => !step.upcoming).length - 1;
-
 // Arrow keys move to the next or previous step, wrapping around, and Home
 // and End jump to the ends, as in any list of tabs.
-const keyMoves: Record<string, (index: number) => number> = {
-  ArrowDown: (index) => (index === last ? 0 : index + 1),
-  ArrowRight: (index) => (index === last ? 0 : index + 1),
-  ArrowUp: (index) => (index === 0 ? last : index - 1),
-  ArrowLeft: (index) => (index === 0 ? last : index - 1),
+const keyMoves: Record<string, (index: number, last: number) => number> = {
+  ArrowDown: (index, last) => (index === last ? 0 : index + 1),
+  ArrowRight: (index, last) => (index === last ? 0 : index + 1),
+  ArrowUp: (index, last) => (index === 0 ? last : index - 1),
+  ArrowLeft: (index, last) => (index === 0 ? last : index - 1),
   Home: () => 0,
-  End: () => last,
+  End: (_, last) => last,
 };
 
-export default function AcademicEducation() {
+interface AcademicEducationProps {
+  header: SectionHeader;
+  steps: EducationStep[];
+}
+
+export default function AcademicEducation({
+  header,
+  steps,
+}: Readonly<AcademicEducationProps>) {
   const [active, setActive] = useState(0);
   const id = useId();
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const last = steps.length - 1;
+  // Past the last finished step, the rail turns dashed.
+  const finished = steps.filter((step) => !step.upcoming).length - 1;
 
   const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     const move = keyMoves[event.key];
     if (!move) return;
     event.preventDefault();
-    const next = move(active);
+    const next = move(active, last);
     setActive(next);
     tabs.current[next]?.focus();
   };
@@ -52,17 +59,13 @@ export default function AcademicEducation() {
 
   return (
     <Section
-      id="education"
-      description={
+      header={header}
+      descriptionEnd={
         <>
-          Postgraduate Coming Soon{' '}
+          {' '}
           <FontAwesomeIcon icon={faHeart} style={{ color: 'red' }} />
         </>
       }
-      quote={{
-        text: 'The learned man is a discoverer of facts that already exist - but the wise man is a creator of values that do not exist and that he makes exist.',
-        author: 'Albert Einstein',
-      }}
     >
       <Reveal className="edu-wrap">
         <div className="edu" style={railStyle}>
@@ -80,7 +83,7 @@ export default function AcademicEducation() {
             </span>
             {steps.map((step, index) => (
               <button
-                key={step.label}
+                key={step.slug}
                 ref={(element) => {
                   tabs.current[index] = element;
                 }}
@@ -110,7 +113,7 @@ export default function AcademicEducation() {
 
           {steps.map((step, index) => (
             <div
-              key={step.label}
+              key={step.slug}
               id={`${id}-panel-${index}`}
               className="edu-panel"
               role="tabpanel"
@@ -122,7 +125,7 @@ export default function AcademicEducation() {
                 {String(index + 1).padStart(2, '0')} · {step.label}
               </p>
               <h3 className="edu-panel__title">{step.title}</h3>
-              <p className="edu-panel__text">{step.content}</p>
+              <p className="edu-panel__text">{step.text}</p>
             </div>
           ))}
         </div>

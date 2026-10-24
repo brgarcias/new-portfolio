@@ -1,0 +1,14 @@
+{
+  "en": {
+    "order": 2,
+    "eyebrow": "Accounting Organization",
+    "title": "Sensei",
+    "device": "ipad",
+    "preview": "/images/projects/sensei-contabil-preview.webp",
+    "image": "/images/projects/sensei-contabil.webp",
+    "dialogTitle": "Sensei Accounting Organization",
+    "dialogSubtitle": "Accounting firm",
+    "description": "This was my first time implementing a responsive website. During this occasion, I had to deal with several responsiveness issues, especially with the breadcrumb, where both the images and the text/title needed significant improvements. Additionally, it was also my first time creating a drop-down menu, which can be seen in the \"Services\" tab.",
+    "link": "https://www.senseicontabil.com.br/"
+  }
+}

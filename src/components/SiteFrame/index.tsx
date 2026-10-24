@@ -20,7 +20,9 @@ import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import SiteFooter from './SiteFooter';
 import ThemeToggle from './ThemeToggle';
 // CONTENT
-import { navItems, resume, socialLinks, type SectionId } from './content';
+import { resume, socialIcons, type NavItem } from './content';
+import type { SocialLink } from '@/src/content';
+import { sectionIds, type SectionId } from '@/src/content/sections';
 // CSS
 import './styles.css';
 
@@ -48,10 +50,23 @@ function headerHeight() {
   return document.querySelector<HTMLElement>('.site-header')?.offsetHeight ?? 0;
 }
 
+interface SiteFrameProps {
+  children: ReactNode;
+  nav: NavItem[];
+  social: readonly SocialLink[];
+  name: string;
+  role: string;
+  year: number;
+}
+
 export default function SiteFrame({
   children,
+  nav,
+  social,
+  name,
+  role,
   year,
-}: Readonly<{ children: ReactNode; year: number }>) {
+}: Readonly<SiteFrameProps>) {
   const pathname = usePathname();
   const isHome = pathname === '/';
   const [menu, setMenu] = useState<MenuState>('closed');
@@ -162,7 +177,7 @@ export default function SiteFrame({
   // without IntersectionObserver simply get no highlight.
   useEffect(() => {
     if (!isHome || !('IntersectionObserver' in window)) return;
-    const elements = ['top', ...navItems.map(({ id }) => id)]
+    const elements = ['top', ...sectionIds]
       .map((id) => document.getElementById(id))
       .filter((element): element is HTMLElement => element !== null);
     const observer = new IntersectionObserver(
@@ -228,12 +243,12 @@ export default function SiteFrame({
             <span className="site-brand__mark" aria-hidden="true">
               BG
             </span>
-            <span className="site-brand__name">Bruno Garcia</span>
+            <span className="site-brand__name">{name}</span>
           </a>
 
           <nav className="site-nav" aria-label="Sections">
             <ul>
-              {navItems.map(({ id, label }) => (
+              {nav.map(({ id, label }) => (
                 <li key={id}>
                   <a
                     className={`site-nav__link${current === id ? ' is-active' : ''}`}
@@ -280,7 +295,7 @@ export default function SiteFrame({
         inert={!open}
       >
         <ol className="stack-menu__list">
-          {navItems.map(({ id, label, title }, index) => (
+          {nav.map(({ id, label, title }, index) => (
             <li
               key={id}
               className="stack-menu__item"
@@ -305,8 +320,8 @@ export default function SiteFrame({
         </ol>
         <div className="stack-menu__footer">
           <ul className="social-links">
-            {socialLinks.map(({ icon, href, text }) => (
-              <li key={text}>
+            {social.map(({ id, href, text }) => (
+              <li key={id}>
                 <a
                   className="social-links__link"
                   href={href}
@@ -314,7 +329,7 @@ export default function SiteFrame({
                   rel="noopener noreferrer"
                   aria-label={text}
                 >
-                  <FontAwesomeIcon icon={icon} />
+                  <FontAwesomeIcon icon={socialIcons[id]} />
                 </a>
               </li>
             ))}
@@ -358,7 +373,13 @@ export default function SiteFrame({
           inert={locked}
         >
           {children}
-          <SiteFooter isHome={isHome} year={year} />
+          <SiteFooter
+            isHome={isHome}
+            name={name}
+            role={role}
+            social={social}
+            year={year}
+          />
         </div>
       </div>
     </>

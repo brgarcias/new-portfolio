@@ -1,0 +1,14 @@
+{
+  "en": {
+    "order": 4,
+    "eyebrow": "Sale of Scrap",
+    "title": "Saldofone",
+    "device": "imac",
+    "preview": "/images/projects/saldofone-dashboard-preview-card.webp",
+    "image": "/images/projects/saldofone-dashboard-preview.webp",
+    "dialogTitle": "Saldofone",
+    "dialogSubtitle": "Sale of Scrap",
+    "description": "With more experience in Full-Stack development, this project was built using Node.js and NestJS for the backend, and ReactJS and NextJS for the frontend. It marked my first experience with the AWS cloud platform. I utilized various features, such as hosting the frontend in a serverless environment, building some microservices with Lambda, using SQS queues, reading logs in CloudWatch, establishing connections with the REDIS database, creating worker lambdas, and integrating with Nuvemshop to receive orders generated on the Saldofone e-commerce platform through a webhook. It was a remarkably successful project.",
+    "link": "http://www.saldofone.com.br/"
+  }
+}

@@ -22,6 +22,11 @@ const nextConfig = {
   agentRules: false,
   poweredByHeader: false,
   reactStrictMode: true,
+  // The home page reads content/, and the size of the images it names, when
+  // it is generated again on the server once a day.
+  outputFileTracingIncludes: {
+    '/*': ['content/**/*.json', 'public/images/**/*'],
+  },
   async headers() {
     return [
       {

@@ -9,7 +9,7 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import ModalComponent from '@/src/components/Modal/Lazy';
 import { openOnKey } from '@/src/components/Modal/openOnKey';
 // CONTENT
-import { courses } from './courses';
+import type { Course as CourseContent } from '@/src/content';
 
 // The colors of the old course tiles, kept as accents.
 const accents = [
@@ -21,17 +21,14 @@ const accents = [
   '#ffcc66',
 ];
 
-type CourseProps = (typeof courses)[number] & { index: number };
+interface CourseProps {
+  course: CourseContent;
+  index: number;
+}
 
-export default function Course({
-  index,
-  title,
-  subtitle,
-  wide,
-  description,
-  descriptionTitle,
-  descriptionSubtitle,
-}: Readonly<CourseProps>) {
+export default function Course({ course, index }: Readonly<CourseProps>) {
+  const { title, subtitle, wide, dialogTitle, dialogSubtitle, modules } =
+    course;
   const [visible, setVisible] = useState(false);
   const accent = {
     '--accent': accents[index % accents.length],
@@ -67,12 +64,12 @@ export default function Course({
         visible={visible}
         setVisible={setVisible}
         size="3xl"
-        title={descriptionTitle}
-        subtitle={descriptionSubtitle}
+        title={dialogTitle}
+        subtitle={dialogSubtitle}
         focusableBody
       >
         <ol className="course-modules" style={accent}>
-          {description.map((item, position) => (
+          {modules.map((item, position) => (
             <li key={item.title} className="course-modules__item">
               <span className="course-modules__index" aria-hidden="true">
                 {String(position + 1).padStart(2, '0')}

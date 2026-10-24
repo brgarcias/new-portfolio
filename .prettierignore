@@ -6,3 +6,6 @@ test-results
 public
 next-env.d.ts
 src/emails
+
+# Written by the content panel (Decap CMS) in its own JSON style.
+content/

@@ -1,0 +1,14 @@
+{
+  "en": {
+    "order": 3,
+    "eyebrow": "Smartphone Repair",
+    "title": "Reparofone",
+    "device": "macbook",
+    "preview": "/images/projects/trocafone_reparos_preview.webp",
+    "image": "/images/projects/trocafone_reparos.webp",
+    "dialogTitle": "Reparofone",
+    "dialogSubtitle": "Smartphone Repair",
+    "description": "This was my first page developed entirely in React and my first experience working as a Full-Stack developer. On the frontend side, I used technologies and libraries associated with React, including Redux for application state management, Material UI for creating components and styling, and GraphQL for consuming APIs. For building the APIs and the backend structure, I used PHP with the Laravel framework and a MySQL database.",
+    "link": "https://reparofone.com.br/novaordem"
+  }
+}

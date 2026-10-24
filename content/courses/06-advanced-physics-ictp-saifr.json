@@ -1,0 +1,32 @@
+{
+  "en": {
+    "order": 6,
+    "title": "Advanced Physics - ICTP Saifr",
+    "subtitle": "Relativity, Gravitation, and Quantum Mechanics",
+    "wide": true,
+    "dialogTitle": "Advanced Physics",
+    "dialogSubtitle": "Relativity, Gravitation, and Quantum Mechanics",
+    "modules": [
+      {
+        "title": "Space-Time",
+        "description": "Speed of Light, Light Cone, Time Dilation, Distances and Simultaneity."
+      },
+      {
+        "title": "Velocity Addition",
+        "description": "Space Contraction, Twin Paradox, Tachyon."
+      },
+      {
+        "title": "Light",
+        "description": "Photon, Speed of Light in Different Environments, Mirrors."
+      },
+      {
+        "title": "Black Hole",
+        "description": "Black and White Hole Graphics, Singularity, Complex Plane."
+      },
+      {
+        "title": "String Theory",
+        "description": "Fundamental Blocks, Particles vs. Strings."
+      }
+    ]
+  }
+}

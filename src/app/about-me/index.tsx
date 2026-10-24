@@ -24,8 +24,16 @@ import { whenIdle } from '@/src/components/Modal/whenIdle';
 import SnackbarFeedback from '@/src/components/SnackBar';
 import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
+import { markup } from '@/src/components/Markup';
 // CONTENT
-import { resume, socialLinks } from '@/src/components/SiteFrame/content';
+import { resume, socialIcons } from '@/src/components/SiteFrame/content';
+import type {
+  About,
+  Hero,
+  Profile,
+  SectionHeader,
+  SocialLink,
+} from '@/src/content';
 // CSS
 import './styles.css';
 
@@ -38,33 +46,24 @@ const Form = dynamic(loadForm, { ssr: false });
 // is the same as this test.
 const isEmpty = (value: string | null | undefined) => !value;
 
-// Technologies named in the second paragraph below.
-const technologies = [
-  'PHP',
-  'CodeIgniter',
-  'Laravel',
-  'GraphQL',
-  'REST APIs',
-  'ReactJS',
-  'NextJS',
-  'NodeJS',
-  'NestJS',
-  'Python',
-  'MySQL',
-  'Postgres',
-  'Jira',
-  'AWS',
-];
-
-// A few of them float around the illustration.
-const highlights = ['ReactJS', 'NextJS', 'NodeJS', 'NestJS', 'GraphQL', 'AWS'];
-
 interface AboutMeProps {
+  header: SectionHeader;
+  profile: Profile;
+  hero: Hero;
+  about: About;
+  social: readonly SocialLink[];
   // The experience without an end date, shown under the name.
   currentRole?: { title: string; company: string };
 }
 
-export default function AboutMe({ currentRole }: Readonly<AboutMeProps>) {
+export default function AboutMe({
+  header,
+  profile,
+  hero,
+  about,
+  social,
+  currentRole,
+}: Readonly<AboutMeProps>) {
   const [visible, setVisible] = useState(false);
   const [fullNameValue, setFullNameValue] = useState('');
   const [emailValue, setEmailValue] = useState('');
@@ -178,28 +177,28 @@ export default function AboutMe({ currentRole }: Readonly<AboutMeProps>) {
               className="hero__name hero__reveal"
               style={{ '--i': 1 } as CSSProperties}
             >
-              Bruno Garcia
+              {profile.name}
             </p>
+            {/* A **highlight** in a line of the title takes the gradient. */}
             <h1 id="hero-title" className="hero__title">
               <span
                 className="hero__title-line hero__reveal"
                 style={{ '--i': 2 } as CSSProperties}
               >
-                <span className="hero__title-accent">Full-Stack</span>
+                {markup(hero.titleTop, 'hero__title-accent')}
               </span>{' '}
               <span
                 className="hero__title-line hero__reveal"
                 style={{ '--i': 3 } as CSSProperties}
               >
-                Developer
+                {markup(hero.titleBottom, 'hero__title-accent')}
               </span>
             </h1>
             <p
               className="hero__tagline hero__reveal"
               style={{ '--i': 4 } as CSSProperties}
             >
-              Passionate about development, eager for new experiences and
-              constantly seeking fresh challenges.
+              {hero.tagline}
             </p>
             <div
               className="hero__actions hero__reveal"
@@ -231,8 +230,8 @@ export default function AboutMe({ currentRole }: Readonly<AboutMeProps>) {
               className="social-links hero__social hero__reveal"
               style={{ '--i': 6 } as CSSProperties}
             >
-              {socialLinks.map(({ icon, href, text }) => (
-                <li key={text}>
+              {social.map(({ id, href, text }) => (
+                <li key={id}>
                   <a
                     className="social-links__link"
                     href={href}
@@ -240,7 +239,7 @@ export default function AboutMe({ currentRole }: Readonly<AboutMeProps>) {
                     rel="noopener noreferrer"
                     aria-label={text}
                   >
-                    <FontAwesomeIcon icon={icon} />
+                    <FontAwesomeIcon icon={socialIcons[id]} />
                   </a>
                 </li>
               ))}
@@ -253,13 +252,13 @@ export default function AboutMe({ currentRole }: Readonly<AboutMeProps>) {
               <Image
                 className="hero__image"
                 src={AboutMeImg}
-                alt="Bruno Garcia"
+                alt={profile.name}
                 unoptimized
                 priority
               />
             </div>
             <ul className="hero__chips" aria-hidden="true">
-              {highlights.map((name, index) => (
+              {hero.highlights.map((name, index) => (
                 <li
                   key={name}
                   className="hero__chip"
@@ -280,40 +279,18 @@ export default function AboutMe({ currentRole }: Readonly<AboutMeProps>) {
         </a>
       </section>
 
-      <Section id="about" className="about">
+      <Section header={header} className="about">
         <div className="about__grid">
           <Reveal className="about__text">
-            <p className="about__lead">
-              Passionate and experienced Full Stack Developer with a solid track
-              record spanning several years in programming, coordinating, and
-              supervising various types of projects. I am an enthusiast for
-              comprehensive project lifecycle management, from conception to
-              implementation, mastering all stages of advanced development.
-              Maintaining a high level of attention to detail and the ability to
-              concurrently manage multiple projects. My experience extends to
-              building strong and productive relationships with clients and team
-              members, always with a total focus on customer satisfaction and
-              project success.
-            </p>
-            <p>
-              My proficiency covers a wide range of technologies, including PHP
-              with frameworks like CodeIgniter and Laravel, GraphQL and REST
-              APIs, ReactJS and NextJS, NodeJS and NestJS, Python, as well as
-              experience with MySQL and Postgres databases. I am also competent
-              in essential tools like Jira and AWS. I am capable of
-              self-managing effectively in independent projects while also
-              collaborating productively in team environments.
-            </p>
-            <p>
-              I am committed to driving the success of every project I&apos;m
-              involved in, and I&apos;m always eager to explore new
-              opportunities and challenges in the field of software development.
-            </p>
+            <p className="about__lead">{about.lead}</p>
+            {about.body.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
           </Reveal>
           <Reveal className="about__stack" delay={0.12}>
-            <h3 className="about__stack-title">Technologies &amp; tools</h3>
+            <h3 className="about__stack-title">{about.stackTitle}</h3>
             <ul className="tag-list">
-              {technologies.map((name) => (
+              {about.technologies.map((name) => (
                 <li key={name} className="tag">
                   {name}
                 </li>
