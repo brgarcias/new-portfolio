@@ -337,6 +337,44 @@ test('respeita a preferência por reduzir movimento', async ({ page }) => {
   await page.getByRole('button', { name: 'Switch to light theme' }).click();
   await expect(page.locator('html')).toHaveClass(/\blight\b/);
   expect(await viewTransitions()).toBe(0);
+  // Buttons do not shrink under the finger.
+  const contact = page.locator('#top .btn--primary');
+  const box = (await contact.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await expect(contact).toHaveCSS('scale', 'none');
+  await page.mouse.up();
+});
+
+test('encolhe os botões sob o dedo e os solta com uma mola', async ({
+  page,
+}) => {
+  await page.goto('/');
+  // Once React starts, the buttons answer the touch.
+  for (const meta of await page.locator('meta[name="theme-color"]').all()) {
+    await expect(meta).toHaveAttribute('content', '#16171b');
+  }
+  const contact = page.locator('#top .btn--primary');
+  const box = (await contact.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await expect(contact).toHaveCSS('scale', '0.94');
+  await page.mouse.up();
+  await expect(contact).toHaveCSS('scale', 'none');
+});
+
+test('pausa as animações em loop fora da tela', async ({ page }) => {
+  await page.goto('/');
+  const hero = page.locator('#top');
+  const chip = hero.locator('.hero__chip').first();
+  await expect(chip).toHaveCSS('animation-play-state', 'running');
+  await openSection(page, 'contact');
+  await expect(hero).toHaveAttribute('data-offscreen');
+  await expect(chip).toHaveCSS('animation-play-state', 'paused');
+  await openSection(page, 'about');
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await expect(hero).not.toHaveAttribute('data-offscreen');
+  await expect(chip).toHaveCSS('animation-play-state', 'running');
 });
 
 test('abre e recolhe as experiências profissionais', async ({ page }) => {

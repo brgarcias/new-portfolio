@@ -103,7 +103,7 @@
 }
 
 /* The cap travels along the rail to the chosen step, as the gift box of the
-   old stepper did. */
+   old stepper did, on a spring that goes a little past and settles. */
 .edu__marker {
   position: absolute;
   z-index: 2;
@@ -122,7 +122,7 @@
   font-size: 1rem;
   pointer-events: none;
   transform: translate3d(0, calc(var(--step) * var(--edu-row)), 0);
-  transition: transform 0.6s var(--ease-stack);
+  transition: transform 0.6s var(--ease-spring);
 }
 
 .edu-panel {

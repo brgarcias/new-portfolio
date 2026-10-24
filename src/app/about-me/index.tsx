@@ -163,7 +163,7 @@ export default function AboutMe({
     <>
       <SnackbarFeedback content={openSnackbar} setOpen={setOpenSnackbar} />
 
-      <section id="top" className="hero" aria-labelledby="hero-title">
+      <section id="top" className="hero" aria-labelledby="hero-title" data-loop>
         <div className="hero__backdrop" aria-hidden="true">
           <span className="hero__glow hero__glow--brand" />
           <span className="hero__glow hero__glow--violet" />

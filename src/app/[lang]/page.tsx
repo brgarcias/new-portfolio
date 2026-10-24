@@ -8,6 +8,8 @@ import Projects from '../projects';
 import Contact from '../contact';
 import Contributing from '../contributing';
 import Courses from '../courses';
+// COMPONENTS
+import OffscreenPause from '@/src/components/OffscreenPause';
 // CONTENT
 import {
   getAbout,
@@ -91,6 +93,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
         social={social}
         socialLabel={messages.frame.socialLinks}
       />
+      <OffscreenPause />
     </main>
   );
 }

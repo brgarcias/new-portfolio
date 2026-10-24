@@ -35,7 +35,7 @@ import './styles.css';
 // page comes forward, back to where it was or to the chosen section.
 type MenuState = 'closed' | 'locked' | 'open' | 'closing';
 
-// The page moves in 0.6s. The timer only has to outlast that, in case the
+// The page moves in 0.7s. The timer only has to outlast that, in case the
 // transition never ends, as with "reduce motion".
 const TRANSITION_TIMEOUT = 1000;
 

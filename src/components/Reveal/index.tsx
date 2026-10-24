@@ -13,7 +13,8 @@ interface RevealProps {
 }
 
 // Fades content in and lifts it into place the first time it scrolls into
-// view. With "reduce motion", MotionConfig keeps only the fade.
+// view, on a spring like the iPhone's that goes a little past and settles.
+// With "reduce motion", MotionConfig keeps only the fade.
 export default function Reveal({
   children,
   className,
@@ -26,7 +27,10 @@ export default function Reveal({
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{
+        opacity: { duration: 0.6, delay, ease: 'easeOut' },
+        y: { type: 'spring', bounce: 0.25, duration: 0.9, delay },
+      }}
     >
       {children}
     </m.div>

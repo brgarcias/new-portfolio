@@ -24,7 +24,7 @@
   backdrop-filter: blur(12px);
   transform: translateX(0);
   transition: transform 300ms ease;
-  animation: snackbar-enter 300ms ease;
+  animation: snackbar-enter 0.6s var(--ease-spring);
 }
 
 .snackbar__content--exiting {

@@ -14,15 +14,45 @@
   --stack-push: 75vh;
   --stack-top: 57vh;
 
+  /* The site moves on springs, like the iPhone. --ease-spring goes 2% past
+     the end and settles, and --ease-out, for most movements, is the same
+     spring. --ease-stack, for the page and the large surfaces, settles
+     without going past. Browsers without linear() get these curves. */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-stack: cubic-bezier(0.6, 0, 0.4, 1);
-  /* A spring, like the iPhone's, that goes 2% past the end and settles.
-     Browsers without linear() get a curve that settles without going past. */
   --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @supports (transition-timing-function: linear(0, 1)) {
   :root {
+    --ease-out: var(--ease-spring);
+    --ease-stack: linear(
+      0,
+      0.055,
+      0.173,
+      0.31,
+      0.442,
+      0.559,
+      0.657,
+      0.737,
+      0.801,
+      0.85,
+      0.888,
+      0.917,
+      0.939,
+      0.955,
+      0.967,
+      0.976,
+      0.983,
+      0.987,
+      0.991,
+      0.993,
+      0.995,
+      0.997,
+      0.998,
+      0.998,
+      1
+    );
     --ease-spring: linear(
       0,
       0.038,
@@ -237,6 +267,12 @@ button:focus-visible {
 .theme-switching *::before,
 .theme-switching *::after {
   transition: none !important;
+}
+
+/* Loops wait while their part of the page is off screen (OffscreenPause). */
+[data-offscreen],
+[data-offscreen] * {
+  animation-play-state: paused !important;
 }
 
 /* ─── Helpers ───────────────────────────────────────────── */
