@@ -32,7 +32,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
-      - run: pnpm build
+      # The tests check a fixed copy of the content, so edits made in the
+      # content panel do not fail them. The Netlify Deploy Preview builds
+      # the real content.
+      - run: pnpm build:test
       # Playwright writes a missing screenshot and passes the test, so the job
       # compares the snapshot folder before and after the tests.
       - name: List screenshots

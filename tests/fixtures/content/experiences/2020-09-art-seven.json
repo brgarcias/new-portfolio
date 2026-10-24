@@ -1,0 +1,62 @@
+{
+  "en": {
+    "company": "Art Seven",
+    "title": "Jr. Frontend Developer",
+    "start": "2020-09",
+    "end": "2021-03",
+    "icon": "desktop",
+    "stack": "JavaScript, React, jQuery, PHP, Node.js, MySQL, WordPress, HTML/CSS",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Engage in in-depth discussions and thorough analysis of new customer requirements, strategically crafting websites with a strong focus on conversion optimization. Meticulously enhance SEO strategies while ensuring impeccable responsiveness and optimal site performance. Adapt websites according to evolving customer needs.",
+          "Embark on a journey into framework languages and libraries like React and JQuery, gaining valuable insights into their application and potential.",
+          "Cultivate a proficient understanding of PHP and Node.JS, encompassing their distinct back-end architectures. Develop expertise in MYSQL, delving into its intricacies for efficient database management.",
+          "Take on a pivotal role in constructing diverse online platforms, including websites, captivating landing pages, and dynamic online.",
+          "Working with HTML/CSS, Javascript, PHP, MYSQL, Wordpress, Nodejs, React."
+        ]
+      }
+    ]
+  },
+  "pt": {
+    "company": "Art Seven",
+    "title": "Desenvolvedor Frontend Júnior",
+    "start": "2020-09",
+    "end": "2021-03",
+    "icon": "desktop",
+    "stack": "JavaScript, React, jQuery, PHP, Node.js, MySQL, WordPress, HTML/CSS",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Participação em discussões aprofundadas e na análise minuciosa de novos requisitos dos clientes, criando sites de forma estratégica e com forte foco na otimização de conversão. Aprimoramento cuidadoso das estratégias de SEO, garantindo responsividade impecável e o melhor desempenho do site. Adaptação dos sites conforme a evolução das necessidades dos clientes.",
+          "Início da jornada em frameworks e bibliotecas como React e JQuery, com uma visão valiosa sobre suas aplicações e seu potencial.",
+          "Desenvolvimento de um bom domínio de PHP e Node.JS, incluindo suas diferentes arquiteturas de back-end. Aprofundamento em MYSQL, explorando seus detalhes para uma gestão eficiente de bancos de dados.",
+          "Papel central na construção de diversas plataformas online, incluindo sites, landing pages atraentes e páginas online dinâmicas.",
+          "Trabalho com HTML/CSS, Javascript, PHP, MYSQL, Wordpress, Nodejs e React."
+        ]
+      }
+    ]
+  },
+  "es": {
+    "company": "Art Seven",
+    "title": "Desarrollador Frontend Junior",
+    "start": "2020-09",
+    "end": "2021-03",
+    "icon": "desktop",
+    "stack": "JavaScript, React, jQuery, PHP, Node.js, MySQL, WordPress, HTML/CSS",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Participación en discusiones en profundidad y en el análisis minucioso de los nuevos requisitos de los clientes, creando sitios web de forma estratégica y con un fuerte enfoque en la optimización de la conversión. Mejora cuidadosa de las estrategias de SEO, garantizando una responsividad impecable y el mejor rendimiento del sitio. Adaptación de los sitios según la evolución de las necesidades de los clientes.",
+          "Inicio del camino en frameworks y bibliotecas como React y JQuery, con una valiosa comprensión de sus aplicaciones y su potencial.",
+          "Desarrollo de un buen dominio de PHP y Node.JS, incluidas sus distintas arquitecturas de back-end. Profundización en MYSQL, explorando sus detalles para una gestión eficiente de bases de datos.",
+          "Papel central en la construcción de diversas plataformas en línea, incluidos sitios web, landing pages atractivas y páginas en línea dinámicas.",
+          "Trabajo con HTML/CSS, Javascript, PHP, MYSQL, Wordpress, Nodejs y React."
+        ]
+      }
+    ]
+  }
+}

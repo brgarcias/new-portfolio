@@ -1,0 +1,35 @@
+{
+  "en": {
+    "name": "Bruno Garcia",
+    "fullName": "Bruno Garcia da Silva",
+    "role": "Full-Stack Developer",
+    "birthDate": "1999-12-15",
+    "email": "bruno-151299@hotmail.com",
+    "phone": "+55 (11) 99696-9301",
+    "whatsappMessage": "Hello, Bruno! Really liked your portfolio.",
+    "linkedin": "https://www.linkedin.com/in/bruno-garcia-9854b1161/",
+    "github": "https://github.com/brgarcias"
+  },
+  "pt": {
+    "name": "Bruno Garcia",
+    "fullName": "Bruno Garcia da Silva",
+    "role": "Desenvolvedor Full-Stack",
+    "birthDate": "1999-12-15",
+    "email": "bruno-151299@hotmail.com",
+    "phone": "+55 (11) 99696-9301",
+    "whatsappMessage": "Olá, Bruno! Gostei muito do seu portfólio.",
+    "linkedin": "https://www.linkedin.com/in/bruno-garcia-9854b1161/",
+    "github": "https://github.com/brgarcias"
+  },
+  "es": {
+    "name": "Bruno Garcia",
+    "fullName": "Bruno Garcia da Silva",
+    "role": "Desarrollador Full-Stack",
+    "birthDate": "1999-12-15",
+    "email": "bruno-151299@hotmail.com",
+    "phone": "+55 (11) 99696-9301",
+    "whatsappMessage": "¡Hola, Bruno! Me gustó mucho tu portafolio.",
+    "linkedin": "https://www.linkedin.com/in/bruno-garcia-9854b1161/",
+    "github": "https://github.com/brgarcias"
+  }
+}

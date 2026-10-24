@@ -13,5 +13,7 @@ export default defineConfig([
     'playwright-report/**',
     'test-results/**',
     'next-env.d.ts',
+    // Decap CMS, vendored as published.
+    'public/admin/cms/**',
   ]),
 ]);

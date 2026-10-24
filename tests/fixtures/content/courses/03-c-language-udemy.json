@@ -1,0 +1,80 @@
+{
+  "en": {
+    "order": 3,
+    "title": "C Language - Udemy",
+    "subtitle": "C",
+    "wide": false,
+    "dialogTitle": "Concepts",
+    "dialogSubtitle": "Fundamentals of the programming language",
+    "modules": [
+      {
+        "title": "Conditions Structures",
+        "description": "If / else / else if / switch"
+      },
+      {
+        "title": "Repeating Structures",
+        "description": "while / do while / for"
+      },
+      {
+        "title": "Functions",
+        "description": "Parameters, return, function types"
+      },
+      {
+        "title": "Libraries",
+        "description": "stdio.h / conio.h"
+      }
+    ]
+  },
+  "pt": {
+    "order": 3,
+    "title": "Linguagem C - Udemy",
+    "subtitle": "C",
+    "wide": false,
+    "dialogTitle": "Conceitos",
+    "dialogSubtitle": "Fundamentos da linguagem de programação",
+    "modules": [
+      {
+        "title": "Estruturas condicionais",
+        "description": "If / else / else if / switch"
+      },
+      {
+        "title": "Estruturas de repetição",
+        "description": "while / do while / for"
+      },
+      {
+        "title": "Funções",
+        "description": "Parâmetros, retorno, tipos de função"
+      },
+      {
+        "title": "Bibliotecas",
+        "description": "stdio.h / conio.h"
+      }
+    ]
+  },
+  "es": {
+    "order": 3,
+    "title": "Lenguaje C - Udemy",
+    "subtitle": "C",
+    "wide": false,
+    "dialogTitle": "Conceptos",
+    "dialogSubtitle": "Fundamentos del lenguaje de programación",
+    "modules": [
+      {
+        "title": "Estructuras condicionales",
+        "description": "If / else / else if / switch"
+      },
+      {
+        "title": "Estructuras de repetición",
+        "description": "while / do while / for"
+      },
+      {
+        "title": "Funciones",
+        "description": "Parámetros, retorno, tipos de función"
+      },
+      {
+        "title": "Bibliotecas",
+        "description": "stdio.h / conio.h"
+      }
+    ]
+  }
+}

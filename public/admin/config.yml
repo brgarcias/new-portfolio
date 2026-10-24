@@ -1,0 +1,355 @@
+# The portfolio's content panel (Decap CMS), at /admin. Each change becomes
+# a pull request with a Deploy Preview, and "Publish" squash-merges it once
+# the checks pass. The files live in content/, with a block per language
+# (single_file structure). Labels and hints are in Portuguese, for Bruno.
+backend:
+  name: github
+  repo: brgarcias/new-portfolio
+  branch: main
+  squash_merges: true
+  # The login goes through Netlify's GitHub provider for this site, also
+  # from a Deploy Preview or from localhost.
+  site_domain: brgarcias-portfolio.netlify.app
+  commit_messages:
+    create: 'feat(conteúdo): cria "{{slug}}" em {{collection}}'
+    update: 'chore(conteúdo): atualiza "{{slug}}" em {{collection}}'
+    delete: 'chore(conteúdo): remove "{{slug}}" de {{collection}}'
+    uploadMedia: 'chore(conteúdo): envia {{path}}'
+    deleteMedia: 'chore(conteúdo): remove {{path}}'
+
+publish_mode: editorial_workflow
+# On localhost, with `pnpm dlx decap-server` running, the panel reads and
+# writes the files of the working copy, with no login.
+local_backend: true
+locale: pt
+site_url: https://brgarcias-portfolio.netlify.app
+display_url: https://brgarcias-portfolio.netlify.app
+logo_url: /favicon/android-icon-192x192.png
+
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+i18n:
+  structure: single_file
+  locales: [en, pt, es]
+  default_locale: en
+
+collections:
+  - name: site
+    label: Textos do site
+    i18n: true
+    files:
+      - name: profile
+        label: Perfil e contatos
+        file: content/site/profile.json
+        format: json
+        i18n: true
+        fields:
+          - { name: name, label: Nome, widget: string, i18n: duplicate }
+          - { name: fullName, label: Nome completo, widget: string, i18n: duplicate }
+          - { name: role, label: Cargo, widget: string, i18n: true, hint: 'Aparece no rodapé, no cartão de perfil e nos dados para buscadores.' }
+          - { name: birthDate, label: Data de nascimento, widget: string, i18n: duplicate, pattern: ['^\d{4}-\d{2}-\d{2}$', 'Use AAAA-MM-DD'], hint: 'AAAA-MM-DD. A idade é calculada a partir dela.' }
+          - { name: email, label: E-mail, widget: string, i18n: duplicate }
+          - { name: phone, label: Telefone, widget: string, i18n: duplicate, hint: 'Como aparece no site. O link do telefone e o do WhatsApp usam os dígitos.' }
+          - { name: whatsappMessage, label: Mensagem pronta do WhatsApp, widget: string, i18n: true }
+          - { name: linkedin, label: LinkedIn, widget: string, i18n: duplicate }
+          - { name: github, label: GitHub, widget: string, i18n: duplicate }
+      - name: hero
+        label: Topo
+        file: content/site/hero.json
+        format: json
+        i18n: true
+        fields:
+          - { name: titleTop, label: Título, primeira linha, widget: string, i18n: true, hint: 'Use **destaque** para o gradiente.' }
+          - { name: titleBottom, label: Título, segunda linha, widget: string, i18n: true, hint: 'Use **destaque** para o gradiente.' }
+          - { name: tagline, label: Frase de apresentação, widget: text, i18n: true }
+          - { name: highlights, label: Tecnologias em volta da ilustração, widget: string, i18n: duplicate, hint: 'Separadas por vírgula.' }
+      - name: about
+        label: Sobre mim
+        file: content/site/about.json
+        format: json
+        i18n: true
+        fields:
+          - { name: lead, label: Primeiro parágrafo, widget: text, i18n: true }
+          - { name: body, label: Outros parágrafos, widget: text, i18n: true, hint: 'Separe os parágrafos com uma linha em branco.' }
+          - { name: stackTitle, label: Título da lista de tecnologias, widget: string, i18n: true }
+          - { name: technologies, label: Tecnologias, widget: string, i18n: duplicate, hint: 'Separadas por vírgula. Repetem as que o texto cita.' }
+      - name: sections
+        label: Cabeçalhos das seções
+        file: content/site/sections.json
+        format: json
+        i18n: true
+        fields:
+          - name: about
+            label: Sobre mim
+            widget: object
+            i18n: true
+            collapsed: true
+            fields:
+              - { name: label, label: Nome curto, widget: string, i18n: true, hint: 'Na barra, no menu do celular e acima do título. Precisa caber na barra.' }
+              - { name: title, label: Título, widget: string, i18n: true }
+              - { name: description, label: Descrição, widget: string, i18n: true, required: false, hint: 'Aceita **destaque** e [link](endereço). Um link para whatsapp ou email leva ao contato do perfil.' }
+              - { name: quote, label: Citação, widget: text, i18n: true, required: false }
+              - { name: author, label: Autor da citação, widget: string, i18n: true, required: false }
+          - name: experience
+            label: Experiência
+            widget: object
+            i18n: true
+            collapsed: true
+            fields:
+              - { name: label, label: Nome curto, widget: string, i18n: true, hint: 'Na barra, no menu do celular e acima do título. Precisa caber na barra.' }
+              - { name: title, label: Título, widget: string, i18n: true }
+              - { name: description, label: Descrição, widget: string, i18n: true, required: false, hint: 'Aceita **destaque** e [link](endereço). Um link para whatsapp ou email leva ao contato do perfil.' }
+              - { name: quote, label: Citação, widget: text, i18n: true, required: false }
+              - { name: author, label: Autor da citação, widget: string, i18n: true, required: false }
+          - name: education
+            label: Formação
+            widget: object
+            i18n: true
+            collapsed: true
+            fields:
+              - { name: label, label: Nome curto, widget: string, i18n: true, hint: 'Na barra, no menu do celular e acima do título. Precisa caber na barra.' }
+              - { name: title, label: Título, widget: string, i18n: true }
+              - { name: description, label: Descrição, widget: string, i18n: true, required: false, hint: 'Aceita **destaque** e [link](endereço). Um link para whatsapp ou email leva ao contato do perfil.' }
+              - { name: quote, label: Citação, widget: text, i18n: true, required: false }
+              - { name: author, label: Autor da citação, widget: string, i18n: true, required: false }
+          - name: courses
+            label: Cursos
+            widget: object
+            i18n: true
+            collapsed: true
+            fields:
+              - { name: label, label: Nome curto, widget: string, i18n: true, hint: 'Na barra, no menu do celular e acima do título. Precisa caber na barra.' }
+              - { name: title, label: Título, widget: string, i18n: true }
+              - { name: description, label: Descrição, widget: string, i18n: true, required: false, hint: 'Aceita **destaque** e [link](endereço). Um link para whatsapp ou email leva ao contato do perfil.' }
+              - { name: quote, label: Citação, widget: text, i18n: true, required: false }
+              - { name: author, label: Autor da citação, widget: string, i18n: true, required: false }
+          - name: projects
+            label: Projetos
+            widget: object
+            i18n: true
+            collapsed: true
+            fields:
+              - { name: label, label: Nome curto, widget: string, i18n: true, hint: 'Na barra, no menu do celular e acima do título. Precisa caber na barra.' }
+              - { name: title, label: Título, widget: string, i18n: true }
+              - { name: description, label: Descrição, widget: string, i18n: true, required: false, hint: 'Aceita **destaque** e [link](endereço). Um link para whatsapp ou email leva ao contato do perfil.' }
+              - { name: quote, label: Citação, widget: text, i18n: true, required: false }
+              - { name: author, label: Autor da citação, widget: string, i18n: true, required: false }
+          - name: contributing
+            label: Contribuições
+            widget: object
+            i18n: true
+            collapsed: true
+            fields:
+              - { name: label, label: Nome curto, widget: string, i18n: true, hint: 'Na barra, no menu do celular e acima do título. Precisa caber na barra.' }
+              - { name: title, label: Título, widget: string, i18n: true }
+              - { name: description, label: Descrição, widget: string, i18n: true, required: false, hint: 'Aceita **destaque** e [link](endereço). Um link para whatsapp ou email leva ao contato do perfil.' }
+              - { name: quote, label: Citação, widget: text, i18n: true, required: false }
+              - { name: author, label: Autor da citação, widget: string, i18n: true, required: false }
+          - name: contact
+            label: Contato
+            widget: object
+            i18n: true
+            collapsed: true
+            fields:
+              - { name: label, label: Nome curto, widget: string, i18n: true, hint: 'Na barra, no menu do celular e acima do título. Precisa caber na barra.' }
+              - { name: title, label: Título, widget: string, i18n: true }
+              - { name: description, label: Descrição, widget: string, i18n: true, required: false, hint: 'Aceita **destaque** e [link](endereço). Um link para whatsapp ou email leva ao contato do perfil.' }
+              - { name: quote, label: Citação, widget: text, i18n: true, required: false }
+              - { name: author, label: Autor da citação, widget: string, i18n: true, required: false }
+      - name: contributing
+        label: Contribuições
+        file: content/site/contributing.json
+        format: json
+        i18n: true
+        fields:
+          - { name: storyLabel, label: Rótulo do texto, widget: string, i18n: true }
+          - { name: story, label: Texto, widget: text, i18n: true, hint: 'Separe os parágrafos com uma linha em branco.' }
+          - { name: galleryLabel, label: Rótulo da galeria, widget: string, i18n: true }
+          - { name: galleryTitle, label: Título da galeria, widget: string, i18n: true }
+          - { name: galleryHint, label: Dica da galeria, widget: string, i18n: true }
+          - name: stats
+            label: Números
+            widget: list
+            i18n: true
+            fields:
+              - { name: value, label: Número, widget: string }
+              - { name: suffix, label: Sufixo, widget: string, required: false, hint: 'Como o "+" de "100+".' }
+              - { name: label, label: Legenda, widget: string }
+          - { name: closing, label: Texto final, widget: text, i18n: true }
+          - { name: highlight, label: Frase de destaque, widget: string, i18n: true, hint: 'Use *ênfase* para o gradiente.' }
+      - name: contact
+        label: Cartões de contato
+        file: content/site/contact.json
+        format: json
+        i18n: true
+        fields:
+          - name: profile
+            label: Perfil
+            widget: object
+            i18n: true
+            hint: 'O nome, o cargo e a idade vêm do perfil.'
+            fields:
+              - { name: label, label: Rótulo, widget: string, i18n: true }
+              - { name: status, label: Estado civil, widget: string, i18n: true }
+          - name: education
+            label: Formação
+            widget: object
+            i18n: true
+            fields:
+              - { name: label, label: Rótulo, widget: string, i18n: true }
+              - { name: title, label: Título, widget: string, i18n: true }
+              - { name: subtitle, label: Subtítulo, widget: string, i18n: true }
+              - { name: details, label: Detalhes, widget: list, i18n: true, field: { name: detail, label: Detalhe, widget: string } }
+          - name: contact
+            label: Contato
+            widget: object
+            i18n: true
+            hint: 'O e-mail e o telefone vêm do perfil.'
+            fields:
+              - { name: label, label: Rótulo, widget: string, i18n: true }
+              - { name: details, label: Detalhes, widget: list, i18n: true, field: { name: detail, label: Detalhe, widget: string } }
+          - name: languages
+            label: Idiomas
+            widget: object
+            i18n: true
+            fields:
+              - { name: label, label: Rótulo, widget: string, i18n: true }
+              - { name: title, label: Título, widget: string, i18n: true }
+              - { name: subtitle, label: Subtítulo, widget: string, i18n: true }
+              - { name: details, label: Detalhes, widget: list, i18n: true, field: { name: detail, label: Detalhe, widget: string } }
+
+  - name: experiences
+    label: Experiências
+    label_singular: Experiência
+    folder: content/experiences
+    format: json
+    extension: json
+    create: true
+    i18n: true
+    slug: '{{fields.start}}-{{fields.company}}'
+    summary: '{{company}} — {{title}} ({{start}})'
+    sortable_fields: ['start', 'company']
+    fields:
+      - { name: company, label: Empresa, widget: string, i18n: duplicate }
+      - { name: title, label: Cargo, widget: string, i18n: true, hint: 'O trecho entre parênteses não aparece no topo do site.' }
+      - { name: start, label: Início, widget: string, i18n: duplicate, pattern: ['^\d{4}-\d{2}$', 'Use AAAA-MM'], hint: 'AAAA-MM.' }
+      - { name: end, label: Fim, widget: string, i18n: duplicate, required: false, pattern: ['^(\d{4}-\d{2})?$', 'Use AAAA-MM'], hint: 'AAAA-MM. Deixe vazio no emprego atual.' }
+      - name: icon
+        label: Ícone
+        widget: select
+        i18n: duplicate
+        options:
+          - { label: Código, value: code }
+          - { label: Computador, value: desktop }
+          - { label: Celular, value: mobile }
+          - { label: Pessoas, value: users }
+      - { name: stack, label: Tecnologias, widget: string, i18n: duplicate, required: false, hint: 'Separadas por vírgula, só as que os detalhes citam, com o nome oficial (Node.js, Next.js, React).' }
+      - name: details
+        label: Detalhes
+        widget: list
+        i18n: true
+        hint: 'Grupos de itens. O título do grupo é opcional.'
+        fields:
+          - { name: heading, label: Título do grupo, widget: string, required: false }
+          - { name: items, label: Itens, widget: list, field: { name: item, label: Item, widget: text } }
+
+  - name: education
+    label: Formação
+    label_singular: Etapa
+    folder: content/education
+    format: json
+    extension: json
+    create: true
+    i18n: true
+    slug: '{{fields.order}}-{{fields.label}}'
+    summary: '{{order}}. {{label}}'
+    sortable_fields: ['order']
+    fields:
+      - { name: order, label: Ordem, widget: number, value_type: int, i18n: duplicate }
+      - { name: label, label: Etapa, widget: string, i18n: true }
+      - { name: title, label: Escola ou título, widget: string, i18n: true }
+      - { name: text, label: Texto, widget: text, i18n: true }
+      - { name: upcoming, label: Ainda por vir, widget: boolean, default: false, i18n: duplicate }
+
+  - name: courses
+    label: Cursos
+    label_singular: Curso
+    folder: content/courses
+    format: json
+    extension: json
+    create: true
+    i18n: true
+    slug: '{{fields.order}}-{{fields.title}}'
+    summary: '{{order}}. {{title}}'
+    sortable_fields: ['order']
+    fields:
+      - { name: order, label: Ordem, widget: number, value_type: int, i18n: duplicate }
+      - { name: title, label: Nome no cartão, widget: string, i18n: true }
+      - { name: subtitle, label: Subtítulo no cartão, widget: string, i18n: true }
+      - { name: wide, label: Ocupa duas colunas, widget: boolean, default: false, i18n: duplicate }
+      - { name: dialogTitle, label: Título dos detalhes, widget: string, i18n: true }
+      - { name: dialogSubtitle, label: Subtítulo dos detalhes, widget: string, i18n: true }
+      - name: modules
+        label: Módulos
+        widget: list
+        i18n: true
+        fields:
+          - { name: title, label: Módulo, widget: string }
+          - { name: description, label: Descrição, widget: text }
+
+  - name: projects
+    label: Projetos
+    label_singular: Projeto
+    folder: content/projects
+    format: json
+    extension: json
+    create: true
+    i18n: true
+    slug: '{{fields.order}}-{{fields.title}}'
+    summary: '{{order}}. {{title}}'
+    sortable_fields: ['order']
+    media_folder: /public/images/projects
+    public_folder: /images/projects
+    fields:
+      - { name: order, label: Ordem, widget: number, value_type: int, i18n: duplicate }
+      - { name: eyebrow, label: Rótulo, widget: string, i18n: true }
+      - { name: title, label: Nome, widget: string, i18n: duplicate }
+      - name: device
+        label: Aparelho
+        widget: select
+        i18n: duplicate
+        options:
+          - { label: iPhone, value: iphone }
+          - { label: iPad, value: ipad }
+          - { label: MacBook, value: macbook }
+          - { label: iMac, value: imac }
+          - { label: Apple Watch, value: watch }
+      - { name: preview, label: Prévia no aparelho, widget: image, i18n: duplicate, hint: 'WebP, PNG ou JPG, com o dobro do tamanho em que aparece no aparelho.' }
+      - { name: image, label: Imagem dos detalhes, widget: image, i18n: duplicate, hint: 'WebP, PNG ou JPG.' }
+      - { name: dialogTitle, label: Título dos detalhes, widget: string, i18n: true }
+      - { name: dialogSubtitle, label: Subtítulo dos detalhes, widget: string, i18n: true }
+      - { name: description, label: Descrição, widget: text, i18n: true }
+      - { name: link, label: Endereço do site, widget: string, i18n: duplicate }
+
+  - name: initiatives
+    label: Fotos de Contribuições
+    label_singular: Foto
+    folder: content/initiatives
+    format: json
+    extension: json
+    create: true
+    i18n: true
+    slug: '{{fields.order}}-{{fields.label}}'
+    summary: '{{order}}. {{title}}'
+    sortable_fields: ['order']
+    media_folder: /public/images/contributing
+    public_folder: /images/contributing
+    fields:
+      - { name: order, label: Ordem, widget: number, value_type: int, i18n: duplicate }
+      - { name: title, label: Título, widget: string, i18n: true }
+      - { name: description, label: Descrição, widget: text, i18n: true }
+      - { name: label, label: Legenda na foto, widget: string, i18n: true }
+      - { name: alt, label: Descrição da foto para leitores de tela, widget: string, i18n: true }
+      - { name: image, label: Foto, widget: image, i18n: duplicate, hint: 'WebP com qualidade 82 e lado menor de 1200 px, sem localização nos metadados.' }
+      - { name: thumb, label: Miniatura, widget: image, i18n: duplicate, required: false, hint: 'Opcional: uma cópia com 600 × 800 px para a grade. Sem ela, a grade usa a foto.' }

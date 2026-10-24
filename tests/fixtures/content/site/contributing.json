@@ -1,0 +1,80 @@
+{
+  "en": {
+    "storyLabel": "Why this matters",
+    "story": "Alongside my work as a software engineer, I actively participate in volunteer initiatives supporting children, families in vulnerable situations, and elderly communities. These experiences reinforce my belief that technology professionals should generate impact not only through systems — but through people.\n\nContributing to social initiatives keeps me connected with real-world challenges and strengthens values that also shape how I collaborate professionally: empathy, responsibility, and long-term thinking.",
+    "galleryLabel": "Initiatives & Gallery",
+    "galleryTitle": "Initiatives I participated in",
+    "galleryHint": "Open each photo to learn more",
+    "stats": [
+      {
+        "value": "4",
+        "suffix": "+",
+        "label": "initiatives"
+      },
+      {
+        "value": "100",
+        "suffix": "+",
+        "label": "volunteer hours"
+      },
+      {
+        "value": "∞",
+        "suffix": "",
+        "label": "communities"
+      }
+    ],
+    "closing": "Staying involved with community initiatives helps me maintain perspective about the purpose behind everything we build as engineers.",
+    "highlight": "Technology transforms systems — *people transform lives.*"
+  },
+  "pt": {
+    "storyLabel": "Por que isso importa",
+    "story": "Paralelamente ao meu trabalho como engenheiro de software, participo ativamente de iniciativas voluntárias que apoiam crianças, famílias em situação de vulnerabilidade e comunidades de idosos. Essas experiências reforçam minha convicção de que profissionais de tecnologia devem gerar impacto não só por meio de sistemas — mas por meio das pessoas.\n\nContribuir com iniciativas sociais me mantém conectado aos desafios do mundo real e fortalece valores que também moldam a forma como colaboro profissionalmente: empatia, responsabilidade e visão de longo prazo.",
+    "galleryLabel": "Iniciativas e galeria",
+    "galleryTitle": "Iniciativas de que participei",
+    "galleryHint": "Abra cada foto para saber mais",
+    "stats": [
+      {
+        "value": "4",
+        "suffix": "+",
+        "label": "iniciativas"
+      },
+      {
+        "value": "100",
+        "suffix": "+",
+        "label": "horas de voluntariado"
+      },
+      {
+        "value": "∞",
+        "suffix": "",
+        "label": "comunidades"
+      }
+    ],
+    "closing": "Manter o envolvimento com iniciativas comunitárias me ajuda a não perder de vista o propósito por trás de tudo o que construímos como engenheiros.",
+    "highlight": "A tecnologia transforma sistemas — *as pessoas transformam vidas.*"
+  },
+  "es": {
+    "storyLabel": "Por qué es importante",
+    "story": "Junto a mi trabajo como ingeniero de software, participo activamente en iniciativas de voluntariado que apoyan a niños, familias en situación de vulnerabilidad y comunidades de personas mayores. Estas experiencias refuerzan mi convicción de que los profesionales de la tecnología deben generar impacto no solo a través de sistemas — sino a través de las personas.\n\nContribuir con iniciativas sociales me mantiene conectado con los desafíos del mundo real y fortalece valores que también definen cómo colaboro profesionalmente: empatía, responsabilidad y visión a largo plazo.",
+    "galleryLabel": "Iniciativas y galería",
+    "galleryTitle": "Iniciativas en las que participé",
+    "galleryHint": "Abre cada foto para saber más",
+    "stats": [
+      {
+        "value": "4",
+        "suffix": "+",
+        "label": "iniciativas"
+      },
+      {
+        "value": "100",
+        "suffix": "+",
+        "label": "horas de voluntariado"
+      },
+      {
+        "value": "∞",
+        "suffix": "",
+        "label": "comunidades"
+      }
+    ],
+    "closing": "Mantenerme involucrado en iniciativas comunitarias me ayuda a no perder de vista el propósito detrás de todo lo que construimos como ingenieros.",
+    "highlight": "La tecnología transforma sistemas — *las personas transforman vidas.*"
+  }
+}

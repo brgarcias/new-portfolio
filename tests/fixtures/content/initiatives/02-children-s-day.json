@@ -1,0 +1,29 @@
+{
+  "en": {
+    "order": 2,
+    "title": "Children's Day events",
+    "description": "Organizing recreational activities and donations creating meaningful experiences for children.",
+    "label": "Children's Day",
+    "alt": "Children's Day event",
+    "image": "/images/contributing/children-day-campaign.webp",
+    "thumb": "/images/contributing/children-day-campaign-thumb.webp"
+  },
+  "pt": {
+    "order": 2,
+    "title": "Eventos de Dia das Crianças",
+    "description": "Organização de atividades recreativas e doações, criando experiências marcantes para as crianças.",
+    "label": "Dia das Crianças",
+    "alt": "Evento de Dia das Crianças",
+    "image": "/images/contributing/children-day-campaign.webp",
+    "thumb": "/images/contributing/children-day-campaign-thumb.webp"
+  },
+  "es": {
+    "order": 2,
+    "title": "Eventos del Día del Niño",
+    "description": "Organización de actividades recreativas y donaciones que crean experiencias significativas para los niños.",
+    "label": "Día del Niño",
+    "alt": "Evento del Día del Niño",
+    "image": "/images/contributing/children-day-campaign.webp",
+    "thumb": "/images/contributing/children-day-campaign-thumb.webp"
+  }
+}

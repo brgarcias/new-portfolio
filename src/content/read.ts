@@ -4,7 +4,12 @@ import path from 'node:path';
 // I18N
 import { defaultLocale, type Locale } from '@/src/i18n/config';
 
-const contentDir = path.join(process.cwd(), 'content');
+// The tests build with a fixed copy, in tests/fixtures/content, so edits
+// made in the panel do not change what they check (CONTENT_DIR).
+const contentDir = path.join(
+  process.cwd(),
+  process.env.CONTENT_DIR ?? 'content',
+);
 
 // A content file holds a block per language, as the panel (Decap CMS) saves
 // it with the single_file structure.

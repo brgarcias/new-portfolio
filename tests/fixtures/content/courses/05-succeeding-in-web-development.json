@@ -1,0 +1,116 @@
+{
+  "en": {
+    "order": 5,
+    "title": "Succeeding in Web Development",
+    "subtitle": "Becoming a Web Developer",
+    "wide": true,
+    "dialogTitle": "Web Development",
+    "dialogSubtitle": "LinkedIn",
+    "modules": [
+      {
+        "title": "Becoming a Web Developer",
+        "description": "Programmer's responsibilities, career, and its technologies."
+      },
+      {
+        "title": "A Developer's Life",
+        "description": "Types of dev's, what a dev's life is like, and where a dev can go."
+      },
+      {
+        "title": "Core Technologies",
+        "description": "Fundamental HTML5, CSS3 design, Interactive JavaScript, and HTTP(S) connection."
+      },
+      {
+        "title": "Core Concepts",
+        "description": "How the internet works, project building, design methods, development skill, and version control."
+      },
+      {
+        "title": "Supporting Technologies",
+        "description": "Server, Back-end, Tools, Frameworks and Libraries, and APIs and Services."
+      },
+      {
+        "title": "Education",
+        "description": "Good code development, BootCamps, online courses."
+      },
+      {
+        "title": "Getting a Job",
+        "description": "How dev's find jobs, the hiring process, compensation, and the best option."
+      }
+    ]
+  },
+  "pt": {
+    "order": 5,
+    "title": "Succeeding in Web Development",
+    "subtitle": "Tornando-se um desenvolvedor web",
+    "wide": true,
+    "dialogTitle": "Desenvolvimento web",
+    "dialogSubtitle": "LinkedIn",
+    "modules": [
+      {
+        "title": "Tornando-se um desenvolvedor web",
+        "description": "Responsabilidades, carreira e tecnologias de quem programa."
+      },
+      {
+        "title": "A vida de um desenvolvedor",
+        "description": "Tipos de devs, como é a vida de um dev e até onde um dev pode chegar."
+      },
+      {
+        "title": "Tecnologias essenciais",
+        "description": "Fundamentos de HTML5, design com CSS3, JavaScript interativo e conexão HTTP(S)."
+      },
+      {
+        "title": "Conceitos essenciais",
+        "description": "Como a internet funciona, construção de projetos, métodos de design, habilidades de desenvolvimento e controle de versão."
+      },
+      {
+        "title": "Tecnologias de apoio",
+        "description": "Servidor, back-end, ferramentas, frameworks e bibliotecas, APIs e serviços."
+      },
+      {
+        "title": "Formação",
+        "description": "Desenvolvimento de bom código, bootcamps, cursos online."
+      },
+      {
+        "title": "Conseguindo um emprego",
+        "description": "Como os devs encontram vagas, o processo seletivo, a remuneração e a melhor opção."
+      }
+    ]
+  },
+  "es": {
+    "order": 5,
+    "title": "Succeeding in Web Development",
+    "subtitle": "Cómo convertirse en desarrollador web",
+    "wide": true,
+    "dialogTitle": "Desarrollo web",
+    "dialogSubtitle": "LinkedIn",
+    "modules": [
+      {
+        "title": "Cómo convertirse en desarrollador web",
+        "description": "Responsabilidades, carrera y tecnologías de quien programa."
+      },
+      {
+        "title": "La vida de un desarrollador",
+        "description": "Tipos de devs, cómo es la vida de un dev y hasta dónde puede llegar."
+      },
+      {
+        "title": "Tecnologías esenciales",
+        "description": "Fundamentos de HTML5, diseño con CSS3, JavaScript interactivo y conexión HTTP(S)."
+      },
+      {
+        "title": "Conceptos esenciales",
+        "description": "Cómo funciona internet, construcción de proyectos, métodos de diseño, habilidades de desarrollo y control de versiones."
+      },
+      {
+        "title": "Tecnologías de apoyo",
+        "description": "Servidor, back-end, herramientas, frameworks y bibliotecas, APIs y servicios."
+      },
+      {
+        "title": "Formación",
+        "description": "Desarrollo de buen código, bootcamps, cursos en línea."
+      },
+      {
+        "title": "Cómo conseguir empleo",
+        "description": "Cómo los devs encuentran empleo, el proceso de selección, la remuneración y la mejor opción."
+      }
+    ]
+  }
+}
