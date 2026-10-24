@@ -1,7 +1,9 @@
 # The portfolio's content panel (Decap CMS), at /admin. Each change becomes
 # a pull request with a Deploy Preview, and "Publish" squash-merges it once
-# the checks pass. The files live in content/, with a block per language
-# (single_file structure). Labels and hints are in Portuguese, for Bruno.
+# the checks pass. panel.js, next to this file, makes GitHub sign every
+# commit and shows the checks. The files live in content/, with a block per
+# language (single_file structure). Labels and hints are in Portuguese, for
+# Bruno.
 backend:
   name: github
   repo: brgarcias/new-portfolio

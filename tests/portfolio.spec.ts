@@ -842,6 +842,8 @@ test('abre o painel de conteúdo em /admin', async ({ page, request }) => {
   // the strict one.
   const panelPolicy = response.headers()['content-security-policy'];
   expect(panelPolicy).toContain('https://api.github.com');
+  // Images uploaded in the panel are read from blob: URLs.
+  expect(panelPolicy).toMatch(/connect-src [^;]*blob:/);
   expect(panelPolicy).toContain("frame-ancestors 'none'");
   expect(response.headers()['x-frame-options']).toBe('DENY');
   const sitePolicy = (await request.get('/')).headers()[

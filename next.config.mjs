@@ -18,16 +18,17 @@ const contentSecurityPolicy = [
 
 // The content panel (Decap CMS, in public/admin) talks to GitHub's API,
 // logs in through Netlify's GitHub provider, shows avatars and the
-// repository's images, and compiles WebAssembly for its image tools. It
-// also needs 'unsafe-eval': its config check (AJV) compiles code at run
-// time. On localhost it can use decap-server, on port 8081.
+// repository's images, reads the images it uploads from blob: URLs, and
+// compiles WebAssembly for its image tools. It also needs 'unsafe-eval':
+// its config check (AJV) compiles code at run time. On localhost it can
+// use decap-server, on port 8081.
 const panelPolicy = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://avatars.githubusercontent.com https://raw.githubusercontent.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://api.github.com https://api.netlify.com https://raw.githubusercontent.com http://localhost:8081",
+  "connect-src 'self' blob: https://api.github.com https://api.netlify.com https://raw.githubusercontent.com http://localhost:8081",
   "frame-src 'self' blob:",
   "worker-src 'self' blob:",
   "media-src 'self' blob:",
