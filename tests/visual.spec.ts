@@ -24,6 +24,9 @@ test.describe.configure({ mode: 'parallel' });
 test.use({ trace: 'off' });
 
 async function settle(page: Page, scope = 'body') {
+  // The dialog code downloads and runs once the page is idle. The capture
+  // waits for it, so that work never overlaps the screenshot.
+  await page.waitForLoadState('networkidle');
   await page.evaluate(() => document.fonts.ready);
   await page.locator(`${scope} img`).evaluateAll((images) =>
     Promise.all(
