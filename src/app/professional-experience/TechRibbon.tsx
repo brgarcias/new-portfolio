@@ -10,7 +10,7 @@ export default function TechRibbon({ items }: Readonly<TechRibbonProps>) {
   const rows = [items.slice(0, half), items.slice(half)];
 
   return (
-    <div className="tech-ribbon" aria-hidden="true">
+    <div className="tech-ribbon" aria-hidden="true" data-loop>
       {rows.map((row) => (
         <div key={row[0]} className="tech-ribbon__row">
           {[0, 1].map((copy) => (

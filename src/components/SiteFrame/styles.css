@@ -375,20 +375,22 @@
   box-shadow: 0 24px 50px -20px rgb(0 0 0 / 0.75);
   visibility: hidden;
   opacity: 0;
-  transform: translate3d(0, -0.4rem, 0);
+  transform: translate3d(0, -0.4rem, 0) scale(0.92);
+  transform-origin: top right;
   transition:
     opacity 0.2s ease,
     transform 0.25s var(--ease-out),
     visibility 0s linear 0.25s;
 }
 
+/* It grows from its corner like the iPhone's menus, on a spring. */
 .lang-switch.is-open .lang-switch__list--dropdown {
   visibility: visible;
   opacity: 1;
   transform: none;
   transition:
     opacity 0.2s ease,
-    transform 0.25s var(--ease-out),
+    transform 0.45s var(--ease-spring),
     visibility 0s;
 }
 
@@ -492,16 +494,20 @@
   gap: 0.25rem 2rem;
 }
 
+/* The links come in one after the other, out of a blur, on a spring. */
 .stack-menu__item {
   opacity: 0;
+  filter: blur(6px);
   transform: translate3d(0, 0.75rem, 0);
   transition:
     opacity 0.4s ease,
-    transform 0.5s var(--ease-out);
+    filter 0.4s ease,
+    transform 0.6s var(--ease-out);
 }
 
 .stack-menu--open .stack-menu__item {
   opacity: 1;
+  filter: none;
   transform: none;
   transition-delay: calc(0.2s + var(--i) * 45ms);
 }
@@ -616,8 +622,8 @@
   right: 0;
   left: 0;
   transition:
-    transform 0.6s var(--ease-stack),
-    clip-path 0.6s var(--ease-stack);
+    transform 0.7s var(--ease-stack),
+    clip-path 0.7s var(--ease-stack);
 }
 
 .stage--open .stage__sheet {
@@ -635,8 +641,8 @@
   opacity: 0;
   transform: translate3d(0, var(--stack-push), -300px);
   transition:
-    transform 0.6s var(--ease-stack),
-    opacity 0.6s var(--ease-stack);
+    transform 0.7s var(--ease-stack),
+    opacity 0.7s var(--ease-stack);
 }
 
 .stage__ghost--middle {

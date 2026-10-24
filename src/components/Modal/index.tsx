@@ -9,6 +9,34 @@ import {
 } from '@heroui/react';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
+// MOTION
+import { spring } from '@/src/components/spring';
+
+// HeroUI's own motion, on springs like the iPhone's: on phones the dialog
+// slides up, and on wider screens it grows a little into place (the
+// --slide and --scale variables, from HeroUI and the base class below).
+const motionProps = {
+  variants: {
+    enter: {
+      scale: 'var(--scale-enter)',
+      y: 'var(--slide-enter)',
+      opacity: 1,
+      willChange: 'auto',
+      transition: {
+        scale: { duration: 0.5, ease: spring },
+        y: { duration: 0.55, ease: spring },
+        opacity: { duration: 0.25, ease: 'easeOut' },
+      },
+    },
+    exit: {
+      scale: 'var(--scale-exit)',
+      y: 'var(--slide-exit)',
+      opacity: 0,
+      willChange: 'transform',
+      transition: { duration: 0.2, ease: [0.4, 0, 1, 1] },
+    },
+  },
+} as const;
 
 export interface ModalProps {
   visible: boolean;
@@ -59,8 +87,10 @@ export default function ModalComponent({
       size={size}
       onOpenChange={onOpenChange}
       scrollBehavior="inside"
-      // Keeps the height limit NextUI used before HeroUI changed it to 8rem.
-      classNames={{ base: 'max-h-[calc(100%_-_7.5rem)]' }}
+      motionProps={motionProps}
+      // Keeps the height limit NextUI used before HeroUI changed it to 8rem,
+      // and has the dialog grow from 96% on wider screens.
+      classNames={{ base: 'max-h-[calc(100%_-_7.5rem)] sm:[--scale-exit:96%]' }}
     >
       <ModalContent>
         {(onClose) => (
