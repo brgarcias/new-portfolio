@@ -1,0 +1,38 @@
+{
+  "en": {
+    "order": 1,
+    "eyebrow": "Integrated Solutions",
+    "title": "CSS",
+    "device": "iphone",
+    "preview": "/images/projects/css-solucoes-preview.webp",
+    "image": "/images/projects/css-solucoes.webp",
+    "dialogTitle": "CSS - Integrated Solutions",
+    "dialogSubtitle": "Specialized services for terminals",
+    "description": "This was the first website I developed entirely on my own, starting from scratch. Since the company offers a wide range of services, I had to create multiple pages to accommodate all the information. The service names were quite lengthy, which challenged me to ensure that the design was responsive and that the layout of the menus (header, footer, and sidebar) was correct in all situations.",
+    "link": "http://csssolucoes.com.br/"
+  },
+  "pt": {
+    "order": 1,
+    "eyebrow": "Soluções integradas",
+    "title": "CSS",
+    "device": "iphone",
+    "preview": "/images/projects/css-solucoes-preview.webp",
+    "image": "/images/projects/css-solucoes.webp",
+    "dialogTitle": "CSS - Soluções Integradas",
+    "dialogSubtitle": "Serviços especializados para terminais",
+    "description": "Este foi o primeiro site que desenvolvi inteiramente sozinho, do zero. Como a empresa oferece uma grande variedade de serviços, precisei criar várias páginas para acomodar todas as informações. Os nomes dos serviços eram bem longos, o que me desafiou a garantir que o design fosse responsivo e que o layout dos menus (cabeçalho, rodapé e barra lateral) ficasse correto em todas as situações.",
+    "link": "http://csssolucoes.com.br/"
+  },
+  "es": {
+    "order": 1,
+    "eyebrow": "Soluciones integradas",
+    "title": "CSS",
+    "device": "iphone",
+    "preview": "/images/projects/css-solucoes-preview.webp",
+    "image": "/images/projects/css-solucoes.webp",
+    "dialogTitle": "CSS - Soluciones Integradas",
+    "dialogSubtitle": "Servicios especializados para terminales",
+    "description": "Este fue el primer sitio web que desarrollé completamente solo, desde cero. Como la empresa ofrece una gran variedad de servicios, tuve que crear varias páginas para incluir toda la información. Los nombres de los servicios eran bastante largos, lo que me desafió a asegurar que el diseño fuera responsivo y que la disposición de los menús (encabezado, pie de página y barra lateral) fuera correcta en todas las situaciones.",
+    "link": "http://csssolucoes.com.br/"
+  }
+}

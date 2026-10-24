@@ -1,0 +1,62 @@
+{
+  "en": {
+    "company": "Ingenico",
+    "title": "Intern Software Developer",
+    "start": "2018-04",
+    "end": "2020-04",
+    "icon": "mobile",
+    "stack": "Java, Android, C, C++",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Gained foundational experience in WEB infrastructure, including a comprehensive understanding of its key concepts, back-end and front-end structures, as well as databases and servers.",
+          "Acquired introductory knowledge of programming languages such as JAVA, Android, C, and C++.",
+          "Enhanced skills through hands-on project development, particularly within internal systems, involving the implementation of enhancements and maintenance of system components.",
+          "Took charge of tailoring and customizing payment terminals to meet specific requirements.",
+          "Demonstrated expertise in addressing customer needs through interface design, proficiently analyzing application logs, and serving as a pivotal troubleshooter. This role included the creation of development documentation for future reference."
+        ]
+      }
+    ]
+  },
+  "pt": {
+    "company": "Ingenico",
+    "title": "Estagiário de Desenvolvimento de Software",
+    "start": "2018-04",
+    "end": "2020-04",
+    "icon": "mobile",
+    "stack": "Java, Android, C, C++",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Adquiri experiência básica em infraestrutura WEB, incluindo uma compreensão abrangente de seus conceitos principais, das estruturas de back-end e front-end, além de bancos de dados e servidores.",
+          "Obtive conhecimentos introdutórios de linguagens de programação como JAVA, Android, C e C++.",
+          "Aprimorei minhas habilidades no desenvolvimento prático de projetos, principalmente em sistemas internos, com a implementação de melhorias e a manutenção de componentes dos sistemas.",
+          "Fiquei responsável por adaptar e personalizar terminais de pagamento para atender a requisitos específicos.",
+          "Demonstrei competência no atendimento às necessidades dos clientes por meio do design de interfaces, analisando logs das aplicações com eficiência e atuando como peça-chave na resolução de problemas. A função incluía a criação de documentação de desenvolvimento para consultas futuras."
+        ]
+      }
+    ]
+  },
+  "es": {
+    "company": "Ingenico",
+    "title": "Desarrollador de Software en prácticas",
+    "start": "2018-04",
+    "end": "2020-04",
+    "icon": "mobile",
+    "stack": "Java, Android, C, C++",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Adquirí experiencia básica en infraestructura WEB, incluida una comprensión amplia de sus conceptos clave, de las estructuras de back-end y front-end, así como de bases de datos y servidores.",
+          "Obtuve conocimientos introductorios de lenguajes de programación como JAVA, Android, C y C++.",
+          "Mejoré mis habilidades con el desarrollo práctico de proyectos, sobre todo en sistemas internos, con la implementación de mejoras y el mantenimiento de componentes de los sistemas.",
+          "Me encargué de adaptar y personalizar terminales de pago para cumplir requisitos específicos.",
+          "Demostré competencia para atender las necesidades de los clientes mediante el diseño de interfaces, analizando con eficiencia los logs de las aplicaciones y actuando como pieza clave en la resolución de problemas. El puesto incluía la creación de documentación de desarrollo para consultas futuras."
+        ]
+      }
+    ]
+  }
+}

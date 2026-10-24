@@ -1,0 +1,92 @@
+{
+  "en": {
+    "order": 6,
+    "title": "Advanced Physics - ICTP Saifr",
+    "subtitle": "Relativity, Gravitation, and Quantum Mechanics",
+    "wide": true,
+    "dialogTitle": "Advanced Physics",
+    "dialogSubtitle": "Relativity, Gravitation, and Quantum Mechanics",
+    "modules": [
+      {
+        "title": "Space-Time",
+        "description": "Speed of Light, Light Cone, Time Dilation, Distances and Simultaneity."
+      },
+      {
+        "title": "Velocity Addition",
+        "description": "Space Contraction, Twin Paradox, Tachyon."
+      },
+      {
+        "title": "Light",
+        "description": "Photon, Speed of Light in Different Environments, Mirrors."
+      },
+      {
+        "title": "Black Hole",
+        "description": "Black and White Hole Graphics, Singularity, Complex Plane."
+      },
+      {
+        "title": "String Theory",
+        "description": "Fundamental Blocks, Particles vs. Strings."
+      }
+    ]
+  },
+  "pt": {
+    "order": 6,
+    "title": "Física avançada - ICTP Saifr",
+    "subtitle": "Relatividade, gravitação e mecânica quântica",
+    "wide": true,
+    "dialogTitle": "Física avançada",
+    "dialogSubtitle": "Relatividade, gravitação e mecânica quântica",
+    "modules": [
+      {
+        "title": "Espaço-tempo",
+        "description": "Velocidade da luz, cone de luz, dilatação do tempo, distâncias e simultaneidade."
+      },
+      {
+        "title": "Adição de velocidades",
+        "description": "Contração do espaço, paradoxo dos gêmeos, táquions."
+      },
+      {
+        "title": "Luz",
+        "description": "Fóton, velocidade da luz em diferentes meios, espelhos."
+      },
+      {
+        "title": "Buraco negro",
+        "description": "Gráficos de buracos negros e brancos, singularidade, plano complexo."
+      },
+      {
+        "title": "Teoria das cordas",
+        "description": "Blocos fundamentais, partículas vs. cordas."
+      }
+    ]
+  },
+  "es": {
+    "order": 6,
+    "title": "Física avanzada - ICTP Saifr",
+    "subtitle": "Relatividad, gravitación y mecánica cuántica",
+    "wide": true,
+    "dialogTitle": "Física avanzada",
+    "dialogSubtitle": "Relatividad, gravitación y mecánica cuántica",
+    "modules": [
+      {
+        "title": "Espacio-tiempo",
+        "description": "Velocidad de la luz, cono de luz, dilatación del tiempo, distancias y simultaneidad."
+      },
+      {
+        "title": "Suma de velocidades",
+        "description": "Contracción del espacio, paradoja de los gemelos, taquiones."
+      },
+      {
+        "title": "Luz",
+        "description": "Fotón, velocidad de la luz en distintos medios, espejos."
+      },
+      {
+        "title": "Agujero negro",
+        "description": "Gráficos de agujeros negros y blancos, singularidad, plano complejo."
+      },
+      {
+        "title": "Teoría de cuerdas",
+        "description": "Bloques fundamentales, partículas vs. cuerdas."
+      }
+    ]
+  }
+}

@@ -16,6 +16,27 @@ const contentSecurityPolicy = [
   "frame-ancestors 'none'",
 ].join('; ');
 
+// The content panel (Decap CMS, in public/admin) talks to GitHub's API,
+// logs in through Netlify's GitHub provider, shows avatars and the
+// repository's images, and compiles WebAssembly for its image tools. It
+// also needs 'unsafe-eval': its config check (AJV) compiles code at run
+// time. On localhost it can use decap-server, on port 8081.
+const panelPolicy = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https://avatars.githubusercontent.com https://raw.githubusercontent.com",
+  "font-src 'self' data:",
+  "connect-src 'self' https://api.github.com https://api.netlify.com https://raw.githubusercontent.com http://localhost:8081",
+  "frame-src 'self' blob:",
+  "worker-src 'self' blob:",
+  "media-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+].join('; ');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Keeps `next dev` from appending its own agent instructions to AGENTS.md.
@@ -23,10 +44,13 @@ const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   // The pages read content/, and the size of the images it names, when they
-  // are generated on the server: the home page once a day, and the 404
-  // pages, which share its layout, on request.
+  // are generated again on the server, once a day.
   outputFileTracingIncludes: {
     '/**': ['content/**/*.json', 'public/images/**/*'],
+  },
+  // The copy of the content for the tests is not needed in production.
+  outputFileTracingExcludes: {
+    '/**': ['tests/**/*'],
   },
   // English, the default language, lives at / without a prefix: / serves
   // the /en page, and /en itself sends visitors to /.
@@ -51,6 +75,11 @@ const nextConfig = {
               'camera=(), microphone=(), geolocation=(), browsing-topics=()',
           },
         ],
+      },
+      // Replaces the policy above on the panel's pages.
+      {
+        source: '/admin/:path*',
+        headers: [{ key: 'Content-Security-Policy', value: panelPolicy }],
       },
     ];
   },

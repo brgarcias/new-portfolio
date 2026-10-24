@@ -835,6 +835,35 @@ test('aplica os cabeçalhos de segurança sem bloquear o site', async ({
   ).toEqual([]);
 });
 
+test('abre o painel de conteúdo em /admin', async ({ page, request }) => {
+  const response = await request.get('/admin');
+  expect(response.status()).toBe(200);
+  // The panel has its own policy, which lets it reach GitHub. The site keeps
+  // the strict one.
+  const panelPolicy = response.headers()['content-security-policy'];
+  expect(panelPolicy).toContain('https://api.github.com');
+  expect(panelPolicy).toContain("frame-ancestors 'none'");
+  expect(response.headers()['x-frame-options']).toBe('DENY');
+  const sitePolicy = (await request.get('/')).headers()[
+    'content-security-policy'
+  ];
+  expect(sitePolicy).not.toContain('api.github.com');
+  expect(sitePolicy).not.toContain('unsafe-eval');
+  expect(await (await request.get('/robots.txt')).text()).toContain(
+    'Disallow: /admin',
+  );
+
+  // Decap checks the whole configuration before it shows the login.
+  await page.goto('/admin');
+  await expect(
+    page.getByRole('button', { name: 'Entrar com o GitHub' }),
+  ).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+    'content',
+    'noindex, nofollow',
+  );
+});
+
 test('publica os metadados de busca e compartilhamento', async ({
   page,
   request,

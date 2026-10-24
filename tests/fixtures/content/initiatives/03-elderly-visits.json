@@ -1,0 +1,29 @@
+{
+  "en": {
+    "order": 3,
+    "title": "Elderly home visits",
+    "description": "Visits promoting interaction, wellbeing, and emotional support in elderly care homes.",
+    "label": "Elderly visits",
+    "alt": "Elderly care home visit",
+    "image": "/images/contributing/elderly-visit.webp",
+    "thumb": "/images/contributing/elderly-visit-thumb.webp"
+  },
+  "pt": {
+    "order": 3,
+    "title": "Visitas a lares de idosos",
+    "description": "Visitas que promovem convivência, bem-estar e apoio emocional em lares de idosos.",
+    "label": "Visitas a idosos",
+    "alt": "Visita a um lar de idosos",
+    "image": "/images/contributing/elderly-visit.webp",
+    "thumb": "/images/contributing/elderly-visit-thumb.webp"
+  },
+  "es": {
+    "order": 3,
+    "title": "Visitas a residencias de mayores",
+    "description": "Visitas que promueven la convivencia, el bienestar y el apoyo emocional en residencias de mayores.",
+    "label": "Visitas a mayores",
+    "alt": "Visita a una residencia de mayores",
+    "image": "/images/contributing/elderly-visit.webp",
+    "thumb": "/images/contributing/elderly-visit-thumb.webp"
+  }
+}

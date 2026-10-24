@@ -1,0 +1,29 @@
+{
+  "en": {
+    "order": 1,
+    "title": "Easter donation campaigns",
+    "description": "Delivering gifts, food, and essential supplies to children from underserved communities.",
+    "label": "Easter campaign",
+    "alt": "Easter donation campaign",
+    "image": "/images/contributing/easter-campaign.webp",
+    "thumb": "/images/contributing/easter-campaign-thumb.webp"
+  },
+  "pt": {
+    "order": 1,
+    "title": "Campanhas de doação de Páscoa",
+    "description": "Entrega de presentes, alimentos e itens essenciais para crianças de comunidades carentes.",
+    "label": "Campanha de Páscoa",
+    "alt": "Campanha de doação de Páscoa",
+    "image": "/images/contributing/easter-campaign.webp",
+    "thumb": "/images/contributing/easter-campaign-thumb.webp"
+  },
+  "es": {
+    "order": 1,
+    "title": "Campañas de donación de Pascua",
+    "description": "Entrega de regalos, alimentos y artículos esenciales a niños de comunidades desfavorecidas.",
+    "label": "Campaña de Pascua",
+    "alt": "Campaña de donación de Pascua",
+    "image": "/images/contributing/easter-campaign.webp",
+    "thumb": "/images/contributing/easter-campaign-thumb.webp"
+  }
+}
