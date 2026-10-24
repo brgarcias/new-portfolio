@@ -10,5 +10,29 @@
     "dialogSubtitle": "Accounting firm",
     "description": "This was my first time implementing a responsive website. During this occasion, I had to deal with several responsiveness issues, especially with the breadcrumb, where both the images and the text/title needed significant improvements. Additionally, it was also my first time creating a drop-down menu, which can be seen in the \"Services\" tab.",
     "link": "https://www.senseicontabil.com.br/"
+  },
+  "pt": {
+    "order": 2,
+    "eyebrow": "Organização contábil",
+    "title": "Sensei",
+    "device": "ipad",
+    "preview": "/images/projects/sensei-contabil-preview.webp",
+    "image": "/images/projects/sensei-contabil.webp",
+    "dialogTitle": "Sensei Organização Contábil",
+    "dialogSubtitle": "Escritório de contabilidade",
+    "description": "Foi a primeira vez que implementei um site responsivo. Nessa ocasião, precisei lidar com vários problemas de responsividade, principalmente no breadcrumb, em que tanto as imagens quanto o texto e o título precisaram de melhorias significativas. Também foi a primeira vez que criei um menu suspenso, que aparece na aba \"Serviços\".",
+    "link": "https://www.senseicontabil.com.br/"
+  },
+  "es": {
+    "order": 2,
+    "eyebrow": "Organización contable",
+    "title": "Sensei",
+    "device": "ipad",
+    "preview": "/images/projects/sensei-contabil-preview.webp",
+    "image": "/images/projects/sensei-contabil.webp",
+    "dialogTitle": "Sensei Organización Contable",
+    "dialogSubtitle": "Estudio contable",
+    "description": "Fue la primera vez que implementé un sitio web responsivo. En esa ocasión, tuve que lidiar con varios problemas de responsividad, sobre todo en el breadcrumb, donde tanto las imágenes como el texto y el título necesitaron mejoras importantes. Además, fue la primera vez que creé un menú desplegable, que se puede ver en la pestaña \"Servicios\".",
+    "link": "https://www.senseicontabil.com.br/"
   }
 }

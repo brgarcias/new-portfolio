@@ -28,6 +28,7 @@ import {
   defaultLocale,
   homePath,
   isLocale,
+  locales,
   type Locale,
 } from '@/src/i18n/config';
 import { getMessages } from '@/src/i18n/messages';
@@ -54,13 +55,13 @@ const removeHeadWhitespace =
   'if(node.nodeType===3&&!node.textContent.trim())node.remove()';
 
 // Only facts the page already shows: name, role, e-mail and profiles.
-const personJsonLd = (profile: Profile) => ({
+const personJsonLd = (profile: Profile, locale: Locale) => ({
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: profile.name,
   alternateName: profile.fullName,
   jobTitle: profile.role,
-  url: `${siteUrl}/`,
+  url: `${siteUrl}${homePath(locale)}`,
   email: `mailto:${profile.email}`,
   sameAs: [profile.linkedin, profile.github],
 });
@@ -72,7 +73,15 @@ export async function generateMetadata({
   const { title, description, ogLocale } = getMessages(locale).meta;
   const home = homePath(locale);
   return {
-    alternates: { canonical: home },
+    // Each language links to the others, so search engines show the right
+    // one; x-default is for visitors whose language the site does not have.
+    alternates: {
+      canonical: home,
+      languages: {
+        ...Object.fromEntries(locales.map((code) => [code, homePath(code)])),
+        'x-default': homePath(defaultLocale),
+      },
+    },
     openGraph: {
       type: 'website',
       url: home,
@@ -118,7 +127,7 @@ export default async function LocaleLayout({
           type="application/ld+json"
           // Escapes "<" so the JSON can never close the script element.
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(personJsonLd(profile)).replace(
+            __html: JSON.stringify(personJsonLd(profile, locale)).replace(
               /</g,
               '\\u003c',
             ),

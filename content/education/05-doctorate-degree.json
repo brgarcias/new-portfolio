@@ -5,5 +5,19 @@
     "title": "When will be?",
     "text": "But I don't want to be called a doctor!",
     "upcoming": true
+  },
+  "pt": {
+    "order": 5,
+    "label": "Doutorado",
+    "title": "Quando será?",
+    "text": "Mas não quero ser chamado de doutor!",
+    "upcoming": true
+  },
+  "es": {
+    "order": 5,
+    "label": "Doctorado",
+    "title": "¿Cuándo será?",
+    "text": "¡Pero no quiero que me llamen doctor!",
+    "upcoming": true
   }
 }

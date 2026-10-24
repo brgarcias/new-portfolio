@@ -1,0 +1,105 @@
+import type { Messages } from './en';
+
+// The interface texts in Spanish.
+const es: Messages = {
+  meta: {
+    title: 'Bruno Garcia — Dev. Full-Stack',
+    description: 'Bruno Garcia: un desarrollador Full-Stack inspirado',
+    ogLocale: 'es_ES',
+    dateLocale: 'es-ES',
+  },
+  frame: {
+    skipToContent: 'Saltar al contenido',
+    sections: 'Secciones',
+    menu: 'Menú',
+    openMenu: 'Abrir el menú',
+    closeMenu: 'Cerrar el menú',
+    backToPage: 'Volver a la página',
+    cv: 'CV',
+    downloadCv: 'Descargar CV',
+    language: 'Idioma',
+    toLightTheme: 'Cambiar al tema claro',
+    toDarkTheme: 'Cambiar al tema oscuro',
+    socialLinks: 'Redes sociales',
+    email: 'Correo',
+    backToTop: 'Volver arriba',
+  },
+  hero: {
+    currently: 'Actualmente {role} en {company}',
+    contact: 'Contáctame',
+    downloadCv: 'Descargar CV',
+    feedback: 'Dejar comentarios',
+    scrollToAbout: 'Ir a Sobre mí',
+  },
+  feedback: {
+    title: '¡Te doy la bienvenida!',
+    subtitle:
+      'Comparte tus impresiones y sugerencias para ayudarme a mejorar mi portafolio.',
+    nameLabel: 'Nombre completo',
+    namePlaceholder: '¿Cómo te llamas?',
+    nameError: 'Por favor, escribe tu nombre.',
+    emailLabel: 'Correo',
+    emailPlaceholder: 'Escribe tu correo',
+    emailError: 'Por favor, indícame tu correo.',
+    feedbackLabel: 'Comentarios',
+    feedbackPlaceholder: 'Deja tus comentarios',
+    feedbackError: 'Por favor, escribe tus comentarios.',
+    botField: 'No completes este campo:',
+    close: 'Cerrar',
+    send: 'Enviar',
+    sentTitle: 'Mensaje enviado',
+    sentText: '¡Muchas gracias por tus comentarios!',
+    failedTitle: 'Tuvimos un problema',
+    failedText: '¡Ocurrió un error al enviar tu mensaje!',
+  },
+  dialog: {
+    close: 'Cerrar',
+    closeNotice: 'Cerrar el aviso',
+  },
+  experience: {
+    technologies: 'Tecnologías',
+    present: 'Actualidad',
+    years: '{count}a',
+    months: '{count}m',
+  },
+  education: {
+    steps: 'Formación',
+  },
+  courses: {
+    details: 'Ver detalles',
+  },
+  projects: {
+    list: 'Proyectos',
+    details: 'Ver detalles',
+    detailsAbout: ' de {title}',
+    previous: 'Proyecto anterior',
+    next: 'Proyecto siguiente',
+    website: 'Conocer el sitio',
+  },
+  contributing: {
+    previous: 'Foto anterior',
+    next: 'Foto siguiente',
+  },
+  contact: {
+    age: '{age} años',
+  },
+  notFound: {
+    label: 'Error 404',
+    heading: 'Página no encontrada',
+    text: 'Esta página no existe, ¡pero puedes [volver al portafolio]!',
+    quote: 'No todos los que vagan están perdidos.',
+    author: 'J.R.R. Tolkien',
+    back: 'Volver al portafolio',
+  },
+  error: {
+    label: 'Error inesperado',
+    heading: 'Algo salió mal',
+    text: 'Lo siento, esta página dejó de funcionar. ¡Por favor, [inténtalo de nuevo]!',
+    quote:
+      'El fracaso es solo la oportunidad de empezar de nuevo, esta vez de forma más inteligente.',
+    author: 'Henry Ford',
+    retry: 'Intentar de nuevo',
+  },
+};
+
+export default es;

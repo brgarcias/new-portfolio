@@ -24,5 +24,57 @@
         "description": "Functional Components, Hooks."
       }
     ]
+  },
+  "pt": {
+    "order": 2,
+    "title": "JavaScript - Udemy",
+    "subtitle": "JavaScript",
+    "wide": false,
+    "dialogTitle": "Curso Web Moderno - Udemy",
+    "dialogSubtitle": "JavaScript, Node.js, HTML5, CSS3, Ajax, jQuery, Bootstrap, React.js, Express",
+    "modules": [
+      {
+        "title": "Javascript",
+        "description": "Fundamentos, estruturas de controle, funções, objetos, arrays."
+      },
+      {
+        "title": "Node.js",
+        "description": "Sistema de módulos, leitura e escrita de arquivos, middleware, API com Express, Postman."
+      },
+      {
+        "title": "Ajax",
+        "description": "XMLHttp, Fetch API, Axios, Ajax com jQuery."
+      },
+      {
+        "title": "React.js",
+        "description": "Componentes funcionais, hooks."
+      }
+    ]
+  },
+  "es": {
+    "order": 2,
+    "title": "JavaScript - Udemy",
+    "subtitle": "JavaScript",
+    "wide": false,
+    "dialogTitle": "Curso de Web Moderna - Udemy",
+    "dialogSubtitle": "JavaScript, Node.js, HTML5, CSS3, Ajax, jQuery, Bootstrap, React.js, Express",
+    "modules": [
+      {
+        "title": "Javascript",
+        "description": "Fundamentos, estructuras de control, funciones, objetos, arrays."
+      },
+      {
+        "title": "Node.js",
+        "description": "Sistema de módulos, lectura y escritura de archivos, middleware, API con Express, Postman."
+      },
+      {
+        "title": "Ajax",
+        "description": "XMLHttp, Fetch API, Axios, Ajax con jQuery."
+      },
+      {
+        "title": "React.js",
+        "description": "Componentes funcionales, hooks."
+      }
+    ]
   }
 }

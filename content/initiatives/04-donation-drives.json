@@ -7,5 +7,23 @@
     "alt": "Community donation campaign",
     "image": "/images/contributing/donate-campaign.webp",
     "thumb": "/images/contributing/donate-campaign-thumb.webp"
+  },
+  "pt": {
+    "order": 4,
+    "title": "Campanhas gerais de doação",
+    "description": "Campanhas que oferecem alimentos, roupas e itens essenciais a famílias em situação de vulnerabilidade.",
+    "label": "Campanhas de doação",
+    "alt": "Campanha de doação comunitária",
+    "image": "/images/contributing/donate-campaign.webp",
+    "thumb": "/images/contributing/donate-campaign-thumb.webp"
+  },
+  "es": {
+    "order": 4,
+    "title": "Campañas generales de donación",
+    "description": "Campañas que ofrecen alimentos, ropa y artículos esenciales a familias en situación de vulnerabilidad.",
+    "label": "Campañas de donación",
+    "alt": "Campaña de donación comunitaria",
+    "image": "/images/contributing/donate-campaign.webp",
+    "thumb": "/images/contributing/donate-campaign-thumb.webp"
   }
 }

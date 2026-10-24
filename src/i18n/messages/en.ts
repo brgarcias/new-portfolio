@@ -18,6 +18,7 @@ const en = {
     backToPage: 'Back to the page',
     cv: 'CV',
     downloadCv: 'Download CV',
+    language: 'Language',
     toLightTheme: 'Switch to light theme',
     toDarkTheme: 'Switch to dark theme',
     socialLinks: 'Social links',

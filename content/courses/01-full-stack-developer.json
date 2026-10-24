@@ -28,5 +28,65 @@
         "description": "Completion of the final application with all the technologies studied."
       }
     ]
+  },
+  "pt": {
+    "order": 1,
+    "title": "Desenvolvedor Full-Stack",
+    "subtitle": "ReactJS",
+    "wide": false,
+    "dialogTitle": "Desenvolvedor Full-Stack - IGTI",
+    "dialogSubtitle": "JavaScript, Node.js, React.js, MongoDB, GitHub e Heroku",
+    "modules": [
+      {
+        "title": "Primeiro módulo - JavaScript puro",
+        "description": "Desenvolvimento de aplicações simples com JavaScript puro e dados persistidos em memória."
+      },
+      {
+        "title": "Segundo módulo - Node.js",
+        "description": "Desenvolvimento e criação de APIs com Node.js."
+      },
+      {
+        "title": "Terceiro módulo - React.js",
+        "description": "Desenvolvimento de aplicações com React, conectadas à API criada no módulo anterior."
+      },
+      {
+        "title": "Quarto módulo - GitHub / Heroku",
+        "description": "Persistência de dados, versionamento de código e deploy. Publicação da aplicação no GitHub e deploy no Heroku."
+      },
+      {
+        "title": "Desafio final",
+        "description": "Conclusão da aplicação final com todas as tecnologias estudadas."
+      }
+    ]
+  },
+  "es": {
+    "order": 1,
+    "title": "Desarrollador Full-Stack",
+    "subtitle": "ReactJS",
+    "wide": false,
+    "dialogTitle": "Desarrollador Full-Stack - IGTI",
+    "dialogSubtitle": "JavaScript, Node.js, React.js, MongoDB, GitHub y Heroku",
+    "modules": [
+      {
+        "title": "Primer módulo - JavaScript puro",
+        "description": "Desarrollo de aplicaciones sencillas con JavaScript puro y datos persistidos en memoria."
+      },
+      {
+        "title": "Segundo módulo - Node.js",
+        "description": "Desarrollo y creación de APIs con Node.js."
+      },
+      {
+        "title": "Tercer módulo - React.js",
+        "description": "Desarrollo de aplicaciones con React, conectadas a la API creada en el módulo anterior."
+      },
+      {
+        "title": "Cuarto módulo - GitHub / Heroku",
+        "description": "Persistencia de datos, control de versiones del código y despliegue. Publicación de la aplicación en GitHub y despliegue en Heroku."
+      },
+      {
+        "title": "Desafío final",
+        "description": "Finalización de la aplicación final con todas las tecnologías estudiadas."
+      }
+    ]
   }
 }

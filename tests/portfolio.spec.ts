@@ -64,6 +64,74 @@ test('mostra o inglês em / e leva quem abre /en para /', async ({
   expect((await request.get('/en/anything')).status()).toBe(404);
 });
 
+test('mostra o site em português e em espanhol', async ({ page }) => {
+  const siteUrl = 'https://brgarcias-portfolio.netlify.app';
+  await page.goto('/pt');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'pt');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Desenvolvedor Full-Stack',
+  );
+  await expect(page.locator('#top .hero__status')).toHaveText(
+    'Atualmente Engenheiro de Software na PayPal',
+  );
+  await expect(page.locator('#experience h2')).toHaveText(
+    'Experiência profissional',
+  );
+  // Months and the current role in the page's language.
+  await expect(
+    page.locator('#experience .xp-item').first().locator('.xp-item__period'),
+  ).toContainText('out. de 2025 — Atual');
+  await expect(
+    page.locator('#contact .contact-card--profile .contact-card__details li'),
+  ).toContainText([/^Casado$/, /^\d+ anos$/]);
+  // The other languages are linked for search engines.
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    'href',
+    `${siteUrl}/pt`,
+  );
+  for (const [lang, path] of [
+    ['en', ''],
+    ['pt', '/pt'],
+    ['es', '/es'],
+    ['x-default', ''],
+  ]) {
+    await expect(
+      page.locator(`link[rel="alternate"][hreflang="${lang}"]`),
+    ).toHaveAttribute('href', `${siteUrl}${path}`);
+  }
+
+  await page.goto('/es');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Desarrollador Full-Stack',
+  );
+  await expect(page.locator('#contact h2')).toHaveText('Contacto');
+});
+
+test('troca o idioma e mantém a seção na tela', async ({ page, isMobile }) => {
+  await page.goto('/');
+  await openSection(page, 'projects');
+  if (isMobile) {
+    // On phones the languages are in the menu.
+    await openMenu(page);
+    await page
+      .locator('.stack-menu')
+      .getByRole('link', { name: 'Português' })
+      .click();
+  } else {
+    await page.getByRole('button', { name: 'Language: English' }).click();
+    const option = page
+      .locator('.site-header')
+      .getByRole('link', { name: 'Português' });
+    await expect(option).toHaveAttribute('href', '/pt#projects');
+    await option.click();
+  }
+  await expect(page).toHaveURL('/pt#projects');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'pt');
+  await expect(page.locator('#projects h2')).toHaveText('Meus projetos');
+  await expect(page.locator('#projects h2')).toBeInViewport();
+});
+
 test('navega por todas as seções pelo menu e fecha o menu com Escape', async ({
   page,
 }) => {

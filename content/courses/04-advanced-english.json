@@ -28,5 +28,65 @@
         "description": "Said x told - Can x Could - Will x Would."
       }
     ]
+  },
+  "pt": {
+    "order": 4,
+    "title": "Inglês avançado",
+    "subtitle": "Number One",
+    "wide": false,
+    "dialogTitle": "Inglês corporativo",
+    "dialogSubtitle": "Gramática e conversação.",
+    "modules": [
+      {
+        "title": "Tempos verbais",
+        "description": "Simple Past, Past Perfect, Past Continuous."
+      },
+      {
+        "title": "Expressões",
+        "description": "\"For goodness sake!\", \"To have no clue\", \"Never mind\"."
+      },
+      {
+        "title": "Comparação",
+        "description": "Superlativo, comparativo."
+      },
+      {
+        "title": "Hábitos do passado",
+        "description": "Used to."
+      },
+      {
+        "title": "Discurso indireto",
+        "description": "Said x told - Can x Could - Will x Would."
+      }
+    ]
+  },
+  "es": {
+    "order": 4,
+    "title": "Inglés avanzado",
+    "subtitle": "Number One",
+    "wide": false,
+    "dialogTitle": "Inglés corporativo",
+    "dialogSubtitle": "Gramática y conversación.",
+    "modules": [
+      {
+        "title": "Tiempos verbales",
+        "description": "Simple Past, Past Perfect, Past Continuous."
+      },
+      {
+        "title": "Expresiones",
+        "description": "\"For goodness sake!\", \"To have no clue\", \"Never mind\"."
+      },
+      {
+        "title": "Comparación",
+        "description": "Superlativo, comparativo."
+      },
+      {
+        "title": "Hábitos del pasado",
+        "description": "Used to."
+      },
+      {
+        "title": "Estilo indirecto",
+        "description": "Said x told - Can x Could - Will x Would."
+      }
+    ]
   }
 }

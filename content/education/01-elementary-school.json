@@ -5,5 +5,19 @@
     "title": "Colégio Salesiano Santa Teresinha",
     "text": "I began my education at the age of 3 in 2002 at Salesian School Santa Teresinha. My mother worked as a teaching assistant at the school, which made it possible for me to attend on a full scholarship. This excellent school played a pivotal role in my early development, imparting a variety of values and fundamental principles crucial for a child's growth.",
     "upcoming": false
+  },
+  "pt": {
+    "order": 1,
+    "label": "Ensino fundamental",
+    "title": "Colégio Salesiano Santa Teresinha",
+    "text": "Comecei meus estudos aos 3 anos, em 2002, no Colégio Salesiano Santa Teresinha. Minha mãe trabalhava como auxiliar de classe na escola, o que me permitiu estudar com bolsa integral. Essa excelente escola teve um papel fundamental no início da minha formação, transmitindo valores e princípios essenciais para o crescimento de uma criança.",
+    "upcoming": false
+  },
+  "es": {
+    "order": 1,
+    "label": "Educación primaria",
+    "title": "Colégio Salesiano Santa Teresinha",
+    "text": "Comencé mis estudios a los 3 años, en 2002, en el Colegio Salesiano Santa Teresinha. Mi madre trabajaba como auxiliar docente en el colegio, lo que me permitió estudiar con una beca completa. Este excelente colegio tuvo un papel fundamental en mis primeros años, transmitiéndome valores y principios esenciales para el crecimiento de un niño.",
+    "upcoming": false
   }
 }

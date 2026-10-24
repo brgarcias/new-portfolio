@@ -20,5 +20,49 @@
         ]
       }
     ]
+  },
+  "pt": {
+    "company": "Serasa",
+    "title": "Desenvolvedor Backend",
+    "start": "2024-09",
+    "end": "2025-02",
+    "icon": "code",
+    "stack": "Node.js, NestJS, Jest, AWS Lambda, SQS, SNS, Step Functions, API Gateway, Microservices, REST APIs",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Foco no desenvolvimento de testes unitários e de ponta a ponta (E2E) com Jest, garantindo a confiabilidade e a qualidade das aplicações entregues.",
+          "Experiência com paralelismo e concorrência, otimizando o desempenho de sistemas complexos e garantindo eficiência na execução de várias tarefas simultâneas.",
+          "Implementação de soluções com AWS Lambda, SQS, SNS e Step Functions, aproveitando recursos serverless para criar sistemas escaláveis e de alta disponibilidade.",
+          "Node.js: desenvolvimento de aplicações robustas e escaláveis com o framework NestJS, criando soluções modulares e fáceis de manter.",
+          "Desenvolvimento de APIs RESTful para facilitar a integração entre serviços e atender às necessidades dos clientes com alto desempenho e segurança.",
+          "Uso de arquiteturas baseadas em microsserviços, promovendo a modularidade e a resiliência dos sistemas em produção.",
+          "Experiência com API Gateway para o gerenciamento de requisições e a comunicação eficiente entre serviços."
+        ]
+      }
+    ]
+  },
+  "es": {
+    "company": "Serasa",
+    "title": "Desarrollador Backend",
+    "start": "2024-09",
+    "end": "2025-02",
+    "icon": "code",
+    "stack": "Node.js, NestJS, Jest, AWS Lambda, SQS, SNS, Step Functions, API Gateway, Microservices, REST APIs",
+    "details": [
+      {
+        "heading": "",
+        "items": [
+          "Enfoque en el desarrollo de pruebas unitarias y de extremo a extremo (E2E) con Jest, garantizando la fiabilidad y la calidad de las aplicaciones entregadas.",
+          "Experiencia en paralelismo y concurrencia, optimizando el rendimiento de sistemas complejos y garantizando la eficiencia al ejecutar varias tareas simultáneas.",
+          "Implementación de soluciones con AWS Lambda, SQS, SNS y Step Functions, aprovechando recursos serverless para crear sistemas escalables y de alta disponibilidad.",
+          "Node.js: desarrollo de aplicaciones robustas y escalables con el framework NestJS, creando soluciones modulares y fáciles de mantener.",
+          "Desarrollo de APIs RESTful para facilitar la integración entre servicios y satisfacer las necesidades de los clientes con alto rendimiento y seguridad.",
+          "Uso de arquitecturas basadas en microservicios, promoviendo la modularidad y la resiliencia de los sistemas en producción.",
+          "Experiencia con API Gateway para la gestión de solicitudes y una comunicación eficiente entre servicios."
+        ]
+      }
+    ]
   }
 }

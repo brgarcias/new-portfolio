@@ -1,10 +1,12 @@
 // I18N
 import type { Locale } from '../config';
 import en, { type Messages } from './en';
+import es from './es';
+import pt from './pt';
 
 export type { Messages };
 
-const messages: Record<Locale, Messages> = { en };
+const messages: Record<Locale, Messages> = { en, pt, es };
 
 export const getMessages = (locale: Locale) => messages[locale];
 
