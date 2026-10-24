@@ -81,6 +81,15 @@ export default function SnackbarFeedback({
     };
   }, [content.open, close, startTimer, pauseTimer, resumeTimer]);
 
+  // Removes the notice once it has slid out. The transitionend below usually
+  // does it; this covers a close during the entrance, when the slide out
+  // never runs and no transitionend comes.
+  useEffect(() => {
+    if (content.open || !rendered) return;
+    const timer = setTimeout(() => setRendered(false), 400);
+    return () => clearTimeout(timer);
+  }, [content.open, rendered]);
+
   if (!rendered) return null;
 
   return (

@@ -6,7 +6,8 @@ import { CSSProperties, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
-import ModalComponent, { openOnKey } from '@/src/components/Modal';
+import ModalComponent from '@/src/components/Modal/Lazy';
+import { openOnKey } from '@/src/components/Modal/openOnKey';
 // CONTENT
 import { courses } from './courses';
 

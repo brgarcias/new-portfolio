@@ -2,8 +2,9 @@
 
 // NEXT
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 // HOOKS
-import { CSSProperties, FormEvent, useState } from 'react';
+import { CSSProperties, FormEvent, useEffect, useState } from 'react';
 // FONTAWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -17,8 +18,9 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 // IMAGES
 import AboutMeImg from '@/public/images/about-me/about-me.webp';
 // COMPONENTS
-import ModalComponent, { openOnKey } from '@/src/components/Modal';
-import Form from '@/src/components/Form';
+import ModalComponent from '@/src/components/Modal/Lazy';
+import { openOnKey } from '@/src/components/Modal/openOnKey';
+import { whenIdle } from '@/src/components/Modal/whenIdle';
 import SnackbarFeedback from '@/src/components/SnackBar';
 import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
@@ -26,6 +28,11 @@ import Reveal from '@/src/components/Reveal';
 import { resume, socialLinks } from '@/src/components/SiteFrame/content';
 // CSS
 import './styles.css';
+
+// The feedback form uses HeroUI's fields, so it loads like the dialog: when
+// the browser is idle after the page, or when the dialog opens.
+const loadForm = () => import('@/src/components/Form');
+const Form = dynamic(loadForm, { ssr: false });
 
 // The form only checks strings, and lodash's isEmpty for a string or null
 // is the same as this test.
@@ -70,6 +77,8 @@ export default function AboutMe({ currentRole }: Readonly<AboutMeProps>) {
     icon: faCheck as IconProp,
     colorIcon: '',
   });
+
+  useEffect(() => whenIdle(() => void loadForm()), []);
   const [errorsState, setErrorsState] = useState({
     fullName: false,
     email: false,
