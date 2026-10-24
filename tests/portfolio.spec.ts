@@ -214,6 +214,11 @@ test('segue o tema do sistema enquanto o visitante não escolhe', async ({
     'background-color',
     'rgb(246, 246, 251)',
   );
+  // Once React starts, the page listens to the system's theme, and the
+  // browser's bar takes the theme's color.
+  for (const meta of await page.locator('meta[name="theme-color"]').all()) {
+    await expect(meta).toHaveAttribute('content', '#f6f6fb');
+  }
   await page.emulateMedia({ colorScheme: 'dark' });
   await expect(html).toHaveClass(/\bdark\b/);
   await expect(html).not.toHaveClass(/\blight\b/);
