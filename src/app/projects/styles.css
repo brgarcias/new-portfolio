@@ -94,8 +94,8 @@
   transition-duration: 0.2s;
 }
 
-/* The device and its screenshot keep the sizes of the old slider, scaled to
-   the card. */
+/* The device keeps the size of the old slider, scaled to the card. Its box
+   is the frame's image, so the screen can sit where the image has it. */
 .project-card__device {
   position: relative;
   display: flex;
@@ -114,17 +114,21 @@
   flex: none;
 }
 
+/* Placed on the frame's screen (screenStyle, in index.tsx). The preview
+   covers it from the top, so a taller page is cut at the bottom. */
 .project-card__screen {
   position: absolute;
-  top: 50%;
-  left: 50%;
   overflow: hidden;
   background: #18191b;
-  transform: translate3d(-50%, -50%, 0);
 }
 
 .project-card__screen img {
   display: block;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
 }
 
 .project-card__glare {

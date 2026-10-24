@@ -312,6 +312,30 @@ test('alterna o tema pelo botão e lembra a escolha', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+test('troca o tema com o menu aberto sem mexer nas páginas', async ({
+  page,
+}) => {
+  const viewTransitions = await countViewTransitions(page);
+  await page.goto('/');
+  await openMenu(page);
+  const sheet = page.locator('.stage__sheet');
+  const before = await sheet.boundingBox();
+  await page.locator('.site-header .theme-toggle').click();
+  const html = page.locator('html');
+  await expect(html).toHaveClass(/\blight\b/);
+  // With the page sitting back in 3D, the colors fade instead of the circle,
+  // whose snapshot does not keep the 3D in every browser.
+  expect(await viewTransitions()).toBe(0);
+  await expect(html).not.toHaveClass(/theme-fading/);
+  expect(await sheet.boundingBox()).toEqual(before);
+  await page.keyboard.press('Escape');
+  await expectMenuClosed(page);
+  await expect(page.locator('body')).toHaveCSS(
+    'background-color',
+    'rgb(246, 246, 251)',
+  );
+});
+
 test('respeita a preferência por reduzir movimento', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const viewTransitions = await countViewTransitions(page);
@@ -512,6 +536,29 @@ test('navega pelos projetos e abre os detalhes', async ({ page }) => {
       track.scrollTo({ left: track.scrollWidth, behavior: 'instant' }),
     );
   await expect(current).toHaveText('Malka RH');
+});
+
+test('preenche a tela de cada aparelho com a prévia do projeto', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await openSection(page, 'projects');
+  const cards = page.locator('#projects .project-card');
+  await expect(cards).toHaveCount(5);
+  for (const card of await cards.all()) {
+    const frame = await card.locator('.project-card__frame').boundingBox();
+    const screen = await card.locator('.project-card__screen').boundingBox();
+    const preview = await card
+      .locator('.project-card__screen img')
+      .boundingBox();
+    // The screen is the frame's, not a box half as wide, and the preview
+    // covers all of it.
+    expect(screen!.width / frame!.width).toBeGreaterThan(0.6);
+    expect(preview!.x).toBeCloseTo(screen!.x, 0);
+    expect(preview!.y).toBeCloseTo(screen!.y, 0);
+    expect(preview!.width).toBeCloseTo(screen!.width, 0);
+    expect(preview!.height).toBeCloseTo(screen!.height, 0);
+  }
 });
 
 test('abre as fotos das iniciativas de contribuição', async ({ page }) => {

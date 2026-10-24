@@ -454,10 +454,19 @@
   padding-inline: var(--gutter);
 }
 
+/* A long text, so it reads at the size of the rest of the site, and the
+   first paragraph stands out by its color. Lines and gaps are whole pixels,
+   so the sections below do not move by fractions of one, which changes how
+   their text is drawn. */
+.about__text {
+  max-width: 40rem;
+}
+
 .about__text p {
   color: var(--color-text-muted);
-  font-size: 1.0625rem;
-  line-height: 1.8;
+  font-size: 1rem;
+  line-height: 1.75rem;
+  text-wrap: pretty;
 }
 
 .about__text p + p {
@@ -466,8 +475,7 @@
 
 .about__text .about__lead {
   color: var(--color-text);
-  font-size: clamp(1.125rem, 1.8vw, 1.3rem);
-  line-height: 1.7;
+  font-size: clamp(1rem, 1.25vw, 1.0625rem);
 }
 
 .about__stack {
@@ -498,6 +506,14 @@
 @media (max-width: 899px) {
   .about__grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Beside the text, the technologies stay in view while it is read. */
+@media (min-width: 900px) {
+  .about__stack {
+    position: sticky;
+    top: calc(var(--header-height) + 2rem);
   }
 }
 

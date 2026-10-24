@@ -24,15 +24,37 @@ let switching = 0;
 // circle, so a quick second click counts from it.
 let latest: Theme | undefined;
 
+// Ends the fade of the colors, after the last of quick clicks.
+let fadeTimer = 0;
+
+// With the menu open, the page sits back in 3D, which the snapshot of a view
+// transition does not keep in every browser. There, the colors fade instead
+// (.theme-fading, in globals.css).
+function fadeTheme(theme: Theme) {
+  const root = document.documentElement;
+  root.classList.add('theme-fading');
+  applyTheme(theme);
+  window.clearTimeout(fadeTimer);
+  fadeTimer = window.setTimeout(
+    () => root.classList.remove('theme-fading'),
+    500,
+  );
+}
+
 // Changes the theme with CSS transitions off, so nothing fades on its own:
 // the page changes at once, or under a circle that spreads from the button.
 function switchTheme(theme: Theme, origin?: HTMLElement) {
   const root = document.documentElement;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const menuOpen = document.querySelector('.stage--locked') !== null;
   const animated =
     origin && !reduced && typeof document.startViewTransition === 'function';
 
   latest = theme;
+  if (animated && menuOpen) {
+    fadeTheme(theme);
+    return;
+  }
   switching += 1;
   const done = () => {
     switching -= 1;
