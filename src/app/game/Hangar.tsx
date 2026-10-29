@@ -44,12 +44,9 @@ function Preview({ shipId }: { shipId: ShipId }) {
   return (
     <>
       <hemisphereLight args={['#8d8fff', '#15161f', 1]} />
-      <directionalLight position={[5, 8, 6]} intensity={1.6} color="#fff2e0" />
-      <directionalLight
-        position={[-6, 3, -4]}
-        intensity={0.5}
-        color="#5c5edc"
-      />
+      {/* The key light on the camera's side, the fill from behind. */}
+      <directionalLight position={[6, 8, -6]} intensity={1.7} color="#fff2e0" />
+      <directionalLight position={[-6, 3, 5]} intensity={0.6} color="#5c5edc" />
       <group ref={stand} rotation-y={reduced ? 0.6 : 0}>
         <primitive object={model} position={[0, 0.6, 0]} />
       </group>
