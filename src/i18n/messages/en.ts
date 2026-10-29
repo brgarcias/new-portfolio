@@ -30,6 +30,7 @@ const en = {
     contact: 'Contact me',
     downloadCv: 'Download CV',
     feedback: 'Leave Feedback',
+    play: 'Play',
     scrollToAbout: 'Scroll to About Me',
   },
   feedback: {
@@ -101,6 +102,8 @@ const en = {
     boost: 'Boost',
     keyboard: 'W, A, S, D or the arrows fly · Shift or Space boosts',
     joystick: 'Joystick',
+    radar: 'Radar',
+    allVisited: 'You flew through the whole portfolio. Thank you!',
     // The name of the pad the ship is on.
     landingPad: 'Landing pad: {place}',
     stopToLand: 'Stop here to open it',

@@ -29,6 +29,7 @@ const pt: Messages = {
     contact: 'Fale comigo',
     downloadCv: 'Baixar CV',
     feedback: 'Deixar feedback',
+    play: 'Jogar',
     scrollToAbout: 'Ir para Sobre mim',
   },
   feedback: {
@@ -97,6 +98,8 @@ const pt: Messages = {
     boost: 'Turbo',
     keyboard: 'W, A, S, D ou as setas pilotam · Shift ou Espaço dá turbo',
     joystick: 'Joystick',
+    radar: 'Radar',
+    allVisited: 'Você voou por todo o portfólio. Obrigado!',
     landingPad: 'Plataforma: {place}',
     stopToLand: 'Pare aqui para abrir',
     openOnSite: 'Abrir no site',

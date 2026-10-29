@@ -108,8 +108,9 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
       </div>
       <Hud
         ship={ships[shipId]}
-        pad={pad && titles[pad]}
-        visited={visited.length}
+        pad={pad}
+        padTitle={pad && titles[pad]}
+        visited={visited}
         total={places.length}
         home={home}
         onChangeShip={() => {

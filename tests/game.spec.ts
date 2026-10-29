@@ -95,6 +95,9 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
     about.getByRole('link', { name: 'Open on the site' }),
   ).toHaveAttribute('href', '/#about');
   await expect(page.locator('.hud__count')).toHaveText('1 of 7 sections');
+  // The radar shows the pads, and the one the ship is on.
+  await expect(page.locator('.radar .radar__pad')).toHaveCount(7);
+  await expect(page.locator('.radar [data-state="active"]')).toHaveCount(1);
   // Keys do not fly the ship while a section is open.
   await page.keyboard.press('KeyW');
   await expect.poll(() => reading(page, 'speed')).toBe(0);

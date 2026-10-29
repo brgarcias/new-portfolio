@@ -22,6 +22,7 @@ function Loading() {
   const t = useI18n().messages.game;
   return (
     <Notice>
+      <div className="game-notice__orbit" aria-hidden="true" />
       <p className="game-notice__text" role="status">
         {t.loading}
       </p>

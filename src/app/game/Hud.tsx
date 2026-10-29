@@ -8,9 +8,12 @@ import { faArrowLeft, faBolt } from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 import { format } from '@/src/i18n/messages';
+// CONTENT
+import type { SectionId } from '@/src/content/sections';
 // GAME
 import { input } from './controls';
 import { overlay } from './overlay';
+import Radar from './Radar';
 import type { Ship } from './ships';
 import { useMediaQuery } from './useMediaQuery';
 
@@ -98,10 +101,11 @@ function TouchControls() {
 
 interface HudProps {
   ship: Ship;
-  // The name of the pad the ship is on.
-  pad: string | null;
-  // How many sections were opened, of how many.
-  visited: number;
+  // The pad the ship is on, and its name.
+  pad: SectionId | null;
+  padTitle: string | null;
+  // The sections opened so far, of how many.
+  visited: SectionId[];
   total: number;
   home: string;
   onChangeShip: () => void;
@@ -112,11 +116,12 @@ const register = (element: HTMLDivElement | null) => {
 };
 
 // What lies over the flight: the way back, the ship's name, the count of
-// sections seen, the pad under the ship and the controls. Fingers get the
-// joystick; a mouse, the keyboard's hint.
+// sections seen, the radar, the pad under the ship and the controls.
+// Fingers get the joystick; a mouse, the keyboard's hint.
 export default function Hud({
   ship,
   pad,
+  padTitle,
   visited,
   total,
   home,
@@ -124,6 +129,7 @@ export default function Hud({
 }: Readonly<HudProps>) {
   const t = useI18n().messages.game;
   const touch = useMediaQuery('(pointer: coarse)');
+  const done = visited.length >= total;
 
   return (
     <div
@@ -141,7 +147,10 @@ export default function Hud({
         </a>
         <p className="hud__ship">{ship.name}</p>
         <p className="hud__count">
-          {format(t.visited, { count: String(visited), total: String(total) })}
+          {format(t.visited, {
+            count: String(visited.length),
+            total: String(total),
+          })}
         </p>
         <button
           type="button"
@@ -151,14 +160,20 @@ export default function Hud({
           {t.changeShip}
         </button>
       </div>
+      <Radar activePad={pad} visited={visited} />
       <p className="hud__pad" role="status">
-        {pad && (
+        {padTitle && (
           <>
-            {format(t.landingPad, { place: pad })}
+            {format(t.landingPad, { place: padTitle })}
             <span className="hud__pad-hint">· {t.stopToLand}</span>
           </>
         )}
       </p>
+      {done && (
+        <p className="hud__done" role="status">
+          {t.allVisited}
+        </p>
+      )}
       {touch ? <TouchControls /> : <p className="hud__hint">{t.keyboard}</p>}
     </div>
   );
