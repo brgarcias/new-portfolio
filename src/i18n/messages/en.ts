@@ -91,7 +91,7 @@ const en = {
   game: {
     title: 'Play',
     description:
-      'Fly a Star Wars ship through my portfolio: choose one in the hangar and land on the sections.',
+      'Fly a Star Wars ship through my portfolio: choose one in the hangar and land on the sections, each on a planet of its own.',
     hangar: 'Hangar',
     chooseShip: 'Choose your ship',
     takeOff: 'Take off',

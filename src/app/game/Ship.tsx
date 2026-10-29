@@ -14,6 +14,7 @@ import { createState, step } from './physics';
 import type { Ship as ShipSpec } from './ships';
 import { useReducedMotion } from './useMediaQuery';
 import { arena, spawn } from './world/arena';
+import { atmosphere, sectorAt, type Sector } from './world/biomes';
 
 interface ShipProps {
   ship: ShipSpec;
@@ -35,6 +36,8 @@ const flight = {
   // How much the camera shakes, after a hit.
   shake: 0,
   clock: 0,
+  // The sector of the world the ship is over.
+  sector: 'hub' as Sector,
 };
 
 const chase = new THREE.Vector3();
@@ -58,6 +61,8 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
     flight.still = 0;
     flight.shake = 0;
     flight.clock = 0;
+    flight.sector = 'hub';
+    atmosphere.sector = 'hub';
     const engines: THREE.MeshStandardMaterial[] = [];
     model.traverse((object) => {
       if (object.userData.engine && object instanceof THREE.Mesh) {
@@ -132,6 +137,14 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
     }
     ahead.set(state.x + fx * 5, ship.hover + 1, state.z + fz * 5);
     camera.lookAt(ahead);
+    // The view widens a little under boost.
+    if (camera instanceof THREE.PerspectiveCamera) {
+      const fov = boosting && !reduced ? 62 : 55;
+      if (Math.abs(camera.fov - fov) > 0.01) {
+        camera.fov += (fov - camera.fov) * (1 - Math.exp(-4 * dt));
+        camera.updateProjectionMatrix();
+      }
+    }
 
     if (state.pad !== flight.pad) {
       flight.pad = state.pad;
@@ -151,6 +164,21 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
     }
 
     const readout = overlay.hud;
+    // Crossing into another sector, the sky follows and the HUD names the
+    // planet.
+    const sector = sectorAt(state.x, state.z);
+    if (sector !== flight.sector) {
+      flight.sector = sector;
+      atmosphere.sector = sector;
+      if (readout) {
+        readout.dataset.sector = sector;
+        for (const chip of readout.querySelectorAll<HTMLElement>(
+          '.hud__planet',
+        )) {
+          chip.hidden = chip.dataset.id !== sector;
+        }
+      }
+    }
     if (readout) {
       readout.dataset.x = state.x.toFixed(1);
       readout.dataset.z = state.z.toFixed(1);

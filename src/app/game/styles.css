@@ -378,6 +378,8 @@
   bottom: 0;
   left: 0;
   display: flex;
+  /* The joystick under the right thumb, the boost under the left. */
+  flex-direction: row-reverse;
   align-items: flex-end;
   justify-content: space-between;
   padding: 0 1.75rem 1.75rem;
@@ -526,4 +528,91 @@
     border: 0;
     border-radius: 0;
   }
+}
+
+/* ─── The planets ───────────────────────────────────────── */
+/* Each pad's label names the planet it lies on. */
+.game__label small {
+  display: block;
+  color: rgb(232 233 255 / 0.65);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* The planet under the ship, under the radar; the frame loop shows the
+   one the ship is over. */
+.hud__planet {
+  position: absolute;
+  top: calc(var(--header-height) + 8rem);
+  right: var(--gutter);
+  margin: 0;
+  color: #e8e9ff;
+  text-align: right;
+}
+
+.hud__planet[hidden] {
+  display: none;
+}
+
+.hud__planet strong {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.hud__planet small {
+  display: block;
+  color: rgb(232 233 255 / 0.7);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hud__planet {
+    animation: hud-planet 0.6s var(--ease-out) both;
+  }
+
+  @keyframes hud-planet {
+    from {
+      opacity: 0;
+      transform: translateY(0.3rem);
+    }
+  }
+}
+
+.radar__sector {
+  opacity: 0.32;
+}
+
+@media (max-width: 639px) {
+  .hud__planet {
+    top: calc(var(--header-height) + 7.4rem);
+    font-size: 0.875rem;
+  }
+}
+
+/* On phones the pad's name keeps to one line, without its hint. */
+@media (max-width: 639px) {
+  .hud__pad {
+    max-width: calc(100% - 2 * var(--gutter));
+    font-size: 0.875rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hud__pad-hint {
+    display: none;
+  }
+}
+
+/* The HUD's texts keep legible over the bright skies, like the ice world's. */
+.hud__ship,
+.hud__count,
+.hud__hint,
+.hud__planet {
+  text-shadow: 0 1px 6px rgb(11 12 20 / 0.55);
 }

@@ -18,6 +18,7 @@ import Ship from './Ship';
 import { isShipId, ships, type ShipId } from './ships';
 import type { Place } from './types';
 import { pads } from './world/arena';
+import { biomes } from './world/biomes';
 import World from './world/World';
 
 const storageKey = 'ship';
@@ -105,6 +106,7 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         {pads.map((landingPad) => (
           <span key={landingPad.id} className="game__label">
             {titles[landingPad.id]}
+            <small>{biomes[landingPad.id].planet}</small>
           </span>
         ))}
       </div>
@@ -112,6 +114,7 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         ship={ships[shipId]}
         pad={pad}
         padTitle={pad && titles[pad]}
+        places={places}
         visited={visited}
         total={places.length}
         home={home}

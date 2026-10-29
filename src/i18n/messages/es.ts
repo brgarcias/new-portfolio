@@ -87,7 +87,7 @@ const es: Messages = {
   game: {
     title: 'Jugar',
     description:
-      'Pilota una nave de Star Wars por mi portafolio: elige una en el hangar y aterriza en las secciones.',
+      'Pilota una nave de Star Wars por mi portafolio: elige una en el hangar y aterriza en las secciones, cada una en su propio planeta.',
     hangar: 'Hangar',
     chooseShip: 'Elige tu nave',
     takeOff: 'Despegar',
