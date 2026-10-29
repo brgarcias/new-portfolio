@@ -7,7 +7,7 @@ import type { Arena, Obstacle, Pad } from '../physics';
 // so the arena is the same on every visit.
 
 export const platformRadius = 110;
-export const padRadius = 7.5;
+export const padRadius = 9;
 const padRing = 70;
 
 export interface LandingPad extends Pad {

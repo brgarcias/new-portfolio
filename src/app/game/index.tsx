@@ -10,7 +10,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // GAME
-import type { Place } from './types';
+import type { GameProps } from './Game';
 // CSS
 import './styles.css';
 
@@ -51,16 +51,12 @@ const canDraw = () => {
 const never = () => () => {};
 const unknown = () => null;
 
-interface GameLoaderProps {
-  places: Place[];
-  home: string;
-}
-
 // Checks that the browser draws 3D before the game, and three.js, load.
 export default function GameLoader({
   places,
   home,
-}: Readonly<GameLoaderProps>) {
+  panels,
+}: Readonly<GameProps>) {
   const t = useI18n().messages.game;
   const webgl = useSyncExternalStore(never, canDraw, unknown);
 
@@ -76,5 +72,5 @@ export default function GameLoader({
       </Notice>
     );
   }
-  return <Game places={places} home={home} />;
+  return <Game places={places} home={home} panels={panels} />;
 }

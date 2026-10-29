@@ -22,8 +22,7 @@ import ModalComponent from '@/src/components/Modal/Lazy';
 import { openOnKey } from '@/src/components/Modal/openOnKey';
 import { whenIdle } from '@/src/components/Modal/whenIdle';
 import SnackbarFeedback from '@/src/components/SnackBar';
-import Section from '@/src/components/Section';
-import Reveal from '@/src/components/Reveal';
+import About from './About';
 import { markup } from '@/src/components/Markup';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
@@ -31,7 +30,7 @@ import { format } from '@/src/i18n/messages';
 // CONTENT
 import { resume, socialIcons } from '@/src/components/SiteFrame/content';
 import type {
-  About,
+  About as AboutContent,
   Hero,
   Profile,
   SectionHeader,
@@ -53,7 +52,7 @@ interface AboutMeProps {
   header: SectionHeader;
   profile: Profile;
   hero: Hero;
-  about: About;
+  about: AboutContent;
   social: readonly SocialLink[];
   // The experience without an end date, shown under the name.
   currentRole?: { title: string; company: string };
@@ -288,26 +287,7 @@ export default function AboutMe({
         </a>
       </section>
 
-      <Section header={header} className="about">
-        <div className="about__grid">
-          <Reveal className="about__text">
-            <p className="about__lead">{about.lead}</p>
-            {about.body.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </Reveal>
-          <Reveal className="about__stack" delay={0.12}>
-            <h3 className="about__stack-title">{about.stackTitle}</h3>
-            <ul className="tag-list">
-              {about.technologies.map((name) => (
-                <li key={name} className="tag">
-                  {name}
-                </li>
-              ))}
-            </ul>
-          </Reveal>
-        </div>
-      </Section>
+      <About header={header} about={about} />
 
       <ModalComponent
         title={tf.title}

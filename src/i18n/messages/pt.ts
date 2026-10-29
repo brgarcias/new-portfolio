@@ -98,6 +98,9 @@ const pt: Messages = {
     keyboard: 'W, A, S, D ou as setas pilotam · Shift ou Espaço dá turbo',
     joystick: 'Joystick',
     landingPad: 'Plataforma: {place}',
+    stopToLand: 'Pare aqui para abrir',
+    openOnSite: 'Abrir no site',
+    visited: '{count} de {total} seções',
     loading: 'Abrindo o hangar…',
     noWebgl:
       'Este navegador não desenha gráficos 3D, então o jogo não abre aqui. O portfólio funciona normalmente.',

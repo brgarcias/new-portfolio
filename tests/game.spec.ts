@@ -16,6 +16,13 @@ const shipNames = [
 const reading = (page: Page, name: string) =>
   page.locator('.hud').getAttribute(`data-${name}`).then(Number);
 
+// Brakes until the ship is nearly still, as a pilot does on reaching a pad.
+async function brake(page: Page) {
+  await page.keyboard.down('KeyS');
+  await expect.poll(() => reading(page, 'speed')).toBeLessThan(3);
+  await page.keyboard.up('KeyS');
+}
+
 async function takeOff(page: Page) {
   await page.goto('/play');
   await page.getByRole('button', { name: 'Take off' }).click();
@@ -71,19 +78,42 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
     .poll(() => reading(page, 'speed'), { timeout: 10_000 })
     .toBeGreaterThan(5);
   await expect.poll(() => reading(page, 'z')).toBeLessThan(-5);
-  // Straight ahead lies the first pad, About Me.
-  await expect(page.locator('.hud__pad')).toHaveText('Landing pad: About Me', {
-    timeout: 20_000,
-  });
+  // Straight ahead lies the first pad, About Me. The pad slows the ship
+  // down, and once it stops there the section opens over the flight.
+  await expect(page.locator('.hud__pad')).toContainText(
+    'Landing pad: About Me',
+    { timeout: 20_000 },
+  );
   await page.keyboard.up('KeyW');
-  await expect(page.locator('.hud__pad')).toHaveText('Landing pad: About Me');
+  await brake(page);
+  const about = page.getByRole('dialog', { name: 'About Me' });
+  await expect(about).toBeVisible({ timeout: 10_000 });
+  await expect(about).toContainText(
+    'Passionate and experienced Full Stack Developer',
+  );
+  await expect(
+    about.getByRole('link', { name: 'Open on the site' }),
+  ).toHaveAttribute('href', '/#about');
+  await expect(page.locator('.hud__count')).toHaveText('1 of 7 sections');
+  // Keys do not fly the ship while a section is open.
+  await page.keyboard.press('KeyW');
+  await expect.poll(() => reading(page, 'speed')).toBe(0);
+  await page.keyboard.press('Escape');
+  await expect(about).toBeHidden();
+  // Still on the pad, it does not open again until the ship comes back.
+  await page.waitForTimeout(1500);
+  await expect(about).toBeHidden();
+  await expect(page.locator('.hud__pad')).toContainText(
+    'Landing pad: About Me',
+  );
 
-  // A turn changes the heading; the boost goes past the top speed.
+  // A turn changes the heading: a long one, back towards the middle of the
+  // platform, where there is room for the boost to go past the top speed.
   const heading = await reading(page, 'heading');
   await page.keyboard.down('KeyD');
   await expect
-    .poll(() => reading(page, 'heading'), { timeout: 5_000 })
-    .toBeLessThan(heading - 0.3);
+    .poll(() => reading(page, 'heading'), { timeout: 8_000 })
+    .toBeLessThan(heading - 2);
   await page.keyboard.up('KeyD');
   await page.keyboard.down('KeyW');
   await page.keyboard.down('ShiftLeft');
@@ -100,6 +130,8 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   const z = await reading(page, 'z');
   expect(Math.hypot(x, z)).toBeLessThan(110);
 
+  // Wherever it stopped, a section may have opened.
+  await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'Change ship' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Choose your ship',
@@ -123,11 +155,22 @@ test('voa pelo joystick no celular', async ({ page, isMobile }) => {
   await expect
     .poll(() => reading(page, 'speed'), { timeout: 10_000 })
     .toBeGreaterThan(5);
+  // Held forward, it reaches the first pad, and lands there once released.
+  await expect(page.locator('.hud__pad')).toContainText(
+    'Landing pad: About Me',
+    { timeout: 20_000 },
+  );
+  await page.mouse.move(centerX, centerY + 40, { steps: 3 });
+  await expect.poll(() => reading(page, 'speed')).toBeLessThan(3);
   await page.mouse.up();
   await expect(joystick.locator('.joystick__knob')).toHaveAttribute(
     'style',
     '',
   );
+  const about = page.getByRole('dialog', { name: 'About Me' });
+  await expect(about).toBeVisible({ timeout: 10_000 });
+  await about.getByRole('button', { name: 'Close' }).click();
+  await expect(about).toBeHidden();
 });
 
 test('fala a língua da página e leva /en/play para /play', async ({
@@ -152,6 +195,18 @@ test('fala a língua da página e leva /en/play para /play', async ({
   ).toHaveAttribute('href', /\/es\/play$/);
   await page.getByRole('button', { name: 'Decolar' }).click();
   await expect(page.getByRole('button', { name: 'Trocar nave' })).toBeVisible();
+  // The sections open in the page's language too.
+  await page.keyboard.down('KeyW');
+  await expect(page.locator('.hud__pad')).toContainText('Sobre mim', {
+    timeout: 20_000,
+  });
+  await page.keyboard.up('KeyW');
+  await brake(page);
+  const sobre = page.getByRole('dialog', { name: 'Sobre mim' });
+  await expect(sobre).toBeVisible({ timeout: 10_000 });
+  await expect(
+    sobre.getByRole('link', { name: 'Abrir no site' }),
+  ).toHaveAttribute('href', '/pt#about');
 
   await page.goto('/es/play');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(

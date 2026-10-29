@@ -98,6 +98,9 @@ const es: Messages = {
     keyboard: 'W, A, S, D o las flechas pilotan · Shift o Espacio da turbo',
     joystick: 'Joystick',
     landingPad: 'Plataforma: {place}',
+    stopToLand: 'Para aquí para abrirla',
+    openOnSite: 'Abrir en el sitio',
+    visited: '{count} de {total} secciones',
     loading: 'Abriendo el hangar…',
     noWebgl:
       'Este navegador no dibuja gráficos 3D, así que el juego no abre aquí. El portafolio funciona con normalidad.',

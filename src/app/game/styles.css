@@ -271,6 +271,18 @@
   display: none;
 }
 
+.hud__pad-hint {
+  margin-left: 0.5rem;
+  color: rgb(255 255 255 / 0.75);
+  font-weight: 500;
+}
+
+.hud__count {
+  color: rgb(232 233 255 / 0.7);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
 .hud__hint {
   position: absolute;
   right: 0;
@@ -343,5 +355,96 @@
 @media (max-width: 639px) {
   .hud__ship {
     display: none;
+  }
+}
+
+/* ─── The section over the flight ───────────────────────── */
+.game-panel {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  padding: 1rem;
+  place-items: center;
+}
+
+.game-panel__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(11 12 20 / 0.6);
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.game-panel__sheet {
+  position: relative;
+  width: min(var(--container-wide), 100%);
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 1.5rem;
+  background: var(--color-bg);
+  box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.8);
+  overscroll-behavior: contain;
+}
+
+.game-panel__sheet:focus {
+  outline: none;
+}
+
+.game-panel__bar {
+  position: sticky;
+  z-index: 2;
+  top: 0.75rem;
+  display: flex;
+  height: 0;
+  justify-content: flex-end;
+  padding-inline: 0.75rem;
+}
+
+.game-panel__close {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  place-items: center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  background: var(--color-fill-strong);
+  color: var(--color-text);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.game-panel__close:hover,
+.game-panel__close:focus-visible {
+  border-color: rgb(92 94 220 / 0.6);
+  background: rgb(92 94 220 / 0.16);
+}
+
+/* The sections keep their look, with less room above and below. */
+.game-panel .section {
+  padding-block: 3rem 2rem;
+}
+
+.game-panel__footer {
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--gutter) 2rem;
+}
+
+@media (max-width: 639px) {
+  .game-panel {
+    padding: 0;
+  }
+
+  .game-panel__sheet {
+    max-height: 100vh;
+    max-height: 100dvh;
+    border: 0;
+    border-radius: 0;
   }
 }
