@@ -7,6 +7,7 @@ import { Canvas } from '@react-three/fiber';
 // CONTENT
 import type { SectionId } from '@/src/content/sections';
 // GAME
+import Adaptive from './Adaptive';
 import { listenToKeyboard, resetInput } from './controls';
 import Hangar from './Hangar';
 import Hud from './Hud';
@@ -98,6 +99,7 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         <World activePad={pad} visited={visited} />
         <Ship ship={ships[shipId]} onPad={setPad} onLand={land} />
         <Labels />
+        <Adaptive />
       </Canvas>
       <div ref={registerLabels} className="game__labels" aria-hidden="true">
         {pads.map((landingPad) => (
@@ -108,8 +110,9 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
       </div>
       <Hud
         ship={ships[shipId]}
-        pad={pad && titles[pad]}
-        visited={visited.length}
+        pad={pad}
+        padTitle={pad && titles[pad]}
+        visited={visited}
         total={places.length}
         home={home}
         onChangeShip={() => {

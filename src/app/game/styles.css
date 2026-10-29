@@ -17,6 +17,27 @@
   text-align: center;
 }
 
+.game-notice__orbit {
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid rgb(var(--rgb-veil) / 0.12);
+  border-top-color: var(--color-brand-light);
+  border-radius: 50%;
+  animation: game-orbit 1s linear infinite;
+}
+
+@keyframes game-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-notice__orbit {
+    animation: none;
+  }
+}
+
 .game-notice__text {
   max-width: 32rem;
   color: var(--color-text-muted);
@@ -281,6 +302,64 @@
   color: rgb(232 233 255 / 0.7);
   font-size: 0.8125rem;
   white-space: nowrap;
+}
+
+.hud__done {
+  position: absolute;
+  top: calc(var(--header-height) + 3.75rem);
+  left: 50%;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: rgb(34 211 238 / 0.2);
+  color: #fff;
+  font-weight: 600;
+  transform: translateX(-50%);
+}
+
+/* ─── Radar ─────────────────────────────────────────────── */
+.radar {
+  position: absolute;
+  top: calc(var(--header-height) + 0.5rem);
+  right: var(--gutter);
+  width: 7rem;
+  height: 7rem;
+  pointer-events: none;
+}
+
+.radar__deck {
+  fill: rgb(11 12 20 / 0.55);
+  stroke: rgb(143 143 255 / 0.5);
+  stroke-width: 3;
+}
+
+.radar__pad {
+  fill: #5c5edc;
+}
+
+.radar__pad[data-state='visited'] {
+  fill: #22d3ee;
+}
+
+.radar__pad[data-state='active'] {
+  fill: #e8e9ff;
+}
+
+.radar__ship polygon {
+  fill: #fff;
+}
+
+/* On phones the two buttons fill the top; the count sits under the radar. */
+@media (max-width: 639px) {
+  .radar {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  .hud__count {
+    position: absolute;
+    top: calc(var(--header-height) + 5.75rem);
+    right: var(--gutter);
+  }
 }
 
 .hud__hint {

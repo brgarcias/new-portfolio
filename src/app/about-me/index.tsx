@@ -13,6 +13,7 @@ import {
   faCheck,
   faCircleExclamation,
   faComment,
+  faRocket,
 } from '@fortawesome/free-solid-svg-icons';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 // IMAGES
@@ -26,6 +27,7 @@ import About from './About';
 import { markup } from '@/src/components/Markup';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
+import { pagePath } from '@/src/i18n/config';
 import { format } from '@/src/i18n/messages';
 // CONTENT
 import { resume, socialIcons } from '@/src/components/SiteFrame/content';
@@ -66,7 +68,7 @@ export default function AboutMe({
   social,
   currentRole,
 }: Readonly<AboutMeProps>) {
-  const { messages } = useI18n();
+  const { locale, messages } = useI18n();
   const t = messages.hero;
   const tf = messages.feedback;
   const [visible, setVisible] = useState(false);
@@ -223,6 +225,10 @@ export default function AboutMe({
               >
                 <FontAwesomeIcon icon={faArrowDown} />
                 {t.downloadCv}
+              </a>
+              <a className="btn btn--ghost" href={pagePath(locale, 'play')}>
+                <FontAwesomeIcon icon={faRocket} />
+                {t.play}
               </a>
               <button
                 type="button"

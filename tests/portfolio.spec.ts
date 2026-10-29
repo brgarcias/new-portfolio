@@ -212,6 +212,17 @@ test('junta o botão de tema ao do menu enquanto o menu está aberto', async ({
   expect(await space()).toBeCloseTo(before, 0);
 });
 
+test('leva ao jogo pelo botão do topo', async ({ page }) => {
+  await page.goto('/');
+  await expect(
+    page.locator('#top').getByRole('link', { name: 'Play' }),
+  ).toHaveAttribute('href', '/play');
+  await page.goto('/pt');
+  await expect(
+    page.locator('#top').getByRole('link', { name: 'Jogar' }),
+  ).toHaveAttribute('href', '/pt/play');
+});
+
 test('mantém o menu funcionando com cliques rápidos', async ({ page }) => {
   await page.goto('/');
   // A second click while the page is still moving back is ignored.

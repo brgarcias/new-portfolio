@@ -107,7 +107,7 @@ export function step(
   // Coasting loses little speed; drifting sideways loses it fast. A pad
   // catches the ship, which stops within a few units unless the thrust
   // stays on.
-  along *= Math.exp(-(state.pad && thrust <= 0 ? 9 : 0.45) * dt);
+  along *= Math.exp(-(state.pad && thrust <= 0 ? 12 : 0.45) * dt);
   lateral *= Math.exp(-5 * dt);
   const max = handling.maxSpeed * boost;
   along = clamp(along, -max * 0.35, max);

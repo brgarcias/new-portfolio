@@ -32,6 +32,8 @@ const flight = {
   // The pad the ship landed on, and for how long it has been still.
   landed: null as string | null,
   still: 0,
+  // How much the camera shakes, after a hit.
+  shake: 0,
   clock: 0,
 };
 
@@ -39,8 +41,8 @@ const chase = new THREE.Vector3();
 const ahead = new THREE.Vector3();
 
 // The ship in flight: each frame it reads the controls, moves by the
-// physics of physics.ts, leans into its turns, lights its engines and pulls
-// the camera along behind it.
+// physics of physics.ts, leans into its turns, lights its engines, pulls
+// the camera along behind it and places itself on the radar.
 export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
   const model = useMemo(() => ship.build(), [ship]);
   const rig = useRef<THREE.Group>(null);
@@ -54,6 +56,7 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
     flight.pad = null;
     flight.landed = null;
     flight.still = 0;
+    flight.shake = 0;
     flight.clock = 0;
     const engines: THREE.MeshStandardMaterial[] = [];
     model.traverse((object) => {
@@ -78,13 +81,15 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
   useFrame(({ camera }, delta) => {
     // Slow frames, as on a weak machine or a software renderer, do not slow
     // the ship down: the physics runs in short steps that add up to the
-    // frame's time, up to a quarter of a second, as after a tab change.
-    const dt = Math.min(delta, 0.25);
+    // frame's time, up to a second, as after a tab change.
+    const dt = Math.min(delta, 1);
     const { state } = flight;
     flight.clock += dt;
     const controls = readInput();
+    let hit = 0;
     for (let left = dt; left > 0; left -= 1 / 60) {
       step(state, controls, ship.handling, arena, Math.min(left, 1 / 60));
+      hit = Math.max(hit, state.hit);
     }
 
     const hull = rig.current;
@@ -109,13 +114,22 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
       0.6 + Math.max(0, controls.thrust) * 1.4 + (boosting ? 1.2 : 0);
     for (const material of flight.engines) material.emissiveIntensity = glow;
 
-    // The camera follows from behind and above, further back at speed.
+    // The camera follows from behind and above, further back at speed, and
+    // shakes after a hit.
     const fx = -Math.sin(state.heading);
     const fz = -Math.cos(state.heading);
     const back = 11 + state.speed * 0.12;
     const up = 5 + state.speed * 0.03;
     chase.set(state.x - fx * back, ship.hover + up, state.z - fz * back);
     camera.position.lerp(chase, reduced ? 1 : 1 - Math.exp(-5 * dt));
+    flight.shake = Math.max(
+      flight.shake * Math.exp(-6 * dt),
+      Math.min(1, hit / 12),
+    );
+    if (!reduced && flight.shake > 0.01) {
+      camera.position.x += (Math.random() - 0.5) * flight.shake * 1.2;
+      camera.position.y += (Math.random() - 0.5) * flight.shake * 0.8;
+    }
     ahead.set(state.x + fx * 5, ship.hover + 1, state.z + fz * 5);
     camera.lookAt(ahead);
 
@@ -135,13 +149,22 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
     } else {
       flight.still = 0;
     }
+
     const readout = overlay.hud;
     if (readout) {
       readout.dataset.x = state.x.toFixed(1);
       readout.dataset.z = state.z.toFixed(1);
       readout.dataset.heading = state.heading.toFixed(2);
       readout.dataset.speed = state.speed.toFixed(1);
+      readout.dataset.time = flight.clock.toFixed(1);
     }
+    overlay.radarShip?.setAttribute(
+      'transform',
+      `translate(${state.x.toFixed(1)} ${state.z.toFixed(1)}) rotate(${(
+        (-state.heading * 180) /
+        Math.PI
+      ).toFixed(1)})`,
+    );
   });
 
   return (

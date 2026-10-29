@@ -5,4 +5,5 @@
 export const overlay = {
   hud: null as HTMLElement | null,
   labels: null as HTMLElement | null,
+  radarShip: null as SVGGElement | null,
 };
