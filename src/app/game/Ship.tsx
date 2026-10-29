@@ -81,8 +81,8 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
   useFrame(({ camera }, delta) => {
     // Slow frames, as on a weak machine or a software renderer, do not slow
     // the ship down: the physics runs in short steps that add up to the
-    // frame's time, up to a quarter of a second, as after a tab change.
-    const dt = Math.min(delta, 0.25);
+    // frame's time, up to a second, as after a tab change.
+    const dt = Math.min(delta, 1);
     const { state } = flight;
     flight.clock += dt;
     const controls = readInput();
@@ -156,6 +156,7 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
       readout.dataset.z = state.z.toFixed(1);
       readout.dataset.heading = state.heading.toFixed(2);
       readout.dataset.speed = state.speed.toFixed(1);
+      readout.dataset.time = flight.clock.toFixed(1);
     }
     overlay.radarShip?.setAttribute(
       'transform',
