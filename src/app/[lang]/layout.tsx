@@ -8,21 +8,13 @@ import '../globals.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 config.autoAddCss = false;
-// COMPONENTS
-import SiteFrame from '@/src/components/SiteFrame';
 // PROVIDERS
 import { Providers } from '../providers';
 // SITE
 import { siteUrl } from '../site';
 import { applyStoredTheme } from '../theme';
 // CONTENT
-import {
-  getProfile,
-  getSections,
-  getSocialLinks,
-  type Profile,
-} from '@/src/content';
-import { sectionIds } from '@/src/content/sections';
+import { getProfile, type Profile } from '@/src/content';
 // I18N
 import {
   defaultLocale,
@@ -41,8 +33,10 @@ const display = Space_Grotesk({
   variable: '--font-display',
 });
 
-// The layout of every page, in its language. The 404 of src/app/not-found.tsx
-// also renders it, in the default language.
+// The layout of every page, in its language: the document, the theme, the
+// fonts and the providers. The bar and the menu are in (site)/layout.tsx,
+// which the game, in play/, does without. The 404 of src/app/not-found.tsx
+// also renders both, in the default language.
 const localeOf = (lang: string): Locale =>
   isLocale(lang) ? lang : defaultLocale;
 
@@ -106,11 +100,6 @@ export default async function LocaleLayout({
 }: LayoutProps<'/[lang]'>) {
   const locale = localeOf((await params).lang);
   const profile = getProfile(locale);
-  const sections = getSections(locale, profile);
-  const nav = sectionIds.map((id) => {
-    const { label, title } = sections[id];
-    return { id, label, title };
-  });
 
   return (
     // The theme script swaps the dark class before React starts, which is
@@ -137,15 +126,7 @@ export default async function LocaleLayout({
       <body className={inter.className}>
         <Providers>
           <I18nProvider locale={locale} messages={getMessages(locale)}>
-            <SiteFrame
-              nav={nav}
-              social={getSocialLinks(profile, getMessages(locale))}
-              name={profile.name}
-              role={profile.role}
-              year={new Date().getUTCFullYear()}
-            >
-              {children}
-            </SiteFrame>
+            {children}
           </I18nProvider>
         </Providers>
       </body>

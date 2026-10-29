@@ -1,7 +1,8 @@
 // NEXT
 import type { Metadata } from 'next';
-// LAYOUT
+// LAYOUTS
 import LocaleLayout from './[lang]/layout';
+import SiteLayout from './[lang]/(site)/layout';
 // COMPONENTS
 import NotFound from '@/src/components/StatusPage/NotFound';
 // I18N
@@ -20,11 +21,14 @@ export const metadata: Metadata = {
 
 // Any address outside the pages of the languages, such as
 // /pagina-inexistente. It shows the 404 in the default language, inside the
-// same layout as the pages, with the bar and the menu.
+// same layouts as the home page, with the bar and the menu.
 export default function RootNotFound() {
+  const params = Promise.resolve({ lang: defaultLocale });
   return (
-    <LocaleLayout params={Promise.resolve({ lang: defaultLocale })}>
-      <NotFound />
+    <LocaleLayout params={params}>
+      <SiteLayout params={params}>
+        <NotFound />
+      </SiteLayout>
     </LocaleLayout>
   );
 }

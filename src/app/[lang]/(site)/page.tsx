@@ -1,13 +1,13 @@
 // NEXT
 import { notFound } from 'next/navigation';
 // SECTIONS
-import AboutMe from '../about-me';
-import ProfessionalExperience from '../professional-experience';
-import AcademicEducation from '../academic-education';
-import Projects from '../projects';
-import Contact from '../contact';
-import Contributing from '../contributing';
-import Courses from '../courses';
+import AboutMe from '../../about-me';
+import ProfessionalExperience from '../../professional-experience';
+import AcademicEducation from '../../academic-education';
+import Projects from '../../projects';
+import Contact from '../../contact';
+import Contributing from '../../contributing';
+import Courses from '../../courses';
 // COMPONENTS
 import OffscreenPause from '@/src/components/OffscreenPause';
 // CONTENT

@@ -12,3 +12,7 @@ export const isLocale = (value: string): value is Locale =>
 // The address of the home page in each language.
 export const homePath = (locale: Locale) =>
   locale === defaultLocale ? '/' : `/${locale}`;
+
+// The address of another page, such as "play", in each language.
+export const pagePath = (locale: Locale, page: string) =>
+  locale === defaultLocale ? `/${page}` : `/${locale}/${page}`;

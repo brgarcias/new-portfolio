@@ -83,6 +83,34 @@ const pt: Messages = {
   contact: {
     age: '{age} anos',
   },
+  game: {
+    title: 'Jogar',
+    description:
+      'Pilote uma nave do Star Wars pelo meu portfólio: escolha uma no hangar e pouse nas seções.',
+    hangar: 'Hangar',
+    chooseShip: 'Escolha sua nave',
+    takeOff: 'Decolar',
+    changeShip: 'Trocar nave',
+    backToSite: 'Voltar ao portfólio',
+    speed: 'Velocidade',
+    agility: 'Agilidade',
+    boost: 'Turbo',
+    keyboard: 'W, A, S, D ou as setas pilotam · Shift ou Espaço dá turbo',
+    joystick: 'Joystick',
+    landingPad: 'Plataforma: {place}',
+    loading: 'Abrindo o hangar…',
+    noWebgl:
+      'Este navegador não desenha gráficos 3D, então o jogo não abre aqui. O portfólio funciona normalmente.',
+    ships: {
+      xwing: 'Caça rebelde de quatro asas: equilibrado e confiável.',
+      tie: 'Caça imperial: arranca e gira rápido, leve como uma folha.',
+      falcon:
+        'Cargueiro coreliano: pesado e lento nas curvas, com o turbo mais forte do hangar.',
+      awing: 'Interceptador: a nave mais rápida daqui, e a curva mais fechada.',
+      ywing: 'Bombardeiro: lento e firme; aguenta os esbarrões.',
+      n1: 'Caça real de Naboo: suave, elegante e veloz.',
+    },
+  },
   notFound: {
     label: 'Erro 404',
     heading: 'Página não encontrada',
