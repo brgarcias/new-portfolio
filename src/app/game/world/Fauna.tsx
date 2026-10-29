@@ -12,6 +12,7 @@ import { useReducedMotion } from '../useMediaQuery';
 import { arena, pads, platformRadius } from './arena';
 import { angleOf, hubRadius, sectorAngle, sectorAt } from './biomes';
 import { Builder, litMaterial, solidMaterial, type Built } from './builder';
+import { groundHeight } from './terrain';
 
 // The animals of each sector, and the traffic of the city: each kind is
 // one shape drawn many times, and each frame moves them a little. They
@@ -217,10 +218,12 @@ function inside(sector: SectionId, x: number, z: number) {
   return Math.abs(angle) < halfWidth;
 }
 
-function blocked(herd: Herd, x: number, z: number) {
+// What stands in the way at a point, if anything: a pad or a prop.
+function blocker(herd: Herd, x: number, z: number) {
   return (
-    pads.some((pad) => Math.hypot(x - pad.x, z - pad.z) < pad.r + 2.5) ||
-    herd.obstacles.some((o) => Math.hypot(x - o.x, z - o.z) < o.r + 1.2)
+    pads.find((pad) => Math.hypot(x - pad.x, z - pad.z) < pad.r + 2.5) ??
+    herd.obstacles.find((o) => Math.hypot(x - o.x, z - o.z) < o.r + 1.2) ??
+    null
   );
 }
 
@@ -256,7 +259,7 @@ function settle(herd: Herd) {
         const distance = nearest + next() * (farthest - nearest);
         const x = Math.sin(angle) * distance;
         const z = -Math.cos(angle) * distance;
-        if (blocked(herd, x, z)) continue;
+        if (blocker(herd, x, z)) continue;
         creature.x = x;
         creature.z = z;
         break;
@@ -305,16 +308,25 @@ function move(herd: Herd, dt: number, time: number) {
     const step = c.speed * dt;
     const nx = c.x - Math.sin(c.heading) * step;
     const nz = c.z - Math.cos(c.heading) * step;
-    if (!inside(species.sector, nx, nz) || blocked(herd, nx, nz)) {
-      c.heading =
-        headingTowards(c.x, c.z, home.x, home.z) + (Math.random() - 0.5);
+    const wall = blocker(herd, nx, nz);
+    if (wall || !inside(species.sector, nx, nz)) {
+      // Turns away from what is in the way, or back towards the middle of
+      // the sector, and keeps that way for a moment: no dithering.
+      const away = wall
+        ? headingTowards(wall.x, wall.z, c.x, c.z)
+        : headingTowards(c.x, c.z, home.x, home.z);
+      c.heading = away + (Math.random() - 0.5) * 0.6;
+      c.turn = 0;
+      c.timer = 1.5 + Math.random();
       continue;
     }
     c.x = nx;
     c.z = nz;
-    c.y = hopping
-      ? Math.max(0, Math.sin(c.phase)) * 0.35
-      : Math.abs(Math.sin(c.phase)) * 0.06;
+    c.y =
+      groundHeight(nx, nz) +
+      (hopping
+        ? Math.max(0, Math.sin(c.phase)) * 0.35
+        : Math.abs(Math.sin(c.phase)) * 0.06);
   }
 }
 

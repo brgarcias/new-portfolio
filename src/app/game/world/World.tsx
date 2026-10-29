@@ -18,6 +18,7 @@ import Far from './Far';
 import Fauna from './Fauna';
 import Ground from './Ground';
 import { floraBuilders, propBuilders } from './props';
+import { groundHeight } from './terrain';
 import Waters from './Water';
 import WeatherClouds from './Weather';
 
@@ -73,8 +74,8 @@ const beacon = new THREE.MeshBasicMaterial({
   color: '#ffffff',
   transparent: true,
 });
-const beaconColor = new THREE.Color();
-const beaconDummy = new THREE.Object3D();
+const color = new THREE.Color();
+const dummy = new THREE.Object3D();
 
 function Beacons({ at }: { at: Vec[] }) {
   const reduced = useReducedMotion();
@@ -83,12 +84,12 @@ function Beacons({ at }: { at: Vec[] }) {
     const instances = mesh.current;
     if (!instances) return;
     at.forEach((position, index) => {
-      beaconDummy.position.set(...position);
-      beaconDummy.updateMatrix();
-      instances.setMatrixAt(index, beaconDummy.matrix);
+      dummy.position.set(...position);
+      dummy.updateMatrix();
+      instances.setMatrixAt(index, dummy.matrix);
       const sector = sectorAt(position[0], position[2]);
-      beaconColor.set(sector === 'hub' ? brand : biomes[sector].accent);
-      instances.setColorAt(index, beaconColor);
+      color.set(sector === 'hub' ? brand : biomes[sector].accent);
+      instances.setColorAt(index, color);
     });
     instances.instanceMatrix.needsUpdate = true;
     if (instances.instanceColor) instances.instanceColor.needsUpdate = true;
@@ -110,18 +111,22 @@ function Beacons({ at }: { at: Vec[] }) {
 }
 
 // The props and the plants of every sector, each sector merged into one
-// shape in the light and one lit on its own.
+// shape in the light and one lit on its own, each thing standing on the
+// ground's relief.
 function Sectors() {
   const built = useMemo(() => {
     const beacons: Vec[] = [];
     const parts = sectionIds.map((id) => {
       const b = new Builder();
       for (const prop of props) {
-        if (prop.sector === id)
-          propBuilders[id][prop.kind](b, prop, { beacons });
+        if (prop.sector !== id) continue;
+        b.lift = groundHeight(prop.x, prop.z);
+        propBuilders[id][prop.kind](b, prop, { beacons });
       }
       for (const item of flora) {
-        if (item.sector === id) floraBuilders[item.kind](b, item);
+        if (item.sector !== id) continue;
+        b.lift = groundHeight(item.x, item.z);
+        floraBuilders[item.kind](b, item);
       }
       return b.build();
     });
@@ -151,50 +156,128 @@ function Sectors() {
   );
 }
 
-// A landing pad: a low disc with a lit ring and a beam of light above it,
-// brighter while the ship is on it, and in another color once it has been
-// visited.
-function LandingPad({
-  x,
-  z,
-  active,
-  visited,
-}: {
-  x: number;
-  z: number;
-  active: boolean;
-  visited: boolean;
-}) {
-  let color = brand;
-  if (active) color = '#c4c5ff';
-  else if (visited) color = '#22d3ee';
+interface PadsProps {
+  activePad: SectionId | null;
+  visited: SectionId[];
+}
+
+// The landing pads: the discs merged into one shape, and the rings, the
+// centers, the glows and the beams of light drawn as instances, in the
+// color of each pad's planet, brighter while the ship is on it, and in
+// another color once it has been visited.
+function Pads({ activePad, visited }: Readonly<PadsProps>) {
+  const discs = useMemo(() => {
+    const b = new Builder();
+    for (const pad of pads) {
+      b.cylinder(padRadius, padRadius + 0.4, 0.3, 48, '#232640', [
+        pad.x,
+        0.15,
+        pad.z,
+      ]);
+    }
+    return b.build().solid;
+  }, []);
+  const shapes = useMemo(() => {
+    const ring = new THREE.RingGeometry(padRadius - 0.7, padRadius, 48);
+    ring.rotateX(-Math.PI / 2);
+    ring.translate(0, 0.32, 0);
+    const center = new THREE.CircleGeometry(1.2, 24);
+    center.rotateX(-Math.PI / 2);
+    center.translate(0, 0.32, 0);
+    const glow = new THREE.RingGeometry(padRadius, padRadius + 2.5, 48);
+    glow.rotateX(-Math.PI / 2);
+    glow.translate(0, 0.31, 0);
+    const beam = new THREE.CylinderGeometry(0.12, 0.3, 14, 6, 1, true);
+    beam.translate(0, 7, 0);
+    return { ring, center, glow, beam };
+  }, []);
+  const materials = useMemo(
+    () => ({
+      lit: new THREE.MeshBasicMaterial({ color: '#ffffff' }),
+      glow: new THREE.MeshBasicMaterial({
+        color: '#ffffff',
+        transparent: true,
+        opacity: 0.18,
+      }),
+      beam: new THREE.MeshBasicMaterial({
+        color: '#ffffff',
+        transparent: true,
+        opacity: 0.6,
+        side: THREE.DoubleSide,
+      }),
+    }),
+    [],
+  );
+  const rings = useRef<THREE.InstancedMesh>(null);
+  const centers = useRef<THREE.InstancedMesh>(null);
+  const glows = useRef<THREE.InstancedMesh>(null);
+  const beams = useRef<THREE.InstancedMesh>(null);
+
+  useEffect(
+    () => () => {
+      discs?.dispose();
+      for (const shape of Object.values(shapes)) shape.dispose();
+      for (const material of Object.values(materials)) material.dispose();
+    },
+    [discs, shapes, materials],
+  );
+
+  // The instances stand on their pads.
+  useEffect(() => {
+    for (const mesh of [rings, centers, glows, beams]) {
+      const instances = mesh.current;
+      if (!instances) continue;
+      pads.forEach((pad, index) => {
+        dummy.position.set(pad.x, 0, pad.z);
+        dummy.updateMatrix();
+        instances.setMatrixAt(index, dummy.matrix);
+      });
+      instances.instanceMatrix.needsUpdate = true;
+    }
+  }, []);
+
+  // And take the color of their state.
+  useEffect(() => {
+    pads.forEach((pad, index) => {
+      const active = pad.id === activePad;
+      if (active) color.set('#c4c5ff');
+      else if (visited.includes(pad.id)) color.set('#22d3ee');
+      else color.set(biomes[pad.id].accent);
+      rings.current?.setColorAt(index, color);
+      centers.current?.setColorAt(index, color);
+      glows.current?.setColorAt(index, color);
+      color.set('#8f8fff').multiplyScalar(active ? 1 : 0.55);
+      beams.current?.setColorAt(index, color);
+    });
+    for (const mesh of [rings, centers, glows, beams]) {
+      const instances = mesh.current;
+      if (instances?.instanceColor) instances.instanceColor.needsUpdate = true;
+    }
+  }, [activePad, visited]);
+
   return (
-    <group position={[x, 0, z]}>
-      <mesh position-y={0.15}>
-        <cylinderGeometry args={[padRadius, padRadius + 0.4, 0.3, 48]} />
-        <meshStandardMaterial color="#232640" roughness={0.9} flatShading />
-      </mesh>
-      <mesh rotation-x={-Math.PI / 2} position-y={0.32}>
-        <ringGeometry args={[padRadius - 0.7, padRadius, 48]} />
-        <meshBasicMaterial color={color} />
-      </mesh>
-      <mesh rotation-x={-Math.PI / 2} position-y={0.32}>
-        <circleGeometry args={[1.2, 24]} />
-        <meshBasicMaterial color={color} />
-      </mesh>
-      <mesh rotation-x={-Math.PI / 2} position-y={0.31}>
-        <ringGeometry args={[padRadius, padRadius + 2.5, 48]} />
-        <meshBasicMaterial color={color} transparent opacity={0.18} />
-      </mesh>
-      <mesh position-y={7}>
-        <cylinderGeometry args={[0.12, 0.3, 14, 6, 1, true]} />
-        <meshBasicMaterial
-          color="#8f8fff"
-          transparent
-          opacity={active ? 0.8 : 0.4}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
+    <group>
+      {discs && <mesh geometry={discs} material={solidMaterial} />}
+      <instancedMesh
+        ref={rings}
+        args={[shapes.ring, materials.lit, pads.length]}
+        frustumCulled={false}
+      />
+      <instancedMesh
+        ref={centers}
+        args={[shapes.center, materials.lit, pads.length]}
+        frustumCulled={false}
+      />
+      <instancedMesh
+        ref={glows}
+        args={[shapes.glow, materials.glow, pads.length]}
+        frustumCulled={false}
+      />
+      <instancedMesh
+        ref={beams}
+        args={[shapes.beam, materials.beam, pads.length]}
+        frustumCulled={false}
+      />
     </group>
   );
 }
@@ -217,15 +300,7 @@ export default function World({ activePad, visited }: Readonly<WorldProps>) {
       <Waters />
       <WeatherClouds />
       <Fauna />
-      {pads.map((pad) => (
-        <LandingPad
-          key={pad.id}
-          x={pad.x}
-          z={pad.z}
-          active={pad.id === activePad}
-          visited={visited.includes(pad.id)}
-        />
-      ))}
+      <Pads activePad={activePad} visited={visited} />
     </>
   );
 }

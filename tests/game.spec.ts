@@ -163,6 +163,13 @@ test('voa pelo joystick no celular', async ({ page, isMobile }) => {
   const box = (await joystick.boundingBox())!;
   const centerX = box.x + box.width / 2;
   const centerY = box.y + box.height / 2;
+  // The joystick lies under the right thumb and the boost under the left.
+  const width = page.viewportSize()!.width;
+  expect(centerX).toBeGreaterThan(width / 2);
+  const boost = (await page
+    .getByRole('button', { name: 'Boost' })
+    .boundingBox())!;
+  expect(boost.x + boost.width / 2).toBeLessThan(width / 2);
   // Pushes the stick forward for a moment, then lets go well before the
   // first pad: the ship coasts in and lands there.
   await page.mouse.move(centerX, centerY);

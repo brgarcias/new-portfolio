@@ -4,11 +4,10 @@
 import { useEffect, useMemo } from 'react';
 // THREE
 import * as THREE from 'three';
-// CONTENT
-import type { SectionId } from '@/src/content/sections';
 // GAME
-import { pads, platformRadius } from './arena';
+import { platformRadius } from './arena';
 import { biomes, hubRadius, sectorOfAngle } from './biomes';
+import { groundHeight, noise, sectorUnder, smoothstep } from './terrain';
 
 // The ground of the world: one disc whose vertices take the color and the
 // relief of the sector they fall in, with the deck of the hub in the
@@ -17,35 +16,6 @@ import { biomes, hubRadius, sectorOfAngle } from './biomes';
 
 const deck = '#24263a';
 const brand = '#5c5edc';
-
-const noise = (x: number, z: number) =>
-  0.6 * (0.5 + 0.5 * Math.sin(x * 0.23 + 1.3) * Math.sin(z * 0.19 + 0.4)) +
-  0.4 * (0.5 + 0.5 * Math.sin(x * 0.61 + 0.7) * Math.cos(z * 0.47 + 2.1));
-
-// The relief of each sector, never higher than the props' footings.
-function relief(sector: SectionId, x: number, z: number) {
-  switch (sector) {
-    case 'about':
-      return 0.6 * (0.5 + 0.5 * Math.sin(x * 0.19 + 1.3) * Math.sin(z * 0.16));
-    case 'education':
-      return -0.15 + 0.25 * noise(x, z);
-    case 'courses':
-      return -0.5;
-    case 'projects':
-      return 0.3 * noise(x, z);
-    case 'contributing':
-      return 0.35 * noise(x, z);
-    case 'contact':
-      return 0.55 * (0.5 + 0.5 * Math.sin(x * 0.22) * Math.cos(z * 0.2));
-    default:
-      return 0;
-  }
-}
-
-const smoothstep = (edge0: number, edge1: number, value: number) => {
-  const t = Math.min(1, Math.max(0, (value - edge0) / (edge1 - edge0)));
-  return t * t * (3 - 2 * t);
-};
 
 function makeGround() {
   const rings = 46;
@@ -62,19 +32,8 @@ function makeGround() {
       const angle = (j / around) * Math.PI * 2;
       const x = Math.sin(angle) * r;
       const z = -Math.cos(angle) * r;
-      // The border between two sectors wanders a little.
-      const sector = sectorOfAngle(
-        angle + 0.035 * Math.sin(r * 0.31 + angle * 4),
-      );
-      const biome = biomes[sector];
-      let height = relief(sector, x, z);
-      for (const pad of pads) {
-        const distance = Math.hypot(x - pad.x, z - pad.z);
-        height *= smoothstep(pad.r + 1, pad.r + 5, distance);
-      }
-      height *= smoothstep(hubRadius, hubRadius + 6, r);
-      height *= 1 - smoothstep(platformRadius - 5, platformRadius, r);
-      positions.push(x, height, z);
+      const biome = biomes[sectorUnder(x, z)];
+      positions.push(x, groundHeight(x, z), z);
       const n = noise(x * 1.7, z * 1.7);
       color.set(biome.ground[0]).lerp(new THREE.Color(biome.ground[1]), n);
       color.lerp(dark, 0.12 * (1 - n));

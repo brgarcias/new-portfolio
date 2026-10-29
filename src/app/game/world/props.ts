@@ -65,7 +65,7 @@ const tatooine: Record<PropKind, PropBuilder> = {
         yaw,
         true,
       );
-      b.cylinder(0.08, 0.1, 2.5, 5, steelDark, [p.x, h + 1.8, p.z]);
+      b.cylinder(0.09, 0.12, 2.5, 5, steelDark, [p.x, h + 1.8, p.z]);
     } else {
       // A moisture farmer's homestead: a dome over a sunken yard.
       b.cylinder(p.r * 1.15, p.r * 1.25, 1.4, 10, sand, [
@@ -82,7 +82,7 @@ const tatooine: Record<PropKind, PropBuilder> = {
         yaw,
         true,
       );
-      b.cylinder(0.06, 0.06, 2.4, 5, steelDark, [p.x + 0.8, 2.6, p.z - 0.6]);
+      b.cylinder(0.08, 0.08, 2.4, 5, steelDark, [p.x + 0.8, 2.6, p.z - 0.6]);
     }
   },
   pillar: (b, p) => {
@@ -176,7 +176,7 @@ const coruscant: Record<PropKind, PropBuilder> = {
       );
     }
     b.box([w * 0.5, 0.8, w * 0.5], towerLight, [p.x, h + 0.4, p.z], yaw);
-    b.cylinder(0.05, 0.08, 2.4, 4, steelDark, [p.x, h + 1.8, p.z]);
+    b.cylinder(0.07, 0.1, 2.4, 4, steelDark, [p.x, h + 1.8, p.z]);
   },
   pillar: (b, p) => {
     // A slim spire, ringed by light.
@@ -187,9 +187,11 @@ const coruscant: Record<PropKind, PropBuilder> = {
       p.z,
     ]);
     for (let y = 2; y < h - 2; y += 3) {
+      // A little wider than the spire at that height, so it stands out.
+      const radius = p.r * (0.95 - (0.25 * (y - foot)) / (h - foot)) + 0.06;
       b.cylinder(
-        p.r * 0.86,
-        p.r * 0.86,
+        radius,
+        radius,
         0.22,
         8,
         amber,
@@ -227,7 +229,7 @@ const coruscant: Record<PropKind, PropBuilder> = {
       p.z,
     ]);
     b.cylinder(p.r * 1.1, p.r * 1.0, 0.5, 12, tower, [p.x, 2.6, p.z]);
-    b.ring(p.r * 1.02, 0.07, neon, [p.x, 2.9, p.z], [Math.PI / 2, 0, 0], true);
+    b.ring(p.r * 1.02, 0.07, neon, [p.x, 2.96, p.z], [Math.PI / 2, 0, 0], true);
   },
 };
 
@@ -366,14 +368,14 @@ const kamino: Record<PropKind, PropBuilder> = {
     b.cylinder(p.r * 1.5, p.r * 1.3, 0.5, 14, shell, [p.x, deck, p.z]);
     b.sphere(p.r * 0.95, 10, shellLight, [p.x, deck + 0.3, p.z], [1, 0.62, 1]);
     b.ring(
-      p.r * 0.9,
+      p.r * 0.98,
       0.09,
       coldGlow,
       [p.x, deck + 0.45, p.z],
       [Math.PI / 2, 0, 0],
       true,
     );
-    b.cylinder(0.05, 0.08, 1.8, 4, stilt, [p.x, deck + 1.6, p.z]);
+    b.cylinder(0.07, 0.1, 1.8, 4, stilt, [p.x, deck + 1.6, p.z]);
   },
   pillar: (b, p) => {
     // A pod on a tall stilt.
@@ -384,7 +386,7 @@ const kamino: Record<PropKind, PropBuilder> = {
     ]);
     b.sphere(p.r * 1.3, 9, shell, [p.x, p.height + 0.4, p.z], [1, 0.7, 1]);
     b.ring(
-      p.r * 1.0,
+      p.r * 1.3,
       0.08,
       coldGlow,
       [p.x, p.height + 0.1, p.z],
@@ -478,8 +480,8 @@ const naboo: Record<PropKind, PropBuilder> = {
       p.z,
     ]);
     b.cylinder(
-      r * 0.9,
-      r * 0.9,
+      r * 1.08,
+      r * 1.08,
       0.5,
       10,
       lantern,
@@ -488,7 +490,7 @@ const naboo: Record<PropKind, PropBuilder> = {
       true,
     );
     b.sphere(r * 1.05, 10, copper, [p.x, p.height + 0.1, p.z], [1, 0.8, 1]);
-    b.cylinder(0.05, 0.08, 1.6, 4, stoneLight, [p.x, p.height + 1.6, p.z]);
+    b.cylinder(0.07, 0.1, 1.6, 4, stoneLight, [p.x, p.height + 1.6, p.z]);
   },
   rock: (b, p) => {
     b.rock(
@@ -784,8 +786,8 @@ export const floraBuilders: Record<FloraKind, FloraBuilder> = {
     for (let i = 0; i < 3; i++) {
       const a = f.rotation + i * 2.1;
       b.cylinder(
-        0.03,
-        0.06,
+        0.05,
+        0.08,
         1.8 * f.scale,
         4,
         '#6a7a3a',

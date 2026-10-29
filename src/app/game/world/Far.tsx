@@ -11,8 +11,6 @@ import { directionOf } from './biomes';
 // the city and the clouds over the ocean and the meadows. They sit far
 // out, in the direction of their sector.
 
-const brand = '#5c5edc';
-
 function Suns() {
   const d = directionOf('about');
   return (
@@ -58,10 +56,8 @@ function Skyline() {
   const built = useMemo(() => {
     const b = new Builder();
     const next = random(21);
-    const base = Math.atan2(
-      directionOf('experience').x,
-      -directionOf('experience').z,
-    );
+    const d = directionOf('experience');
+    const base = Math.atan2(d.x, -d.z);
     for (let i = 0; i < 18; i++) {
       const angle = base + (next() * 2 - 1) * 0.4;
       const distance = 150 + next() * 70;
@@ -102,6 +98,7 @@ function Skyline() {
   );
 }
 
+// A few clouds over a sector, all in one shape.
 function Clouds({
   sector,
   color,
@@ -113,40 +110,31 @@ function Clouds({
   height: number;
   count: number;
 }) {
-  const puffs = useMemo(() => {
+  const built = useMemo(() => {
+    const b = new Builder();
     const next = random(sector === 'projects' ? 31 : 37);
     const d = directionOf(sector);
     const base = Math.atan2(d.x, -d.z);
-    return Array.from({ length: count }, () => {
+    for (let i = 0; i < count; i++) {
       const angle = base + (next() * 2 - 1) * 0.3;
       const distance = 70 + next() * 60;
-      return {
-        x: Math.sin(angle) * distance,
-        y: height + next() * 14,
-        z: -Math.cos(angle) * distance,
-        size: 9 + next() * 8,
-      };
-    });
-  }, [sector, count, height]);
-  return (
-    <group>
-      {puffs.map((puff, index) => (
-        <group key={index} position={[puff.x, puff.y, puff.z]}>
-          <mesh scale={[1.6, 0.55, 1]}>
-            <sphereGeometry args={[puff.size, 10, 7]} />
-            <meshStandardMaterial color={color} flatShading />
-          </mesh>
-          <mesh
-            position={[puff.size * 0.9, puff.size * 0.15, 0]}
-            scale={[1.1, 0.5, 0.9]}
-          >
-            <sphereGeometry args={[puff.size * 0.7, 9, 6]} />
-            <meshStandardMaterial color={color} flatShading />
-          </mesh>
-        </group>
-      ))}
-    </group>
-  );
+      const x = Math.sin(angle) * distance;
+      const y = height + next() * 14;
+      const z = -Math.cos(angle) * distance;
+      const size = 9 + next() * 8;
+      b.sphere(size, 10, color, [x, y, z], [1.6, 0.55, 1]);
+      b.sphere(
+        size * 0.7,
+        9,
+        color,
+        [x + size * 0.9, y + size * 0.15, z],
+        [1.1, 0.5, 0.9],
+      );
+    }
+    return b.build().solid;
+  }, [sector, color, height, count]);
+  useEffect(() => () => built?.dispose(), [built]);
+  return built ? <mesh geometry={built} material={solidMaterial} /> : null;
 }
 
 export default function Far() {
@@ -160,5 +148,3 @@ export default function Far() {
     </>
   );
 }
-
-export { brand };

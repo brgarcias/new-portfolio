@@ -137,6 +137,14 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
     }
     ahead.set(state.x + fx * 5, ship.hover + 1, state.z + fz * 5);
     camera.lookAt(ahead);
+    // The view widens a little under boost.
+    if (camera instanceof THREE.PerspectiveCamera) {
+      const fov = boosting && !reduced ? 62 : 55;
+      if (Math.abs(camera.fov - fov) > 0.01) {
+        camera.fov += (fov - camera.fov) * (1 - Math.exp(-4 * dt));
+        camera.updateProjectionMatrix();
+      }
+    }
 
     if (state.pad !== flight.pad) {
       flight.pad = state.pad;

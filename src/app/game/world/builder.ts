@@ -23,6 +23,8 @@ export interface Built {
 export class Builder {
   private solid: THREE.BufferGeometry[] = [];
   private lit: THREE.BufferGeometry[] = [];
+  // Added to the height of every shape: the ground under what is built.
+  lift = 0;
 
   add(
     geometry: THREE.BufferGeometry,
@@ -35,7 +37,7 @@ export class Builder {
     const part = geometry.index ? geometry.toNonIndexed() : geometry;
     if (part !== geometry) geometry.dispose();
     part.deleteAttribute('uv');
-    position.set(...at);
+    position.set(at[0], at[1] + this.lift, at[2]);
     // Yaw, pitch and roll: the roll and the pitch turn the shape on its
     // own axes, and the yaw turns it on the ground.
     quaternion.setFromEuler(
@@ -150,7 +152,7 @@ export class Builder {
   // Bakes a model built from meshes, like a ship, into the geometry, with
   // the colors of its materials.
   model(object: THREE.Object3D, at: Vec, rotation: Vec, scale = 1) {
-    object.position.set(...at);
+    object.position.set(at[0], at[1] + this.lift, at[2]);
     object.rotation.set(...rotation);
     object.scale.setScalar(scale);
     object.updateMatrixWorld(true);
@@ -160,10 +162,11 @@ export class Builder {
       const part = child.geometry.clone() as THREE.BufferGeometry;
       part.applyMatrix4(child.matrixWorld);
       child.geometry.dispose();
+      // The model is already in place: no lift twice.
       this.add(
         part,
         material.color,
-        [0, 0, 0],
+        [0, -this.lift, 0],
         undefined,
         1,
         !!child.userData.engine,

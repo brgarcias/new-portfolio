@@ -378,6 +378,8 @@
   bottom: 0;
   left: 0;
   display: flex;
+  /* The joystick under the right thumb, the boost under the left. */
+  flex-direction: row-reverse;
   align-items: flex-end;
   justify-content: space-between;
   padding: 0 1.75rem 1.75rem;
@@ -590,4 +592,27 @@
     top: calc(var(--header-height) + 7.4rem);
     font-size: 0.875rem;
   }
+}
+
+/* On phones the pad's name keeps to one line, without its hint. */
+@media (max-width: 639px) {
+  .hud__pad {
+    max-width: calc(100% - 2 * var(--gutter));
+    font-size: 0.875rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hud__pad-hint {
+    display: none;
+  }
+}
+
+/* The HUD's texts keep legible over the bright skies, like the ice world's. */
+.hud__ship,
+.hud__count,
+.hud__hint,
+.hud__planet {
+  text-shadow: 0 1px 6px rgb(11 12 20 / 0.55);
 }
