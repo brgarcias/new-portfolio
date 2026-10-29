@@ -1,4 +1,4 @@
-'use client'; // Error components must be Client Components
+'use client';
 
 // HOOKS
 import { useEffect } from 'react';
@@ -15,7 +15,9 @@ import { splitLink } from '@/src/i18n/messages';
 // re-rendering the segment with reset() would not do.
 const reload = () => window.location.reload();
 
-export default function Error({
+// The page shown when a page or the layout fails. The error.tsx files of
+// the routes render it, as does src/app/global-error.tsx.
+export default function ErrorPage({
   error,
 }: {
   error: Error & { digest?: string };

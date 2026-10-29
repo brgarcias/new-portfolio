@@ -87,6 +87,35 @@ const en = {
   contact: {
     age: '{age} years',
   },
+  game: {
+    title: 'Play',
+    description:
+      'Fly a Star Wars ship through my portfolio: choose one in the hangar and land on the sections.',
+    hangar: 'Hangar',
+    chooseShip: 'Choose your ship',
+    takeOff: 'Take off',
+    changeShip: 'Change ship',
+    backToSite: 'Back to the portfolio',
+    speed: 'Speed',
+    agility: 'Agility',
+    boost: 'Boost',
+    keyboard: 'W, A, S, D or the arrows fly · Shift or Space boosts',
+    joystick: 'Joystick',
+    // The name of the pad the ship is on.
+    landingPad: 'Landing pad: {place}',
+    loading: 'Opening the hangar…',
+    noWebgl:
+      'This browser cannot draw 3D graphics, so the game cannot open here. The portfolio works as usual.',
+    ships: {
+      xwing: 'Rebel starfighter with four wings: balanced and dependable.',
+      tie: 'Imperial fighter: quick off the mark and quick to turn, light as a leaf.',
+      falcon:
+        'Corellian freighter: heavy and slow to turn, with the strongest boost in the hangar.',
+      awing: 'Interceptor: the fastest ship here, and the sharpest turn.',
+      ywing: 'Bomber: slow and steady; it shrugs off the bumps.',
+      n1: 'Royal starfighter of Naboo: smooth, elegant and fast.',
+    },
+  },
   notFound: {
     label: 'Error 404',
     heading: 'Page Not Found',

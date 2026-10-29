@@ -1,0 +1,347 @@
+/* ─── The page ──────────────────────────────────────────── */
+.play {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-bg);
+}
+
+.game-notice {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: var(--gutter);
+  text-align: center;
+}
+
+.game-notice__text {
+  max-width: 32rem;
+  color: var(--color-text-muted);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+/* ─── Hangar ────────────────────────────────────────────── */
+.hangar {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: calc(var(--header-height) + 1rem) 0 3rem;
+  background:
+    radial-gradient(60% 50% at 50% 0%, rgb(92 94 220 / 0.22), transparent 70%),
+    var(--color-bg);
+}
+
+.hangar__top {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  height: var(--header-height);
+  align-items: center;
+  max-width: var(--container-wide);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.hangar__inner {
+  display: grid;
+  max-width: var(--container);
+  gap: 1.25rem;
+  grid-template-areas:
+    'eyebrow eyebrow'
+    'title title'
+    'stage info'
+    'ships ships';
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+}
+
+.hangar__inner > .eyebrow {
+  grid-area: eyebrow;
+}
+
+.hangar__title {
+  grid-area: title;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.hangar__stage {
+  grid-area: stage;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at 50% 60%, rgb(92 94 220 / 0.3), transparent 62%),
+    linear-gradient(160deg, #20212b, #16171c);
+}
+
+.hangar__canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.hangar__info {
+  grid-area: info;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--color-border);
+  border-radius: 1.5rem;
+  background: var(--color-surface);
+}
+
+.hangar__name {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.hangar__about {
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.hangar__stats {
+  display: grid;
+  gap: 0.5rem;
+  margin-block: 0.25rem auto;
+}
+
+.hangar__stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.hangar__stat dd {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.hangar__stat dd span {
+  width: 1.25rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: rgb(var(--rgb-veil) / 0.12);
+}
+
+.hangar__stat dd span.is-on {
+  background: var(--gradient-brand);
+}
+
+.hangar__ships {
+  grid-area: ships;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hangar__ship {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  background: var(--color-fill);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.hangar__ship:hover,
+.hangar__ship:focus-visible {
+  border-color: rgb(92 94 220 / 0.6);
+  background: rgb(92 94 220 / 0.14);
+}
+
+.hangar__ship[aria-pressed='true'] {
+  border-color: transparent;
+  background: var(--gradient-brand);
+  color: #fff;
+}
+
+@media (max-width: 767px) {
+  .hangar__inner {
+    grid-template-areas:
+      'eyebrow'
+      'title'
+      'stage'
+      'ships'
+      'info';
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ─── Flight ────────────────────────────────────────────── */
+.game {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #0b0c14;
+  touch-action: none;
+}
+
+.game__canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.game__labels {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.game__label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgb(143 143 255 / 0.5);
+  border-radius: 999px;
+  background: rgb(11 12 20 / 0.7);
+  color: #e8e9ff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  will-change: transform, opacity;
+}
+
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hud .btn,
+.hud .touch > * {
+  pointer-events: auto;
+}
+
+.hud__top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem var(--gutter);
+}
+
+.hud__ship {
+  margin-inline: auto;
+  white-space: nowrap;
+  color: #e8e9ff;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.hud__pad {
+  position: absolute;
+  top: calc(var(--header-height) + 1rem);
+  left: 50%;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: rgb(92 94 220 / 0.25);
+  color: #fff;
+  font-weight: 600;
+  transform: translateX(-50%);
+}
+
+.hud__pad:empty {
+  display: none;
+}
+
+.hud__hint {
+  position: absolute;
+  right: 0;
+  bottom: 1.25rem;
+  left: 0;
+  color: rgb(232 233 255 / 0.7);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.touch {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 1.75rem 1.75rem;
+  padding-bottom: calc(1.75rem + env(safe-area-inset-bottom));
+}
+
+.joystick {
+  position: relative;
+  display: grid;
+  width: 8.5rem;
+  height: 8.5rem;
+  place-items: center;
+  border: 1px solid rgb(232 233 255 / 0.3);
+  border-radius: 50%;
+  background: rgb(11 12 20 / 0.45);
+  touch-action: none;
+}
+
+.joystick__knob {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--gradient-brand);
+  box-shadow: 0 12px 32px -12px rgb(92 94 220 / 0.9);
+  pointer-events: none;
+}
+
+.boost {
+  display: grid;
+  width: 5rem;
+  height: 5rem;
+  place-items: center;
+  border: 1px solid rgb(232 233 255 / 0.3);
+  border-radius: 50%;
+  background: rgb(11 12 20 / 0.45);
+  color: #ffd166;
+  font-size: 1.5rem;
+  touch-action: none;
+}
+
+.boost:active {
+  background: rgb(255 209 102 / 0.3);
+}
+
+/* The hangar's bar, like the site's, keeps the light theme's text dark. */
+.light .hangar__stage {
+  background:
+    radial-gradient(circle at 50% 60%, rgb(92 94 220 / 0.3), transparent 62%),
+    linear-gradient(160deg, #2a2b3a, #1b1c26);
+}
+
+/* On phones the two buttons fill the top; the ship's name stays in the
+   hangar. */
+@media (max-width: 639px) {
+  .hud__ship {
+    display: none;
+  }
+}

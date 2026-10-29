@@ -54,12 +54,21 @@ const nextConfig = {
     '/**': ['tests/**/*'],
   },
   // English, the default language, lives at / without a prefix: / serves
-  // the /en page, and /en itself sends visitors to /.
+  // the /en page, and /en itself sends visitors to /. The game, at /play,
+  // works the same way.
   async redirects() {
-    return [{ source: '/en', destination: '/', permanent: true }];
+    return [
+      { source: '/en', destination: '/', permanent: true },
+      { source: '/en/play', destination: '/play', permanent: true },
+    ];
   },
   async rewrites() {
-    return { beforeFiles: [{ source: '/', destination: '/en' }] };
+    return {
+      beforeFiles: [
+        { source: '/', destination: '/en' },
+        { source: '/play', destination: '/en/play' },
+      ],
+    };
   },
   async headers() {
     return [
