@@ -1,7 +1,7 @@
 'use client';
 
 // HOOKS
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, type PointerEvent } from 'react';
 // THREE
 import * as THREE from 'three';
 import { Canvas, useFrame } from '@react-three/fiber';
@@ -22,11 +22,36 @@ interface HangarProps {
   home: string;
 }
 
-// The chosen ship, turning slowly on its pedestal.
+// How the ship on the pedestal is turned: by itself, slowly, or by a
+// finger or the mouse dragged across the stage, which spins it and lets
+// it coast to a stop, as a wheel would. The frame loop reads it; the
+// stage reports the turn as a data attribute.
+const spin = {
+  yaw: 0,
+  pitch: 0,
+  velocity: 0,
+  dragging: false,
+  // Seconds since the last drag.
+  idle: 10,
+  last: { x: 0, y: 0, at: 0 },
+  stage: null as HTMLDivElement | null,
+};
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
+// The chosen ship, turning on its pedestal.
 function Preview({ shipId }: { shipId: ShipId }) {
   const model = useMemo(() => ships[shipId].build(), [shipId]);
   const stand = useRef<THREE.Group>(null);
   const reduced = useReducedMotion();
+
+  useEffect(() => {
+    spin.yaw = reduced ? 0.6 : 0;
+    spin.pitch = 0;
+    spin.velocity = 0;
+    spin.idle = 10;
+  }, [reduced]);
 
   useEffect(
     () => () =>
@@ -37,8 +62,21 @@ function Preview({ shipId }: { shipId: ShipId }) {
   );
 
   useFrame((_, delta) => {
-    if (!stand.current || reduced) return;
-    stand.current.rotation.y += delta * 0.45;
+    if (!stand.current) return;
+    const dt = Math.min(delta, 0.1);
+    if (!spin.dragging) {
+      spin.yaw += spin.velocity * dt;
+      spin.velocity *= Math.exp(-2.2 * dt);
+      spin.pitch *= Math.exp(-4 * dt);
+      spin.idle += dt;
+      // Left alone for a moment, it goes back to its slow turn.
+      if (!reduced && spin.idle > 2) {
+        spin.yaw += dt * 0.45 * Math.min(1, spin.idle - 2);
+      }
+    }
+    stand.current.rotation.y = spin.yaw;
+    stand.current.rotation.x = spin.pitch;
+    if (spin.stage) spin.stage.dataset.yaw = spin.yaw.toFixed(2);
   });
 
   return (
@@ -47,7 +85,7 @@ function Preview({ shipId }: { shipId: ShipId }) {
       {/* The key light on the camera's side, the fill from behind. */}
       <directionalLight position={[6, 8, -6]} intensity={1.7} color="#fff2e0" />
       <directionalLight position={[-6, 3, 5]} intensity={0.6} color="#5c5edc" />
-      <group ref={stand} rotation-y={reduced ? 0.6 : 0}>
+      <group ref={stand}>
         <primitive object={model} position={[0, 0.6, 0]} />
       </group>
       <mesh rotation-x={-Math.PI / 2} position-y={-1.6}>
@@ -59,6 +97,67 @@ function Preview({ shipId }: { shipId: ShipId }) {
         <meshBasicMaterial color="#1b1d2b" />
       </mesh>
     </>
+  );
+}
+
+const registerStage = (element: HTMLDivElement | null) => {
+  spin.stage = element;
+};
+
+// The stage, where a drag turns the ship.
+function Stage({ shipId, hint }: { shipId: ShipId; hint: string }) {
+  const reduced = useReducedMotion();
+
+  const onDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (spin.dragging) return;
+    spin.dragging = true;
+    spin.velocity = 0;
+    spin.last = { x: event.clientX, y: event.clientY, at: performance.now() };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const onMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (!spin.dragging) return;
+    const now = performance.now();
+    const dx = event.clientX - spin.last.x;
+    const dy = event.clientY - spin.last.y;
+    const seconds = Math.max(0.001, (now - spin.last.at) / 1000);
+    spin.yaw += dx * 0.012;
+    spin.pitch = clamp(spin.pitch + dy * 0.005, -0.45, 0.45);
+    // The speed of the drag, smoothed, is what the ship keeps on release.
+    spin.velocity = spin.velocity * 0.5 + ((dx * 0.012) / seconds) * 0.5;
+    spin.last = { x: event.clientX, y: event.clientY, at: now };
+  };
+  const onUp = () => {
+    if (!spin.dragging) return;
+    spin.dragging = false;
+    spin.idle = 0;
+    if (reduced) spin.velocity = 0;
+  };
+
+  return (
+    <div
+      ref={registerStage}
+      className="hangar__stage"
+      data-yaw="0.00"
+      onPointerDown={onDown}
+      onPointerMove={onMove}
+      onPointerUp={onUp}
+      onPointerCancel={onUp}
+    >
+      <Canvas
+        className="hangar__canvas"
+        dpr={[1, 1.5]}
+        camera={{
+          fov: 38,
+          near: 0.5,
+          far: 100,
+          position: [6.5, 3.2, -8.5],
+        }}
+      >
+        <Preview shipId={shipId} />
+      </Canvas>
+      <p className="hangar__hint">{hint}</p>
+    </div>
   );
 }
 
@@ -97,20 +196,7 @@ export default function Hangar({
       <div className="hangar__inner">
         <p className="eyebrow">{t.hangar}</p>
         <h1 className="hangar__title">{t.chooseShip}</h1>
-        <div className="hangar__stage">
-          <Canvas
-            className="hangar__canvas"
-            dpr={[1, 1.5]}
-            camera={{
-              fov: 38,
-              near: 0.5,
-              far: 100,
-              position: [6.5, 3.2, -8.5],
-            }}
-          >
-            <Preview shipId={shipId} />
-          </Canvas>
-        </div>
+        <Stage shipId={shipId} hint={t.dragToTurn} />
         <ul className="hangar__ships">
           {shipIds.map((id) => (
             <li key={id}>

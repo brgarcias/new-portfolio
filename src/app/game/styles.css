@@ -98,9 +98,14 @@
 }
 
 .hangar__stage {
+  position: relative;
   grid-area: stage;
   aspect-ratio: 4 / 3;
   overflow: hidden;
+  /* A drag turns the ship; a vertical swipe still scrolls the page. */
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
   border: 1px solid var(--color-border);
   border-radius: 1.5rem;
   background:
@@ -615,4 +620,280 @@
 .hud__hint,
 .hud__planet {
   text-shadow: 0 1px 6px rgb(11 12 20 / 0.55);
+}
+
+/* ─── The hangar's stage ───────────────────────────────── */
+.hangar__stage:active {
+  cursor: grabbing;
+}
+
+.hangar__hint {
+  position: absolute;
+  right: 0;
+  bottom: 0.75rem;
+  left: 0;
+  margin: 0;
+  color: rgb(232 233 255 / 0.6);
+  font-size: 0.75rem;
+  pointer-events: none;
+  text-align: center;
+}
+
+/* ─── The radar, and the map ───────────────────────────── */
+/* The radar is a button that opens the map. */
+.radar-button {
+  position: absolute;
+  top: calc(var(--header-height) + 0.5rem);
+  right: var(--gutter);
+  width: 7rem;
+  height: 7rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  pointer-events: auto;
+  transition: transform 0.4s var(--ease-spring);
+}
+
+.radar-button:hover {
+  transform: scale(1.04);
+}
+
+.radar-button:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 4px;
+}
+
+.radar-button .radar {
+  position: static;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.radar__texture {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.radar__hub {
+  fill: #1b1d2b;
+  stroke: rgb(143 143 255 / 0.5);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+
+.radar__prop {
+  fill: rgb(232 233 255 / 0.28);
+}
+
+.radar__cone {
+  fill: rgb(232 233 255 / 0.14);
+}
+
+.radar__sweep {
+  transform-box: view-box;
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.radar__name {
+  fill: #e8e9ff;
+  font-family: var(--font-display);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.radar--large .radar__deck {
+  fill: rgb(11 12 20 / 0.8);
+}
+
+.radar--large .radar__texture {
+  opacity: 0.7;
+}
+
+/* The sector the ship is over stands out. */
+.hud[data-sector='about'] .radar__sector[data-id='about'],
+.hud[data-sector='experience'] .radar__sector[data-id='experience'],
+.hud[data-sector='education'] .radar__sector[data-id='education'],
+.hud[data-sector='courses'] .radar__sector[data-id='courses'],
+.hud[data-sector='projects'] .radar__sector[data-id='projects'],
+.hud[data-sector='contributing'] .radar__sector[data-id='contributing'],
+.hud[data-sector='contact'] .radar__sector[data-id='contact'] {
+  opacity: 0.55;
+}
+
+.radar__pad[data-state='active'] {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .radar__sweep {
+    animation: radar-sweep 4s linear infinite;
+  }
+
+  .radar__pad[data-state='active'] {
+    animation: radar-pad 1.6s ease-in-out infinite;
+  }
+
+  @keyframes radar-sweep {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes radar-pad {
+    50% {
+      transform: scale(1.35);
+    }
+  }
+}
+
+/* The map over the flight. */
+.game-map {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  padding: 1rem;
+  place-items: center;
+  pointer-events: auto;
+}
+
+.game-map__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(11 12 20 / 0.6);
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.game-map__sheet {
+  position: relative;
+  width: min(44rem, 100%);
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  padding: 1.25rem 1.5rem 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1.5rem;
+  background: var(--color-bg);
+  box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.8);
+  overscroll-behavior: contain;
+}
+
+.game-map__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.game-map__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.game-map__body {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+}
+
+.game-map .radar--large {
+  position: static;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.game-map__legend {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.game-map__legend li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+}
+
+.game-map__legend li[data-state='active'] {
+  border-color: rgb(92 94 220 / 0.6);
+  background: rgb(92 94 220 / 0.12);
+}
+
+.game-map__legend li[data-state='visited'] {
+  border-color: rgb(34 211 238 / 0.4);
+}
+
+.game-map__dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+.game-map__planet {
+  display: grid;
+  line-height: 1.25;
+}
+
+.game-map__planet strong {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.game-map__planet small {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.game-map__legend em {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.game-map__legend li[data-state='active'] em {
+  color: var(--color-brand);
+}
+
+.game-map__legend li[data-state='visited'] em {
+  color: #22d3ee;
+}
+
+.light .game-map__legend li[data-state='visited'] em {
+  color: #0e7490;
+}
+
+@media (max-width: 639px) {
+  .radar-button {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  .game-map__body {
+    grid-template-columns: 1fr;
+  }
+
+  .game-map .radar--large {
+    width: min(100%, 60vh);
+    margin-inline: auto;
+  }
 }

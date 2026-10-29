@@ -12,6 +12,7 @@ import { format } from '@/src/i18n/messages';
 import type { SectionId } from '@/src/content/sections';
 // GAME
 import { input } from './controls';
+import GalaxyMap from './GalaxyMap';
 import { overlay } from './overlay';
 import Radar from './Radar';
 import type { Ship } from './ships';
@@ -113,10 +114,17 @@ interface HudProps {
   total: number;
   home: string;
   onChangeShip: () => void;
+  // The map over the flight, and how it opens and closes.
+  mapOpen: boolean;
+  onOpenMap: () => void;
+  onCloseMap: () => void;
 }
 
 const register = (element: HTMLDivElement | null) => {
   overlay.hud = element;
+};
+const registerRadarShip = (element: SVGGElement | null) => {
+  overlay.radarShip = element;
 };
 
 // What lies over the flight: the way back, the ship's name, the count of
@@ -131,6 +139,9 @@ export default function Hud({
   total,
   home,
   onChangeShip,
+  mapOpen,
+  onOpenMap,
+  onCloseMap,
 }: Readonly<HudProps>) {
   const t = useI18n().messages.game;
   const touch = useMediaQuery('(pointer: coarse)');
@@ -166,7 +177,19 @@ export default function Hud({
           {t.changeShip}
         </button>
       </div>
-      <Radar activePad={pad} visited={visited} />
+      <button
+        type="button"
+        className="radar-button"
+        aria-label={t.openMap}
+        onClick={onOpenMap}
+      >
+        <Radar
+          scope="hud"
+          activePad={pad}
+          visited={visited}
+          registerShip={registerRadarShip}
+        />
+      </button>
       {/* The planet under the ship: the frame loop shows the one it is over. */}
       {places.map((place) => (
         <p key={place.id} className="hud__planet" data-id={place.id} hidden>
@@ -188,6 +211,14 @@ export default function Hud({
         </p>
       )}
       {touch ? <TouchControls /> : <p className="hud__hint">{t.keyboard}</p>}
+      {mapOpen && (
+        <GalaxyMap
+          activePad={pad}
+          visited={visited}
+          places={places}
+          onClose={onCloseMap}
+        />
+      )}
     </div>
   );
 }

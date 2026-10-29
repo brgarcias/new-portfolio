@@ -13,7 +13,7 @@ import { overlay } from './overlay';
 import { createState, step } from './physics';
 import type { Ship as ShipSpec } from './ships';
 import { useReducedMotion } from './useMediaQuery';
-import { arena, spawn } from './world/arena';
+import { arena, padRadius, spawn } from './world/arena';
 import { atmosphere, sectorAt, type Sector } from './world/biomes';
 
 interface ShipProps {
@@ -38,10 +38,79 @@ const flight = {
   clock: 0,
   // The sector of the world the ship is over.
   sector: 'hub' as Sector,
+  // The ring that spreads over a pad when the ship lands on it.
+  pulse: { x: 0, z: 0, age: 9 },
 };
+
+// The trail behind the ship: the last positions of its two sides, newest
+// first, which draw as two ribbons that fade with age.
+const trailLength = 28;
+const trail = {
+  left: new Float32Array(trailLength * 2),
+  right: new Float32Array(trailLength * 2),
+  filled: 0,
+};
+
+function makeTrail() {
+  const geometry = new THREE.BufferGeometry();
+  const vertices = trailLength * 4;
+  geometry.setAttribute(
+    'position',
+    new THREE.BufferAttribute(new Float32Array(vertices * 3), 3),
+  );
+  geometry.setAttribute(
+    'color',
+    new THREE.BufferAttribute(new Float32Array(vertices * 3), 3),
+  );
+  const indices: number[] = [];
+  for (const strip of [0, 1]) {
+    const base = strip * trailLength * 2;
+    for (let i = 0; i < trailLength - 1; i++) {
+      const a = base + i * 2;
+      indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+    }
+  }
+  geometry.setIndex(indices);
+  // The ribbons move every frame, so the bounds are left to the frame.
+  geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e5);
+  return geometry;
+}
+
+// Writes one ribbon's vertices from its stored points.
+function ribbon(
+  positions: THREE.BufferAttribute,
+  points: Float32Array,
+  base: number,
+  y: number,
+) {
+  for (let i = 0; i < trailLength; i++) {
+    const x = points[i * 2];
+    const z = points[i * 2 + 1];
+    const before = Math.max(0, i - 1);
+    const after = Math.min(trailLength - 1, i + 1);
+    let dx = points[before * 2] - points[after * 2];
+    let dz = points[before * 2 + 1] - points[after * 2 + 1];
+    const length = Math.hypot(dx, dz) || 1;
+    dx /= length;
+    dz /= length;
+    const width = 0.06 + 0.42 * (1 - i / (trailLength - 1));
+    positions.setXYZ(base + i * 2, x - dz * width, y, z + dx * width);
+    positions.setXYZ(base + i * 2 + 1, x + dz * width, y, z - dx * width);
+  }
+}
 
 const chase = new THREE.Vector3();
 const ahead = new THREE.Vector3();
+const trailColor = new THREE.Color();
+const trailGeometry = makeTrail();
+const trailMaterial = new THREE.MeshBasicMaterial({
+  vertexColors: true,
+  transparent: true,
+  opacity: 0,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending,
+  side: THREE.DoubleSide,
+});
 
 // The ship in flight: each frame it reads the controls, moves by the
 // physics of physics.ts, leans into its turns, lights its engines, pulls
@@ -50,6 +119,8 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
   const model = useMemo(() => ship.build(), [ship]);
   const rig = useRef<THREE.Group>(null);
   const body = useRef<THREE.Group>(null);
+  const trailMesh = useRef<THREE.Mesh>(null);
+  const pulseMesh = useRef<THREE.Mesh>(null);
   const reduced = useReducedMotion();
 
   // A new ship starts again from the hangar's spot. Its shapes are freed
@@ -63,6 +134,8 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
     flight.clock = 0;
     flight.sector = 'hub';
     atmosphere.sector = 'hub';
+    flight.pulse.age = 9;
+    trail.filled = 0;
     const engines: THREE.MeshStandardMaterial[] = [];
     model.traverse((object) => {
       if (object.userData.engine && object instanceof THREE.Mesh) {
@@ -70,6 +143,28 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
       }
     });
     flight.engines = engines;
+    // The trail takes the color of the engines, fading with age.
+    trailColor.set(engines[0]?.emissive ?? '#8f8fff');
+    const colors = trailGeometry.attributes.color as THREE.BufferAttribute;
+    for (let strip = 0; strip < 2; strip++) {
+      for (let i = 0; i < trailLength; i++) {
+        const fade = Math.pow(1 - i / (trailLength - 1), 1.6);
+        const k = strip * trailLength * 2 + i * 2;
+        colors.setXYZ(
+          k,
+          trailColor.r * fade,
+          trailColor.g * fade,
+          trailColor.b * fade,
+        );
+        colors.setXYZ(
+          k + 1,
+          trailColor.r * fade,
+          trailColor.g * fade,
+          trailColor.b * fade,
+        );
+      }
+    }
+    colors.needsUpdate = true;
     return () => {
       flight.engines = [];
       model.traverse((object) => {
@@ -146,6 +241,45 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
       }
     }
 
+    // The trail: the sides of the ship, this frame, go to the front of the
+    // ribbons, which show with speed.
+    const rx = Math.cos(state.heading);
+    const rz = -Math.sin(state.heading);
+    const spread = ship.handling.radius * 0.45;
+    trail.left.copyWithin(2, 0, trailLength * 2 - 2);
+    trail.right.copyWithin(2, 0, trailLength * 2 - 2);
+    trail.left[0] = state.x + rx * spread;
+    trail.left[1] = state.z + rz * spread;
+    trail.right[0] = state.x - rx * spread;
+    trail.right[1] = state.z - rz * spread;
+    trail.filled = Math.min(trailLength, trail.filled + 1);
+    const ribbons = trailMesh.current;
+    if (ribbons) {
+      const show = !reduced && trail.filled >= trailLength && state.speed > 3;
+      ribbons.visible = show;
+      if (show) {
+        const positions = trailGeometry.attributes
+          .position as THREE.BufferAttribute;
+        ribbon(positions, trail.left, 0, ship.hover - 0.2);
+        ribbon(positions, trail.right, trailLength * 2, ship.hover - 0.2);
+        positions.needsUpdate = true;
+        trailMaterial.opacity = Math.min(0.85, (state.speed - 3) / 12);
+      }
+    }
+    // The ring that spreads over the pad on landing.
+    const ring = pulseMesh.current;
+    if (ring) {
+      flight.pulse.age += dt;
+      const alive = flight.pulse.age < 0.9;
+      ring.visible = alive;
+      if (alive) {
+        ring.position.set(flight.pulse.x, 0.42, flight.pulse.z);
+        ring.scale.setScalar(1 + flight.pulse.age * 1.4);
+        (ring.material as THREE.MeshBasicMaterial).opacity =
+          0.7 * (1 - flight.pulse.age / 0.9);
+      }
+    }
+
     if (state.pad !== flight.pad) {
       flight.pad = state.pad;
       onPad(state.pad as SectionId | null);
@@ -157,6 +291,12 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
       flight.still += dt;
       if (flight.still > 0.5) {
         flight.landed = state.pad;
+        const spot = arena.pads.find((pad) => pad.id === state.pad);
+        if (spot) {
+          flight.pulse.x = spot.x;
+          flight.pulse.z = spot.z;
+          flight.pulse.age = 0;
+        }
         onLand(state.pad as SectionId);
       }
     } else {
@@ -186,31 +326,48 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
       readout.dataset.speed = state.speed.toFixed(1);
       readout.dataset.time = flight.clock.toFixed(1);
     }
-    overlay.radarShip?.setAttribute(
-      'transform',
-      `translate(${state.x.toFixed(1)} ${state.z.toFixed(1)}) rotate(${(
-        (-state.heading * 180) /
-        Math.PI
-      ).toFixed(1)})`,
-    );
+    const marker = `translate(${state.x.toFixed(1)} ${state.z.toFixed(1)}) rotate(${(
+      (-state.heading * 180) /
+      Math.PI
+    ).toFixed(1)})`;
+    overlay.radarShip?.setAttribute('transform', marker);
+    overlay.mapShip?.setAttribute('transform', marker);
   });
 
   return (
-    <group ref={rig}>
-      <group ref={body}>
-        <primitive object={model} />
+    <>
+      <group ref={rig}>
+        <group ref={body}>
+          <primitive object={model} />
+        </group>
+        {/* Its shadow on the deck, and the light of its engines. */}
+        <mesh rotation-x={-Math.PI / 2} position-y={-ship.hover + 0.06}>
+          <circleGeometry args={[ship.handling.radius * 0.9, 20]} />
+          <meshBasicMaterial color="#000000" transparent opacity={0.35} />
+        </mesh>
+        <pointLight
+          position={[0, 0.5, 2.5]}
+          intensity={18}
+          distance={16}
+          color="#8f8fff"
+        />
       </group>
-      {/* Its shadow on the deck, and the light of its engines. */}
-      <mesh rotation-x={-Math.PI / 2} position-y={-ship.hover + 0.06}>
-        <circleGeometry args={[ship.handling.radius * 0.9, 20]} />
-        <meshBasicMaterial color="#000000" transparent opacity={0.35} />
-      </mesh>
-      <pointLight
-        position={[0, 0.5, 2.5]}
-        intensity={18}
-        distance={16}
-        color="#8f8fff"
+      <mesh
+        ref={trailMesh}
+        geometry={trailGeometry}
+        material={trailMaterial}
+        visible={false}
+        frustumCulled={false}
       />
-    </group>
+      <mesh ref={pulseMesh} rotation-x={-Math.PI / 2} visible={false}>
+        <ringGeometry args={[padRadius - 1.2, padRadius, 48]} />
+        <meshBasicMaterial
+          color="#c4c5ff"
+          transparent
+          opacity={0.7}
+          depthWrite={false}
+        />
+      </mesh>
+    </>
   );
 }
