@@ -100,6 +100,9 @@ interface HudProps {
   ship: Ship;
   // The name of the pad the ship is on.
   pad: string | null;
+  // How many sections were opened, of how many.
+  visited: number;
+  total: number;
   home: string;
   onChangeShip: () => void;
 }
@@ -108,12 +111,14 @@ const register = (element: HTMLDivElement | null) => {
   overlay.hud = element;
 };
 
-// What lies over the flight: the way back, the ship's name, the pad under
-// it and the controls. Fingers get the joystick; a mouse, the keyboard's
-// hint.
+// What lies over the flight: the way back, the ship's name, the count of
+// sections seen, the pad under the ship and the controls. Fingers get the
+// joystick; a mouse, the keyboard's hint.
 export default function Hud({
   ship,
   pad,
+  visited,
+  total,
   home,
   onChangeShip,
 }: Readonly<HudProps>) {
@@ -135,6 +140,9 @@ export default function Hud({
           {t.backToSite}
         </a>
         <p className="hud__ship">{ship.name}</p>
+        <p className="hud__count">
+          {format(t.visited, { count: String(visited), total: String(total) })}
+        </p>
         <button
           type="button"
           className="btn btn--ghost btn--small"
@@ -144,7 +152,12 @@ export default function Hud({
         </button>
       </div>
       <p className="hud__pad" role="status">
-        {pad && format(t.landingPad, { place: pad })}
+        {pad && (
+          <>
+            {format(t.landingPad, { place: pad })}
+            <span className="hud__pad-hint">· {t.stopToLand}</span>
+          </>
+        )}
       </p>
       {touch ? <TouchControls /> : <p className="hud__hint">{t.keyboard}</p>}
     </div>

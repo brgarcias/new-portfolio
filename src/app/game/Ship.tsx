@@ -17,8 +17,10 @@ import { arena, spawn } from './world/arena';
 
 interface ShipProps {
   ship: ShipSpec;
-  // Called when the ship enters or leaves a landing pad.
+  // Called when the ship enters or leaves a landing pad, and when it
+  // stops on one.
   onPad: (pad: SectionId | null) => void;
+  onLand: (pad: SectionId) => void;
 }
 
 // The flight in progress, which the frame loop reads and writes: the ship's
@@ -27,6 +29,9 @@ const flight = {
   state: createState(),
   engines: [] as THREE.MeshStandardMaterial[],
   pad: null as string | null,
+  // The pad the ship landed on, and for how long it has been still.
+  landed: null as string | null,
+  still: 0,
   clock: 0,
 };
 
@@ -36,7 +41,7 @@ const ahead = new THREE.Vector3();
 // The ship in flight: each frame it reads the controls, moves by the
 // physics of physics.ts, leans into its turns, lights its engines and pulls
 // the camera along behind it.
-export default function Ship({ ship, onPad }: Readonly<ShipProps>) {
+export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
   const model = useMemo(() => ship.build(), [ship]);
   const rig = useRef<THREE.Group>(null);
   const body = useRef<THREE.Group>(null);
@@ -47,6 +52,8 @@ export default function Ship({ ship, onPad }: Readonly<ShipProps>) {
   useEffect(() => {
     flight.state = createState(spawn.x, spawn.z, spawn.heading);
     flight.pad = null;
+    flight.landed = null;
+    flight.still = 0;
     flight.clock = 0;
     const engines: THREE.MeshStandardMaterial[] = [];
     model.traverse((object) => {
@@ -69,12 +76,16 @@ export default function Ship({ ship, onPad }: Readonly<ShipProps>) {
   }, [model]);
 
   useFrame(({ camera }, delta) => {
-    // A long frame, as after a tab change, moves the ship by one short one.
-    const dt = Math.min(delta, 1 / 30);
+    // Slow frames, as on a weak machine or a software renderer, do not slow
+    // the ship down: the physics runs in short steps that add up to the
+    // frame's time, up to a quarter of a second, as after a tab change.
+    const dt = Math.min(delta, 0.25);
     const { state } = flight;
     flight.clock += dt;
     const controls = readInput();
-    step(state, controls, ship.handling, arena, dt);
+    for (let left = dt; left > 0; left -= 1 / 60) {
+      step(state, controls, ship.handling, arena, Math.min(left, 1 / 60));
+    }
 
     const hull = rig.current;
     const frame = body.current;
@@ -111,6 +122,18 @@ export default function Ship({ ship, onPad }: Readonly<ShipProps>) {
     if (state.pad !== flight.pad) {
       flight.pad = state.pad;
       onPad(state.pad as SectionId | null);
+    }
+    // Stopped on a pad for a moment, the ship lands there, once per visit
+    // to the pad: it has to leave and come back to land again.
+    if (!state.pad) flight.landed = null;
+    if (state.pad && state.pad !== flight.landed && state.speed < 1.5) {
+      flight.still += dt;
+      if (flight.still > 0.5) {
+        flight.landed = state.pad;
+        onLand(state.pad as SectionId);
+      }
+    } else {
+      flight.still = 0;
     }
     const readout = overlay.hud;
     if (readout) {

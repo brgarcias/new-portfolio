@@ -103,6 +103,9 @@ const en = {
     joystick: 'Joystick',
     // The name of the pad the ship is on.
     landingPad: 'Landing pad: {place}',
+    stopToLand: 'Stop here to open it',
+    openOnSite: 'Open on the site',
+    visited: '{count} of {total} sections',
     loading: 'Opening the hangar…',
     noWebgl:
       'This browser cannot draw 3D graphics, so the game cannot open here. The portfolio works as usual.',

@@ -133,11 +133,16 @@ function LandingPad({
   x,
   z,
   active,
+  visited,
 }: {
   x: number;
   z: number;
   active: boolean;
+  visited: boolean;
 }) {
+  let color = brand;
+  if (active) color = '#c4c5ff';
+  else if (visited) color = '#22d3ee';
   return (
     <group position={[x, 0, z]}>
       <mesh position-y={0.15}>
@@ -146,11 +151,11 @@ function LandingPad({
       </mesh>
       <mesh rotation-x={-Math.PI / 2} position-y={0.32}>
         <ringGeometry args={[padRadius - 0.7, padRadius, 48]} />
-        <meshBasicMaterial color={active ? '#c4c5ff' : brand} />
+        <meshBasicMaterial color={color} />
       </mesh>
       <mesh rotation-x={-Math.PI / 2} position-y={0.32}>
         <circleGeometry args={[1.2, 24]} />
-        <meshBasicMaterial color={active ? '#c4c5ff' : brand} />
+        <meshBasicMaterial color={color} />
       </mesh>
       <mesh position-y={7}>
         <cylinderGeometry args={[0.12, 0.3, 14, 6, 1, true]} />
@@ -167,9 +172,10 @@ function LandingPad({
 
 interface WorldProps {
   activePad: SectionId | null;
+  visited: SectionId[];
 }
 
-export default function World({ activePad }: Readonly<WorldProps>) {
+export default function World({ activePad, visited }: Readonly<WorldProps>) {
   return (
     <>
       <color attach="background" args={['#0b0c14']} />
@@ -192,6 +198,7 @@ export default function World({ activePad }: Readonly<WorldProps>) {
           x={pad.x}
           z={pad.z}
           active={pad.id === activePad}
+          visited={visited.includes(pad.id)}
         />
       ))}
     </>

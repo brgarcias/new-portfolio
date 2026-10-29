@@ -104,8 +104,10 @@ export function step(
   // Reverse thrust brakes harder than the engines push.
   const push = thrust * handling.acceleration * (thrust > 0 ? boost : 1.4);
   along += push * dt;
-  // Coasting loses little speed; drifting sideways loses it fast.
-  along *= Math.exp(-0.45 * dt);
+  // Coasting loses little speed; drifting sideways loses it fast. A pad
+  // catches the ship, which stops within a few units unless the thrust
+  // stays on.
+  along *= Math.exp(-(state.pad && thrust <= 0 ? 9 : 0.45) * dt);
   lateral *= Math.exp(-5 * dt);
   const max = handling.maxSpeed * boost;
   along = clamp(along, -max * 0.35, max);
