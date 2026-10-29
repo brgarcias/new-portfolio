@@ -16,13 +16,6 @@ const shipNames = [
 const reading = (page: Page, name: string) =>
   page.locator('.hud').getAttribute(`data-${name}`).then(Number);
 
-// Brakes until the ship is nearly still, as a pilot does on reaching a pad.
-async function brake(page: Page) {
-  await page.keyboard.down('KeyS');
-  await expect.poll(() => reading(page, 'speed')).toBeLessThan(3);
-  await page.keyboard.up('KeyS');
-}
-
 async function takeOff(page: Page) {
   await page.goto('/play');
   await page.getByRole('button', { name: 'Take off' }).click();
@@ -78,14 +71,17 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
     .poll(() => reading(page, 'speed'), { timeout: 10_000 })
     .toBeGreaterThan(5);
   await expect.poll(() => reading(page, 'z')).toBeLessThan(-5);
-  // Straight ahead lies the first pad, About Me. The pad slows the ship
-  // down, and once it stops there the section opens over the flight.
+  // Straight ahead lies the first pad, About Me. The thrust goes off well
+  // before it, as a pilot would: the ship coasts in, the pad catches it,
+  // and once it stops there the section opens over the flight.
+  await expect
+    .poll(() => reading(page, 'z'), { timeout: 10_000 })
+    .toBeLessThan(-40);
+  await page.keyboard.up('KeyW');
   await expect(page.locator('.hud__pad')).toContainText(
     'Landing pad: About Me',
     { timeout: 20_000 },
   );
-  await page.keyboard.up('KeyW');
-  await brake(page);
   const about = page.getByRole('dialog', { name: 'About Me' });
   await expect(about).toBeVisible({ timeout: 10_000 });
   await expect(about).toContainText(
@@ -158,17 +154,18 @@ test('voa pelo joystick no celular', async ({ page, isMobile }) => {
   await expect
     .poll(() => reading(page, 'speed'), { timeout: 10_000 })
     .toBeGreaterThan(5);
-  // Held forward, it reaches the first pad, and lands there once released.
-  await expect(page.locator('.hud__pad')).toContainText(
-    'Landing pad: About Me',
-    { timeout: 20_000 },
-  );
-  await page.mouse.move(centerX, centerY + 40, { steps: 3 });
-  await expect.poll(() => reading(page, 'speed')).toBeLessThan(3);
+  // Let go well before the first pad: the ship coasts in and lands there.
+  await expect
+    .poll(() => reading(page, 'z'), { timeout: 10_000 })
+    .toBeLessThan(-40);
   await page.mouse.up();
   await expect(joystick.locator('.joystick__knob')).toHaveAttribute(
     'style',
     '',
+  );
+  await expect(page.locator('.hud__pad')).toContainText(
+    'Landing pad: About Me',
+    { timeout: 20_000 },
   );
   const about = page.getByRole('dialog', { name: 'About Me' });
   await expect(about).toBeVisible({ timeout: 10_000 });
@@ -200,11 +197,13 @@ test('fala a língua da página e leva /en/play para /play', async ({
   await expect(page.getByRole('button', { name: 'Trocar nave' })).toBeVisible();
   // The sections open in the page's language too.
   await page.keyboard.down('KeyW');
+  await expect
+    .poll(() => reading(page, 'z'), { timeout: 10_000 })
+    .toBeLessThan(-40);
+  await page.keyboard.up('KeyW');
   await expect(page.locator('.hud__pad')).toContainText('Sobre mim', {
     timeout: 20_000,
   });
-  await page.keyboard.up('KeyW');
-  await brake(page);
   const sobre = page.getByRole('dialog', { name: 'Sobre mim' });
   await expect(sobre).toBeVisible({ timeout: 10_000 });
   await expect(
