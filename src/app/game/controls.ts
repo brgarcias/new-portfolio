@@ -57,8 +57,13 @@ export function listenToKeyboard() {
     const action = bindings[event.code];
     if (!action) return;
     // Typing in a field is not flying.
-    const target = event.target as HTMLElement | null;
-    if (target?.matches('input, textarea, select, [contenteditable]')) return;
+    const target = event.target;
+    if (
+      target instanceof Element &&
+      target.matches('input, textarea, select, [contenteditable]')
+    ) {
+      return;
+    }
     event.preventDefault();
     if (event.repeat) return;
     held[action] = event.type === 'keydown';

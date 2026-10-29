@@ -16,6 +16,27 @@ const shipNames = [
 const reading = (page: Page, name: string) =>
   page.locator('.hud').getAttribute(`data-${name}`).then(Number);
 
+// Holds a key for a while, timed by the page's own clock: on a slow machine a
+// command from the test can arrive late and keep the thrust on past the pad.
+// The game reads the key's code as it bubbles up to the window.
+async function hold(page: Page, code: string, ms: number) {
+  await page.evaluate(
+    ([code, ms]) =>
+      new Promise<void>((done) => {
+        const send = (type: string) =>
+          document.body.dispatchEvent(
+            new KeyboardEvent(type, { code, bubbles: true }),
+          );
+        send('keydown');
+        setTimeout(() => {
+          send('keyup');
+          done();
+        }, ms);
+      }),
+    [code, ms] as const,
+  );
+}
+
 async function takeOff(page: Page) {
   await page.goto('/play');
   await page.getByRole('button', { name: 'Take off' }).click();
@@ -75,10 +96,9 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   // flight. Timed, not read from the page: on CI's software renderer each
   // command to the page can take a second, and the pad catches the ship
   // whether the thrust goes off a second early or a second late.
-  await page.keyboard.down('KeyW');
-  await page.waitForTimeout(2500);
-  await page.keyboard.up('KeyW');
-  await expect.poll(() => reading(page, 'speed')).toBeGreaterThan(5);
+  await hold(page, 'KeyW', 2500);
+  // Read by position, not speed: on a slow machine the pad may have caught
+  // the ship before the first reading.
   await expect.poll(() => reading(page, 'z')).toBeLessThan(-5);
   await expect(page.locator('.hud__pad')).toContainText(
     'Landing pad: About Me',
@@ -114,18 +134,27 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
     'Landing pad: About Me',
   );
 
-  // A turn changes the heading: a long one, back towards the middle of the
-  // platform, where there is room for the boost to go past the top speed.
+  // A turn changes the heading: a long one, back the way it came, where
+  // the way is clear and there is room for the boost to go past the top
+  // speed. The boost reading keeps the highest speed seen, because a bump
+  // on the way, or a slow machine, could hide the peak from a reading.
   const heading = await reading(page, 'heading');
   await page.keyboard.down('KeyD');
   await expect
-    .poll(() => reading(page, 'heading'), { timeout: 8_000 })
-    .toBeLessThan(heading - 2);
+    .poll(() => reading(page, 'heading'), { timeout: 12_000 })
+    .toBeLessThan(heading - 2.8);
   await page.keyboard.up('KeyD');
   await page.keyboard.down('KeyW');
   await page.keyboard.down('ShiftLeft');
+  let fastest = 0;
   await expect
-    .poll(() => reading(page, 'speed'), { timeout: 10_000 })
+    .poll(
+      async () => {
+        fastest = Math.max(fastest, await reading(page, 'speed'));
+        return fastest;
+      },
+      { timeout: 15_000 },
+    )
     .toBeGreaterThan(27);
   await page.keyboard.up('ShiftLeft');
   await page.keyboard.up('KeyW');
@@ -177,7 +206,7 @@ test('voa pelo joystick no celular', async ({ page, isMobile }) => {
   await page.mouse.move(centerX, centerY - 40, { steps: 5 });
   await page.waitForTimeout(2500);
   await page.mouse.up();
-  await expect.poll(() => reading(page, 'speed')).toBeGreaterThan(5);
+  await expect.poll(() => reading(page, 'z')).toBeLessThan(-5);
   await expect(joystick.locator('.joystick__knob')).toHaveAttribute(
     'style',
     '',
@@ -216,9 +245,7 @@ test('fala a língua da página e leva /en/play para /play', async ({
   await expect(page.getByRole('button', { name: 'Trocar nave' })).toBeVisible();
   await expect.poll(() => reading(page, 'time')).toBeGreaterThan(0.5);
   // The sections open in the page's language too.
-  await page.keyboard.down('KeyW');
-  await page.waitForTimeout(2500);
-  await page.keyboard.up('KeyW');
+  await hold(page, 'KeyW', 2500);
   await expect(page.locator('.hud__pad')).toContainText('Sobre mim', {
     timeout: 20_000,
   });
