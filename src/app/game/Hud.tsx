@@ -15,6 +15,8 @@ import { input } from './controls';
 import { overlay } from './overlay';
 import Radar from './Radar';
 import type { Ship } from './ships';
+import type { Place } from './types';
+import { biomes } from './world/biomes';
 import { useMediaQuery } from './useMediaQuery';
 
 const stickRadius = 44;
@@ -104,6 +106,8 @@ interface HudProps {
   // The pad the ship is on, and its name.
   pad: SectionId | null;
   padTitle: string | null;
+  // The places of the arena, each on its planet.
+  places: Place[];
   // The sections opened so far, of how many.
   visited: SectionId[];
   total: number;
@@ -122,6 +126,7 @@ export default function Hud({
   ship,
   pad,
   padTitle,
+  places,
   visited,
   total,
   home,
@@ -139,6 +144,7 @@ export default function Hud({
       data-z="0"
       data-heading="0"
       data-speed="0"
+      data-sector="hub"
     >
       <div className="hud__top">
         <a className="btn btn--ghost btn--small" href={home}>
@@ -161,6 +167,13 @@ export default function Hud({
         </button>
       </div>
       <Radar activePad={pad} visited={visited} />
+      {/* The planet under the ship: the frame loop shows the one it is over. */}
+      {places.map((place) => (
+        <p key={place.id} className="hud__planet" data-id={place.id} hidden>
+          <strong>{biomes[place.id].planet}</strong>
+          <small>{place.title}</small>
+        </p>
+      ))}
       <p className="hud__pad" role="status">
         {padTitle && (
           <>

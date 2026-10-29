@@ -527,3 +527,67 @@
     border-radius: 0;
   }
 }
+
+/* ─── The planets ───────────────────────────────────────── */
+/* Each pad's label names the planet it lies on. */
+.game__label small {
+  display: block;
+  color: rgb(232 233 255 / 0.65);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* The planet under the ship, under the radar; the frame loop shows the
+   one the ship is over. */
+.hud__planet {
+  position: absolute;
+  top: calc(var(--header-height) + 8rem);
+  right: var(--gutter);
+  margin: 0;
+  color: #e8e9ff;
+  text-align: right;
+}
+
+.hud__planet[hidden] {
+  display: none;
+}
+
+.hud__planet strong {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.hud__planet small {
+  display: block;
+  color: rgb(232 233 255 / 0.7);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hud__planet {
+    animation: hud-planet 0.6s var(--ease-out) both;
+  }
+
+  @keyframes hud-planet {
+    from {
+      opacity: 0;
+      transform: translateY(0.3rem);
+    }
+  }
+}
+
+.radar__sector {
+  opacity: 0.32;
+}
+
+@media (max-width: 639px) {
+  .hud__planet {
+    top: calc(var(--header-height) + 7.4rem);
+    font-size: 0.875rem;
+  }
+}

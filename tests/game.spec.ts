@@ -93,9 +93,15 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
     about.getByRole('link', { name: 'Open on the site' }),
   ).toHaveAttribute('href', '/#about');
   await expect(page.locator('.hud__count')).toHaveText('1 of 7 sections');
-  // The radar shows the pads, and the one the ship is on.
+  // The radar shows the sectors and the pads, and the one the ship is on;
+  // the pad lies on its planet, which the HUD and its label name.
+  await expect(page.locator('.radar .radar__sector')).toHaveCount(7);
   await expect(page.locator('.radar .radar__pad')).toHaveCount(7);
   await expect(page.locator('.radar [data-state="active"]')).toHaveCount(1);
+  await expect(
+    page.locator('.hud__planet').filter({ visible: true }),
+  ).toHaveText(/Tatooine/);
+  await expect(page.locator('.game__label').first()).toContainText('Tatooine');
   // Keys do not fly the ship while a section is open.
   await page.keyboard.press('KeyW');
   await expect.poll(() => reading(page, 'speed')).toBe(0);
