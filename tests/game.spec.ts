@@ -20,9 +20,10 @@ const reading = (page: Page, name: string) =>
 // command from the test can arrive late and keep the thrust on past the pad.
 // The game reads the key's code as it bubbles up to the window.
 async function hold(page: Page, codes: string | string[], ms: number) {
-  await page.evaluate(
+  return page.evaluate(
     ([codes, ms]) =>
-      new Promise<void>((done) => {
+      new Promise<number>((done) => {
+        const hud = document.querySelector<HTMLElement>('.hud');
         const send = (type: string) => {
           for (const code of codes) {
             document.body.dispatchEvent(
@@ -30,13 +31,56 @@ async function hold(page: Page, codes: string | string[], ms: number) {
             );
           }
         };
+        // The HUD's speed, read every frame: the highest one shown while
+        // the keys are held, and a moment after.
+        let fastest = 0;
+        const watch = () => {
+          fastest = Math.max(fastest, Number(hud?.dataset.speed ?? 0));
+          frame = requestAnimationFrame(watch);
+        };
+        let frame = requestAnimationFrame(watch);
         send('keydown');
         setTimeout(() => {
           send('keyup');
-          done();
+          setTimeout(() => {
+            cancelAnimationFrame(frame);
+            done(fastest);
+          }, 300);
         }, ms);
       }),
     [Array.isArray(codes) ? codes : [codes], ms] as const,
+  );
+}
+
+// Turns the ship with a key until the HUD shows its heading past a target,
+// checked every frame in the page: the key goes up on the first frame past
+// it, so neither a slow command from the test nor a late timer can carry
+// the turn much further.
+async function steer(page: Page, code: 'KeyA' | 'KeyD', target: number) {
+  await page.evaluate(
+    ([code, target]) =>
+      new Promise<void>((done, fail) => {
+        const hud = document.querySelector<HTMLElement>('.hud');
+        const send = (type: string) =>
+          document.body.dispatchEvent(
+            new KeyboardEvent(type, { code, bubbles: true }),
+          );
+        const started = performance.now();
+        const check = () => {
+          const heading = Number(hud?.dataset.heading);
+          const past = code === 'KeyD' ? heading <= target : heading >= target;
+          if (past || performance.now() - started > 20_000) {
+            send('keyup');
+            if (past) done();
+            else fail(new Error(`The heading stayed at ${heading}.`));
+            return;
+          }
+          requestAnimationFrame(check);
+        };
+        send('keydown');
+        requestAnimationFrame(check);
+      }),
+    [code, target] as const,
   );
 }
 
@@ -226,30 +270,21 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
     'Landing pad: About Me',
   );
 
-  // A turn all the way round, back the way it came, timed by the page at
-  // the slow turn of a ship at rest, so it points down the lane, which is
-  // clear; then a burst of boost down it, past the top speed. The reading
-  // keeps the highest speed seen, because a slow machine could miss the
-  // peak.
-  // Fully at rest first: a ship still drifting turns quicker.
+  // A turn all the way round, back the way it came, so the ship points
+  // down the lane, which is clear; the page lets go of the key on the
+  // first frame past the target, so it aims a little short of the full
+  // turn and ends within a frame's turn of it.
+  // Then a burst of boost down the lane, past the top speed, which the
+  // page reads every frame, so a slow machine cannot miss the peak.
   await expect
     .poll(() => reading(page, 'speed'), { timeout: 10_000 })
     .toBeLessThan(0.1);
-  await hold(page, 'KeyD', 3550);
   const heading = await reading(page, 'heading');
-  expect(Math.abs(Math.abs(heading) - Math.PI)).toBeLessThan(0.6);
-  let fastest = 0;
-  const burst = hold(page, ['KeyW', 'ShiftLeft'], 1800);
-  await expect
-    .poll(
-      async () => {
-        fastest = Math.max(fastest, await reading(page, 'speed'));
-        return fastest;
-      },
-      { timeout: 10_000 },
-    )
-    .toBeGreaterThan(27);
-  await burst;
+  await steer(page, 'KeyD', heading - Math.PI + 0.15);
+  const turned = await reading(page, 'heading');
+  expect(Math.abs(turned - (heading - Math.PI))).toBeLessThan(0.5);
+  const fastest = await hold(page, ['KeyW', 'ShiftLeft'], 1800);
+  expect(fastest).toBeGreaterThan(27);
   // It coasts, and never leaves the platform.
   await expect
     .poll(() => reading(page, 'speed'), { timeout: 15_000 })
