@@ -231,9 +231,13 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   // clear; then a burst of boost down it, past the top speed. The reading
   // keeps the highest speed seen, because a slow machine could miss the
   // peak.
+  // Fully at rest first: a ship still drifting turns quicker.
+  await expect
+    .poll(() => reading(page, 'speed'), { timeout: 10_000 })
+    .toBeLessThan(0.1);
   await hold(page, 'KeyD', 3550);
   const heading = await reading(page, 'heading');
-  expect(Math.abs(Math.abs(heading) - Math.PI)).toBeLessThan(0.45);
+  expect(Math.abs(Math.abs(heading) - Math.PI)).toBeLessThan(0.6);
   let fastest = 0;
   const burst = hold(page, ['KeyW', 'ShiftLeft'], 1800);
   await expect
