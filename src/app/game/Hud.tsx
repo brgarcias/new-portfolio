@@ -4,7 +4,16 @@
 import { useRef, type PointerEvent } from 'react';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faBolt, faCube } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowLeft,
+  faBolt,
+  faCamera,
+  faCube,
+  faDownload,
+  faVolumeHigh,
+  faVolumeXmark,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 import { format } from '@/src/i18n/messages';
@@ -16,6 +25,8 @@ import GalaxyMap from './GalaxyMap';
 import { overlay } from './overlay';
 import Radar from './Radar';
 import type { Ship } from './ships';
+import { snapshot } from './Snapshot';
+import { play } from './sound';
 import type { Place } from './types';
 import { biomes } from './world/biomes';
 import { useMediaQuery } from './useMediaQuery';
@@ -121,6 +132,11 @@ interface HudProps {
   mapOpen: boolean;
   onOpenMap: () => void;
   onCloseMap: () => void;
+  // The sounds, and the photo mode, which hides everything but the picture.
+  soundOn: boolean;
+  onToggleSound: () => void;
+  photo: boolean;
+  onPhoto: (on: boolean) => void;
 }
 
 const register = (element: HTMLDivElement | null) => {
@@ -146,11 +162,31 @@ export default function Hud({
   mapOpen,
   onOpenMap,
   onCloseMap,
+  soundOn,
+  onToggleSound,
+  photo,
+  onPhoto,
 }: Readonly<HudProps>) {
   const t = useI18n().messages.game;
   const touch = useMediaQuery('(pointer: coarse)');
   const done = visited.length >= total;
   const complete = found.length >= places.length;
+
+  // Saves the picture, named after the planet under the ship.
+  const savePhoto = () => {
+    const picture = snapshot.take?.();
+    if (!picture) return;
+    const sector = overlay.hud?.dataset.sector;
+    const planet =
+      sector && sector !== 'hub'
+        ? biomes[sector as SectionId].planet.toLowerCase()
+        : 'space';
+    const link = document.createElement('a');
+    link.href = picture;
+    link.download = `portfolio-${planet}.png`;
+    link.click();
+    play('photo');
+  };
 
   return (
     <div
@@ -161,6 +197,7 @@ export default function Hud({
       data-heading="0"
       data-speed="0"
       data-sector="hub"
+      data-photo={photo ? '' : undefined}
     >
       <div className="hud__top">
         <a className="btn btn--ghost btn--small" href={home}>
@@ -187,6 +224,26 @@ export default function Hud({
           onClick={onChangeShip}
         >
           {t.changeShip}
+        </button>
+      </div>
+      <div className="hud__tools">
+        <button
+          type="button"
+          className="hud__tool"
+          aria-pressed={soundOn}
+          aria-label={soundOn ? t.soundOn : t.soundOff}
+          onClick={onToggleSound}
+        >
+          <FontAwesomeIcon icon={soundOn ? faVolumeHigh : faVolumeXmark} />
+        </button>
+        <button
+          type="button"
+          className="hud__tool"
+          aria-pressed={photo}
+          aria-label={t.photoMode}
+          onClick={() => onPhoto(!photo)}
+        >
+          <FontAwesomeIcon icon={faCamera} />
         </button>
       </div>
       <button
@@ -229,6 +286,26 @@ export default function Hud({
         </p>
       )}
       {touch ? <TouchControls /> : <p className="hud__hint">{t.keyboard}</p>}
+      {photo && (
+        <div className="hud__photo" role="group" aria-label={t.photoMode}>
+          <button
+            type="button"
+            className="btn btn--primary btn--small"
+            onClick={savePhoto}
+          >
+            <FontAwesomeIcon icon={faDownload} />
+            {t.savePhoto}
+          </button>
+          <button
+            type="button"
+            className="btn btn--ghost btn--small"
+            onClick={() => onPhoto(false)}
+          >
+            <FontAwesomeIcon icon={faXmark} />
+            {t.leavePhoto}
+          </button>
+        </div>
+      )}
       {mapOpen && (
         <GalaxyMap
           activePad={pad}

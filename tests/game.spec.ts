@@ -19,21 +19,24 @@ const reading = (page: Page, name: string) =>
 // Holds a key for a while, timed by the page's own clock: on a slow machine a
 // command from the test can arrive late and keep the thrust on past the pad.
 // The game reads the key's code as it bubbles up to the window.
-async function hold(page: Page, code: string, ms: number) {
+async function hold(page: Page, codes: string | string[], ms: number) {
   await page.evaluate(
-    ([code, ms]) =>
+    ([codes, ms]) =>
       new Promise<void>((done) => {
-        const send = (type: string) =>
-          document.body.dispatchEvent(
-            new KeyboardEvent(type, { code, bubbles: true }),
-          );
+        const send = (type: string) => {
+          for (const code of codes) {
+            document.body.dispatchEvent(
+              new KeyboardEvent(type, { code, bubbles: true }),
+            );
+          }
+        };
         send('keydown');
         setTimeout(() => {
           send('keyup');
           done();
         }, ms);
       }),
-    [code, ms] as const,
+    [Array.isArray(codes) ? codes : [codes], ms] as const,
   );
 }
 
@@ -141,6 +144,31 @@ test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
   await expect(map).toBeHidden();
 });
 
+test('liga o som e entra no modo foto', async ({ page, isMobile }) => {
+  await takeOff(page);
+  // The sounds come on with their button, and the choice is kept.
+  await page.getByRole('button', { name: 'Sound off' }).click();
+  await expect(page.getByRole('button', { name: 'Sound on' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  expect(await page.evaluate(() => localStorage.getItem('sound'))).toBe('on');
+  // Photo mode leaves only the picture, and saves it.
+  await page.getByRole('button', { name: 'Photo mode' }).click();
+  await expect(page.locator('.hud__top')).toBeHidden();
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Save photo' }).click();
+  expect((await download).suggestedFilename()).toMatch(/^portfolio-.*\.png$/);
+  await page.getByRole('button', { name: 'Leave photo mode' }).click();
+  await expect(page.locator('.hud__top')).toBeVisible();
+  if (isMobile) return;
+  // P enters it, Escape leaves it.
+  await page.keyboard.press('KeyP');
+  await expect(page.locator('.hud__top')).toBeHidden();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.hud__top')).toBeVisible();
+});
+
 test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   page,
   isMobile,
@@ -198,30 +226,26 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
     'Landing pad: About Me',
   );
 
-  // A turn changes the heading: a long one, back the way it came, where
-  // the way is clear and there is room for the boost to go past the top
-  // speed. The boost reading keeps the highest speed seen, because a bump
-  // on the way, or a slow machine, could hide the peak from a reading.
+  // A turn all the way round, back the way it came, timed by the page at
+  // the slow turn of a ship at rest, so it points down the lane, which is
+  // clear; then a burst of boost down it, past the top speed. The reading
+  // keeps the highest speed seen, because a slow machine could miss the
+  // peak.
+  await hold(page, 'KeyD', 3550);
   const heading = await reading(page, 'heading');
-  await page.keyboard.down('KeyD');
-  await expect
-    .poll(() => reading(page, 'heading'), { timeout: 12_000 })
-    .toBeLessThan(heading - 2.8);
-  await page.keyboard.up('KeyD');
-  await page.keyboard.down('KeyW');
-  await page.keyboard.down('ShiftLeft');
+  expect(Math.abs(Math.abs(heading) - Math.PI)).toBeLessThan(0.45);
   let fastest = 0;
+  const burst = hold(page, ['KeyW', 'ShiftLeft'], 1800);
   await expect
     .poll(
       async () => {
         fastest = Math.max(fastest, await reading(page, 'speed'));
         return fastest;
       },
-      { timeout: 15_000 },
+      { timeout: 10_000 },
     )
     .toBeGreaterThan(27);
-  await page.keyboard.up('ShiftLeft');
-  await page.keyboard.up('KeyW');
+  await burst;
   // It coasts, and never leaves the platform.
   await expect
     .poll(() => reading(page, 'speed'), { timeout: 15_000 })

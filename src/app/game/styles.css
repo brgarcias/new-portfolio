@@ -1222,3 +1222,87 @@
     transform: scale(1.2);
   }
 }
+
+/* ─── The tools: sound and photo ───────────────────────── */
+.hud__tools {
+  position: absolute;
+  top: calc(var(--header-height) + 0.5rem);
+  left: var(--gutter);
+  display: grid;
+  gap: 0.5rem;
+}
+
+.hud__tool {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border: 1px solid rgb(143 143 255 / 0.35);
+  border-radius: 50%;
+  background: rgb(11 12 20 / 0.55);
+  color: #e8e9ff;
+  pointer-events: auto;
+  transition:
+    transform 0.4s var(--ease-spring),
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.hud__tool:hover {
+  transform: scale(1.06);
+  border-color: rgb(143 143 255 / 0.7);
+}
+
+.hud__tool[aria-pressed='true'] {
+  border-color: rgb(143 143 255 / 0.8);
+  background: rgb(92 94 220 / 0.35);
+}
+
+.hud__tool:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
+}
+
+/* Photo mode: only the picture, and the two buttons. */
+.hud[data-photo] .hud__top,
+.hud[data-photo] .hud__tools,
+.hud[data-photo] .radar-button,
+.hud[data-photo] .hud__planet,
+.hud[data-photo] .hud__count,
+.hud[data-photo] .hud__holocrons,
+.hud[data-photo] .hud__pad,
+.hud[data-photo] .hud__done,
+.hud[data-photo] .hud__found,
+.hud[data-photo] .hud__hint,
+.hud[data-photo] .touch {
+  display: none;
+}
+
+.game:has(.hud[data-photo]) .game__labels {
+  display: none;
+}
+
+.hud__photo {
+  position: absolute;
+  right: 0;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  left: 0;
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+.hud__photo .btn {
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hud__tools {
+    animation: hud-drop 0.7s var(--ease-out) 0.1s both;
+  }
+
+  .hud__photo {
+    animation: hud-rise 0.5s var(--ease-out) both;
+  }
+}

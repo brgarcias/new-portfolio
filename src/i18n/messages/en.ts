@@ -101,7 +101,7 @@ const en = {
     agility: 'Agility',
     boost: 'Boost',
     keyboard:
-      'W, A, S, D or the arrows fly · Shift or Space boosts · M opens the map',
+      'W, A, S, D or the arrows fly · Shift or Space boosts · M opens the map · P takes photos',
     joystick: 'Joystick',
     radar: 'Radar',
     dragToTurn: 'Drag to turn the ship',
@@ -115,6 +115,12 @@ const en = {
     holocrons: '{count} of {total} holocrons',
     holocronFound: 'Holocron found',
     allFound: 'You found every holocron. May the Force be with you!',
+    // The sounds, off until turned on, and the photo mode.
+    soundOn: 'Sound on',
+    soundOff: 'Sound off',
+    photoMode: 'Photo mode',
+    savePhoto: 'Save photo',
+    leavePhoto: 'Leave photo mode',
     allVisited: 'You flew through the whole portfolio. Thank you!',
     // The name of the pad the ship is on.
     landingPad: 'Landing pad: {place}',

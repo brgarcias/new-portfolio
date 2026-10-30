@@ -15,6 +15,8 @@ import Labels from './Labels';
 import { overlay } from './overlay';
 import Panel from './Panel';
 import Ship from './Ship';
+import Snapshot from './Snapshot';
+import { play, setSound, storedSound } from './sound';
 import { isShipId, ships, type ShipId } from './ships';
 import type { Place } from './types';
 import { pads } from './world/arena';
@@ -56,6 +58,8 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
   const [visited, setVisited] = useState<SectionId[]>([]);
   const [found, setFound] = useState<SectionId[]>([]);
   const [mapOpen, setMapOpen] = useState(false);
+  const [soundOn, setSoundOn] = useState(storedSound);
+  const [photo, setPhoto] = useState(false);
   const titles = useMemo(
     () => Object.fromEntries(places.map((place) => [place.id, place.title])),
     [places],
@@ -67,12 +71,24 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
     if (!flying || open || mapOpen) return;
     return listenToKeyboard();
   }, [flying, open, mapOpen]);
+  // The sound comes on with the stored choice, once the game is on.
+  useEffect(() => {
+    if (flying && soundOn) setSound(true);
+  }, [flying, soundOn]);
+  // M opens and closes the map, P the photo mode, which Escape leaves too.
   useEffect(() => {
     if (!flying || open) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.code !== 'KeyM' || event.repeat) return;
-      event.preventDefault();
-      setMapOpen((value) => !value);
+      if (event.repeat) return;
+      if (event.code === 'KeyM') {
+        event.preventDefault();
+        setMapOpen((value) => !value);
+      } else if (event.code === 'KeyP') {
+        event.preventDefault();
+        setPhoto((value) => !value);
+      } else if (event.key === 'Escape') {
+        setPhoto(false);
+      }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
@@ -83,6 +99,12 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
     try {
       localStorage.setItem(storageKey, id);
     } catch {}
+  };
+
+  const toggleSound = () => {
+    const on = !soundOn;
+    setSoundOn(on);
+    setSound(on);
   };
 
   const collect = (id: SectionId) => {
@@ -101,7 +123,13 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
       <Hangar
         shipId={shipId}
         onChoose={choose}
-        onTakeOff={() => setFlying(true)}
+        onTakeOff={() => {
+          setFlying(true);
+          if (soundOn) {
+            setSound(true);
+            play('takeoff');
+          }
+        }}
         home={home}
       />
     );
@@ -124,6 +152,7 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         />
         <Labels />
         <Adaptive />
+        <Snapshot />
       </Canvas>
       <div ref={registerLabels} className="game__labels" aria-hidden="true">
         {pads.map((landingPad) => (
@@ -150,6 +179,10 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         mapOpen={mapOpen}
         onOpenMap={() => setMapOpen(true)}
         onCloseMap={() => setMapOpen(false)}
+        soundOn={soundOn}
+        onToggleSound={toggleSound}
+        photo={photo}
+        onPhoto={setPhoto}
       />
       {open && (
         <Panel id={open} home={home} onClose={() => setOpen(null)}>
