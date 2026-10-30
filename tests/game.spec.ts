@@ -95,6 +95,16 @@ test('gira a nave no hangar ao arrastar', async ({ page }) => {
   await expect
     .poll(() => stage.getAttribute('data-yaw').then(Number))
     .toBeGreaterThan(before + 1);
+  // A drag up or down tilts it.
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.3);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.7, {
+    steps: 8,
+  });
+  await page.mouse.up();
+  await expect
+    .poll(() => stage.getAttribute('data-pitch').then(Number))
+    .toBeGreaterThan(0.3);
 });
 
 test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
@@ -111,6 +121,7 @@ test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
   await expect(legend.first()).toContainText('About Me');
   await expect(legend.first()).toContainText('Not opened yet');
   await expect(map.locator('.radar__ship')).toHaveCount(1);
+  await expect(map).toContainText('0 of 7 sections');
   await page.keyboard.press('Escape');
   await expect(map).toBeHidden();
   if (isMobile) return;

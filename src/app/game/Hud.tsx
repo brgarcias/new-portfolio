@@ -83,6 +83,8 @@ function TouchControls() {
         onPointerMove={onMove}
         onPointerUp={onUp}
         onPointerCancel={onUp}
+        onLostPointerCapture={onUp}
+        onContextMenu={(event) => event.preventDefault()}
       >
         <div ref={knob} className="joystick__knob" />
       </div>

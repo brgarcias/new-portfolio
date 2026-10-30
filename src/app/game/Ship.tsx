@@ -29,6 +29,7 @@ interface ShipProps {
 const flight = {
   state: createState(),
   engines: [] as THREE.MeshStandardMaterial[],
+  flames: [] as THREE.Mesh[],
   pad: null as string | null,
   // The pad the ship landed on, and for how long it has been still.
   landed: null as string | null,
@@ -102,6 +103,62 @@ function ribbon(
 const chase = new THREE.Vector3();
 const ahead = new THREE.Vector3();
 const trailColor = new THREE.Color();
+
+// The flames of the engines: cones behind each engine's mouth, an outer
+// one in fire and an inner one in white heat, that lengthen with the
+// thrust and the boost and flicker.
+const flameGeometry = new THREE.ConeGeometry(1, 1, 8, 1, true);
+flameGeometry.translate(0, 0.5, 0);
+flameGeometry.rotateX(Math.PI / 2);
+const outerFlame = new THREE.MeshBasicMaterial({
+  color: '#ff6a2a',
+  transparent: true,
+  opacity: 0.85,
+  depthWrite: false,
+  side: THREE.DoubleSide,
+});
+const innerFlame = new THREE.MeshBasicMaterial({
+  color: '#fff1b0',
+  transparent: true,
+  opacity: 0.9,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending,
+  side: THREE.DoubleSide,
+});
+
+// The wind under boost: streaks around the ship, in its own space, that
+// rush past it and wrap around.
+const windCount = 40;
+function makeWind() {
+  const positions = new Float32Array(windCount * 6);
+  for (let i = 0; i < windCount; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const radius = 2 + Math.random() * 3.5;
+    const z = -12 + Math.random() * 20;
+    const length = 2 + Math.random() * 2;
+    positions.set(
+      [
+        Math.cos(angle) * radius,
+        Math.sin(angle) * radius,
+        z,
+        Math.cos(angle) * radius,
+        Math.sin(angle) * radius,
+        z + length,
+      ],
+      i * 6,
+    );
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  return geometry;
+}
+const windGeometry = makeWind();
+const windMaterial = new THREE.LineBasicMaterial({
+  color: '#8f9bff',
+  transparent: true,
+  opacity: 0,
+  depthWrite: false,
+});
 const trailGeometry = makeTrail();
 const trailMaterial = new THREE.MeshBasicMaterial({
   vertexColors: true,
@@ -121,6 +178,7 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
   const body = useRef<THREE.Group>(null);
   const trailMesh = useRef<THREE.Mesh>(null);
   const pulseMesh = useRef<THREE.Mesh>(null);
+  const wind = useRef<THREE.LineSegments>(null);
   const reduced = useReducedMotion();
 
   // A new ship starts again from the hangar's spot. Its shapes are freed
@@ -137,12 +195,29 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
     flight.pulse.age = 9;
     trail.filled = 0;
     const engines: THREE.MeshStandardMaterial[] = [];
+    const flames: THREE.Mesh[] = [];
     model.traverse((object) => {
       if (object.userData.engine && object instanceof THREE.Mesh) {
         engines.push(object.material as THREE.MeshStandardMaterial);
+        // A flame behind each engine, sized to its mouth.
+        const mouth =
+          (object.geometry as THREE.CylinderGeometry).parameters?.radiusTop ??
+          0.3;
+        const outer = new THREE.Mesh(flameGeometry, outerFlame);
+        outer.scale.set(mouth * 1.05, mouth * 1.05, 1);
+        outer.position.z = 0.06;
+        outer.visible = false;
+        const inner = new THREE.Mesh(flameGeometry, innerFlame);
+        inner.scale.set(mouth * 0.55, mouth * 0.55, 0.7);
+        inner.position.z = 0.06;
+        inner.visible = false;
+        inner.userData.inner = true;
+        object.add(outer, inner);
+        flames.push(outer, inner);
       }
     });
     flight.engines = engines;
+    flight.flames = flames;
     // The trail takes the color of the engines, fading with age.
     trailColor.set(engines[0]?.emissive ?? '#8f8fff');
     const colors = trailGeometry.attributes.color as THREE.BufferAttribute;
@@ -213,6 +288,39 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
     const glow =
       0.6 + Math.max(0, controls.thrust) * 1.4 + (boosting ? 1.2 : 0);
     for (const material of flight.engines) material.emissiveIntensity = glow;
+    // Fire from the engines with the thrust, longer under boost.
+    const firing = controls.thrust > 0;
+    const length = 1.2 + 1.6 * controls.thrust + (boosting ? 3.6 : 0);
+    const flicker = reduced ? 1 : 0.82 + 0.36 * Math.random();
+    for (const flame of flight.flames) {
+      flame.visible = firing;
+      if (firing) {
+        flame.scale.z = length * flicker * (flame.userData.inner ? 0.7 : 1);
+      }
+    }
+    // The wind rushes past under boost.
+    const streaks = wind.current;
+    if (streaks) {
+      const target = boosting && !reduced ? 0.5 : 0;
+      windMaterial.opacity +=
+        (target - windMaterial.opacity) * (1 - Math.exp(-6 * dt));
+      streaks.visible = windMaterial.opacity > 0.02;
+      if (streaks.visible) {
+        const positions = windGeometry.attributes
+          .position as THREE.BufferAttribute;
+        for (let i = 0; i < windCount; i++) {
+          let z = positions.getZ(i * 2) + 60 * dt;
+          let tail = positions.getZ(i * 2 + 1) + 60 * dt;
+          if (z > 10) {
+            z -= 22;
+            tail -= 22;
+          }
+          positions.setZ(i * 2, z);
+          positions.setZ(i * 2 + 1, tail);
+        }
+        positions.needsUpdate = true;
+      }
+    }
 
     // The camera follows from behind and above, further back at speed, and
     // shakes after a hit.
@@ -340,6 +448,13 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
         <group ref={body}>
           <primitive object={model} />
         </group>
+        <lineSegments
+          ref={wind}
+          geometry={windGeometry}
+          material={windMaterial}
+          visible={false}
+          frustumCulled={false}
+        />
         {/* Its shadow on the deck, and the light of its engines. */}
         <mesh rotation-x={-Math.PI / 2} position-y={-ship.hover + 0.06}>
           <circleGeometry args={[ship.handling.radius * 0.9, 20]} />

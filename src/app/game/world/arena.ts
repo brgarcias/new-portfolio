@@ -29,6 +29,22 @@ export const pads: LandingPad[] = sectionIds.map((id) => {
   };
 });
 
+// Beside each pad, outward from the middle, stands the place the pad
+// belongs to on its planet: a homestead, a tower, a hut, a hall, a
+// palace, a village, a hangar. Solid, like the props.
+export interface Landmark extends Obstacle {
+  id: SectionId;
+  angle: number;
+}
+
+export const landmarks: Landmark[] = pads.map((pad) => ({
+  id: pad.id,
+  angle: pad.angle,
+  x: Math.sin(pad.angle) * (padRing + 18),
+  z: -Math.cos(pad.angle) * (padRing + 18),
+  r: 4.5,
+}));
+
 export type PropKind = 'crate' | 'pillar' | 'mast' | 'rock';
 
 export interface Prop extends Obstacle {
@@ -98,14 +114,20 @@ function scatter(count: number, seed: number) {
       z,
       sector: sectorOf(x, z),
     };
-    // Clear of the pads, of the start and of each other.
+    // Clear of the pads and their landmarks, of the start, of the way to
+    // the first pad and of each other.
     const clear =
+      !inLane(x, z, r) &&
+      landmarks.every(
+        (mark) => Math.hypot(prop.x - mark.x, prop.z - mark.z) > mark.r + r + 8,
+      ) &&
       pads.every(
         (pad) => Math.hypot(prop.x - pad.x, prop.z - pad.z) > pad.r + r + 5,
       ) &&
+      // A ship's width apart, so nothing pins the ship between two props.
       props.every(
         (other) =>
-          Math.hypot(prop.x - other.x, prop.z - other.z) > other.r + r + 4,
+          Math.hypot(prop.x - other.x, prop.z - other.z) > other.r + r + 7,
       );
     if (clear) props.push(prop);
   }
@@ -179,14 +201,24 @@ function grow(seed: number) {
         const z = -Math.cos(angle) * distance;
         const clear =
           !inLane(x, z, r) &&
+          landmarks.every(
+            (mark) =>
+              Math.hypot(x - mark.x, z - mark.z) > mark.r + r + (solid ? 7 : 2),
+          ) &&
           pads.every(
             (pad) => Math.hypot(x - pad.x, z - pad.z) > pad.r + r + 4,
           ) &&
+          // Solid plants keep a ship's width from the props and from each
+          // other, so nothing pins the ship between two things.
           props.every(
-            (prop) => Math.hypot(x - prop.x, z - prop.z) > prop.r + r + 2.5,
+            (prop) =>
+              Math.hypot(x - prop.x, z - prop.z) >
+              prop.r + r + (solid ? 7 : 2.5),
           ) &&
           flora.every(
-            (other) => Math.hypot(x - other.x, z - other.z) > other.r + r + 1.2,
+            (other) =>
+              Math.hypot(x - other.x, z - other.z) >
+              other.r + r + (solid && other.solid ? 7 : 1.2),
           );
         if (!clear) continue;
         flora.push({
@@ -210,7 +242,7 @@ export const flora = grow(2027);
 
 export const arena: Arena = {
   radius: platformRadius,
-  obstacles: [...props, ...flora.filter((item) => item.solid)],
+  obstacles: [...props, ...landmarks, ...flora.filter((item) => item.solid)],
   pads,
 };
 

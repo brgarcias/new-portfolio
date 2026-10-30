@@ -1,5 +1,7 @@
 'use client';
 
+// HOOKS
+import type { CSSProperties } from 'react';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
@@ -154,23 +156,29 @@ export default function Radar({
         </linearGradient>
       </defs>
       <circle className="radar__deck" r={platformRadius} />
-      {pads.map((pad) => (
+      {pads.map((pad, index) => (
         <path
           key={pad.id}
           className="radar__sector"
           data-id={pad.id}
           d={wedge(pad.angle)}
           fill={biomes[pad.id].accent}
+          style={{ '--i': index } as CSSProperties}
         />
       ))}
-      {pads.map((pad) => (
+      {pads.map((pad, index) => (
         <path
           key={pad.id}
           className="radar__texture"
           d={wedge(pad.angle)}
           fill={`url(#${scope}-${pad.id})`}
+          style={{ '--i': index } as CSSProperties}
         />
       ))}
+      {large &&
+        [40, 70, 100].map((radius) => (
+          <circle key={radius} className="radar__ring" r={radius} />
+        ))}
       <circle className="radar__hub" r={hubRadius} />
       {props.map((prop, index) => (
         <circle
@@ -190,6 +198,16 @@ export default function Radar({
             cx={item.x.toFixed(1)}
             cy={item.z.toFixed(1)}
             r="1"
+          />
+        ))}
+      {large &&
+        pads.map((pad) => (
+          <circle
+            key={pad.id}
+            className="radar__halo"
+            cx={pad.x}
+            cy={pad.z}
+            r={pad.r + 5}
           />
         ))}
       {pads.map((pad) => (
@@ -229,8 +247,10 @@ export default function Radar({
         />
       )}
       <g ref={registerShip} className="radar__ship">
-        <path className="radar__cone" d="M0 -6 L13 -34 L-13 -34 Z" />
-        <polygon points="0,-9 6,7 0,4 -6,7" />
+        <g className="radar__marker">
+          <path className="radar__cone" d="M0 -6 L13 -34 L-13 -34 Z" />
+          <polygon points="0,-9 6,7 0,4 -6,7" />
+        </g>
       </g>
     </svg>
   );

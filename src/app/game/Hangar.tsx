@@ -30,6 +30,10 @@ const spin = {
   yaw: 0,
   pitch: 0,
   velocity: 0,
+  // Of the pitch, when the drag goes up or down.
+  tilt: 0,
+  // Seconds since the ship on the pedestal changed: it grows in.
+  appear: 10,
   dragging: false,
   // Seconds since the last drag.
   idle: 10,
@@ -50,8 +54,14 @@ function Preview({ shipId }: { shipId: ShipId }) {
     spin.yaw = reduced ? 0.6 : 0;
     spin.pitch = 0;
     spin.velocity = 0;
+    spin.tilt = 0;
     spin.idle = 10;
   }, [reduced]);
+
+  // A new ship on the pedestal grows in, on a spring.
+  useEffect(() => {
+    spin.appear = reduced ? 10 : 0;
+  }, [model, reduced]);
 
   useEffect(
     () => () =>
@@ -67,16 +77,26 @@ function Preview({ shipId }: { shipId: ShipId }) {
     if (!spin.dragging) {
       spin.yaw += spin.velocity * dt;
       spin.velocity *= Math.exp(-2.2 * dt);
-      spin.pitch *= Math.exp(-4 * dt);
+      spin.pitch = clamp(spin.pitch + spin.tilt * dt, -1.2, 1.2);
+      spin.tilt *= Math.exp(-2.2 * dt);
       spin.idle += dt;
-      // Left alone for a moment, it goes back to its slow turn.
+      // Left alone for a moment, it goes back to its slow turn, and after
+      // a while it levels out.
       if (!reduced && spin.idle > 2) {
         spin.yaw += dt * 0.45 * Math.min(1, spin.idle - 2);
       }
+      if (spin.idle > 6) spin.pitch *= Math.exp(-0.8 * dt);
     }
+    spin.appear += dt;
+    const grow =
+      1 - 0.35 * Math.exp(-5 * spin.appear) * Math.cos(9 * spin.appear);
+    stand.current.scale.setScalar(grow);
     stand.current.rotation.y = spin.yaw;
     stand.current.rotation.x = spin.pitch;
-    if (spin.stage) spin.stage.dataset.yaw = spin.yaw.toFixed(2);
+    if (spin.stage) {
+      spin.stage.dataset.yaw = spin.yaw.toFixed(2);
+      spin.stage.dataset.pitch = spin.pitch.toFixed(2);
+    }
   });
 
   return (
@@ -112,6 +132,7 @@ function Stage({ shipId, hint }: { shipId: ShipId; hint: string }) {
     if (spin.dragging) return;
     spin.dragging = true;
     spin.velocity = 0;
+    spin.tilt = 0;
     spin.last = { x: event.clientX, y: event.clientY, at: performance.now() };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -122,16 +143,20 @@ function Stage({ shipId, hint }: { shipId: ShipId; hint: string }) {
     const dy = event.clientY - spin.last.y;
     const seconds = Math.max(0.001, (now - spin.last.at) / 1000);
     spin.yaw += dx * 0.012;
-    spin.pitch = clamp(spin.pitch + dy * 0.005, -0.45, 0.45);
+    spin.pitch = clamp(spin.pitch + dy * 0.01, -1.2, 1.2);
     // The speed of the drag, smoothed, is what the ship keeps on release.
     spin.velocity = spin.velocity * 0.5 + ((dx * 0.012) / seconds) * 0.5;
+    spin.tilt = spin.tilt * 0.5 + ((dy * 0.01) / seconds) * 0.5;
     spin.last = { x: event.clientX, y: event.clientY, at: now };
   };
   const onUp = () => {
     if (!spin.dragging) return;
     spin.dragging = false;
     spin.idle = 0;
-    if (reduced) spin.velocity = 0;
+    if (reduced) {
+      spin.velocity = 0;
+      spin.tilt = 0;
+    }
   };
 
   return (
@@ -139,6 +164,7 @@ function Stage({ shipId, hint }: { shipId: ShipId; hint: string }) {
       ref={registerStage}
       className="hangar__stage"
       data-yaw="0.00"
+      data-pitch="0.00"
       onPointerDown={onDown}
       onPointerMove={onMove}
       onPointerUp={onUp}

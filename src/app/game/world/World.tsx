@@ -10,14 +10,19 @@ import { sectionIds, type SectionId } from '@/src/content/sections';
 // GAME
 import { useReducedMotion } from '../useMediaQuery';
 // WORLD
-import { flora, pads, padRadius, props } from './arena';
+import { flora, landmarks, pads, padRadius, props } from './arena';
 import Atmosphere from './Atmosphere';
 import { biomes, hubRadius, sectorAt, space } from './biomes';
 import { Builder, litMaterial, solidMaterial, type Vec } from './builder';
 import Far from './Far';
 import Fauna from './Fauna';
 import Ground from './Ground';
-import { floraBuilders, propBuilders } from './props';
+import {
+  floraBuilders,
+  landmarkBuilders,
+  padBuilders,
+  propBuilders,
+} from './props';
 import { groundHeight } from './terrain';
 import Waters from './Water';
 import WeatherClouds from './Weather';
@@ -128,6 +133,17 @@ function Sectors() {
         b.lift = groundHeight(item.x, item.z);
         floraBuilders[item.kind](b, item);
       }
+      // The pad, as a place of the planet, and the landmark beside it.
+      const pad = pads.find((landing) => landing.id === id);
+      if (pad) {
+        b.lift = 0;
+        padBuilders[id](b, pad);
+      }
+      const mark = landmarks.find((landmark) => landmark.id === id);
+      if (mark) {
+        b.lift = groundHeight(mark.x, mark.z);
+        landmarkBuilders[id](b, mark);
+      }
       return b.build();
     });
     return { parts, beacons };
@@ -161,22 +177,11 @@ interface PadsProps {
   visited: SectionId[];
 }
 
-// The landing pads: the discs merged into one shape, and the rings, the
-// centers, the glows and the beams of light drawn as instances, in the
-// color of each pad's planet, brighter while the ship is on it, and in
-// another color once it has been visited.
+// The landing pads' lights: the rings, the centers, the glows and the
+// beams drawn as instances, in the color of each pad's planet, brighter
+// while the ship is on it, and in another color once it has been visited.
+// The ground of each pad is part of its sector, in props.ts.
 function Pads({ activePad, visited }: Readonly<PadsProps>) {
-  const discs = useMemo(() => {
-    const b = new Builder();
-    for (const pad of pads) {
-      b.cylinder(padRadius, padRadius + 0.4, 0.3, 48, '#232640', [
-        pad.x,
-        0.15,
-        pad.z,
-      ]);
-    }
-    return b.build().solid;
-  }, []);
   const shapes = useMemo(() => {
     const ring = new THREE.RingGeometry(padRadius - 0.7, padRadius, 48);
     ring.rotateX(-Math.PI / 2);
@@ -187,7 +192,7 @@ function Pads({ activePad, visited }: Readonly<PadsProps>) {
     const glow = new THREE.RingGeometry(padRadius, padRadius + 2.5, 48);
     glow.rotateX(-Math.PI / 2);
     glow.translate(0, 0.31, 0);
-    const beam = new THREE.CylinderGeometry(0.12, 0.3, 14, 6, 1, true);
+    const beam = new THREE.CylinderGeometry(0.1, 0.22, 14, 6, 1, true);
     beam.translate(0, 7, 0);
     return { ring, center, glow, beam };
   }, []);
@@ -202,7 +207,7 @@ function Pads({ activePad, visited }: Readonly<PadsProps>) {
       beam: new THREE.MeshBasicMaterial({
         color: '#ffffff',
         transparent: true,
-        opacity: 0.6,
+        opacity: 0.42,
         side: THREE.DoubleSide,
       }),
     }),
@@ -215,11 +220,10 @@ function Pads({ activePad, visited }: Readonly<PadsProps>) {
 
   useEffect(
     () => () => {
-      discs?.dispose();
       for (const shape of Object.values(shapes)) shape.dispose();
       for (const material of Object.values(materials)) material.dispose();
     },
-    [discs, shapes, materials],
+    [shapes, materials],
   );
 
   // The instances stand on their pads.
@@ -257,7 +261,6 @@ function Pads({ activePad, visited }: Readonly<PadsProps>) {
 
   return (
     <group>
-      {discs && <mesh geometry={discs} material={solidMaterial} />}
       <instancedMesh
         ref={rings}
         args={[shapes.ring, materials.lit, pads.length]}

@@ -1,12 +1,17 @@
 'use client';
 
 // HOOKS
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type CSSProperties } from 'react';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheck,
+  faLocationArrow,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
+import { format } from '@/src/i18n/messages';
 // CONTENT
 import type { SectionId } from '@/src/content/sections';
 // GAME
@@ -27,9 +32,10 @@ const registerShip = (element: SVGGElement | null) => {
 };
 
 // The map of the world over the flight: the planets with their names, the
-// ship moving on it, and the list of the sections, with the ones already
-// opened. It opens from the radar or with M, and closes with its button,
-// with Escape, with M again or with a click outside.
+// ship moving on it, and the sections as cards, with the ones already
+// opened and the one the ship is at. It opens from the radar or with M,
+// and closes with its button, with Escape, with M again or with a click
+// outside.
 export default function GalaxyMap({
   activePad,
   visited,
@@ -49,8 +55,8 @@ export default function GalaxyMap({
   }, [onClose]);
 
   const stateOf = (id: SectionId) => {
-    if (id === activePad) return t.youAreHere;
-    return visited.includes(id) ? t.sectionOpened : t.notOpened;
+    if (id === activePad) return 'active';
+    return visited.includes(id) ? 'visited' : undefined;
   };
 
   return (
@@ -69,9 +75,17 @@ export default function GalaxyMap({
         aria-labelledby="game-map-title"
       >
         <header className="game-map__bar">
-          <h2 id="game-map-title" className="game-map__title">
-            {t.map}
-          </h2>
+          <div>
+            <h2 id="game-map-title" className="game-map__title">
+              {t.map}
+            </h2>
+            <p className="game-map__count">
+              {format(t.visited, {
+                count: String(visited.length),
+                total: String(places.length),
+              })}
+            </p>
+          </div>
           <button
             ref={close}
             type="button"
@@ -83,36 +97,51 @@ export default function GalaxyMap({
           </button>
         </header>
         <div className="game-map__body">
-          <Radar
-            scope="map"
-            large
-            activePad={activePad}
-            visited={visited}
-            registerShip={registerShip}
-          />
+          <div className="game-map__chart">
+            <Radar
+              scope="map"
+              large
+              activePad={activePad}
+              visited={visited}
+              registerShip={registerShip}
+            />
+          </div>
           <ol className="game-map__legend">
-            {places.map((place) => (
-              <li
-                key={place.id}
-                data-state={
-                  place.id === activePad
-                    ? 'active'
-                    : visited.includes(place.id)
-                      ? 'visited'
-                      : undefined
-                }
-              >
-                <span
-                  className="game-map__dot"
-                  style={{ background: biomes[place.id].accent }}
-                />
-                <span className="game-map__planet">
-                  <strong>{biomes[place.id].planet}</strong>
-                  <small>{place.title}</small>
-                </span>
-                <em>{stateOf(place.id)}</em>
-              </li>
-            ))}
+            {places.map((place, index) => {
+              const state = stateOf(place.id);
+              return (
+                <li
+                  key={place.id}
+                  data-state={state}
+                  style={
+                    {
+                      '--accent': biomes[place.id].accent,
+                      '--i': index,
+                    } as CSSProperties
+                  }
+                >
+                  <span
+                    className="game-map__dot"
+                    style={{ background: biomes[place.id].accent }}
+                  />
+                  <span className="game-map__planet">
+                    <strong>{biomes[place.id].planet}</strong>
+                    <small>{place.title}</small>
+                  </span>
+                  <span className="game-map__state">
+                    {state === 'active' && (
+                      <FontAwesomeIcon icon={faLocationArrow} />
+                    )}
+                    {state === 'visited' && <FontAwesomeIcon icon={faCheck} />}
+                    {state === 'active'
+                      ? t.youAreHere
+                      : state === 'visited'
+                        ? t.sectionOpened
+                        : t.notOpened}
+                  </span>
+                </li>
+              );
+            })}
           </ol>
         </div>
       </section>

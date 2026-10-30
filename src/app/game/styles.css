@@ -102,9 +102,10 @@
   grid-area: stage;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  /* A drag turns the ship; a vertical swipe still scrolls the page. */
+  /* A drag, in any direction, turns the ship. */
   cursor: grab;
-  touch-action: pan-y;
+  touch-action: none;
+  -webkit-user-select: none;
   user-select: none;
   border: 1px solid var(--color-border);
   border-radius: 1.5rem;
@@ -752,7 +753,7 @@
   }
 }
 
-/* The map over the flight. */
+/* ─── The map over the flight ──────────────────────────── */
 .game-map {
   position: fixed;
   z-index: 50;
@@ -766,76 +767,181 @@
 .game-map__backdrop {
   position: absolute;
   inset: 0;
-  background: rgb(11 12 20 / 0.6);
+  background: rgb(11 12 20 / 0.62);
   cursor: pointer;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
+/* The sheet, with a faint glow and a border that fades along its edge. */
 .game-map__sheet {
   position: relative;
-  width: min(44rem, 100%);
+  width: min(60rem, 100%);
   max-height: calc(100vh - 2rem);
   max-height: calc(100dvh - 2rem);
   overflow: auto;
-  padding: 1.25rem 1.5rem 1.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: 1.5rem;
-  background: var(--color-bg);
-  box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.8);
+  padding: 1.5rem clamp(1.25rem, 3vw, 2.25rem) clamp(1.5rem, 3vw, 2.25rem);
+  border: 1px solid transparent;
+  border-radius: 1.75rem;
+  background:
+    linear-gradient(var(--color-bg), var(--color-bg)) padding-box,
+    linear-gradient(
+        135deg,
+        rgb(92 94 220 / 0.7),
+        rgb(34 211 238 / 0.35) 60%,
+        rgb(92 94 220 / 0.2)
+      )
+      border-box;
+  box-shadow:
+    inset 0 0 90px rgb(92 94 220 / 0.08),
+    0 40px 80px -30px rgb(0 0 0 / 0.8);
   overscroll-behavior: contain;
 }
 
 .game-map__bar {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .game-map__title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.game-map__count {
+  margin: 0.25rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
 }
 
 .game-map__body {
   display: grid;
-  gap: 1.5rem;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+}
+
+/* The chart sits on a soft glow, like a holo-table. */
+.game-map__chart {
+  position: relative;
+  display: grid;
+  padding: 1rem;
+  place-items: center;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgb(92 94 220 / 0.22),
+    rgb(92 94 220 / 0.06) 45%,
+    transparent 72%
+  );
 }
 
 .game-map .radar--large {
   position: static;
   width: 100%;
   height: auto;
+  overflow: visible;
   aspect-ratio: 1;
+  filter: drop-shadow(0 0 28px rgb(92 94 220 / 0.35));
 }
 
+.radar--large .radar__deck {
+  fill: rgb(11 12 20 / 0.85);
+  stroke: rgb(143 143 255 / 0.7);
+  stroke-width: 1.5;
+}
+
+.radar--large .radar__texture {
+  opacity: 0.72;
+}
+
+.radar--large .radar__ring {
+  fill: none;
+  stroke: rgb(232 233 255 / 0.1);
+  stroke-width: 0.8;
+  stroke-dasharray: 3 4;
+  pointer-events: none;
+}
+
+.radar--large .radar__halo {
+  fill: rgb(232 233 255 / 0.1);
+}
+
+.radar--large .radar__pad {
+  stroke: rgb(11 12 20 / 0.6);
+  stroke-width: 1.5;
+}
+
+.radar--large .radar__name {
+  paint-order: stroke;
+  stroke: rgb(11 12 20 / 0.85);
+  stroke-width: 2.5px;
+  stroke-linejoin: round;
+}
+
+.radar--large .radar__marker {
+  transform: scale(1.5);
+}
+
+.radar--large .radar__ship polygon {
+  stroke: rgb(11 12 20 / 0.8);
+  stroke-width: 1;
+}
+
+/* The sections, as cards: the planet, the section and where it stands. */
 .game-map__legend {
+  display: grid;
   margin: 0;
   padding: 0;
-  list-style: none;
-  display: grid;
   gap: 0.5rem;
+  list-style: none;
 }
 
 .game-map__legend li {
+  --accent: var(--color-brand);
+
+  position: relative;
   display: grid;
-  grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0.75rem;
+  padding: 0.6rem 0.9rem 0.6rem 1.1rem;
   border: 1px solid var(--color-border);
   border-radius: 1rem;
+  background: var(--color-surface, transparent);
+  gap: 0.75rem;
+  grid-template-columns: auto 1fr auto;
+  transition:
+    transform 0.4s var(--ease-spring),
+    border-color 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.game-map__legend li::before {
+  position: absolute;
+  top: 0.75rem;
+  bottom: 0.75rem;
+  left: 0;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--accent);
+  content: '';
+}
+
+.game-map__legend li:hover {
+  transform: translateY(-2px);
+  border-color: rgb(92 94 220 / 0.5);
 }
 
 .game-map__legend li[data-state='active'] {
   border-color: rgb(92 94 220 / 0.6);
   background: rgb(92 94 220 / 0.12);
+  box-shadow:
+    0 0 0 1px rgb(92 94 220 / 0.2),
+    0 12px 30px -16px rgb(92 94 220 / 0.6);
 }
 
 .game-map__legend li[data-state='visited'] {
@@ -843,9 +949,12 @@
 }
 
 .game-map__dot {
-  width: 0.75rem;
-  height: 0.75rem;
+  width: 0.85rem;
+  height: 0.85rem;
   border-radius: 50%;
+  box-shadow:
+    0 0 0 3px rgb(255 255 255 / 0.08),
+    0 0 14px var(--accent);
 }
 
 .game-map__planet {
@@ -863,23 +972,73 @@
   font-size: 0.75rem;
 }
 
-.game-map__legend em {
+.game-map__state {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: var(--color-fill, rgb(255 255 255 / 0.06));
   color: var(--color-text-muted);
   font-size: 0.75rem;
-  font-style: normal;
+  font-weight: 500;
+  gap: 0.4rem;
   white-space: nowrap;
 }
 
-.game-map__legend li[data-state='active'] em {
-  color: var(--color-brand);
+.game-map__legend li[data-state='active'] .game-map__state {
+  background: rgb(92 94 220 / 0.2);
+  color: var(--color-text);
 }
 
-.game-map__legend li[data-state='visited'] em {
+.game-map__legend li[data-state='visited'] .game-map__state {
+  background: rgb(34 211 238 / 0.14);
   color: #22d3ee;
 }
 
-.light .game-map__legend li[data-state='visited'] em {
+.light .game-map__legend li[data-state='visited'] .game-map__state {
   color: #0e7490;
+}
+
+/* The map comes in on a spring, its sectors and cards one after another. */
+@media (prefers-reduced-motion: no-preference) {
+  .game-map__backdrop {
+    animation: game-map-fade 0.35s ease-out both;
+  }
+
+  .game-map__sheet {
+    animation: game-map-in 0.55s var(--ease-spring) both;
+  }
+
+  .radar--large .radar__sector,
+  .radar--large .radar__texture {
+    animation: game-map-fade 0.5s ease-out both;
+    animation-delay: calc(0.12s + var(--i, 0) * 0.06s);
+  }
+
+  .game-map__legend li {
+    animation: game-map-card 0.5s var(--ease-out) both;
+    animation-delay: calc(0.18s + var(--i, 0) * 0.05s);
+  }
+
+  @keyframes game-map-fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes game-map-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.94);
+    }
+  }
+
+  @keyframes game-map-card {
+    from {
+      opacity: 0;
+      transform: translateX(10px);
+    }
+  }
 }
 
 @media (max-width: 639px) {
@@ -888,12 +1047,85 @@
     height: 5rem;
   }
 
+  .game-map__sheet {
+    padding: 1.25rem 1rem 1.25rem;
+    border-radius: 1.25rem;
+  }
+
   .game-map__body {
     grid-template-columns: 1fr;
   }
 
+  .game-map__chart {
+    padding: 0.25rem;
+  }
+
   .game-map .radar--large {
-    width: min(100%, 60vh);
+    width: min(100%, 56vh);
     margin-inline: auto;
   }
+}
+
+/* ─── The flight comes in ──────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .game {
+    animation: game-fade 0.8s ease-out both;
+  }
+
+  .hud__top {
+    animation: hud-drop 0.7s var(--ease-out) both;
+  }
+
+  .radar-button {
+    animation: hud-pop 0.7s var(--ease-spring) 0.15s both;
+  }
+
+  .hud__hint,
+  .touch {
+    animation: hud-rise 0.7s var(--ease-out) 0.2s both;
+  }
+
+  @keyframes game-fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes hud-drop {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes hud-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+  }
+
+  @keyframes hud-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+}
+
+/* ─── Fingers ──────────────────────────────────────────── */
+/* Nothing in the game is text to select: a long press on the joystick
+   would select it and leave it stuck. */
+.game,
+.hud,
+.touch,
+.touch * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.joystick,
+.boost {
+  touch-action: none;
 }
