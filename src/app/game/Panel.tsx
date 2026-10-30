@@ -1,17 +1,22 @@
 'use client';
 
 // HOOKS
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useRef, type CSSProperties, type ReactNode } from 'react';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  faArrowLeft,
   faArrowUpRightFromSquare,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
-import type { SectionId } from '@/src/content/sections';
+import { sectionIds, type SectionId } from '@/src/content/sections';
+// GAME
+import { Keycap } from './ui';
+import { useDialog } from './useDialog';
+import { biomes } from './world/biomes';
 
 interface PanelProps {
   id: SectionId;
@@ -21,9 +26,12 @@ interface PanelProps {
   children: ReactNode;
 }
 
-// A section of the site over the flight, opened by landing on its pad. It
-// closes with its button, with Escape or with a click outside, and it
-// takes its name from the section's title.
+// A section of the site over the flight, opened by landing on its pad, as
+// a transmission on the ship's terminal: a bar with the planet and the
+// landing zone, in the planet's color, the section as the site shows it,
+// and a footer with the way back to the flight and to the section on the
+// site. It closes with its button, with Escape or with a click outside,
+// and it takes its name from the section's title.
 export default function Panel({
   id,
   home,
@@ -31,19 +39,17 @@ export default function Panel({
   children,
 }: Readonly<PanelProps>) {
   const { messages } = useI18n();
+  const t = messages.game;
   const sheet = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    sheet.current?.focus();
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [onClose]);
+  const body = useRef<HTMLDivElement>(null);
+  useDialog(sheet, onClose, body);
+  const index = String(sectionIds.indexOf(id) + 1).padStart(2, '0');
 
   return (
-    <div className="game-panel">
+    <div
+      className="game-panel"
+      style={{ '--accent': biomes[id].accent } as CSSProperties}
+    >
       <button
         type="button"
         className="game-panel__backdrop"
@@ -59,23 +65,37 @@ export default function Panel({
         aria-labelledby={`${id}-title`}
         tabIndex={-1}
       >
-        <div className="game-panel__bar">
+        <header className="game-panel__bar">
+          <p className="game-panel__where">
+            <span className="game-panel__dot" aria-hidden="true" />
+            <span className="game-panel__planet">{biomes[id].planet}</span>
+            <span className="g-label">
+              {t.landingZone} {index}
+            </span>
+          </p>
           <button
             type="button"
-            className="game-panel__close"
+            className="g-btn g-btn--icon game-panel__close"
             aria-label={messages.dialog.close}
             onClick={onClose}
           >
             <FontAwesomeIcon icon={faXmark} />
           </button>
+        </header>
+        <div ref={body} className="game-panel__body" tabIndex={-1}>
+          {children}
         </div>
-        {children}
-        <p className="game-panel__footer">
-          <a className="btn btn--ghost btn--small" href={`${home}#${id}`}>
-            {messages.game.openOnSite}
+        <footer className="game-panel__footer">
+          <button type="button" className="g-btn" onClick={onClose}>
+            <FontAwesomeIcon icon={faArrowLeft} />
+            {t.backToFlight}
+            <Keycap>Esc</Keycap>
+          </button>
+          <a className="g-btn" href={`${home}#${id}`}>
+            {t.openOnSite}
             <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
           </a>
-        </p>
+        </footer>
       </div>
     </div>
   );

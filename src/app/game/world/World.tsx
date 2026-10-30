@@ -176,13 +176,14 @@ function Sectors() {
 interface PadsProps {
   activePad: SectionId | null;
   visited: SectionId[];
+  course: SectionId | null;
 }
 
 // The landing pads' lights: the rings, the centers, the glows and the
 // beams drawn as instances, in the color of each pad's planet, brighter
 // while the ship is on it, and in another color once it has been visited.
 // The ground of each pad is part of its sector, in props.ts.
-function Pads({ activePad, visited }: Readonly<PadsProps>) {
+function Pads({ activePad, visited, course }: Readonly<PadsProps>) {
   const shapes = useMemo(() => {
     const ring = new THREE.RingGeometry(padRadius - 0.7, padRadius, 48);
     ring.rotateX(-Math.PI / 2);
@@ -246,19 +247,21 @@ function Pads({ activePad, visited }: Readonly<PadsProps>) {
     pads.forEach((pad, index) => {
       const active = pad.id === activePad;
       if (active) color.set('#c4c5ff');
-      else if (visited.includes(pad.id)) color.set('#22d3ee');
+      else if (visited.includes(pad.id)) color.set('#5ee6c0');
       else color.set(biomes[pad.id].accent);
       rings.current?.setColorAt(index, color);
       centers.current?.setColorAt(index, color);
       glows.current?.setColorAt(index, color);
-      color.set('#8f8fff').multiplyScalar(active ? 1 : 0.55);
+      // The beam of the pad the course leads to burns amber.
+      if (pad.id === course) color.set('#ffbf5e');
+      else color.set('#8f8fff').multiplyScalar(active ? 1 : 0.55);
       beams.current?.setColorAt(index, color);
     });
     for (const mesh of [rings, centers, glows, beams]) {
       const instances = mesh.current;
       if (instances?.instanceColor) instances.instanceColor.needsUpdate = true;
     }
-  }, [activePad, visited]);
+  }, [activePad, visited, course]);
 
   return (
     <group>
@@ -289,9 +292,14 @@ function Pads({ activePad, visited }: Readonly<PadsProps>) {
 interface WorldProps {
   activePad: SectionId | null;
   visited: SectionId[];
+  course: SectionId | null;
 }
 
-export default function World({ activePad, visited }: Readonly<WorldProps>) {
+export default function World({
+  activePad,
+  visited,
+  course,
+}: Readonly<WorldProps>) {
   return (
     <>
       <color attach="background" args={[space.fog]} />
@@ -305,7 +313,7 @@ export default function World({ activePad, visited }: Readonly<WorldProps>) {
       <WeatherClouds />
       <Fauna />
       <Holocrons />
-      <Pads activePad={activePad} visited={visited} />
+      <Pads activePad={activePad} visited={visited} course={course} />
     </>
   );
 }

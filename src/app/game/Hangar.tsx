@@ -1,17 +1,31 @@
 'use client';
 
 // HOOKS
-import { useEffect, useMemo, useRef, type PointerEvent } from 'react';
+import {
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  type CSSProperties,
+  type KeyboardEvent,
+  type PointerEvent,
+} from 'react';
 // THREE
 import * as THREE from 'three';
 import { Canvas, useFrame } from '@react-three/fiber';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faRocket } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowLeft,
+  faArrowsRotate,
+  faRocket,
+} from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
+import { format } from '@/src/i18n/messages';
 // GAME
-import { rating, shipIds, ships, type ShipId } from './ships';
+import { shipIds, ships, specOf, specs, type Ship, type ShipId } from './ships';
+import { Keycap, ShipGlyph } from './ui';
 import { useReducedMotion } from './useMediaQuery';
 
 interface HangarProps {
@@ -25,7 +39,7 @@ interface HangarProps {
 // How the ship on the pedestal is turned: by itself, slowly, or by a
 // finger or the mouse dragged across the stage, which spins it and lets
 // it coast to a stop, as a wheel would. The frame loop reads it; the
-// stage reports the turn as a data attribute.
+// stage reports the turn as data attributes, and as a readout.
 const spin = {
   yaw: 0,
   pitch: 0,
@@ -39,15 +53,26 @@ const spin = {
   idle: 10,
   last: { x: 0, y: 0, at: 0 },
   stage: null as HTMLDivElement | null,
+  readout: null as HTMLSpanElement | null,
+  clock: 1,
 };
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
+const angle = (radians: number) => {
+  const degrees = Math.round((radians * 180) / Math.PI);
+  return (((degrees % 360) + 360) % 360).toString().padStart(3, '0');
+};
+
+// The pedestal's ring of segments, turning slowly under the ship.
+const segments = Array.from({ length: 24 }, (_, index) => index);
+
 // The chosen ship, turning on its pedestal.
 function Preview({ shipId }: { shipId: ShipId }) {
   const model = useMemo(() => ships[shipId].build(), [shipId]);
   const stand = useRef<THREE.Group>(null);
+  const ring = useRef<THREE.Group>(null);
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -93,9 +118,16 @@ function Preview({ shipId }: { shipId: ShipId }) {
     stand.current.scale.setScalar(grow);
     stand.current.rotation.y = spin.yaw;
     stand.current.rotation.x = spin.pitch;
+    if (ring.current && !reduced) ring.current.rotation.y -= dt * 0.18;
     if (spin.stage) {
       spin.stage.dataset.yaw = spin.yaw.toFixed(2);
       spin.stage.dataset.pitch = spin.pitch.toFixed(2);
+    }
+    spin.clock += dt;
+    if (spin.readout && spin.clock > 0.12) {
+      spin.clock = 0;
+      const tilt = Math.round((spin.pitch * 180) / Math.PI);
+      spin.readout.textContent = `${angle(spin.yaw)}° · ${tilt < 0 ? '−' : '+'}${String(Math.abs(tilt)).padStart(2, '0')}°`;
     }
   });
 
@@ -108,14 +140,51 @@ function Preview({ shipId }: { shipId: ShipId }) {
       <group ref={stand}>
         <primitive object={model} position={[0, 0.6, 0]} />
       </group>
-      <mesh rotation-x={-Math.PI / 2} position-y={-1.6}>
-        <ringGeometry args={[3.2, 3.6, 48]} />
-        <meshBasicMaterial color="#5c5edc" transparent opacity={0.8} />
-      </mesh>
+      {/* The pedestal: a dark disc, a lit ring, a ring of segments that
+          turns, and a soft glow where the ship's light falls. */}
       <mesh rotation-x={-Math.PI / 2} position-y={-1.62}>
-        <circleGeometry args={[3.2, 48]} />
-        <meshBasicMaterial color="#1b1d2b" />
+        <circleGeometry args={[3.4, 64]} />
+        <meshBasicMaterial color="#0d1022" />
       </mesh>
+      <mesh rotation-x={-Math.PI / 2} position-y={-1.6}>
+        <ringGeometry args={[3.25, 3.42, 64]} />
+        <meshBasicMaterial color="#7b7dff" />
+      </mesh>
+      <mesh rotation-x={-Math.PI / 2} position-y={-1.61}>
+        <circleGeometry args={[2.6, 48]} />
+        <meshBasicMaterial
+          color="#5c5edc"
+          transparent
+          opacity={0.18}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      <group ref={ring} position-y={-1.59}>
+        {segments.map((index) => (
+          <mesh
+            key={index}
+            rotation-x={-Math.PI / 2}
+            rotation-z={(index / segments.length) * Math.PI * 2}
+          >
+            <ringGeometry
+              args={[
+                3.7,
+                3.82,
+                6,
+                1,
+                0,
+                (Math.PI * 2) / segments.length - 0.08,
+              ]}
+            />
+            <meshBasicMaterial
+              color="#9ad7ff"
+              transparent
+              opacity={index % 6 === 0 ? 0.75 : 0.28}
+            />
+          </mesh>
+        ))}
+      </group>
     </>
   );
 }
@@ -123,9 +192,15 @@ function Preview({ shipId }: { shipId: ShipId }) {
 const registerStage = (element: HTMLDivElement | null) => {
   spin.stage = element;
 };
+const registerReadout = (element: HTMLSpanElement | null) => {
+  spin.readout = element;
+};
 
-// The stage, where a drag turns the ship.
-function Stage({ shipId, hint }: { shipId: ShipId; hint: string }) {
+// The stage, where a drag turns the ship, framed like a projector's view:
+// the model and class above, the bay's number, the drag's hint and the
+// turn's readout below. A light crosses it whenever the ship changes.
+function Stage({ ship, index }: { ship: Ship; index: number }) {
+  const t = useI18n().messages.game;
   const reduced = useReducedMotion();
 
   const onDown = (event: PointerEvent<HTMLDivElement>) => {
@@ -180,27 +255,111 @@ function Stage({ shipId, hint }: { shipId: ShipId; hint: string }) {
           position: [6.5, 3.2, -8.5],
         }}
       >
-        <Preview shipId={shipId} />
+        <Preview shipId={ship.id} />
       </Canvas>
-      <p className="hangar__hint">{hint}</p>
+      <div className="stage-hud">
+        <p className="stage-hud__tl" aria-hidden="true">
+          <b>{ship.model}</b>
+          <span>{t.classes[ship.kind]}</span>
+        </p>
+        <p className="stage-hud__tr g-num" aria-hidden="true">
+          {String(index + 1).padStart(2, '0')}
+          <span>/{String(shipIds.length).padStart(2, '0')}</span>
+        </p>
+        <p className="stage-hud__bl">
+          <FontAwesomeIcon icon={faArrowsRotate} />
+          {t.dragToTurn}
+        </p>
+        <p className="stage-hud__br g-num" aria-hidden="true">
+          <span ref={registerReadout}>000° · +00°</span>
+        </p>
+        <span key={ship.id} className="stage-hud__scan" aria-hidden="true" />
+      </div>
     </div>
   );
 }
 
-function Bar({ label, value }: { label: string; value: number }) {
+const units: Record<string, string> = {
+  speed: 'm/s',
+  acceleration: 'm/s²',
+  agility: '°/s',
+  boost: '',
+};
+
+// The ship's sheet: its number, name, model, class and maker, what it is
+// like to fly, and its figures, each on a meter that places it among the
+// hangar's ships.
+function Sheet({
+  ship,
+  index,
+  onTakeOff,
+}: {
+  ship: Ship;
+  index: number;
+  onTakeOff: () => void;
+}) {
+  const t = useI18n().messages.game;
   return (
-    <div className="hangar__stat">
-      <dt>{label}</dt>
-      <dd aria-label={`${value}/5`}>
-        {[1, 2, 3, 4, 5].map((level) => (
-          <span key={level} className={level <= value ? 'is-on' : undefined} />
-        ))}
-      </dd>
-    </div>
+    <section className="hangar__spec" aria-labelledby="hangar-ship">
+      <div key={ship.id} className="hangar__spec-body">
+        <p className="hangar__index g-num">
+          <span>{String(index + 1).padStart(2, '0')}</span>/
+          {String(shipIds.length).padStart(2, '0')}
+        </p>
+        <h2 id="hangar-ship" className="hangar__name">
+          {ship.name}
+        </h2>
+        <p className="hangar__model">
+          <span>{ship.model}</span>
+          <span>{t.classes[ship.kind]}</span>
+        </p>
+        <p className="hangar__maker">{ship.maker}</p>
+        <p className="hangar__about">{t.ships[ship.id]}</p>
+        <dl className="hangar__stats">
+          {specs.map((spec, row) => {
+            const { value, share } = specOf(ship, spec);
+            const lit = Math.max(1, Math.round(1 + share * 9));
+            return (
+              <div
+                key={spec}
+                className="stat"
+                style={{ '--row': row } as CSSProperties}
+              >
+                <dt className="g-label">{t[spec]}</dt>
+                <dd className="stat__meter" aria-hidden="true">
+                  {Array.from({ length: 10 }, (_, segment) => (
+                    <span
+                      key={segment}
+                      className={segment < lit ? 'is-on' : undefined}
+                    />
+                  ))}
+                </dd>
+                <dd className="stat__value g-num">
+                  {spec === 'boost' ? `×${value.toFixed(2)}` : value.toFixed(0)}
+                  {units[spec] && <small>{units[spec]}</small>}
+                </dd>
+              </div>
+            );
+          })}
+        </dl>
+      </div>
+      <button
+        type="button"
+        className="g-btn g-btn--primary hangar__launch"
+        onClick={onTakeOff}
+      >
+        <FontAwesomeIcon icon={faRocket} />
+        {t.takeOff}
+        <Keycap>Enter</Keycap>
+      </button>
+    </section>
   );
 }
 
-// Where the ship is chosen, before the flight.
+// Where the ship is chosen, before the flight: a terminal of the hangar,
+// with the ship on its pedestal, its sheet, and the roster of the six, a
+// group of radio buttons that the arrows, Home, End and 1 to 6 move
+// through. Enter takes off.
 export default function Hangar({
   shipId,
   onChoose,
@@ -209,50 +368,106 @@ export default function Hangar({
 }: Readonly<HangarProps>) {
   const t = useI18n().messages.game;
   const ship = ships[shipId];
-  const stats = rating(ship);
+  const index = shipIds.indexOf(shipId);
+  const roster = useRef<HTMLDivElement>(null);
+
+  const pick = (id: ShipId, focus = false) => {
+    onChoose(id);
+    if (focus) {
+      roster.current
+        ?.querySelector<HTMLButtonElement>(`[data-ship="${id}"]`)
+        ?.focus();
+    }
+  };
+
+  const onRosterKey = (event: KeyboardEvent<HTMLDivElement>) => {
+    const last = shipIds.length - 1;
+    let next = -1;
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      next = index === last ? 0 : index + 1;
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      next = index === 0 ? last : index - 1;
+    } else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = last;
+    if (next < 0) return;
+    event.preventDefault();
+    pick(shipIds[next], true);
+  };
+
+  // Enter takes off, and 1 to 6 pick a ship, unless a link or a button
+  // other than a ship has the focus.
+  const onKey = useEffectEvent((event: globalThis.KeyboardEvent) => {
+    if (event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
+    const target = event.target as HTMLElement | null;
+    const busy =
+      target?.closest('a, input, textarea, select') ||
+      (target?.closest('button') && !target.closest('[data-ship]'));
+    if (busy) return;
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      onTakeOff();
+      return;
+    }
+    const number = Number(event.key);
+    if (Number.isInteger(number) && number >= 1 && number <= shipIds.length) {
+      pick(shipIds[number - 1], target?.closest('[data-ship]') !== null);
+    }
+  });
+
+  useEffect(() => {
+    const listener = (event: globalThis.KeyboardEvent) => onKey(event);
+    document.addEventListener('keydown', listener);
+    return () => document.removeEventListener('keydown', listener);
+  }, []);
 
   return (
     <div className="hangar">
       <header className="hangar__top">
-        <a className="btn btn--ghost btn--small" href={home}>
+        <a className="g-btn hangar__back" href={home}>
           <FontAwesomeIcon icon={faArrowLeft} />
           {t.backToSite}
         </a>
+        <p className="g-label hangar__ready">
+          <span className="hangar__ready-light" aria-hidden="true" />
+          {format(t.shipsReady, { count: String(shipIds.length) })}
+        </p>
       </header>
-      <div className="hangar__inner">
-        <p className="eyebrow">{t.hangar}</p>
-        <h1 className="hangar__title">{t.chooseShip}</h1>
-        <Stage shipId={shipId} hint={t.dragToTurn} />
-        <ul className="hangar__ships">
-          {shipIds.map((id) => (
-            <li key={id}>
-              <button
-                type="button"
-                className="hangar__ship"
-                aria-pressed={id === shipId}
-                onClick={() => onChoose(id)}
-              >
-                {ships[id].name}
-              </button>
-            </li>
+      <div className="hangar__layout">
+        <div className="hangar__head">
+          <p className="g-label hangar__eyebrow">{t.hangar}</p>
+          <h1 className="hangar__title">{t.chooseShip}</h1>
+        </div>
+        <Stage ship={ship} index={index} />
+        <Sheet ship={ship} index={index} onTakeOff={onTakeOff} />
+        <div
+          ref={roster}
+          className="hangar__roster"
+          role="radiogroup"
+          aria-label={t.roster}
+          onKeyDown={onRosterKey}
+        >
+          {shipIds.map((id, position) => (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              className="hangar__ship"
+              data-ship={id}
+              aria-checked={id === shipId}
+              aria-label={ships[id].name}
+              tabIndex={id === shipId ? 0 : -1}
+              onClick={() => pick(id)}
+            >
+              <span className="hangar__ship-index g-num" aria-hidden="true">
+                {String(position + 1).padStart(2, '0')}
+              </span>
+              <ShipGlyph ship={ships[id]} className="hangar__ship-glyph" />
+              <span className="hangar__ship-name">{ships[id].name}</span>
+              <span className="hangar__ship-model" aria-hidden="true">
+                {ships[id].model}
+              </span>
+            </button>
           ))}
-        </ul>
-        <div className="hangar__info">
-          <h2 className="hangar__name">{ship.name}</h2>
-          <p className="hangar__about">{t.ships[shipId]}</p>
-          <dl className="hangar__stats">
-            <Bar label={t.speed} value={stats.speed} />
-            <Bar label={t.agility} value={stats.agility} />
-            <Bar label={t.boost} value={stats.boost} />
-          </dl>
-          <button
-            type="button"
-            className="btn btn--primary"
-            onClick={onTakeOff}
-          >
-            <FontAwesomeIcon icon={faRocket} />
-            {t.takeOff}
-          </button>
         </div>
       </div>
     </div>

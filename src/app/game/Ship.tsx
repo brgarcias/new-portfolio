@@ -11,8 +11,10 @@ import type { SectionId } from '@/src/content/sections';
 import { readInput } from './controls';
 import { hunt } from './hunt';
 import { hum, play } from './sound';
+import { updateInstruments } from './instruments';
 import { overlay } from './overlay';
 import { createState, step } from './physics';
+import { resetTelemetry, telemetry } from './telemetry';
 import type { Ship as ShipSpec } from './ships';
 import { useReducedMotion } from './useMediaQuery';
 import { arena, holocrons, padRadius, spawn } from './world/arena';
@@ -90,7 +92,7 @@ const sparkMaterial = new THREE.ShaderMaterial({
       vLife = clamp(1.0 - t / 3.2, 0.0, 1.0);
       vSeed = seed;
       vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
-      gl_PointSize = clamp((0.6 + 0.6 * seed) * (260.0 / -mvPosition.z) * vLife, 1.0, 18.0);
+      gl_PointSize = clamp((0.9 + 0.9 * seed) * (300.0 / -mvPosition.z) * (0.4 + 0.6 * vLife), 2.0, 26.0);
       gl_Position = projectionMatrix * mvPosition;
     }
   `,
@@ -99,10 +101,14 @@ const sparkMaterial = new THREE.ShaderMaterial({
     varying float vSeed;
     void main() {
       vec2 d = gl_PointCoord - 0.5;
-      if (dot(d, d) > 0.25) discard;
+      float d2 = dot(d, d);
+      if (d2 > 0.25) discard;
+      // A bright core in a softer disc.
+      float core = 1.0 - smoothstep(0.0, 0.25, d2);
       vec3 gold = vec3(1.0, 0.78, 0.3);
       vec3 blue = vec3(0.45, 0.85, 1.0);
-      gl_FragColor = vec4(mix(gold, blue, step(0.5, vSeed)), vLife);
+      vec3 tint = mix(gold, blue, step(0.5, vSeed));
+      gl_FragColor = vec4(mix(tint, vec3(1.0), core * 0.55), vLife * (0.5 + 0.5 * core));
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
     }
@@ -266,6 +272,7 @@ export default function Ship({
     flight.clock = 0;
     flight.sector = 'hub';
     atmosphere.sector = 'hub';
+    resetTelemetry();
     flight.pulse.age = 9;
     trail.filled = 0;
     const engines: THREE.MeshStandardMaterial[] = [];
@@ -544,12 +551,21 @@ export default function Ship({
       readout.dataset.time = flight.clock.toFixed(1);
       readout.dataset.pad = state.pad ?? '';
     }
-    const marker = `translate(${state.x.toFixed(1)} ${state.z.toFixed(1)}) rotate(${(
-      (-state.heading * 180) /
-      Math.PI
-    ).toFixed(1)})`;
-    overlay.radarShip?.setAttribute('transform', marker);
-    overlay.mapShip?.setAttribute('transform', marker);
+    // What the instruments read, and the instruments themselves.
+    telemetry.x = state.x;
+    telemetry.z = state.z;
+    telemetry.heading = state.heading;
+    telemetry.speed = state.speed;
+    telemetry.boost = boosting;
+    telemetry.sector = flight.sector;
+    telemetry.pad = state.pad as SectionId | null;
+    telemetry.landed = Boolean(state.pad && flight.landed === state.pad);
+    telemetry.landing = telemetry.landed
+      ? 1
+      : state.pad
+        ? Math.min(1, flight.still / 0.5)
+        : 0;
+    updateInstruments(dt);
   });
 
   return (

@@ -1,14 +1,22 @@
 'use client';
 
 // HOOKS
-import { useRef, type PointerEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+} from 'react';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faArrowLeft,
+  faArrowRightArrowLeft,
   faBolt,
+  faLocationDot,
   faCamera,
-  faCube,
+  faCheck,
   faDownload,
   faVolumeHigh,
   faVolumeXmark,
@@ -20,6 +28,7 @@ import { format } from '@/src/i18n/messages';
 // CONTENT
 import type { SectionId } from '@/src/content/sections';
 // GAME
+import Compass from './Compass';
 import { input } from './controls';
 import GalaxyMap from './GalaxyMap';
 import { overlay } from './overlay';
@@ -27,13 +36,21 @@ import Radar from './Radar';
 import type { Ship } from './ships';
 import { snapshot } from './Snapshot';
 import { play } from './sound';
-import type { Place } from './types';
-import { biomes } from './world/biomes';
+import type { Place, Toast } from './types';
+import { HolocronIcon, Keycap, Pips } from './ui';
 import { useMediaQuery } from './useMediaQuery';
+import { biomes } from './world/biomes';
 
 const stickRadius = 44;
 
-// A joystick under the left thumb and the boost under the right one. Both
+const register = (element: HTMLDivElement | null) => {
+  overlay.hud = element;
+};
+const registerLanding = (element: HTMLDivElement | null) => {
+  overlay.landing = element;
+};
+
+// A joystick under the right thumb and the boost under the left one. Both
 // write straight into the controls, with no render in between.
 function TouchControls() {
   const t = useI18n().messages.game;
@@ -59,6 +76,7 @@ function TouchControls() {
   const release = () => {
     pointer.current = null;
     if (knob.current) knob.current.style.transform = '';
+    base.current?.removeAttribute('data-active');
     input.stick.turn = 0;
     input.stick.thrust = 0;
   };
@@ -67,6 +85,7 @@ function TouchControls() {
     if (pointer.current !== null) return;
     pointer.current = event.pointerId;
     event.currentTarget.setPointerCapture(event.pointerId);
+    event.currentTarget.dataset.active = '';
     move(event.clientX, event.clientY);
   };
   const onMove = (event: PointerEvent<HTMLDivElement>) => {
@@ -76,8 +95,10 @@ function TouchControls() {
     if (event.pointerId === pointer.current) release();
   };
 
-  const boost = (on: boolean) => () => {
+  const boost = (on: boolean) => (event: PointerEvent<HTMLButtonElement>) => {
     input.stick.boost = on;
+    if (on) event.currentTarget.dataset.active = '';
+    else event.currentTarget.removeAttribute('data-active');
   };
 
   return (
@@ -110,70 +131,124 @@ function TouchControls() {
         onContextMenu={(event) => event.preventDefault()}
       >
         <FontAwesomeIcon icon={faBolt} />
+        <span aria-hidden="true">{t.boost}</span>
       </button>
     </div>
   );
 }
 
-interface HudProps {
-  ship: Ship;
-  // The pad the ship is on, and its name.
-  pad: SectionId | null;
-  padTitle: string | null;
-  // The places of the arena, each on its planet.
-  places: Place[];
-  // The sections opened so far, of how many, and the holocrons found.
-  visited: SectionId[];
-  found: SectionId[];
-  total: number;
-  home: string;
-  onChangeShip: () => void;
-  // The map over the flight, and how it opens and closes.
-  mapOpen: boolean;
-  onOpenMap: () => void;
-  onCloseMap: () => void;
-  // The sounds, and the photo mode, which hides everything but the picture.
-  soundOn: boolean;
-  onToggleSound: () => void;
-  photo: boolean;
-  onPhoto: (on: boolean) => void;
+// The keys, as keycaps, under the flight.
+function Legend() {
+  const t = useI18n().messages.game;
+  return (
+    <p className="hud__hint">
+      <span className="hud__hint-item">
+        <span className="hud__keys">
+          <Keycap>W</Keycap>
+          <Keycap>A</Keycap>
+          <Keycap>S</Keycap>
+          <Keycap>D</Keycap>
+        </span>
+        {t.keysFly}
+      </span>
+      <span className="hud__hint-item">
+        <Keycap>Shift</Keycap>
+        {t.keysBoost}
+      </span>
+      <span className="hud__hint-item">
+        <Keycap>M</Keycap>
+        {t.keysMap}
+      </span>
+      <span className="hud__hint-item">
+        <Keycap>P</Keycap>
+        {t.keysPhoto}
+      </span>
+    </p>
+  );
 }
 
-const register = (element: HTMLDivElement | null) => {
-  overlay.hud = element;
-};
-const registerRadarShip = (element: SVGGElement | null) => {
-  overlay.radarShip = element;
-};
-
-// What lies over the flight: the way back, the ship's name, the count of
-// sections seen, the radar, the pad under the ship and the controls.
-// Fingers get the joystick; a mouse, the keyboard's hint.
-export default function Hud({
-  ship,
-  pad,
-  padTitle,
-  places,
-  visited,
-  found,
-  total,
-  home,
-  onChangeShip,
-  mapOpen,
-  onOpenMap,
-  onCloseMap,
-  soundOn,
-  onToggleSound,
-  photo,
-  onPhoto,
-}: Readonly<HudProps>) {
+// The pad under the ship: the place and its planet, and a ring that fills
+// while the ship holds still on it, until it lands. The frame loop sets
+// the phase and the ring (instruments.ts).
+function Landing({ pad, place }: { pad: SectionId | null; place?: Place }) {
   const t = useI18n().messages.game;
-  const touch = useMediaQuery('(pointer: coarse)');
-  const done = visited.length >= total;
-  const complete = found.length >= places.length;
+  return (
+    <div
+      ref={registerLanding}
+      className="hud__pad"
+      role="status"
+      data-phase="none"
+      style={
+        pad ? ({ '--pad': biomes[pad].accent } as CSSProperties) : undefined
+      }
+    >
+      {pad && place && (
+        <>
+          <svg className="hud__pad-ring" viewBox="0 0 40 40" aria-hidden="true">
+            <circle className="hud__pad-track" cx="20" cy="20" r="16" />
+            <circle
+              className="hud__pad-fill"
+              cx="20"
+              cy="20"
+              r="16"
+              pathLength="1"
+            />
+            <path className="hud__pad-check" d="M13.5 20.5l4.2 4.2 8.8-9.4" />
+          </svg>
+          <span className="hud__pad-text">
+            <span className="g-label">
+              <span className="hud__pad-zone">{t.landingZone} · </span>
+              {biomes[pad].planet}
+            </span>
+            <strong>{place.title}</strong>
+            <span className="hud__pad-hint">
+              <span data-when="approach">{t.slowDown}</span>
+              <span data-when="hold">{t.landing}</span>
+              <span data-when="landed">{t.landed}</span>
+            </span>
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
 
-  // Saves the picture, named after the planet under the ship.
-  const savePhoto = () => {
+// The moment all seven holocrons are recovered: the frame goes wide, like
+// a film's, and the archive's title comes up, with the sparks the ship
+// throws (Ship.tsx) and the fanfare, if the sound is on.
+function Finale({ total }: { total: number }) {
+  const t = useI18n().messages.game;
+  return (
+    <div className="finale" aria-hidden="true">
+      <span className="finale__bar finale__bar--top" />
+      <span className="finale__bar finale__bar--bottom" />
+      <div className="finale__card">
+        <HolocronIcon className="finale__icon" />
+        <p className="g-label finale__label">{t.archiveComplete}</p>
+        <p className="finale__title">{t.allFoundTitle}</p>
+        <p className="finale__line">{t.allFoundLine}</p>
+        <Pips
+          count={total}
+          total={total}
+          kind="diamond"
+          className="finale__pips"
+        />
+      </div>
+    </div>
+  );
+}
+
+// Photo mode: nothing over the picture but a viewfinder's corners and two
+// buttons. A saved photo flashes the screen and says so for a moment.
+function PhotoMode({ onLeave }: { onLeave: () => void }) {
+  const t = useI18n().messages.game;
+  const [shots, setShots] = useState(0);
+  const [saved, setSaved] = useState<string | null>(null);
+  const timer = useRef(0);
+
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+
+  const save = () => {
     const picture = snapshot.take?.();
     if (!picture) return;
     const sector = overlay.hud?.dataset.sector;
@@ -181,12 +256,107 @@ export default function Hud({
       sector && sector !== 'hub'
         ? biomes[sector as SectionId].planet.toLowerCase()
         : 'space';
+    const name = `portfolio-${planet}.png`;
     const link = document.createElement('a');
     link.href = picture;
-    link.download = `portfolio-${planet}.png`;
+    link.download = name;
     link.click();
     play('photo');
+    setShots((count) => count + 1);
+    setSaved(name);
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => setSaved(null), 2600);
   };
+
+  return (
+    <div className="photo" role="group" aria-label={t.photoMode}>
+      <span className="photo__frame" aria-hidden="true" />
+      <div className="photo__bar">
+        <span className="g-label photo__label">
+          <FontAwesomeIcon icon={faCamera} />
+          {t.photoMode}
+        </span>
+        <button type="button" className="g-btn g-btn--primary" onClick={save}>
+          <FontAwesomeIcon icon={faDownload} />
+          {t.savePhoto}
+        </button>
+        <button type="button" className="g-btn" onClick={onLeave}>
+          <FontAwesomeIcon icon={faXmark} />
+          {t.leavePhoto}
+          <Keycap>Esc</Keycap>
+        </button>
+      </div>
+      {saved && (
+        <p className="photo__saved" role="status">
+          <FontAwesomeIcon icon={faCheck} />
+          {t.photoSaved}
+          <span className="g-num">{saved}</span>
+        </p>
+      )}
+      {shots > 0 && (
+        <span key={shots} className="photo__flash" aria-hidden="true" />
+      )}
+    </div>
+  );
+}
+
+interface HudProps {
+  ship: Ship;
+  // The pad the ship is on.
+  pad: SectionId | null;
+  // The places of the arena, each on its planet.
+  places: Place[];
+  // The sections opened so far, and the holocrons found.
+  visited: SectionId[];
+  found: SectionId[];
+  home: string;
+  onChangeShip: () => void;
+  // The navigation chart over the flight, and the course set on it.
+  mapOpen: boolean;
+  onOpenMap: () => void;
+  onCloseMap: () => void;
+  course: SectionId | null;
+  onCourse: (id: SectionId) => void;
+  // The sounds, and the photo mode, which hides everything but the picture.
+  soundOn: boolean;
+  onToggleSound: () => void;
+  photo: boolean;
+  onPhoto: (on: boolean) => void;
+  // The notices of the moment, and the finale of the holocrons.
+  toasts: Toast[];
+  finale: boolean;
+}
+
+// The flight's instruments, as one system over the canvas: the way back
+// and the mission's log on the left, the compass along the top, the radar
+// and where the ship is on the right, the ship and its speed at the bottom
+// left, and the keys or the touch controls at the bottom. The frame loop
+// writes what moves (instruments.ts); React draws what changes now and
+// then.
+export default function Hud({
+  ship,
+  pad,
+  places,
+  visited,
+  found,
+  home,
+  onChangeShip,
+  mapOpen,
+  onOpenMap,
+  onCloseMap,
+  course,
+  onCourse,
+  soundOn,
+  onToggleSound,
+  photo,
+  onPhoto,
+  toasts,
+  finale,
+}: Readonly<HudProps>) {
+  const t = useI18n().messages.game;
+  const touch = useMediaQuery('(pointer: coarse)');
+  const total = places.length;
+  const placeOf = (id: SectionId) => places.find((place) => place.id === id);
 
   return (
     <div
@@ -198,120 +368,216 @@ export default function Hud({
       data-speed="0"
       data-sector="hub"
       data-photo={photo ? '' : undefined}
+      data-finale={finale ? '' : undefined}
     >
       <div className="hud__top">
-        <a className="btn btn--ghost btn--small" href={home}>
-          <FontAwesomeIcon icon={faArrowLeft} />
-          {t.backToSite}
-        </a>
-        <p className="hud__ship">{ship.name}</p>
-        <p className="hud__count">
-          {format(t.visited, {
-            count: String(visited.length),
-            total: String(total),
-          })}
-        </p>
-        <p className="hud__holocrons">
-          <FontAwesomeIcon icon={faCube} />
-          {format(t.holocrons, {
-            count: String(found.length),
-            total: String(places.length),
-          })}
-        </p>
-        <button
-          type="button"
-          className="btn btn--ghost btn--small"
-          onClick={onChangeShip}
-        >
-          {t.changeShip}
-        </button>
-      </div>
-      <div className="hud__tools">
-        <button
-          type="button"
-          className="hud__tool"
-          aria-pressed={soundOn}
-          aria-label={soundOn ? t.soundOn : t.soundOff}
-          onClick={onToggleSound}
-        >
-          <FontAwesomeIcon icon={soundOn ? faVolumeHigh : faVolumeXmark} />
-        </button>
-        <button
-          type="button"
-          className="hud__tool"
-          aria-pressed={photo}
-          aria-label={t.photoMode}
-          onClick={() => onPhoto(!photo)}
-        >
-          <FontAwesomeIcon icon={faCamera} />
-        </button>
-      </div>
-      <button
-        type="button"
-        className="radar-button"
-        aria-label={t.openMap}
-        onClick={onOpenMap}
-      >
-        <Radar
-          scope="hud"
-          activePad={pad}
-          visited={visited}
-          found={found}
-          registerShip={registerRadarShip}
-        />
-      </button>
-      {/* The planet under the ship: the frame loop shows the one it is over. */}
-      {places.map((place) => (
-        <p key={place.id} className="hud__planet" data-id={place.id} hidden>
-          <strong>{biomes[place.id].planet}</strong>
-          <small>{place.title}</small>
-        </p>
-      ))}
-      <p className="hud__pad" role="status">
-        {padTitle && (
-          <>
-            {format(t.landingPad, { place: padTitle })}
-            <span className="hud__pad-hint">· {t.stopToLand}</span>
-          </>
-        )}
-      </p>
-      {done && (
-        <p className="hud__done" role="status">
-          {t.allVisited}
-        </p>
-      )}
-      {complete && (
-        <p className="hud__found" role="status">
-          {t.allFound}
-        </p>
-      )}
-      {touch ? <TouchControls /> : <p className="hud__hint">{t.keyboard}</p>}
-      {photo && (
-        <div className="hud__photo" role="group" aria-label={t.photoMode}>
+        <div className="hud__nw">
+          <a className="g-btn hud__back" href={home} aria-label={t.backToSite}>
+            <FontAwesomeIcon icon={faArrowLeft} />
+            <span className="hud__back-label">{t.backToSite}</span>
+          </a>
+          <div className="hud__log">
+            <p className="hud__count tally">
+              <span className="tally__label">{t.sections}</span>
+              <FontAwesomeIcon icon={faLocationDot} className="tally__icon" />
+              <Pips count={visited.length} total={total} />
+              <span className="tally__value g-num" aria-hidden="true">
+                {visited.length}/{total}
+              </span>
+              <span className="g-sr">
+                {format(t.visited, {
+                  count: String(visited.length),
+                  total: String(total),
+                })}
+              </span>
+            </p>
+            <p className="hud__holocrons tally">
+              <span className="tally__label">{t.holocronsLabel}</span>
+              <HolocronIcon className="tally__icon" />
+              <Pips count={found.length} total={total} kind="diamond" />
+              <span className="tally__value g-num" aria-hidden="true">
+                {found.length}/{total}
+              </span>
+              <span className="g-sr">
+                {format(t.holocrons, {
+                  count: String(found.length),
+                  total: String(total),
+                })}
+              </span>
+            </p>
+            {visited.length >= total && (
+              <p className="hud__done" role="status">
+                <FontAwesomeIcon icon={faCheck} />
+                <span aria-hidden="true">{t.explored}</span>
+                <span className="g-sr">{t.allVisited}</span>
+              </p>
+            )}
+            {found.length >= total && (
+              <p className="hud__found" role="status">
+                <HolocronIcon />
+                <span aria-hidden="true">{t.archiveComplete}</span>
+                <span className="g-sr">{t.allFound}</span>
+              </p>
+            )}
+          </div>
+          <div className="hud__tools">
+            <button
+              type="button"
+              className="g-btn g-btn--icon hud__tool"
+              aria-pressed={soundOn}
+              aria-label={soundOn ? t.soundOn : t.soundOff}
+              data-tip={soundOn ? t.soundOn : t.soundOff}
+              onClick={onToggleSound}
+            >
+              <FontAwesomeIcon icon={soundOn ? faVolumeHigh : faVolumeXmark} />
+              <span className="hud__eq" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+            </button>
+            <button
+              type="button"
+              className="g-btn g-btn--icon hud__tool"
+              aria-pressed={photo}
+              aria-label={t.photoMode}
+              data-tip={t.photoMode}
+              data-key="P"
+              onClick={() => onPhoto(!photo)}
+            >
+              <FontAwesomeIcon icon={faCamera} />
+            </button>
+          </div>
+        </div>
+        <Compass />
+        <div className="hud__ne">
           <button
             type="button"
-            className="btn btn--primary btn--small"
-            onClick={savePhoto}
+            className="radar-button"
+            aria-label={t.openMap}
+            onClick={onOpenMap}
           >
-            <FontAwesomeIcon icon={faDownload} />
-            {t.savePhoto}
+            <Radar
+              activePad={pad}
+              visited={visited}
+              found={found}
+              course={course}
+            />
+            <Keycap>M</Keycap>
           </button>
+          <div className="hud__locator">
+            <p className="hud__planet" data-id="hub">
+              <strong>{t.centralDeck}</strong>
+            </p>
+            {places.map((place) => (
+              <p
+                key={place.id}
+                className="hud__planet"
+                data-id={place.id}
+                hidden
+                style={{ '--accent': biomes[place.id].accent } as CSSProperties}
+              >
+                <strong>{biomes[place.id].planet}</strong>
+                <small>{place.title}</small>
+              </p>
+            ))}
+            <p className="hud__coords g-num" aria-hidden="true">
+              <span>X</span>
+              <b data-read="x">+000.0</b>
+              <span>Z</span>
+              <b data-read="z">+000.0</b>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <Landing pad={pad} place={pad ? placeOf(pad) : undefined} />
+
+      <div className="toasts" role="status">
+        {toasts.map((toast) => (
+          <div
+            key={toast.key}
+            className="toast"
+            data-kind={toast.kind}
+            style={{ '--accent': biomes[toast.id].accent } as CSSProperties}
+          >
+            {toast.kind === 'holocron' ? (
+              <>
+                <HolocronIcon className="toast__icon" />
+                <p className="toast__title">{t.holocronFound}</p>
+                <p className="toast__meta">
+                  {format(t.holocronOn, { planet: biomes[toast.id].planet })}
+                  {' · '}
+                  {placeOf(toast.id)?.title}
+                </p>
+                <p className="toast__count g-num">
+                  {toast.count}/{total}
+                </p>
+                <Pips
+                  count={toast.count}
+                  total={total}
+                  kind="diamond"
+                  fresh={toast.count - 1}
+                  className="toast__pips"
+                />
+              </>
+            ) : (
+              <>
+                <span className="toast__icon toast__icon--check">
+                  <FontAwesomeIcon icon={faCheck} />
+                </span>
+                <p className="toast__title">{t.explored}</p>
+                <p className="toast__meta">{t.allVisited}</p>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {finale && <Finale total={total} />}
+
+      <div className="hud__bottom">
+        <div className="hud__craft">
+          <p className="hud__craft-id">
+            <strong className="hud__ship">{ship.name}</strong>
+            <span className="g-label">{ship.model}</span>
+          </p>
+          <div className="speedo" aria-hidden="true">
+            <span className="g-label">{t.speedLabel}</span>
+            <span className="speedo__value">
+              <b className="g-num" data-read="speed">
+                0.0
+              </b>
+              <small>m/s</small>
+            </span>
+            <span className="speedo__bar">
+              <span />
+            </span>
+            <span className="speedo__boost">{t.boost}</span>
+          </div>
           <button
             type="button"
-            className="btn btn--ghost btn--small"
-            onClick={() => onPhoto(false)}
+            className="g-btn hud__swap"
+            aria-label={t.changeShip}
+            onClick={onChangeShip}
           >
-            <FontAwesomeIcon icon={faXmark} />
-            {t.leavePhoto}
+            <FontAwesomeIcon icon={faArrowRightArrowLeft} />
+            <span className="hud__swap-label">{t.changeShip}</span>
           </button>
         </div>
-      )}
+        {touch ? <TouchControls /> : <Legend />}
+      </div>
+
+      {photo && <PhotoMode onLeave={() => onPhoto(false)} />}
       {mapOpen && (
         <GalaxyMap
+          ship={ship}
           activePad={pad}
           visited={visited}
           found={found}
           places={places}
+          course={course}
+          onCourse={onCourse}
           onClose={onCloseMap}
         />
       )}
