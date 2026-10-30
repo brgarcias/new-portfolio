@@ -100,9 +100,17 @@ const en = {
     speed: 'Speed',
     agility: 'Agility',
     boost: 'Boost',
-    keyboard: 'W, A, S, D or the arrows fly · Shift or Space boosts',
+    keyboard:
+      'W, A, S, D or the arrows fly · Shift or Space boosts · M opens the map',
     joystick: 'Joystick',
     radar: 'Radar',
+    dragToTurn: 'Drag to turn the ship',
+    map: 'Map',
+    openMap: 'Open the map',
+    closeMap: 'Close the map',
+    youAreHere: 'You are here',
+    sectionOpened: 'Section opened',
+    notOpened: 'Not opened yet',
     allVisited: 'You flew through the whole portfolio. Thank you!',
     // The name of the pad the ship is on.
     landingPad: 'Landing pad: {place}',

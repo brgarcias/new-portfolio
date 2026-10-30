@@ -44,7 +44,9 @@ async function takeOff(page: Page) {
   await expect(page.locator('.game canvas')).toBeVisible();
   // The flight is on once its clock runs: the first frames compile the
   // shaders, which takes a while on a software renderer.
-  await expect.poll(() => reading(page, 'time')).toBeGreaterThan(0.5);
+  await expect
+    .poll(() => reading(page, 'time'), { timeout: 20_000 })
+    .toBeGreaterThan(0.5);
 }
 
 test('abre o hangar com as naves e lembra a escolhida', async ({ page }) => {
@@ -75,6 +77,62 @@ test('abre o hangar com as naves e lembra a escolhida', async ({ page }) => {
     page.getByRole('button', { name: 'Millennium Falcon' }),
   ).toHaveAttribute('aria-pressed', 'true');
   expect(errors).toEqual([]);
+});
+
+test('gira a nave no hangar ao arrastar', async ({ page }) => {
+  await page.goto('/play');
+  const stage = page.locator('.hangar__stage');
+  await expect(stage).toContainText('Drag to turn the ship');
+  const box = (await stage.boundingBox())!;
+  const before = Number(await stage.getAttribute('data-yaw'));
+  await page.mouse.move(box.x + box.width * 0.3, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 0.7, box.y + box.height / 2, {
+    steps: 8,
+  });
+  await page.mouse.up();
+  // The drag turned it, well past what the slow turn would have done.
+  await expect
+    .poll(() => stage.getAttribute('data-yaw').then(Number))
+    .toBeGreaterThan(before + 1);
+  // A drag up or down tilts it.
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.3);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.7, {
+    steps: 8,
+  });
+  await page.mouse.up();
+  await expect
+    .poll(() => stage.getAttribute('data-pitch').then(Number))
+    .toBeGreaterThan(0.3);
+});
+
+test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
+  await takeOff(page);
+  await page.getByRole('button', { name: 'Open the map' }).click();
+  const map = page.getByRole('dialog', { name: 'Map' });
+  await expect(map).toBeVisible();
+  // The seven planets, named, with their sections, none opened yet, and
+  // the ship on it.
+  await expect(map.locator('.radar__name')).toHaveCount(7);
+  await expect(map.locator('.radar__name').first()).toHaveText('Tatooine');
+  const legend = map.locator('.game-map__legend li');
+  await expect(legend).toHaveCount(7);
+  await expect(legend.first()).toContainText('About Me');
+  await expect(legend.first()).toContainText('Not opened yet');
+  await expect(map.locator('.radar__ship')).toHaveCount(1);
+  await expect(map).toContainText('0 of 7 sections');
+  await page.keyboard.press('Escape');
+  await expect(map).toBeHidden();
+  if (isMobile) return;
+  // M opens and closes it, and the keys do not fly the ship meanwhile.
+  await page.keyboard.press('KeyM');
+  await expect(map).toBeVisible();
+  await page.keyboard.press('KeyW');
+  await page.waitForTimeout(400);
+  expect(await reading(page, 'speed')).toBe(0);
+  await page.keyboard.press('KeyM');
+  await expect(map).toBeHidden();
 });
 
 test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
@@ -243,7 +301,9 @@ test('fala a língua da página e leva /en/play para /play', async ({
   ).toHaveAttribute('href', /\/es\/play$/);
   await page.getByRole('button', { name: 'Decolar' }).click();
   await expect(page.getByRole('button', { name: 'Trocar nave' })).toBeVisible();
-  await expect.poll(() => reading(page, 'time')).toBeGreaterThan(0.5);
+  await expect
+    .poll(() => reading(page, 'time'), { timeout: 20_000 })
+    .toBeGreaterThan(0.5);
   // The sections open in the page's language too.
   await hold(page, 'KeyW', 2500);
   await expect(page.locator('.hud__pad')).toContainText('Sobre mim', {

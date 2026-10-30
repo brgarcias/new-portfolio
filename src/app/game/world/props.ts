@@ -1,6 +1,14 @@
 import type { SectionId } from '@/src/content/sections';
 import { buildXWing } from '../ships/xwing';
-import type { Flora, FloraKind, Prop, PropKind } from './arena';
+import {
+  padRadius,
+  type Flora,
+  type FloraKind,
+  type Landmark,
+  type LandingPad,
+  type Prop,
+  type PropKind,
+} from './arena';
 import type { Builder, Vec } from './builder';
 
 // What the props and the plants of each sector look like. A prop keeps
@@ -849,5 +857,321 @@ export const floraBuilders: Record<FloraKind, FloraBuilder> = {
         [0.3, a, 0],
       );
     }
+  },
+};
+
+// ─── The landing places ─────────────────────────────────────
+// Each pad is a place of its planet: its ground, what stands around its
+// rim (low, so the ship passes over it) and, outward from the middle, the
+// landmark beside it, which is solid.
+
+type PadBuilder = (b: Builder, pad: LandingPad) => void;
+type LandmarkBuilder = (b: Builder, mark: Landmark) => void;
+
+// Places things around the rim of a pad.
+function around(
+  pad: LandingPad,
+  count: number,
+  distance: number,
+  place: (x: number, z: number, angle: number, index: number) => void,
+  offset = 0,
+) {
+  for (let i = 0; i < count; i++) {
+    const angle = pad.angle + offset + (i / count) * Math.PI * 2;
+    place(
+      pad.x + Math.sin(angle) * distance,
+      pad.z - Math.cos(angle) * distance,
+      angle,
+      i,
+    );
+  }
+}
+
+function disc(b: Builder, pad: LandingPad, color: string, inner?: string) {
+  b.cylinder(padRadius, padRadius + 0.4, 0.3, 48, color, [pad.x, 0.15, pad.z]);
+  if (inner) {
+    b.cylinder(padRadius * 0.55, padRadius * 0.55, 0.32, 48, inner, [
+      pad.x,
+      0.16,
+      pad.z,
+    ]);
+  }
+}
+
+function lanternPost(b: Builder, x: number, z: number, glow: string) {
+  b.cylinder(0.07, 0.09, 0.8, 5, steelDark, [x, 0.4, z]);
+  b.sphere(0.2, 6, glow, [x, 0.95, z], 1, true);
+}
+
+export const padBuilders: Record<SectionId, PadBuilder> = {
+  about: (b, pad) => {
+    // A courtyard of packed sand, ringed by stones and lanterns.
+    disc(b, pad, '#c9a56e', '#b48f5c');
+    around(pad, 10, 11, (x, z, angle, i) => {
+      b.rock(
+        0.55 + (i % 3) * 0.15,
+        i % 2 ? sandDark : '#c9a26e',
+        [x, 0.3, z],
+        [0, angle, 0.2],
+      );
+    });
+    around(pad, 4, 11.5, (x, z) => lanternPost(b, x, z, warmGlow), Math.PI / 4);
+  },
+  experience: (b, pad) => {
+    // A rooftop platform, its edge lit, with light pylons.
+    disc(b, pad, '#2a2f4a', '#353b5e');
+    around(pad, 16, 10.6, (x, z, angle) => {
+      b.box([1.1, 0.22, 0.3], windowLight, [x, 0.4, z], [0, angle, 0], true);
+    });
+    around(
+      pad,
+      4,
+      11.8,
+      (x, z) => {
+        b.cylinder(0.1, 0.14, 1.1, 5, towerLight, [x, 0.55, z]);
+        b.box([0.5, 0.2, 0.5], neon, [x, 1.2, z], undefined, true);
+      },
+      Math.PI / 4,
+    );
+  },
+  education: (b, pad) => {
+    // A mossy clearing, with logs and glowing mushrooms around it.
+    disc(b, pad, '#2f3f2a', '#3a4d33');
+    around(pad, 6, 11.2, (x, z, angle) => {
+      b.cylinder(
+        0.3,
+        0.35,
+        2.2,
+        6,
+        bark,
+        [x, 0.3, z],
+        [0, angle + Math.PI / 2, Math.PI / 2],
+      );
+    });
+    around(
+      pad,
+      8,
+      11.4,
+      (x, z) => {
+        b.cylinder(0.09, 0.12, 0.5, 5, '#d8d2c0', [x, 0.25, z]);
+        b.sphere(0.32, 7, mushroomGlow, [x, 0.5, z], [1, 0.5, 1], true);
+      },
+      Math.PI / 8,
+    );
+  },
+  courses: (b, pad) => {
+    // A platform of the cloners, white over the sea, with bollards lit.
+    disc(b, pad, '#dfe5ea', '#cfd7de');
+    around(pad, 8, 11, (x, z) => {
+      b.cylinder(0.3, 0.36, 0.8, 7, shell, [x, 0.4, z]);
+      b.sphere(0.2, 6, coldGlow, [x, 0.95, z], 1, true);
+    });
+  },
+  projects: (b, pad) => {
+    // A plaza of stone, with planters of flowers around it.
+    disc(b, pad, '#d9c9a5', '#bfae86');
+    b.cylinder(padRadius * 0.8, padRadius * 0.8, 0.31, 48, '#cdbb93', [
+      pad.x,
+      0.16,
+      pad.z,
+    ]);
+    around(pad, 6, 11.3, (x, z, angle, i) => {
+      b.box([1.6, 0.6, 0.7], stoneLight, [x, 0.3, z], [0, angle, 0]);
+      b.sphere(0.5, 6, '#3f9a4a', [x, 0.75, z], [1.4, 0.6, 0.9]);
+      b.sphere(0.14, 4, i % 2 ? '#ff8fb0' : '#fff1a0', [x + 0.3, 1.0, z]);
+      b.sphere(0.14, 4, i % 2 ? '#fff1a0' : '#d9a0ff', [
+        x - 0.3,
+        0.95,
+        z + 0.1,
+      ]);
+    });
+  },
+  contributing: (b, pad) => {
+    // A deck of planks in the forest, lit by torches.
+    disc(b, pad, '#6b4a2e', '#7a5636');
+    b.cylinder(padRadius * 0.78, padRadius * 0.78, 0.31, 48, '#5f4229', [
+      pad.x,
+      0.16,
+      pad.z,
+    ]);
+    around(pad, 8, 11.2, (x, z) => {
+      b.cylinder(0.08, 0.1, 1.0, 5, bark, [x, 0.5, z]);
+      b.cone(0.2, 0.5, 5, '#ffb347', [x, 1.25, z], undefined, true);
+    });
+  },
+  contact: (b, pad) => {
+    // A strip cleared in the snow, with marker lights and drifts around.
+    disc(b, pad, '#e8f0f7', '#d6e2ed');
+    around(pad, 12, 10.8, (x, z) => {
+      b.box([0.45, 0.25, 0.45], coldGlow, [x, 0.42, z], undefined, true);
+    });
+    around(
+      pad,
+      5,
+      12.2,
+      (x, z) => {
+        b.sphere(1.3, 7, snow, [x, 0.1, z], [1.6, 0.45, 1]);
+      },
+      0.3,
+    );
+  },
+};
+
+// Yaw that turns a landmark's front towards its pad.
+const facing = (mark: Landmark) => -mark.angle;
+const front = (mark: Landmark, forward: number, side = 0): Vec =>
+  yawed({ x: mark.x, z: mark.z, rotation: facing(mark) }, forward, side);
+
+export const landmarkBuilders: Record<SectionId, LandmarkBuilder> = {
+  about: (b, mark) => {
+    // A moisture farmer's homestead: the dome, its door to the pad, and a
+    // vaporator beside it.
+    const yaw: Vec = [0, facing(mark), 0];
+    b.cylinder(3.4, 3.6, 1.6, 12, sand, [mark.x, 0.8 + foot / 2, mark.z]);
+    b.sphere(3.3, 12, sand, [mark.x, 1.6, mark.z], [1, 0.6, 1]);
+    b.box([1.4, 1.8, 0.8], '#2a1a10', lift(front(mark, 3.1), 0.9), yaw);
+    b.box([1.6, 0.18, 0.3], warmGlow, lift(front(mark, 3.25), 1.95), yaw, true);
+    for (const side of [-2.2, 2.2]) {
+      b.box(
+        [0.6, 0.4, 0.2],
+        warmGlow,
+        lift(front(mark, 3.0, side), 1.5),
+        yaw,
+        true,
+      );
+    }
+    const [vx, , vz] = front(mark, -1, 4.6);
+    b.cylinder(0.4, 0.5, 7, 8, steel, [vx, 3.5, vz]);
+    for (let i = 1; i <= 3; i++) {
+      b.cylinder(0.8, 0.8, 0.25, 8, steelDark, [vx, i * 2, vz]);
+    }
+  },
+  experience: (b, mark) => {
+    // A pylon with the district's holo-sign, over the platform.
+    const yaw: Vec = [0, facing(mark), 0];
+    b.cylinder(1.6, 2.0, 1.2, 8, towerLight, [mark.x, 0.6 + foot / 2, mark.z]);
+    b.cylinder(0.35, 0.5, 11, 8, tower, [mark.x, 5.5, mark.z]);
+    b.box([4.2, 2.4, 0.16], neon, lift(front(mark, 0.4), 7.5), yaw, true);
+    b.box([4.4, 2.6, 0.12], tower, lift(front(mark, 0.3), 7.5), yaw);
+    b.box([2.6, 1.2, 0.16], '#4ff0ff', lift(front(mark, 0.4), 4.6), yaw, true);
+    b.ring(
+      1.1,
+      0.08,
+      windowLight,
+      [mark.x, 11.2, mark.z],
+      [Math.PI / 2, 0, 0],
+      true,
+    );
+  },
+  education: (b, mark) => {
+    // The master's hut, its window lit, under a tree of the swamp.
+    const yaw: Vec = [0, facing(mark), 0];
+    b.sphere(2.9, 10, '#6b5a3c', [mark.x, 0.9, mark.z], [1, 0.62, 1]);
+    b.cylinder(0.7, 0.8, 1.2, 7, '#5a4a30', [mark.x, 2.6, mark.z]);
+    b.box([1.1, 1.3, 0.5], '#2a1a10', lift(front(mark, 2.6), 0.75), yaw);
+    b.sphere(0.34, 6, amber, lift(front(mark, 2.5, 1.5), 1.3), 1, true);
+    const [tx, , tz] = front(mark, -2.4, 3.2);
+    swampTree(b, tx, tz, 9, 1.1, facing(mark) + 0.6);
+  },
+  courses: (b, mark) => {
+    // A hall of the cloners: a white dome on its base, ringed with light.
+    b.cylinder(4.2, 4.6, 2.4, 14, shell, [mark.x, 1.2 + foot / 2, mark.z]);
+    b.sphere(3.9, 12, shellLight, [mark.x, 2.5, mark.z], [1, 0.62, 1]);
+    b.ring(
+      4.0,
+      0.1,
+      coldGlow,
+      [mark.x, 2.55, mark.z],
+      [Math.PI / 2, 0, 0],
+      true,
+    );
+    b.box([1.2, 1.6, 0.4], '#2a3340', lift(front(mark, 4.2), 1.2), [
+      0,
+      facing(mark),
+      0,
+    ]);
+    b.cylinder(0.07, 0.1, 3, 4, stilt, [mark.x, 6, mark.z]);
+    b.sphere(0.25, 6, coldGlow, [mark.x, 7.6, mark.z], 1, true);
+  },
+  projects: (b, mark) => {
+    // A palace of the capital: arches to the pad, columns and a green dome.
+    const yaw: Vec = [0, facing(mark), 0];
+    b.box([10, 0.4, 7], stoneLight, [mark.x, 0.2 + foot / 2, mark.z], yaw);
+    b.box([8.5, 4.2, 5], stone, [mark.x, 2.1, mark.z], yaw);
+    for (const side of [-2.6, 0, 2.6]) {
+      b.box(
+        [1.4, 2.6, 0.3],
+        lantern,
+        lift(front(mark, 2.55, side), 1.5),
+        yaw,
+        true,
+      );
+    }
+    for (const side of [-4.0, 4.0]) {
+      const [cx, , cz] = front(mark, 3.4, side);
+      b.cylinder(0.35, 0.42, 4.4, 8, stoneLight, [cx, 2.2, cz]);
+      b.box([1.0, 0.3, 1.0], stone, [cx, 4.5, cz], yaw);
+    }
+    b.box([9, 0.5, 5.5], stoneLight, [mark.x, 4.45, mark.z], yaw);
+    b.sphere(3.0, 12, copper, [mark.x, 4.6, mark.z], [1, 0.7, 1]);
+    b.cylinder(0.06, 0.08, 1.6, 4, stoneLight, [mark.x, 7.3, mark.z]);
+  },
+  contributing: (b, mark) => {
+    // A village in the trees: huts on stilts, a bridge and torches.
+    const yaw = facing(mark);
+    const huts: [number, number, number, number][] = [
+      [-2.6, 0.4, 1.7, 3.2],
+      [2.8, -0.6, 1.4, 4.6],
+    ];
+    for (const [side, forward, r, floor] of huts) {
+      const [hx, , hz] = front(mark, forward, side);
+      for (let i = 0; i < 3; i++) {
+        const a = yaw + (i / 3) * Math.PI * 2;
+        b.cylinder(0.14, 0.18, floor - foot, 5, redwood, [
+          hx + Math.sin(a) * r * 0.7,
+          (floor + foot) / 2,
+          hz + Math.cos(a) * r * 0.7,
+        ]);
+      }
+      b.cylinder(r, r, 0.25, 8, redwood, [hx, floor, hz]);
+      b.cylinder(r * 0.85, r * 0.9, 1.4, 8, hut, [hx, floor + 0.8, hz]);
+      b.cone(r * 1.15, 1.5, 8, thatch, [hx, floor + 2.25, hz]);
+      b.box(
+        [0.5, 0.45, 0.2],
+        amber,
+        lift(yawed({ x: hx, z: hz, rotation: yaw }, r * 0.88), floor + 0.85),
+        [0, yaw, 0],
+        true,
+      );
+    }
+    const [bx, , bz] = front(mark, -0.1, 0.1);
+    b.box([4.6, 0.16, 0.9], redwood, [bx, 3.6, bz], [0, yaw + 0.25, 0.22]);
+    for (const side of [-4.5, 4.5]) {
+      const [tx, , tz] = front(mark, 3.2, side);
+      b.cylinder(0.09, 0.11, 1.2, 5, bark, [tx, 0.6, tz]);
+      b.cone(0.22, 0.55, 5, '#ffb347', [tx, 1.45, tz], undefined, true);
+    }
+  },
+  contact: (b, mark) => {
+    // The hangar of the hidden base, dug into the snow, its mouth lit.
+    const yaw: Vec = [0, facing(mark), 0];
+    b.sphere(4.8, 12, snow, [mark.x, 0.4, mark.z], [1.5, 0.62, 1]);
+    b.box([4.6, 2.6, 0.8], '#2a3340', lift(front(mark, 4.0), 1.3), yaw);
+    b.box([4.2, 0.2, 0.2], warmGlow, lift(front(mark, 4.2), 2.7), yaw, true);
+    for (const side of [-2.6, 2.6]) {
+      b.box(
+        [0.3, 0.3, 0.3],
+        coldGlow,
+        lift(front(mark, 4.4, side), 0.5),
+        yaw,
+        true,
+      );
+    }
+    b.cylinder(0.08, 0.1, 2.5, 4, steelDark, lift(front(mark, -2, 2.5), 3.2));
+    b.cylinder(1.0, 1.0, 0.2, 10, shell, lift(front(mark, -2, 2.5), 4.4), [
+      0.9,
+      facing(mark),
+      0,
+    ]);
   },
 };

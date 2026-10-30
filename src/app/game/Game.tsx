@@ -54,15 +54,27 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
   const [pad, setPad] = useState<SectionId | null>(null);
   const [open, setOpen] = useState<SectionId | null>(null);
   const [visited, setVisited] = useState<SectionId[]>([]);
+  const [mapOpen, setMapOpen] = useState(false);
   const titles = useMemo(
     () => Object.fromEntries(places.map((place) => [place.id, place.title])),
     [places],
   );
 
-  // The keyboard flies the ship, except while a section is open.
+  // The keyboard flies the ship, except while a section or the map is
+  // open; M opens and closes the map.
+  useEffect(() => {
+    if (!flying || open || mapOpen) return;
+    return listenToKeyboard();
+  }, [flying, open, mapOpen]);
   useEffect(() => {
     if (!flying || open) return;
-    return listenToKeyboard();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.code !== 'KeyM' || event.repeat) return;
+      event.preventDefault();
+      setMapOpen((value) => !value);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, [flying, open]);
 
   const choose = (id: ShipId) => {
@@ -74,6 +86,7 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
 
   const land = (id: SectionId) => {
     resetInput();
+    setMapOpen(false);
     setVisited((list) => (list.includes(id) ? list : [...list, id]));
     setOpen(id);
   };
@@ -120,8 +133,12 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         home={home}
         onChangeShip={() => {
           setPad(null);
+          setMapOpen(false);
           setFlying(false);
         }}
+        mapOpen={mapOpen}
+        onOpenMap={() => setMapOpen(true)}
+        onCloseMap={() => setMapOpen(false)}
       />
       {open && (
         <Panel id={open} home={home} onClose={() => setOpen(null)}>
