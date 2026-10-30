@@ -1282,10 +1282,12 @@
   display: none;
 }
 
+/* At the top, where nothing else sits in photo mode (the bottom of a
+   Deploy Preview carries Netlify's own drawer). */
 .hud__photo {
   position: absolute;
+  top: calc(var(--header-height) + 1rem);
   right: 0;
-  bottom: calc(1.5rem + env(safe-area-inset-bottom));
   left: 0;
   display: flex;
   justify-content: center;
@@ -1303,6 +1305,6 @@
   }
 
   .hud__photo {
-    animation: hud-rise 0.5s var(--ease-out) both;
+    animation: hud-drop 0.5s var(--ease-out) both;
   }
 }
