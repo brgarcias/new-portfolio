@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
 
 // The game at /play: the hangar, the flight and the ways around it. The
@@ -202,7 +203,14 @@ test('liga o som e entra no modo foto', async ({ page, isMobile }) => {
   await expect(page.locator('.hud__top')).toBeHidden();
   const download = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Save photo' }).click();
-  expect((await download).suggestedFilename()).toMatch(/^portfolio-.*\.png$/);
+  const photo = await download;
+  expect(photo.suggestedFilename()).toMatch(/^portfolio-.*\.png$/);
+  // At the canvas's own resolution, whatever the frames: the width in the
+  // PNG's header is at least the page's.
+  const png = await readFile((await photo.path())!);
+  expect(png.readUInt32BE(16)).toBeGreaterThanOrEqual(
+    page.viewportSize()!.width,
+  );
   await page.getByRole('button', { name: 'Leave photo mode' }).click();
   await expect(page.locator('.hud__top')).toBeVisible();
   if (isMobile) return;
