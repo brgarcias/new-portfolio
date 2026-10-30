@@ -1129,3 +1129,96 @@
 .boost {
   touch-action: none;
 }
+
+/* ─── The holocrons ─────────────────────────────────────── */
+.hud__holocrons {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgb(232 233 255 / 0.7);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  text-shadow: 0 1px 6px rgb(11 12 20 / 0.55);
+}
+
+.hud__holocrons svg {
+  color: #7de3ff;
+}
+
+.hud__found {
+  position: absolute;
+  top: calc(var(--header-height) + 3.75rem);
+  left: 50%;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: rgb(56 189 248 / 0.22);
+  color: #fff;
+  font-weight: 600;
+  transform: translateX(-50%);
+}
+
+.hud__done ~ .hud__found {
+  top: calc(var(--header-height) + 6.25rem);
+}
+
+.radar__holocron {
+  fill: none;
+  stroke: #7de3ff;
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.radar__holocron[data-state='found'] {
+  fill: #7de3ff;
+  stroke: rgb(11 12 20 / 0.6);
+}
+
+.radar--large .radar__holocron {
+  transform: scale(1.4);
+}
+
+.game-map__holocron {
+  margin-left: 0.4rem;
+  color: #7de3ff;
+  font-size: 0.75em;
+  vertical-align: 0.1em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .radar__holocron:not([data-state='found']) {
+    animation: radar-holocron 2.4s ease-in-out infinite;
+  }
+
+  @keyframes radar-holocron {
+    50% {
+      transform: scale(1.3);
+      opacity: 0.6;
+    }
+  }
+
+  /* The sections open on the same spring as the map. */
+  .game-panel__backdrop {
+    animation: game-map-fade 0.35s ease-out both;
+  }
+
+  .game-panel__sheet {
+    animation: game-map-in 0.55s var(--ease-spring) both;
+  }
+}
+
+@media (max-width: 639px) {
+  .hud__holocrons {
+    position: absolute;
+    top: calc(var(--header-height) + 7.1rem);
+    right: var(--gutter);
+  }
+
+  .hud__planet {
+    top: calc(var(--header-height) + 8.9rem);
+  }
+
+  .radar--large .radar__holocron {
+    transform: scale(1.2);
+  }
+}

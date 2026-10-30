@@ -9,11 +9,12 @@ import { useFrame } from '@react-three/fiber';
 import type { SectionId } from '@/src/content/sections';
 // GAME
 import { readInput } from './controls';
+import { hunt } from './hunt';
 import { overlay } from './overlay';
 import { createState, step } from './physics';
 import type { Ship as ShipSpec } from './ships';
 import { useReducedMotion } from './useMediaQuery';
-import { arena, padRadius, spawn } from './world/arena';
+import { arena, holocrons, padRadius, spawn } from './world/arena';
 import { atmosphere, sectorAt, type Sector } from './world/biomes';
 
 interface ShipProps {
@@ -22,6 +23,8 @@ interface ShipProps {
   // stops on one.
   onPad: (pad: SectionId | null) => void;
   onLand: (pad: SectionId) => void;
+  // Called when the ship flies through a holocron.
+  onCollect: (id: SectionId) => void;
 }
 
 // The flight in progress, which the frame loop reads and writes: the ship's
@@ -172,7 +175,12 @@ const trailMaterial = new THREE.MeshBasicMaterial({
 // The ship in flight: each frame it reads the controls, moves by the
 // physics of physics.ts, leans into its turns, lights its engines, pulls
 // the camera along behind it and places itself on the radar.
-export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
+export default function Ship({
+  ship,
+  onPad,
+  onLand,
+  onCollect,
+}: Readonly<ShipProps>) {
   const model = useMemo(() => ship.build(), [ship]);
   const rig = useRef<THREE.Group>(null);
   const body = useRef<THREE.Group>(null);
@@ -388,6 +396,16 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
       }
     }
 
+    // A holocron within reach is found.
+    for (const holocron of holocrons) {
+      if (hunt.found.has(holocron.id)) continue;
+      if (Math.hypot(state.x - holocron.x, state.z - holocron.z) < 3.5) {
+        hunt.found.add(holocron.id);
+        hunt.age.set(holocron.id, 0);
+        onCollect(holocron.id);
+      }
+    }
+
     if (state.pad !== flight.pad) {
       flight.pad = state.pad;
       onPad(state.pad as SectionId | null);
@@ -433,6 +451,7 @@ export default function Ship({ ship, onPad, onLand }: Readonly<ShipProps>) {
       readout.dataset.heading = state.heading.toFixed(2);
       readout.dataset.speed = state.speed.toFixed(1);
       readout.dataset.time = flight.clock.toFixed(1);
+      readout.dataset.pad = state.pad ?? '';
     }
     const marker = `translate(${state.x.toFixed(1)} ${state.z.toFixed(1)}) rotate(${(
       (-state.heading * 180) /

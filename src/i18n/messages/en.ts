@@ -111,6 +111,10 @@ const en = {
     youAreHere: 'You are here',
     sectionOpened: 'Section opened',
     notOpened: 'Not opened yet',
+    // The holocrons hidden on the planets.
+    holocrons: '{count} of {total} holocrons',
+    holocronFound: 'Holocron found',
+    allFound: 'You found every holocron. May the Force be with you!',
     allVisited: 'You flew through the whole portfolio. Thank you!',
     // The name of the pad the ship is on.
     landingPad: 'Landing pad: {place}',

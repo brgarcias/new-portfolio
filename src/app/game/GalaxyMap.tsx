@@ -6,6 +6,7 @@ import { useEffect, useRef, type CSSProperties } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheck,
+  faCube,
   faLocationArrow,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
@@ -23,6 +24,7 @@ import { biomes } from './world/biomes';
 interface GalaxyMapProps {
   activePad: SectionId | null;
   visited: SectionId[];
+  found: SectionId[];
   places: Place[];
   onClose: () => void;
 }
@@ -39,6 +41,7 @@ const registerShip = (element: SVGGElement | null) => {
 export default function GalaxyMap({
   activePad,
   visited,
+  found,
   places,
   onClose,
 }: Readonly<GalaxyMapProps>) {
@@ -103,6 +106,7 @@ export default function GalaxyMap({
               large
               activePad={activePad}
               visited={visited}
+              found={found}
               registerShip={registerShip}
             />
           </div>
@@ -125,7 +129,16 @@ export default function GalaxyMap({
                     style={{ background: biomes[place.id].accent }}
                   />
                   <span className="game-map__planet">
-                    <strong>{biomes[place.id].planet}</strong>
+                    <strong>
+                      {biomes[place.id].planet}
+                      {found.includes(place.id) && (
+                        <FontAwesomeIcon
+                          icon={faCube}
+                          className="game-map__holocron"
+                          title={t.holocronFound}
+                        />
+                      )}
+                    </strong>
                     <small>{place.title}</small>
                   </span>
                   <span className="game-map__state">

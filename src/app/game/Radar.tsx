@@ -7,7 +7,7 @@ import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
 import type { SectionId } from '@/src/content/sections';
 // GAME
-import { flora, pads, platformRadius, props } from './world/arena';
+import { flora, holocrons, pads, platformRadius, props } from './world/arena';
 import { biomes, hubRadius, sectorAngle } from './world/biomes';
 
 // The slice of the map a sector takes, from the hub to the edge.
@@ -104,6 +104,8 @@ function Texture({ id, accent }: { id: SectionId; accent: string }) {
 interface RadarProps {
   activePad: SectionId | null;
   visited: SectionId[];
+  // The holocrons found, marked on the map.
+  found: SectionId[];
   // The map, large, names the planets.
   large?: boolean;
   // Tells the two radars' patterns apart on the page.
@@ -119,6 +121,7 @@ interface RadarProps {
 export default function Radar({
   activePad,
   visited,
+  found,
   large = false,
   scope,
   registerShip,
@@ -218,6 +221,20 @@ export default function Radar({
           cx={pad.x}
           cy={pad.z}
           r={pad.r}
+        />
+      ))}
+      {holocrons.map((holocron) => (
+        <path
+          key={holocron.id}
+          className="radar__holocron"
+          data-state={found.includes(holocron.id) ? 'found' : undefined}
+          d={
+            'M ' +
+            holocron.x.toFixed(1) +
+            ' ' +
+            (holocron.z - 4).toFixed(1) +
+            ' l 4 4 l -4 4 l -4 -4 Z'
+          }
         />
       ))}
       {large &&
