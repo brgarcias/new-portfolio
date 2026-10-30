@@ -54,6 +54,7 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
   const [pad, setPad] = useState<SectionId | null>(null);
   const [open, setOpen] = useState<SectionId | null>(null);
   const [visited, setVisited] = useState<SectionId[]>([]);
+  const [found, setFound] = useState<SectionId[]>([]);
   const [mapOpen, setMapOpen] = useState(false);
   const titles = useMemo(
     () => Object.fromEntries(places.map((place) => [place.id, place.title])),
@@ -84,6 +85,10 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
     } catch {}
   };
 
+  const collect = (id: SectionId) => {
+    setFound((list) => (list.includes(id) ? list : [...list, id]));
+  };
+
   const land = (id: SectionId) => {
     resetInput();
     setMapOpen(false);
@@ -111,7 +116,12 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         gl={{ antialias: true, powerPreference: 'high-performance' }}
       >
         <World activePad={pad} visited={visited} />
-        <Ship ship={ships[shipId]} onPad={setPad} onLand={land} />
+        <Ship
+          ship={ships[shipId]}
+          onPad={setPad}
+          onLand={land}
+          onCollect={collect}
+        />
         <Labels />
         <Adaptive />
       </Canvas>
@@ -129,6 +139,7 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         padTitle={pad && titles[pad]}
         places={places}
         visited={visited}
+        found={found}
         total={places.length}
         home={home}
         onChangeShip={() => {

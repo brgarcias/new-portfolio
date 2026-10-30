@@ -122,6 +122,12 @@ test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
   await expect(legend.first()).toContainText('Not opened yet');
   await expect(map.locator('.radar__ship')).toHaveCount(1);
   await expect(map).toContainText('0 of 7 sections');
+  // The holocrons hide on the map, none found yet.
+  await expect(map.locator('.radar__holocron')).toHaveCount(7);
+  await expect(map.locator('.radar__holocron[data-state="found"]')).toHaveCount(
+    0,
+  );
+  await expect(page.locator('.hud__holocrons')).toHaveText('0 of 7 holocrons');
   await page.keyboard.press('Escape');
   await expect(map).toBeHidden();
   if (isMobile) return;

@@ -22,12 +22,15 @@ export default function Labels() {
       const distance = point.distanceTo(camera.position);
       point.project(camera);
       const behind = point.z > 1;
+      // The pad the ship is on is named by the HUD already.
+      const under = overlay.hud?.dataset.pad === pad.id;
       const x = (point.x * 0.5 + 0.5) * size.width;
       const y = (-point.y * 0.5 + 0.5) * size.height;
       label.style.transform = `translate(-50%, -100%) translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
-      label.style.opacity = behind
-        ? '0'
-        : Math.max(0.15, Math.min(1, 1 - (distance - 60) / 110)).toFixed(2);
+      label.style.opacity =
+        behind || under
+          ? '0'
+          : Math.max(0.15, Math.min(1, 1 - (distance - 60) / 110)).toFixed(2);
     });
   });
 

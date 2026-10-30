@@ -17,6 +17,7 @@ import { Builder, litMaterial, solidMaterial, type Vec } from './builder';
 import Far from './Far';
 import Fauna from './Fauna';
 import Ground from './Ground';
+import Holocrons from './Holocrons';
 import {
   floraBuilders,
   landmarkBuilders,
@@ -303,6 +304,7 @@ export default function World({ activePad, visited }: Readonly<WorldProps>) {
       <Waters />
       <WeatherClouds />
       <Fauna />
+      <Holocrons />
       <Pads activePad={activePad} visited={visited} />
     </>
   );

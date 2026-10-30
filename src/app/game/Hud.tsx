@@ -4,7 +4,7 @@
 import { useRef, type PointerEvent } from 'react';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faBolt } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faBolt, faCube } from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 import { format } from '@/src/i18n/messages';
@@ -111,8 +111,9 @@ interface HudProps {
   padTitle: string | null;
   // The places of the arena, each on its planet.
   places: Place[];
-  // The sections opened so far, of how many.
+  // The sections opened so far, of how many, and the holocrons found.
   visited: SectionId[];
+  found: SectionId[];
   total: number;
   home: string;
   onChangeShip: () => void;
@@ -138,6 +139,7 @@ export default function Hud({
   padTitle,
   places,
   visited,
+  found,
   total,
   home,
   onChangeShip,
@@ -148,6 +150,7 @@ export default function Hud({
   const t = useI18n().messages.game;
   const touch = useMediaQuery('(pointer: coarse)');
   const done = visited.length >= total;
+  const complete = found.length >= places.length;
 
   return (
     <div
@@ -171,6 +174,13 @@ export default function Hud({
             total: String(total),
           })}
         </p>
+        <p className="hud__holocrons">
+          <FontAwesomeIcon icon={faCube} />
+          {format(t.holocrons, {
+            count: String(found.length),
+            total: String(places.length),
+          })}
+        </p>
         <button
           type="button"
           className="btn btn--ghost btn--small"
@@ -189,6 +199,7 @@ export default function Hud({
           scope="hud"
           activePad={pad}
           visited={visited}
+          found={found}
           registerShip={registerRadarShip}
         />
       </button>
@@ -212,11 +223,17 @@ export default function Hud({
           {t.allVisited}
         </p>
       )}
+      {complete && (
+        <p className="hud__found" role="status">
+          {t.allFound}
+        </p>
+      )}
       {touch ? <TouchControls /> : <p className="hud__hint">{t.keyboard}</p>}
       {mapOpen && (
         <GalaxyMap
           activePad={pad}
           visited={visited}
+          found={found}
           places={places}
           onClose={onCloseMap}
         />

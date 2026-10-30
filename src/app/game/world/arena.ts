@@ -247,3 +247,38 @@ export const arena: Arena = {
 };
 
 export const spawn = { x: 0, z: 0, heading: 0 };
+
+// A holocron hides on each planet, floating at the ships' height, to be
+// found by flying through it. The first waits on the way to the first pad,
+// where every flight starts; the others sit off their sector's middle, on
+// the first clear spot of a few tried.
+export interface Holocron {
+  id: SectionId;
+  x: number;
+  z: number;
+}
+
+function hide(): Holocron[] {
+  const offsets = [0.26, -0.26, 0.4, -0.4, 0.12, -0.12, 0];
+  const distances = [88, 80, 96, 72, 60];
+  return sectionIds.map((id) => {
+    if (id === 'about') return { id, x: 0, z: -34 };
+    for (const distance of distances) {
+      for (const offset of offsets) {
+        const angle = angleOf(id) + offset;
+        const x = Math.sin(angle) * distance;
+        const z = -Math.cos(angle) * distance;
+        const clear =
+          arena.obstacles.every(
+            (o) => Math.hypot(x - o.x, z - o.z) > o.r + 4,
+          ) &&
+          pads.every((pad) => Math.hypot(x - pad.x, z - pad.z) > pad.r + 4);
+        if (clear) return { id, x, z };
+      }
+    }
+    const angle = angleOf(id);
+    return { id, x: Math.sin(angle) * 50, z: -Math.cos(angle) * 50 };
+  });
+}
+
+export const holocrons = hide();
