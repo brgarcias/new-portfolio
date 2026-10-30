@@ -10,6 +10,7 @@ import type { SectionId } from '@/src/content/sections';
 // GAME
 import { readInput } from './controls';
 import { hunt } from './hunt';
+import { hum, play } from './sound';
 import { overlay } from './overlay';
 import { createState, step } from './physics';
 import type { Ship as ShipSpec } from './ships';
@@ -44,7 +45,71 @@ const flight = {
   sector: 'hub' as Sector,
   // The ring that spreads over a pad when the ship lands on it.
   pulse: { x: 0, z: 0, age: 9 },
+  // The burst of light when the last holocron is found: where, and how
+  // long ago, or less than zero for none.
+  party: { x: 0, y: 0, z: 0, age: -1 },
 };
+
+// The burst: sparks thrown from the ship, in gold and blue, that rise,
+// fall and fade; the shader moves them with the time since the burst.
+const sparkCount = 220;
+function makeSparks() {
+  const geometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(sparkCount * 3);
+  const velocities = new Float32Array(sparkCount * 3);
+  const seeds = new Float32Array(sparkCount);
+  for (let i = 0; i < sparkCount; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const lift = Math.random() * 0.9 + 0.1;
+    const speed = 4 + Math.random() * 9;
+    const flat = Math.sqrt(1 - lift * lift);
+    velocities[i * 3] = Math.cos(theta) * flat * speed;
+    velocities[i * 3 + 1] = lift * speed + 3;
+    velocities[i * 3 + 2] = Math.sin(theta) * flat * speed;
+    seeds[i] = Math.random();
+  }
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+  geometry.setAttribute('seed', new THREE.BufferAttribute(seeds, 1));
+  geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e5);
+  return geometry;
+}
+const sparkGeometry = makeSparks();
+const sparkMaterial = new THREE.ShaderMaterial({
+  uniforms: { time: { value: 0 }, origin: { value: new THREE.Vector3() } },
+  vertexShader: /* glsl */ `
+    uniform float time;
+    uniform vec3 origin;
+    attribute vec3 velocity;
+    attribute float seed;
+    varying float vLife;
+    varying float vSeed;
+    void main() {
+      float t = time;
+      vec3 p = origin + velocity * t + vec3(0.0, -3.2 * t * t, 0.0);
+      vLife = clamp(1.0 - t / 3.2, 0.0, 1.0);
+      vSeed = seed;
+      vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
+      gl_PointSize = clamp((0.6 + 0.6 * seed) * (260.0 / -mvPosition.z) * vLife, 1.0, 18.0);
+      gl_Position = projectionMatrix * mvPosition;
+    }
+  `,
+  fragmentShader: /* glsl */ `
+    varying float vLife;
+    varying float vSeed;
+    void main() {
+      vec2 d = gl_PointCoord - 0.5;
+      if (dot(d, d) > 0.25) discard;
+      vec3 gold = vec3(1.0, 0.78, 0.3);
+      vec3 blue = vec3(0.45, 0.85, 1.0);
+      gl_FragColor = vec4(mix(gold, blue, step(0.5, vSeed)), vLife);
+      #include <tonemapping_fragment>
+      #include <colorspace_fragment>
+    }
+  `,
+  transparent: true,
+  depthWrite: false,
+});
 
 // The trail behind the ship: the last positions of its two sides, newest
 // first, which draw as two ribbons that fade with age.
@@ -187,6 +252,7 @@ export default function Ship({
   const trailMesh = useRef<THREE.Mesh>(null);
   const pulseMesh = useRef<THREE.Mesh>(null);
   const wind = useRef<THREE.LineSegments>(null);
+  const sparks = useRef<THREE.Points>(null);
   const reduced = useReducedMotion();
 
   // A new ship starts again from the hangar's spot. Its shapes are freed
@@ -296,6 +362,8 @@ export default function Ship({
     const glow =
       0.6 + Math.max(0, controls.thrust) * 1.4 + (boosting ? 1.2 : 0);
     for (const material of flight.engines) material.emissiveIntensity = glow;
+    hum(controls.thrust, boosting, state.speed);
+    if (hit > 4) play('bump');
     // Fire from the engines with the thrust, longer under boost.
     const firing = controls.thrust > 0;
     const length = 1.2 + 1.6 * controls.thrust + (boosting ? 3.6 : 0);
@@ -382,6 +450,21 @@ export default function Ship({
         trailMaterial.opacity = Math.min(0.85, (state.speed - 3) / 12);
       }
     }
+    // The sparks of the last holocron.
+    const burst = sparks.current;
+    if (burst) {
+      if (flight.party.age >= 0) flight.party.age += dt;
+      const alive = !reduced && flight.party.age >= 0 && flight.party.age < 3.4;
+      burst.visible = alive;
+      if (alive) {
+        sparkMaterial.uniforms.time.value = flight.party.age;
+        (sparkMaterial.uniforms.origin.value as THREE.Vector3).set(
+          flight.party.x,
+          flight.party.y,
+          flight.party.z,
+        );
+      }
+    }
     // The ring that spreads over the pad on landing.
     const ring = pulseMesh.current;
     if (ring) {
@@ -403,6 +486,13 @@ export default function Ship({
         hunt.found.add(holocron.id);
         hunt.age.set(holocron.id, 0);
         onCollect(holocron.id);
+        if (hunt.found.size >= holocrons.length) {
+          // The last one: a burst of sparks from the ship.
+          flight.party = { x: state.x, y: ship.hover, z: state.z, age: 0 };
+          play('party');
+        } else {
+          play('holocron');
+        }
       }
     }
 
@@ -417,6 +507,7 @@ export default function Ship({
       flight.still += dt;
       if (flight.still > 0.5) {
         flight.landed = state.pad;
+        play('land');
         const spot = arena.pads.find((pad) => pad.id === state.pad);
         if (spot) {
           flight.pulse.x = spot.x;
@@ -490,6 +581,13 @@ export default function Ship({
         ref={trailMesh}
         geometry={trailGeometry}
         material={trailMaterial}
+        visible={false}
+        frustumCulled={false}
+      />
+      <points
+        ref={sparks}
+        geometry={sparkGeometry}
+        material={sparkMaterial}
         visible={false}
         frustumCulled={false}
       />
