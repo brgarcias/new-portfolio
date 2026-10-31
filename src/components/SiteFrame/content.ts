@@ -22,6 +22,13 @@ export const resume = {
   fileName: 'Bruno_Garcia_Resume.pdf',
 } as const;
 
+// A site opens in a new tab; an email or a phone number stays on the page,
+// which hands it to the right app, instead of leaving an empty tab behind.
+export const linkTarget = (href: string) =>
+  /^https?:/.test(href)
+    ? ({ target: '_blank', rel: 'noopener noreferrer' } as const)
+    : {};
+
 // The icon of each channel of content/site/profile.json.
 export const socialIcons: Record<SocialLink['id'], IconDefinition> = {
   email: faEnvelope,

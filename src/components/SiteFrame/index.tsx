@@ -24,7 +24,7 @@ import ThemeToggle from './ThemeToggle';
 import { homePath } from '@/src/i18n/config';
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
-import { resume, socialIcons, type NavItem } from './content';
+import { resume, linkTarget, socialIcons, type NavItem } from './content';
 import type { SocialLink } from '@/src/content';
 import { sectionIds, type SectionId } from '@/src/content/sections';
 // CSS
@@ -372,8 +372,7 @@ export default function SiteFrame({
                 <a
                   className="social-links__link"
                   href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...linkTarget(href)}
                   aria-label={text}
                 >
                   <FontAwesomeIcon icon={socialIcons[id]} />

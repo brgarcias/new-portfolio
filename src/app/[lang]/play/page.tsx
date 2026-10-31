@@ -1,5 +1,5 @@
 // NEXT
-import type { Metadata } from 'next';
+import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
 // GAME
 import GameLoader from '../../game';
@@ -38,8 +38,8 @@ import {
 } from '@/src/i18n/config';
 import { getMessages } from '@/src/i18n/messages';
 
-// The sections show the current role's duration and the age, as the home
-// page does, so this page is regenerated once a day too.
+// The sections show the current role's duration, as the home page does, so
+// this page is regenerated once a day too.
 export const revalidate = 86400;
 
 // One page per language, like the home page: /play serves the English
@@ -50,13 +50,19 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export async function generateMetadata({
-  params,
-}: PageProps<'/[lang]/play'>): Promise<Metadata> {
+export async function generateMetadata(
+  { params }: PageProps<'/[lang]/play'>,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
   const { lang } = await params;
   const locale = isLocale(lang) ? lang : defaultLocale;
   const { game, meta } = getMessages(locale);
   const url = pagePath(locale, 'play');
+  // A shared link shows the whole title, as the tab does, and the site's
+  // image. This page's openGraph replaces the layout's, image included, so
+  // the image comes from the layout.
+  const title = `${game.title} | ${meta.title}`;
+  const { images } = (await parent).openGraph ?? {};
   return {
     title: game.title,
     description: game.description,
@@ -73,9 +79,15 @@ export async function generateMetadata({
       type: 'website',
       url,
       siteName: 'Bruno Garcia',
-      title: game.title,
+      title,
       description: game.description,
       locale: meta.ogLocale,
+      images,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description: game.description,
     },
   };
 }

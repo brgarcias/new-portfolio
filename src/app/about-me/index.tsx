@@ -25,12 +25,17 @@ import { whenIdle } from '@/src/components/Modal/whenIdle';
 import SnackbarFeedback from '@/src/components/SnackBar';
 import About from './About';
 import { markup } from '@/src/components/Markup';
+import { fields, isValidField } from '@/src/components/Form/utils';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 import { pagePath } from '@/src/i18n/config';
 import { format } from '@/src/i18n/messages';
 // CONTENT
-import { resume, socialIcons } from '@/src/components/SiteFrame/content';
+import {
+  resume,
+  linkTarget,
+  socialIcons,
+} from '@/src/components/SiteFrame/content';
 import type {
   About as AboutContent,
   Hero,
@@ -46,9 +51,7 @@ import './styles.css';
 const loadForm = () => import('@/src/components/Form');
 const Form = dynamic(loadForm, { ssr: false });
 
-// The form only checks strings, and lodash's isEmpty for a string or null
-// is the same as this test.
-const isEmpty = (value: string | null | undefined) => !value;
+const noErrors = { fullName: false, email: false, feedback: false };
 
 interface AboutMeProps {
   header: SectionHeader;
@@ -85,21 +88,12 @@ export default function AboutMe({
   });
 
   useEffect(() => whenIdle(() => void loadForm()), []);
-  const [errorsState, setErrorsState] = useState({
-    fullName: false,
-    email: false,
-    feedback: false,
-  });
+  const [errorsState, setErrorsState] = useState(noErrors);
   const validateField = (fieldName: string, value: string | null) => {
     setErrorsState((prevState) => ({
       ...prevState,
-      [fieldName]: isEmpty(value),
+      [fieldName]: !isValidField(fieldName, value),
     }));
-  };
-  const callValidateFields = (formDataParsed: Record<string, string>) => {
-    Object.entries(errorsState).map((item) => {
-      validateField(item[0], formDataParsed[item[0]]);
-    });
   };
 
   const submitForm = async (data: FormEvent<HTMLFormElement>) => {
@@ -147,19 +141,28 @@ export default function AboutMe({
         setVisible(false);
       }
     };
-    callValidateFields(formDataParsed);
-
     // Only the visitor's fields are required. The form also sends form-name
-    // and the bot-field honeypot, which stays empty.
-    if (
-      Object.keys(errorsState).every((field) => !isEmpty(formDataParsed[field]))
-    ) {
-      setSubmitting(true);
-      validateAndSubmit();
-    }
+    // and the bot-field honeypot, which stays empty. Every field is checked,
+    // the email's format included.
+    const wrong = fields.filter(
+      (field) => !isValidField(field, formDataParsed[field]),
+    );
+    setErrorsState({
+      fullName: wrong.includes('fullName'),
+      email: wrong.includes('email'),
+      feedback: wrong.includes('feedback'),
+    });
+    if (wrong.length) return;
+    setSubmitting(true);
+    validateAndSubmit();
   };
 
-  const openModalFeedback = () => setVisible(true);
+  // The form opens with its fields empty, so without the errors of the last
+  // time it was open.
+  const openModalFeedback = () => {
+    setErrorsState(noErrors);
+    setVisible(true);
+  };
   return (
     <>
       <SnackbarFeedback content={openSnackbar} setOpen={setOpenSnackbar} />
@@ -249,8 +252,7 @@ export default function AboutMe({
                   <a
                     className="social-links__link"
                     href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    {...linkTarget(href)}
                     aria-label={text}
                   >
                     <FontAwesomeIcon icon={socialIcons[id]} />

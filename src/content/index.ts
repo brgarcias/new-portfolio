@@ -52,9 +52,6 @@ const splitParagraphs = (text: string) =>
 const byOrder = (a: { order: number }, b: { order: number }) =>
   a.order - b.order;
 
-const escapeHtml = (text: string) =>
-  text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
 export function getProfile(locale: Locale) {
   const profile = readSingleton<ProfileContent>('profile', locale);
   const digits = profile.phone.replace(/\D/g, '');
@@ -135,16 +132,6 @@ export function getAbout(locale: Locale) {
 
 export type About = ReturnType<typeof getAbout>;
 
-// The details become the list the card opens, with a heading before each
-// group that has one.
-function detailsHtml(details: ExperienceEntry['details']) {
-  const items = details.flatMap(({ heading, items }) => [
-    ...(heading ? [`<h4>${escapeHtml(heading)}</h4>`] : []),
-    ...items.map((item) => `<li>${escapeHtml(item)}</li>`),
-  ]);
-  return `<ul>${items.join('')}</ul>`;
-}
-
 // From the most recent role. A function, so the current role's duration is
 // computed on every render instead of once when the module loads.
 export function getExperiences(locale: Locale, messages: Messages) {
@@ -161,7 +148,7 @@ export function getExperiences(locale: Locale, messages: Messages) {
       stack: splitList(stack),
       date: formatDateRange(start, end || undefined, { dateLocale, present }),
       duration: calculateDuration(start, end || undefined, { years, months }),
-      details: detailsHtml(details),
+      details,
     }));
 }
 

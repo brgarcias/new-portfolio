@@ -11,7 +11,7 @@ import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
 // CONTENT
 import type { ContactCard, SectionHeader, SocialLink } from '@/src/content';
-import { socialIcons } from '@/src/components/SiteFrame/content';
+import { linkTarget, socialIcons } from '@/src/components/SiteFrame/content';
 // CSS
 import './styles.css';
 
@@ -77,12 +77,7 @@ export default function Contact({
         <ul className="contact-links" aria-label={socialLabel}>
           {social.map(({ id, href, text }) => (
             <li key={id}>
-              <a
-                className="btn btn--ghost"
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a className="btn btn--ghost" href={href} {...linkTarget(href)}>
                 <FontAwesomeIcon icon={socialIcons[id]} />
                 {text}
               </a>
