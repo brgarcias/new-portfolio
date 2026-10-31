@@ -423,6 +423,21 @@
   }
 }
 
+/* The cases behind the button, until it shows them. */
+.case-card[hidden] {
+  display: none;
+}
+
+/* An odd last case takes the whole row, instead of leaving half of it
+   empty. */
+.case-card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.case-card:last-child:nth-child(odd) .case-card__summary {
+  max-width: 68ch;
+}
+
 .case-card__where {
   color: var(--color-brand-light);
   font-size: 0.75rem;
@@ -487,6 +502,23 @@
 .case-card:focus-within .case-card__more {
   gap: 0.75rem;
   color: var(--color-text);
+}
+
+/* The button that shows the other cases, or hides them again. */
+.cases__more {
+  display: flex;
+  max-width: var(--container);
+  justify-content: center;
+  margin: clamp(1rem, 2.5vw, 1.5rem) auto 0;
+  padding-inline: var(--gutter);
+}
+
+.cases__more svg {
+  transition: transform 0.35s var(--ease-out);
+}
+
+.cases__more [aria-expanded='true'] svg {
+  transform: rotate(180deg);
 }
 
 /* The flow of a case's system: its steps, joined by arrows. */
@@ -626,9 +658,24 @@
   }
 }
 
+/* The cases the button shows rise into place. */
+@media (prefers-reduced-motion: no-preference) {
+  .case-card[data-more] {
+    animation: case-in 0.6s var(--ease-out);
+  }
+}
+
+@keyframes case-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .case-card,
-  .case-card__more {
+  .case-card__more,
+  .cases__more svg {
     transition: none;
   }
 }

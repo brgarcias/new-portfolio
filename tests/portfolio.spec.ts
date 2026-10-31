@@ -550,12 +550,19 @@ test('mostra os estudos de caso e abre cada um num diálogo', async ({
   await page.goto('/');
   await openSection(page, 'projects');
   const cases = page.locator('#projects .case-card');
-  await expect(cases).toHaveCount(4);
-  await expect(cases.first()).toContainText('Trocafone · 2023–2024');
+  const shown = page.locator('#projects .case-card:visible');
+  // One from each company first; a button shows the others.
+  await expect(cases).toHaveCount(7);
+  await expect(shown.locator('.case-card__where')).toHaveText([
+    'PayPal · Since 2025',
+    'AB InBev · 2025–2026',
+    'Serasa · 2024–2025',
+    'Trocafone · 2023–2024',
+  ]);
   // The system's flow, step by step, in order.
+  const migration = cases.nth(3);
   await expect(
-    cases
-      .first()
+    migration
       .getByRole('list', {
         name: 'System flow — From a PHP monolith to microservices',
       })
@@ -571,7 +578,7 @@ test('mostra os estudos de caso e abre cada um num diálogo', async ({
     'opacity',
     '1',
   );
-  await cases.first().getByRole('button').click();
+  await migration.getByRole('button').click();
   const monolith = page.getByRole('dialog', {
     name: 'From a PHP monolith to microservices',
   });
@@ -587,8 +594,31 @@ test('mostra os estudos de caso e abre cada um num diálogo', async ({
   ).toContainText('Kubernetes');
   await page.keyboard.press('Escape');
   await expect(monolith).toBeHidden();
-  // From the keyboard too; a part the content leaves empty does not show.
-  await cases.nth(2).getByRole('button').focus();
+  // A part the content leaves empty does not show, nor a link it lacks.
+  await cases.first().getByRole('button').click();
+  const platform = page.getByRole('dialog', {
+    name: 'Leaner GraphQL for services and frontends',
+  });
+  await expect(platform.getByRole('heading', { level: 3 })).toHaveText([
+    'Context',
+    'My role',
+    'What I built',
+  ]);
+  await expect(platform.getByRole('link')).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await expect(platform).toBeHidden();
+
+  // The button shows the other cases and takes the focus to the first of
+  // them, so the keyboard goes on from there.
+  const more = page.getByRole('button', { name: 'See 3 more case studies' });
+  await expect(more).toHaveAttribute('aria-expanded', 'false');
+  await more.click();
+  await expect(shown).toHaveCount(7);
+  await expect(cases.nth(4).getByRole('button')).toBeFocused();
+  const fewer = page.getByRole('button', { name: 'Show fewer case studies' });
+  await expect(fewer).toHaveAttribute('aria-expanded', 'true');
+  // From the keyboard too.
+  await cases.nth(5).getByRole('button').focus();
   await page.keyboard.press('Enter');
   const store = page.getByRole('dialog', {
     name: 'Store orders processed in queues',
@@ -603,6 +633,12 @@ test('mostra os estudos de caso e abre cada um num diálogo', async ({
   await expect(
     store.getByRole('link', { name: 'See more about the website' }),
   ).toHaveAttribute('href', 'http://www.saldofone.com.br/');
+  await page.keyboard.press('Escape');
+  await expect(store).toBeHidden();
+  // Hiding them again keeps the button on the screen.
+  await fewer.click();
+  await expect(shown).toHaveCount(4);
+  await expect(more).toBeInViewport();
 });
 
 test('mostra os detalhes de um curso em um modal', async ({ page }) => {
