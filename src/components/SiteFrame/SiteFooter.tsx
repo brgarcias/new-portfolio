@@ -4,7 +4,7 @@ import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
-import { socialIcons } from './content';
+import { linkTarget, socialIcons } from './content';
 import type { SocialLink } from '@/src/content';
 
 interface SiteFooterProps {
@@ -46,8 +46,7 @@ export default function SiteFooter({
               <a
                 className="social-links__link"
                 href={href}
-                target="_blank"
-                rel="noopener noreferrer"
+                {...linkTarget(href)}
                 aria-label={text}
               >
                 <FontAwesomeIcon icon={socialIcons[id]} />
