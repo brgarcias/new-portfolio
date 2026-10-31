@@ -2,8 +2,7 @@
   "en": {
     "name": "Bruno Garcia",
     "fullName": "Bruno Garcia da Silva",
-    "role": "Full-Stack Developer",
-    "birthDate": "1999-12-15",
+    "role": "Full-Stack Software Engineer",
     "email": "bruno-151299@hotmail.com",
     "phone": "+55 (11) 99696-9301",
     "whatsappMessage": "Hello, Bruno! Really liked your portfolio.",
@@ -13,8 +12,7 @@
   "pt": {
     "name": "Bruno Garcia",
     "fullName": "Bruno Garcia da Silva",
-    "role": "Desenvolvedor Full-Stack",
-    "birthDate": "1999-12-15",
+    "role": "Engenheiro de Software Full-Stack",
     "email": "bruno-151299@hotmail.com",
     "phone": "+55 (11) 99696-9301",
     "whatsappMessage": "Olá, Bruno! Gostei muito do seu portfólio.",
@@ -24,8 +22,7 @@
   "es": {
     "name": "Bruno Garcia",
     "fullName": "Bruno Garcia da Silva",
-    "role": "Desarrollador Full-Stack",
-    "birthDate": "1999-12-15",
+    "role": "Ingeniero de Software Full-Stack",
     "email": "bruno-151299@hotmail.com",
     "phone": "+55 (11) 99696-9301",
     "whatsappMessage": "¡Hola, Bruno! Me gustó mucho tu portafolio.",

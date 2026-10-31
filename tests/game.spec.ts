@@ -110,7 +110,9 @@ test('abre o hangar com as naves e lembra a escolhida', async ({ page }) => {
   page.on('pageerror', (error) => errors.push(error.message));
   const response = await page.goto('/play');
   expect(response?.status()).toBe(200);
-  await expect(page).toHaveTitle('Play | Bruno Garcia — Dev. Full-Stack');
+  await expect(page).toHaveTitle(
+    'Play | Bruno Garcia — Full-Stack Software Engineer',
+  );
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Choose your ship',
@@ -700,7 +702,9 @@ test('fala a língua da página e leva /en/play para /play', async ({
 
   await page.goto('/pt/play');
   await expect(page.locator('html')).toHaveAttribute('lang', 'pt');
-  await expect(page).toHaveTitle('Jogar | Bruno Garcia — Dev. Full-Stack');
+  await expect(page).toHaveTitle(
+    'Jogar | Bruno Garcia — Engenheiro de Software Full-Stack',
+  );
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Escolha sua nave',
   );

@@ -5,19 +5,16 @@
     "start": "2024-06",
     "end": "2025-02",
     "icon": "code",
-    "stack": "Node.js, NestJS, AWS, REST APIs, Microservices, API Gateway",
+    "stack": "Node.js, NestJS, .NET Core, AWS, REST APIs, Microservices, API Gateway, Docker, Kubernetes",
     "details": [
       {
         "heading": "",
         "items": [
-          "Backend Development: Designing and implementing server-side logic to ensure high performance and responsiveness to front-end requests.",
-          "Node.js: Leveraging the power of Node.js to build efficient and scalable network applications.",
-          "NestJS: Utilizing NestJS framework to develop maintainable and modular server-side applications.",
-          "AWS: Implementing and managing cloud infrastructure using Amazon Web Services to ensure reliability and scalability.",
-          "API REST: Designing and developing RESTful APIs to enable seamless communication between client and server.",
-          "Microservices: Building and orchestrating microservices architecture to enhance modularity and improve system resilience.",
-          "API Gateway: Managing and routing API requests efficiently with API Gateway to ensure secure and consistent service delivery.",
-          "Passionate about leveraging modern technologies to solve complex problems, I thrive in dynamic environments where innovation and continuous learning are valued."
+          "Built backend services with Node.js and NestJS, and some with .NET Core, focused on performance and fast responses to the frontend.",
+          "Designed REST APIs for the clients and for integrating third-party services.",
+          "Built microservices with Docker, orchestrated with Kubernetes, to isolate responsibilities and improve fault tolerance.",
+          "Routed requests through API Gateway, keeping service delivery secure and consistent.",
+          "Implemented and managed the cloud infrastructure on AWS."
         ]
       }
     ]
@@ -28,19 +25,16 @@
     "start": "2024-06",
     "end": "2025-02",
     "icon": "code",
-    "stack": "Node.js, NestJS, AWS, REST APIs, Microservices, API Gateway",
+    "stack": "Node.js, NestJS, .NET Core, AWS, REST APIs, Microservices, API Gateway, Docker, Kubernetes",
     "details": [
       {
         "heading": "",
         "items": [
-          "Desenvolvimento backend: projeto e implementação da lógica do lado do servidor para garantir alto desempenho e respostas rápidas às requisições do front-end.",
-          "Node.js: uso do potencial do Node.js para criar aplicações de rede eficientes e escaláveis.",
-          "NestJS: uso do framework NestJS para desenvolver aplicações de servidor modulares e fáceis de manter.",
-          "AWS: implementação e gestão de infraestrutura em nuvem na Amazon Web Services para garantir confiabilidade e escalabilidade.",
-          "API REST: projeto e desenvolvimento de APIs RESTful para uma comunicação fluida entre cliente e servidor.",
-          "Microsserviços: construção e orquestração de uma arquitetura de microsserviços para aumentar a modularidade e a resiliência do sistema.",
-          "API Gateway: gerenciamento e roteamento eficientes das requisições de API com o API Gateway, garantindo uma entrega de serviços segura e consistente.",
-          "Apaixonado por usar tecnologias modernas para resolver problemas complexos, rendo melhor em ambientes dinâmicos que valorizam a inovação e o aprendizado contínuo."
+          "Construí serviços de backend com Node.js e NestJS, e alguns com .NET Core, com foco em desempenho e respostas rápidas ao frontend.",
+          "Projetei APIs REST para os clientes e para a integração de serviços de terceiros.",
+          "Construí microsserviços com Docker, orquestrados com Kubernetes, para isolar responsabilidades e aumentar a tolerância a falhas.",
+          "Roteei as requisições pelo API Gateway, mantendo a entrega dos serviços segura e consistente.",
+          "Implementei e gerenciei a infraestrutura em nuvem na AWS."
         ]
       }
     ]
@@ -51,19 +45,16 @@
     "start": "2024-06",
     "end": "2025-02",
     "icon": "code",
-    "stack": "Node.js, NestJS, AWS, REST APIs, Microservices, API Gateway",
+    "stack": "Node.js, NestJS, .NET Core, AWS, REST APIs, Microservices, API Gateway, Docker, Kubernetes",
     "details": [
       {
         "heading": "",
         "items": [
-          "Desarrollo backend: diseño e implementación de la lógica del lado del servidor para garantizar un alto rendimiento y respuestas rápidas a las solicitudes del front-end.",
-          "Node.js: aprovechamiento del potencial de Node.js para crear aplicaciones de red eficientes y escalables.",
-          "NestJS: uso del framework NestJS para desarrollar aplicaciones de servidor modulares y fáciles de mantener.",
-          "AWS: implementación y gestión de infraestructura en la nube con Amazon Web Services para garantizar fiabilidad y escalabilidad.",
-          "API REST: diseño y desarrollo de APIs RESTful para una comunicación fluida entre cliente y servidor.",
-          "Microservicios: construcción y orquestación de una arquitectura de microservicios para aumentar la modularidad y la resiliencia del sistema.",
-          "API Gateway: gestión y enrutamiento eficientes de las solicitudes de API con API Gateway, garantizando una entrega de servicios segura y coherente.",
-          "Apasionado por aprovechar las tecnologías modernas para resolver problemas complejos, me desenvuelvo mejor en entornos dinámicos que valoran la innovación y el aprendizaje continuo."
+          "Construí servicios de backend con Node.js y NestJS, y algunos con .NET Core, enfocados en el rendimiento y en respuestas rápidas al frontend.",
+          "Diseñé APIs REST para los clientes y para la integración de servicios de terceros.",
+          "Construí microservicios con Docker, orquestados con Kubernetes, para aislar responsabilidades y mejorar la tolerancia a fallos.",
+          "Enruté las solicitudes a través de API Gateway, manteniendo la entrega de los servicios segura y consistente.",
+          "Implementé y gestioné la infraestructura en la nube en AWS."
         ]
       }
     ]

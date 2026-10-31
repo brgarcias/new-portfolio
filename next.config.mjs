@@ -60,6 +60,12 @@ const nextConfig = {
     return [
       { source: '/en', destination: '/', permanent: true },
       { source: '/en/play', destination: '/play', permanent: true },
+      // The résumé was a ZIP with this PDF inside; old links still reach it.
+      {
+        source: '/documents/cv/Bruno_Garcia_Resume.zip',
+        destination: '/documents/cv/Bruno_Garcia_Resume.pdf',
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

@@ -3,8 +3,9 @@
 // "{name}" marks a value filled in when the text is shown.
 const en = {
   meta: {
-    title: 'Bruno Garcia — Dev. Full-Stack',
-    description: 'Bruno Garcia: An inspired Full-Stack Developer',
+    title: 'Bruno Garcia — Full-Stack Software Engineer',
+    description:
+      'Full-stack software engineer with 8+ years building APIs, distributed systems and web platforms with Node.js, TypeScript, GraphQL, React and AWS.',
     ogLocale: 'en_US',
     // How dates are written, as in "Oct 2025".
     dateLocale: 'en-US',
@@ -84,9 +85,6 @@ const en = {
   contributing: {
     previous: 'Previous photo',
     next: 'Next photo',
-  },
-  contact: {
-    age: '{age} years',
   },
   game: {
     title: 'Play',
