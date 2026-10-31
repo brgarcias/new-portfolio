@@ -28,6 +28,8 @@ const registerList = (element: HTMLOListElement | null) => {
 };
 
 interface GalaxyMapProps {
+  // While it fades out, after it was closed: nothing in it answers.
+  leaving: boolean;
   ship: Ship;
   activePad: SectionId | null;
   visited: SectionId[];
@@ -46,6 +48,7 @@ interface GalaxyMapProps {
 // radar or with M, and closes with its button, with Escape, with M again
 // or with a click outside.
 export default function GalaxyMap({
+  leaving,
   ship,
   activePad,
   visited,
@@ -58,7 +61,7 @@ export default function GalaxyMap({
   const t = useI18n().messages.game;
   const sheet = useRef<HTMLElement>(null);
   const close = useRef<HTMLButtonElement>(null);
-  useDialog(sheet, onClose, close);
+  useDialog(sheet, onClose, close, !leaving);
   const total = places.length;
 
   const stateOf = (id: SectionId) => {
@@ -67,7 +70,11 @@ export default function GalaxyMap({
   };
 
   return (
-    <div className="game-map">
+    <div
+      className="game-map"
+      data-leaving={leaving ? '' : undefined}
+      inert={leaving}
+    >
       <button
         type="button"
         className="game-map__backdrop"

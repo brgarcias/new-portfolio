@@ -316,6 +316,8 @@ interface HudProps {
   onChangeShip: () => void;
   // The navigation chart over the flight, and the course set on it.
   mapOpen: boolean;
+  // While the chart fades out, after it was closed.
+  mapLeaving: boolean;
   onOpenMap: () => void;
   onCloseMap: () => void;
   course: SectionId | null;
@@ -345,6 +347,7 @@ export default function Hud({
   home,
   onChangeShip,
   mapOpen,
+  mapLeaving,
   onOpenMap,
   onCloseMap,
   course,
@@ -574,6 +577,7 @@ export default function Hud({
       {photo && <PhotoMode onLeave={() => onPhoto(false)} />}
       {mapOpen && (
         <GalaxyMap
+          leaving={mapLeaving}
           ship={ship}
           activePad={pad}
           visited={visited}

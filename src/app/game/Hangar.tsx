@@ -6,6 +6,7 @@ import {
   useEffectEvent,
   useMemo,
   useRef,
+  useState,
   type CSSProperties,
   type KeyboardEvent,
   type PointerEvent,
@@ -31,10 +32,21 @@ import { useReducedMotion } from './useMediaQuery';
 interface HangarProps {
   shipId: ShipId;
   onChoose: (id: ShipId) => void;
+  // The moment the launch begins, inside the pilot's press, so the sound
+  // can start; and the moment the ship has gone, when the flight takes
+  // over.
+  onIgnite: () => void;
   onTakeOff: () => void;
   // The address of the site in the page's language.
   home: string;
 }
+
+// The camera on the hangar's stage, and the way that points away from it,
+// down the camera's line of sight, along which the ship leaves on launch.
+const cameraAt: [number, number, number] = [6.5, 3.2, -8.5];
+const awayYaw = Math.atan2(cameraAt[0], cameraAt[2]);
+// How long the launch lasts, in milliseconds, until the flight takes over.
+const launchTime = 950;
 
 // How the ship on the pedestal is turned: by itself, slowly, or by a
 // finger or the mouse dragged across the stage, which spins it and lets
@@ -55,6 +67,10 @@ const spin = {
   stage: null as HTMLDivElement | null,
   readout: null as HTMLSpanElement | null,
   clock: 1,
+  // Seconds since the launch began, or less than zero before it.
+  launch: -1,
+  // The materials of the ship's engines, which flare on launch.
+  engines: [] as THREE.MeshStandardMaterial[],
 };
 
 const clamp = (value: number, min: number, max: number) =>
@@ -67,6 +83,27 @@ const angle = (radians: number) => {
 
 // The pedestal's ring of segments, turning slowly under the ship.
 const segments = Array.from({ length: 24 }, (_, index) => index);
+
+// The launch, a frame of it: the ship turns away from the camera, lifts off
+// the pedestal, its engines flare, and it shoots off down the line of
+// sight, faster and faster.
+function flyOff(stand: THREE.Group, dt: number) {
+  spin.launch += dt;
+  const time = spin.launch;
+  const turn = Math.PI * 2;
+  const target = awayYaw + turn * Math.round((spin.yaw - awayYaw) / turn);
+  spin.yaw += (target - spin.yaw) * (1 - Math.exp(-9 * dt));
+  spin.pitch += (-0.14 - spin.pitch) * (1 - Math.exp(-7 * dt));
+  const go = Math.max(0, time - 0.2);
+  const distance = 60 * go * go;
+  stand.position.set(
+    -Math.sin(spin.yaw) * distance,
+    Math.min(1, time / 0.2) * 0.35 + go * 1.5,
+    -Math.cos(spin.yaw) * distance,
+  );
+  const flare = 1 + Math.min(1, time / 0.25) * 4;
+  for (const engine of spin.engines) engine.emissiveIntensity = flare;
+}
 
 // The chosen ship, turning on its pedestal.
 function Preview({ shipId }: { shipId: ShipId }) {
@@ -82,6 +119,21 @@ function Preview({ shipId }: { shipId: ShipId }) {
     spin.tilt = 0;
     spin.idle = 10;
   }, [reduced]);
+
+  // The engines' materials, each the ship's own, freed with it.
+  useEffect(() => {
+    const engines: THREE.MeshStandardMaterial[] = [];
+    model.traverse((object) => {
+      if (object.userData.engine && object instanceof THREE.Mesh) {
+        engines.push(object.material as THREE.MeshStandardMaterial);
+      }
+    });
+    spin.engines = engines;
+    return () => {
+      spin.engines = [];
+      for (const material of engines) material.dispose();
+    };
+  }, [model]);
 
   // A new ship on the pedestal grows in, on a spring.
   useEffect(() => {
@@ -115,6 +167,7 @@ function Preview({ shipId }: { shipId: ShipId }) {
     spin.appear += dt;
     const grow =
       1 - 0.35 * Math.exp(-5 * spin.appear) * Math.cos(9 * spin.appear);
+    if (spin.launch >= 0) flyOff(stand.current, dt);
     stand.current.scale.setScalar(grow);
     stand.current.rotation.y = spin.yaw;
     stand.current.rotation.x = spin.pitch;
@@ -199,7 +252,15 @@ const registerReadout = (element: HTMLSpanElement | null) => {
 // The stage, where a drag turns the ship, framed like a projector's view:
 // the model and class above, the bay's number, the drag's hint and the
 // turn's readout below. A light crosses it whenever the ship changes.
-function Stage({ ship, index }: { ship: Ship; index: number }) {
+function Stage({
+  ship,
+  index,
+  launching,
+}: {
+  ship: Ship;
+  index: number;
+  launching: boolean;
+}) {
   const t = useI18n().messages.game;
   const reduced = useReducedMotion();
 
@@ -252,7 +313,7 @@ function Stage({ ship, index }: { ship: Ship; index: number }) {
           fov: 38,
           near: 0.5,
           far: 100,
-          position: [6.5, 3.2, -8.5],
+          position: cameraAt,
         }}
       >
         <Preview shipId={ship.id} />
@@ -273,7 +334,11 @@ function Stage({ ship, index }: { ship: Ship; index: number }) {
         <p className="stage-hud__br g-num" aria-hidden="true">
           <span ref={registerReadout}>000° · +00°</span>
         </p>
-        <span key={ship.id} className="stage-hud__scan" aria-hidden="true" />
+        <span
+          key={launching ? 'launch' : ship.id}
+          className="stage-hud__scan"
+          aria-hidden="true"
+        />
       </div>
     </div>
   );
@@ -292,10 +357,12 @@ const units: Record<string, string> = {
 function Sheet({
   ship,
   index,
+  launching,
   onTakeOff,
 }: {
   ship: Ship;
   index: number;
+  launching: boolean;
   onTakeOff: () => void;
 }) {
   const t = useI18n().messages.game;
@@ -349,11 +416,12 @@ function Sheet({
         <button
           type="button"
           className="g-btn g-btn--primary hangar__launch"
+          aria-disabled={launching || undefined}
           onClick={onTakeOff}
         >
           <FontAwesomeIcon icon={faRocket} />
-          {t.takeOff}
-          <Keycap>Enter</Keycap>
+          {launching ? t.launching : t.takeOff}
+          {!launching && <Keycap>Enter</Keycap>}
         </button>
       </div>
     </section>
@@ -367,6 +435,7 @@ function Sheet({
 export default function Hangar({
   shipId,
   onChoose,
+  onIgnite,
   onTakeOff,
   home,
 }: Readonly<HangarProps>) {
@@ -374,6 +443,37 @@ export default function Hangar({
   const ship = ships[shipId];
   const index = shipIds.indexOf(shipId);
   const roster = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+  const [launching, setLaunching] = useState(false);
+  const launchTimer = useRef(0);
+
+  // A hangar comes in with no launch under way, whenever its 3D stage
+  // mounts.
+  useEffect(() => {
+    spin.launch = -1;
+    return () => window.clearTimeout(launchTimer.current);
+  }, []);
+
+  // Takes off: the launch plays on the stage while the hangar dims, and
+  // the flight takes over when it ends; at once, for those who ask for
+  // less motion. A second press during the launch does nothing.
+  const launch = () => {
+    if (launching) return;
+    onIgnite();
+    if (reduced) {
+      onTakeOff();
+      return;
+    }
+    spin.launch = 0;
+    setLaunching(true);
+    // On a phone the pilot may be down by the sheet: the stage comes into
+    // view, to see the ship go.
+    const stage = spin.stage?.getBoundingClientRect();
+    if (stage && (stage.top < 0 || stage.bottom > window.innerHeight)) {
+      spin.stage?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    launchTimer.current = window.setTimeout(onTakeOff, launchTime);
+  };
 
   const pick = (id: ShipId, focus = false) => {
     onChoose(id);
@@ -385,6 +485,7 @@ export default function Hangar({
   };
 
   const onRosterKey = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (launching) return;
     const last = shipIds.length - 1;
     let next = -1;
     if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
@@ -399,9 +500,11 @@ export default function Hangar({
   };
 
   // Enter takes off, and 1 to 6 pick a ship, unless a link or a button
-  // other than a ship has the focus.
+  // other than a ship has the focus. During the launch, the ship that
+  // leaves is the one that flies.
   const onKey = useEffectEvent((event: globalThis.KeyboardEvent) => {
     if (event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (launching) return;
     const target = event.target as HTMLElement | null;
     const busy =
       target?.closest('a, input, textarea, select') ||
@@ -409,7 +512,7 @@ export default function Hangar({
     if (busy) return;
     if (event.key === 'Enter') {
       event.preventDefault();
-      onTakeOff();
+      launch();
       return;
     }
     const number = Number(event.key);
@@ -425,7 +528,7 @@ export default function Hangar({
   }, []);
 
   return (
-    <div className="hangar">
+    <div className="hangar" data-launching={launching ? '' : undefined}>
       <header className="hangar__top">
         <a className="g-btn hangar__back" href={home}>
           <FontAwesomeIcon icon={faArrowLeft} />
@@ -441,7 +544,7 @@ export default function Hangar({
           <p className="g-label hangar__eyebrow">{t.hangar}</p>
           <h1 className="hangar__title">{t.chooseShip}</h1>
         </div>
-        <Stage ship={ship} index={index} />
+        <Stage ship={ship} index={index} launching={launching} />
         <div
           ref={roster}
           className="hangar__roster"
@@ -472,7 +575,12 @@ export default function Hangar({
             </button>
           ))}
         </div>
-        <Sheet ship={ship} index={index} onTakeOff={onTakeOff} />
+        <Sheet
+          ship={ship}
+          index={index}
+          launching={launching}
+          onTakeOff={launch}
+        />
       </div>
     </div>
   );

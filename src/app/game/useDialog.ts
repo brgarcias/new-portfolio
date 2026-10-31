@@ -6,17 +6,18 @@ const focusable =
 
 // A dialog over the flight: focus moves into it, Tab and Shift+Tab stay
 // inside it, Escape closes it, and focus goes back where it was when it
-// closes.
+// closes, or as soon as it stops being active, while it fades out.
 export function useDialog(
   dialog: RefObject<HTMLElement | null>,
   onClose: () => void,
   first?: RefObject<HTMLElement | null>,
+  active = true,
 ) {
   const close = useEffectEvent(onClose);
 
   useEffect(() => {
     const element = dialog.current;
-    if (!element) return;
+    if (!element || !active) return;
     const before = document.activeElement;
     (first?.current ?? element).focus();
     const onKeyDown = (event: KeyboardEvent) => {
@@ -45,5 +46,5 @@ export function useDialog(
       document.removeEventListener('keydown', onKeyDown);
       if (before instanceof HTMLElement && before.isConnected) before.focus();
     };
-  }, [dialog, first]);
+  }, [dialog, first, active]);
 }

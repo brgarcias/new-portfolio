@@ -93,6 +93,7 @@ const es: Messages = {
     chooseShip: 'Elige tu nave',
     roster: 'Naves',
     takeOff: 'Despegar',
+    launching: 'Despegando…',
     changeShip: 'Cambiar de nave',
     backToSite: 'Volver al portafolio',
     dragToTurn: 'Arrastra para girar la nave',

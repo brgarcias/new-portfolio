@@ -98,6 +98,7 @@ const en = {
     chooseShip: 'Choose your ship',
     roster: 'Ships',
     takeOff: 'Take off',
+    launching: 'Launching…',
     changeShip: 'Change ship',
     backToSite: 'Back to the portfolio',
     dragToTurn: 'Drag to turn the ship',

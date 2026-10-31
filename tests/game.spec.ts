@@ -161,6 +161,43 @@ test('abre o hangar com as naves e lembra a escolhida', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+test('decola numa sequência de lançamento, ou na hora com menos movimento', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+  // The page's clock is the test's: once it stops, the launch waits for
+  // the test to move time on.
+  await page.clock.install();
+  await page.goto('/play');
+  await expect(page.locator('.hangar__canvas canvas')).toBeVisible();
+  await page.clock.pauseAt(new Date(Date.now() + 2000));
+  const xwing = page.getByRole('radio', { name: 'X-wing' });
+  await xwing.focus();
+  await page.keyboard.press('Enter');
+  // The launch plays: the button says so and answers no more, and the
+  // flight waits for the ship to be gone.
+  const launching = page.getByRole('button', { name: /Launching/ });
+  await expect(launching).toHaveAttribute('aria-disabled', 'true');
+  await expect(page.locator('.hangar')).toHaveAttribute('data-launching', '');
+  // The ship that leaves is the one that flies: the numbers and the
+  // arrows pick no other one meanwhile.
+  await page.keyboard.press('2');
+  await page.keyboard.press('ArrowRight');
+  await expect(xwing).toHaveAttribute('aria-checked', 'true');
+  await expect(page.locator('.hud')).toHaveCount(0);
+  await page.clock.runFor(1200);
+  await expect(page.locator('.hud')).toBeVisible();
+  await expect(page.locator('.hud__ship')).toHaveText('X-wing');
+  // With less motion, back to the hangar and off again, at once.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.getByRole('button', { name: 'Change ship' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Choose your ship',
+  );
+  await page.getByRole('button', { name: /Take off/ }).click();
+  await expect(page.locator('.hud')).toBeVisible();
+});
+
 test('gira a nave no hangar ao arrastar', async ({ page }) => {
   await page.goto('/play');
   const stage = page.locator('.hangar__stage');
