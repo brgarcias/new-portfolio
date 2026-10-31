@@ -4,17 +4,16 @@
     "title": "Software Engineer (Node.js / GraphQL Platform)",
     "start": "2025-10",
     "end": "",
-    "icon": "code",
     "stack": "Node.js, GraphQL",
     "details": [
       {
         "heading": "",
         "items": [
-          "Designed and evolved GraphQL schemas powering scalable data access across multiple platform services and frontend applications",
-          "Implemented resilient APIs supporting service-to-service communication within a distributed architecture",
-          "Improved resolver performance and query efficiency, reducing over-fetching and optimizing client response times",
-          "Applied clean architecture and strong modular design patterns to support maintainability across a growing codebase",
-          "Collaborated cross-functionally with platform engineers, product stakeholders, and frontend teams to deliver secure and production-grade features at scale"
+          "Design and evolve GraphQL schemas that serve data to several platform services and front-end applications.",
+          "Build Node.js APIs for service-to-service communication in a distributed architecture.",
+          "Improve resolver performance and query efficiency, reducing over-fetching and client response times.",
+          "Apply clean architecture and modular design to keep a growing codebase maintainable.",
+          "Work with platform engineers, product stakeholders and front-end teams to ship secure, production-grade features."
         ]
       }
     ]
@@ -24,17 +23,16 @@
     "title": "Engenheiro de Software (Plataforma Node.js / GraphQL)",
     "start": "2025-10",
     "end": "",
-    "icon": "code",
     "stack": "Node.js, GraphQL",
     "details": [
       {
         "heading": "",
         "items": [
-          "Projetei e evoluí schemas GraphQL que viabilizam o acesso escalável a dados em vários serviços da plataforma e aplicações frontend",
-          "Implementei APIs resilientes para a comunicação entre serviços em uma arquitetura distribuída",
-          "Melhorei o desempenho dos resolvers e a eficiência das consultas, reduzindo o over-fetching e otimizando os tempos de resposta para os clientes",
-          "Apliquei arquitetura limpa e padrões sólidos de design modular para facilitar a manutenção de uma base de código em crescimento",
-          "Colaborei de forma multidisciplinar com engenheiros de plataforma, stakeholders de produto e times de frontend para entregar funcionalidades seguras e prontas para produção em escala"
+          "Projeto e evoluo esquemas GraphQL que fornecem dados a vários serviços da plataforma e a aplicações front-end.",
+          "Desenvolvo APIs em Node.js para a comunicação entre serviços numa arquitetura distribuída.",
+          "Melhoro o desempenho dos resolvers e a eficiência das consultas, reduzindo o excesso de dados e o tempo de resposta aos clientes.",
+          "Aplico arquitetura limpa e design modular para manter uma base de código em crescimento fácil de manter.",
+          "Trabalho com engenheiros de plataforma, stakeholders de produto e times de front-end para entregar funcionalidades seguras e prontas para produção."
         ]
       }
     ]
@@ -44,17 +42,16 @@
     "title": "Ingeniero de Software (Plataforma Node.js / GraphQL)",
     "start": "2025-10",
     "end": "",
-    "icon": "code",
     "stack": "Node.js, GraphQL",
     "details": [
       {
         "heading": "",
         "items": [
-          "Diseñé y evolucioné esquemas GraphQL que permiten un acceso escalable a datos en varios servicios de la plataforma y aplicaciones frontend",
-          "Implementé APIs resilientes para la comunicación entre servicios en una arquitectura distribuida",
-          "Mejoré el rendimiento de los resolvers y la eficiencia de las consultas, reduciendo el over-fetching y optimizando los tiempos de respuesta para los clientes",
-          "Apliqué arquitectura limpia y sólidos patrones de diseño modular para facilitar el mantenimiento de una base de código en crecimiento",
-          "Colaboré de forma multifuncional con ingenieros de plataforma, stakeholders de producto y equipos de frontend para entregar funcionalidades seguras y listas para producción a escala"
+          "Diseño y evoluciono esquemas GraphQL que proveen datos a varios servicios de la plataforma y a aplicaciones front-end.",
+          "Desarrollo APIs en Node.js para la comunicación entre servicios en una arquitectura distribuida.",
+          "Mejoro el rendimiento de los resolvers y la eficiencia de las consultas, reduciendo el exceso de datos y el tiempo de respuesta a los clientes.",
+          "Aplico arquitectura limpia y diseño modular para mantener fácil de mantener una base de código que crece.",
+          "Trabajo con ingenieros de plataforma, stakeholders de producto y equipos de front-end para entregar funcionalidades seguras y listas para producción."
         ]
       }
     ]

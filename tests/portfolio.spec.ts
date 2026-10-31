@@ -30,7 +30,7 @@ test('carrega o portfólio sem erros e sem rolagem horizontal', async ({
   expect(response?.status()).toBe(200);
   // Regenerated daily, so the durations and the age stay current.
   expect(response?.headers()['cache-control']).toContain('s-maxage=86400');
-  await expect(page).toHaveTitle('Bruno Garcia — Dev. Full-Stack');
+  await expect(page).toHaveTitle('Bruno Garcia — Full-Stack Developer');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(
     page.locator('meta[name="google-site-verification"]'),
@@ -352,16 +352,12 @@ test('respeita a preferência por reduzir movimento', async ({ page }) => {
   const viewTransitions = await countViewTransitions(page);
   await page.goto('/');
   await expect(page.locator('html')).toHaveCSS('scroll-behavior', 'auto');
-  await expect(page.locator('.hero__title-accent')).toHaveCSS(
+  // The top appears at once, and the timeline is drawn at once.
+  await expect(page.locator('#top .hero__reveal').first()).toHaveCSS(
     'animation-name',
     'none',
   );
-  // The timeline is drawn at once and the ribbon stands still.
   await expect(page.locator('.xp__rail-fill')).toHaveCSS(
-    'animation-name',
-    'none',
-  );
-  await expect(page.locator('.tech-ribbon__row').first()).toHaveCSS(
     'animation-name',
     'none',
   );
@@ -416,18 +412,22 @@ test('abre uma experiência pela seta do título', async ({ page }) => {
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
 });
 
-test('pausa as animações em loop fora da tela', async ({ page }) => {
+test('não deixa nada em loop na página depois das entradas', async ({
+  page,
+}) => {
   await page.goto('/');
-  const hero = page.locator('#top');
-  const chip = hero.locator('.hero__chip').first();
-  await expect(chip).toHaveCSS('animation-play-state', 'running');
-  await openSection(page, 'contact');
-  await expect(hero).toHaveAttribute('data-offscreen');
-  await expect(chip).toHaveCSS('animation-play-state', 'paused');
-  await openSection(page, 'about');
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-  await expect(hero).not.toHaveAttribute('data-offscreen');
-  await expect(chip).toHaveCSS('animation-play-state', 'running');
+  await expect(page.locator('#top .hero__visual')).toHaveCSS('opacity', '1');
+  // Every animation of the page has an end.
+  const looping = await page.evaluate(() =>
+    document
+      .getAnimations()
+      .filter(
+        (animation) =>
+          animation.effect?.getComputedTiming().iterations === Infinity,
+      )
+      .map((animation) => (animation as CSSAnimation).animationName),
+  );
+  expect(looping).toEqual([]);
 });
 
 test('abre e recolhe as experiências profissionais', async ({ page }) => {
@@ -448,17 +448,15 @@ test('abre e recolhe as experiências profissionais', async ({ page }) => {
   await expect(items.last().locator('.xp-item__period')).toHaveText(
     'May 2017 — Apr 2018 · 11m',
   );
-  // The tags and the ribbon repeat technologies that the descriptions name.
+  // The tags repeat technologies that the descriptions name.
   await expect(
     items.nth(1).getByRole('list', { name: 'Technologies' }),
   ).toContainText('Azure DevOps');
-  await expect(page.locator('#experience .tech-ribbon')).toHaveAttribute(
-    'aria-hidden',
-    'true',
-  );
-  await expect(page.locator('#experience .tech-ribbon')).toContainText(
-    'Step Functions',
-  );
+  // The details are lists of items, with a group's heading before its
+  // list, never inside it.
+  await expect(
+    page.locator('#experience .xp-card__details ul > :not(li)'),
+  ).toHaveCount(0);
 
   // The current role starts open; the others open and close on a click.
   await expect(items.first().locator('.xp-card__toggle')).toHaveAttribute(
@@ -484,18 +482,15 @@ test('alterna as etapas da formação acadêmica', async ({ page }) => {
   const tab = (name: string) => education.getByRole('tab', { name });
   // Only the chosen step's panel is shown.
   const panel = education.getByRole('tabpanel');
-  await expect(education.getByRole('tab')).toHaveCount(5);
+  await expect(education.getByRole('tab')).toHaveCount(4);
   await expect(panel).toHaveCount(1);
   await expect(panel.getByRole('heading', { level: 3 })).toHaveText(
     'Colégio Salesiano Santa Teresinha',
   );
   await scrollTo(page, '#education .edu');
-  await tab('University Education').click();
-  await expect(tab('University Education')).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
-  await expect(tab('Elementary School')).toHaveAttribute(
+  await tab('University').click();
+  await expect(tab('University')).toHaveAttribute('aria-selected', 'true');
+  await expect(tab('Elementary school')).toHaveAttribute(
     'aria-selected',
     'false',
   );
@@ -503,19 +498,23 @@ test('alterna as etapas da formação acadêmica', async ({ page }) => {
     'Universidade São Judas Tadeu',
   );
   // The arrow keys, Home and End move between the steps, as in any tabs.
+  // The step still ahead is marked as such.
   await page.keyboard.press('ArrowDown');
   await expect(tab('Postgraduate')).toBeFocused();
+  await expect(tab('Postgraduate')).toHaveClass(/edu-step--upcoming/);
   await expect(panel.getByRole('heading', { level: 3 })).toHaveText(
-    'Which course?',
+    'Postgraduate degree',
   );
-  await page.keyboard.press('End');
-  await expect(tab('Doctorate Degree')).toHaveAttribute(
+  await page.keyboard.press('Home');
+  await expect(tab('Elementary school')).toHaveAttribute(
     'aria-selected',
     'true',
   );
+  await page.keyboard.press('End');
+  await expect(tab('Postgraduate')).toHaveAttribute('aria-selected', 'true');
   await page.keyboard.press('ArrowDown');
-  await expect(tab('Elementary School')).toBeFocused();
-  await expect(tab('Elementary School')).toHaveAttribute(
+  await expect(tab('Elementary school')).toBeFocused();
+  await expect(tab('Elementary school')).toHaveAttribute(
     'aria-selected',
     'true',
   );
@@ -569,21 +568,21 @@ test('navega pelos projetos e abre os detalhes', async ({ page }) => {
     '.project-card[aria-current="true"] .project-card__title',
   );
   await expect(current).toHaveText('CSS');
-  await projects.getByRole('button', { name: 'Next Project' }).click();
+  await projects.getByRole('button', { name: 'Next project' }).click();
   await expect(current).toHaveText('Sensei');
-  await projects.getByRole('button', { name: 'Previous Project' }).click();
+  await projects.getByRole('button', { name: 'Previous project' }).click();
   await expect(current).toHaveText('CSS');
   // The arrows go around.
-  await projects.getByRole('button', { name: 'Previous Project' }).click();
+  await projects.getByRole('button', { name: 'Previous project' }).click();
   await expect(current).toHaveText('Malka RH');
   await waitForProjectsTrack(page);
 
   await projects
-    .getByRole('button', { name: 'See details about Malka RH' })
+    .getByRole('button', { name: 'View details about Malka RH' })
     .click();
   const dialog = page.getByRole('dialog', { name: 'Malka RH' });
   await expect(dialog).toBeVisible();
-  const link = dialog.getByRole('link', { name: /See more about the website/ });
+  const link = dialog.getByRole('link', { name: /Visit the website/ });
   await expect(link).toHaveAttribute(
     'href',
     'http://malkarh.com.br/lp/recrutamento-e-selecao/',
@@ -592,7 +591,7 @@ test('navega pelos projetos e abre os detalhes', async ({ page }) => {
   await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   await dialog.locator('footer').getByRole('button', { name: 'Close' }).click();
   await expect(dialog).toBeHidden();
-  await projects.getByRole('button', { name: 'Next Project' }).click();
+  await projects.getByRole('button', { name: 'Next project' }).click();
   await expect(current).toHaveText('CSS');
   await waitForProjectsTrack(page);
 
@@ -662,9 +661,9 @@ test('mostra os dados de contato', async ({ page }) => {
   await openSection(page, 'contact');
   const cards = page.locator('#contact .contact-card');
   await expect(cards.getByRole('heading', { level: 3 })).toHaveText([
+    'bruno-151299@hotmail.com',
     'Bruno Garcia da Silva',
     'Bachelor of Computer Science',
-    'bruno-151299@hotmail.com',
     'Advanced English',
   ]);
   const contact = page.locator('#contact .contact-card--contact');
@@ -679,15 +678,23 @@ test('mostra os dados de contato', async ({ page }) => {
   );
   const links = page.locator('#contact .contact-links a');
   await expect(links).toHaveText(['Email', 'LinkedIn', 'WhatsApp', 'GitHub']);
-  for (const link of await links.all()) {
+  await expect(links.first()).not.toHaveAttribute('target');
+  for (const link of (await links.all()).slice(1)) {
+    await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   }
+  await expect(
+    page.locator('#contact').getByRole('button', { name: 'Leave feedback' }),
+  ).toBeVisible();
 });
 
 test('fecha a página com o rodapé', async ({ page }) => {
   await page.goto('/');
   const footer = page.locator('.site-footer');
-  await expect(footer.locator('.social-links a')).toHaveCount(4);
+  await expect(footer.locator('.site-footer__role')).toHaveText(
+    'Full-Stack Developer',
+  );
+  await expect(footer.locator('.social-links')).toHaveCount(0);
   await expect(footer.locator('.site-footer__year')).toHaveText(
     String(new Date().getUTCFullYear()),
   );
@@ -739,7 +746,9 @@ test('oferece o currículo e os canais de contato', async ({
     'href',
     'https://github.com/brgarcias',
   );
-  for (const link of await social.all()) {
+  // The email opens the mail app in place; the sites open in a new tab.
+  await expect(social.first()).not.toHaveAttribute('target');
+  for (const link of (await social.all()).slice(1)) {
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   }
@@ -747,10 +756,9 @@ test('oferece o currículo e os canais de contato', async ({
     'download',
     'Bruno_Garcia_Resume.zip',
   );
-  await expect(page.getByRole('link', { name: 'text me' })).toHaveAttribute(
-    'rel',
-    'noopener noreferrer',
-  );
+  await expect(
+    page.getByRole('link', { name: 'send a WhatsApp message' }),
+  ).toHaveAttribute('rel', 'noopener noreferrer');
 });
 
 test('publica ícones e manifesto que existem', async ({ page, request }) => {
@@ -782,20 +790,37 @@ test('publica ícones e manifesto que existem', async ({ page, request }) => {
 test('valida os campos do formulário de feedback', async ({ page }) => {
   await page.goto('/');
   const dialog = await openFeedbackForm(page);
+  const name = dialog.locator('input[name="fullName"]');
+  const email = dialog.locator('input[name="email"]');
+  // Entering and leaving an empty field says nothing yet.
+  await name.focus();
+  await email.focus();
+  await expect(dialog.getByText('Enter your name.')).toBeHidden();
+
   await dialog.getByRole('button', { name: 'Send' }).click();
-  await expect(dialog.getByText('Please, write your name.')).toBeVisible();
-  await expect(dialog.getByText('Please, tell me your email.')).toBeVisible();
-  await expect(
-    dialog.getByText('Please, give me your feedback.'),
-  ).toBeVisible();
+  await expect(dialog.getByText('Enter your name.')).toBeVisible();
+  await expect(dialog.getByText('Enter a valid email address.')).toBeVisible();
+  await expect(dialog.getByText('Write a message.')).toBeVisible();
+  // The first wrong field gets the focus, and its error describes it.
+  await expect(name).toBeFocused();
+  await expect(name).toHaveAttribute('aria-invalid', 'true');
+  await expect(name).toHaveAccessibleDescription('Enter your name.');
 
-  await dialog.locator('input[name="email"]').fill('email-invalido');
-  await expect(dialog.getByText('Please, tell me your email.')).toBeVisible();
-  await dialog.locator('input[name="email"]').fill('visitante@example.com');
-  await expect(dialog.getByText('Please, tell me your email.')).toBeHidden();
+  await email.fill('email-invalido');
+  await expect(dialog.getByText('Enter a valid email address.')).toBeVisible();
+  await email.fill('visitante@example.com');
+  await expect(dialog.getByText('Enter a valid email address.')).toBeHidden();
 
-  await dialog.getByRole('button', { name: 'Close' }).last().click();
+  // An address typed wrong is pointed out as the field is left.
+  await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
+  const again = await openFeedbackForm(page);
+  await again.locator('input[name="email"]').fill('visitante@');
+  await again.locator('input[name="fullName"]').focus();
+  await expect(again.getByText('Enter a valid email address.')).toBeVisible();
+
+  await again.getByRole('button', { name: 'Cancel' }).click();
+  await expect(again).toBeHidden();
 });
 
 test('envia o feedback ao Netlify Forms e confirma o envio', async ({
@@ -815,11 +840,9 @@ test('envia o feedback ao Netlify Forms e confirma o envio', async ({
   await expect(dialog).toBeHidden();
   // A status, so screen readers announce it.
   await expect(
-    page.getByRole('status').getByText('Message Submitted'),
+    page.getByRole('status').getByText('Message sent'),
   ).toBeVisible();
-  await expect(
-    page.getByText('Thank you very much for your feedback!'),
-  ).toBeVisible();
+  await expect(page.getByText('Thanks for the feedback.')).toBeVisible();
   // Netlify Forms only accepts submissions posted to a static file.
   expect(new URL(url!).pathname).toBe('/contact.html');
   expect(payload?.get('form-name')).toBe('contact');
@@ -829,7 +852,7 @@ test('envia o feedback ao Netlify Forms e confirma o envio', async ({
   expect(payload?.get('feedback')).toBe('Gostei muito do portfólio.');
 
   await page.keyboard.press('Escape');
-  await expect(page.getByText('Message Submitted')).toBeHidden();
+  await expect(page.getByText('Message sent')).toBeHidden();
 });
 
 test('declara ao Netlify todos os campos do feedback', async ({
@@ -861,20 +884,30 @@ test('declara ao Netlify todos os campos do feedback', async ({
 });
 
 test('avisa quando o envio do feedback falha', async ({ page }) => {
+  let status = 500;
   await page.route('**/*', (route) =>
     route.request().method() === 'POST'
-      ? route.fulfill({ status: 500, body: '' })
+      ? route.fulfill({ status, body: '' })
       : route.continue(),
   );
   await page.goto('/');
   const dialog = await fillFeedback(page);
   await dialog.getByRole('button', { name: 'Send' }).click();
-  await expect(page.getByText('We had a problem')).toBeVisible();
+  await expect(dialog.getByRole('alert')).toHaveText(
+    "Your message wasn't sent. Please try again.",
+  );
+  await expect(dialog.locator('input[name="fullName"]')).toHaveValue(
+    'Visitante de Teste',
+  );
+  // On the next try it goes, and the notice can be closed by its button.
+  status = 200;
+  await dialog.getByRole('button', { name: 'Send' }).click();
+  await expect(dialog).toBeHidden();
   await expect(
-    page.getByText('An error occurred while sending your message!'),
+    page.getByRole('status').getByText('Message sent'),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Close notification' }).click();
-  await expect(page.getByText('We had a problem')).toBeHidden();
+  await expect(page.getByText('Message sent')).toBeHidden();
 });
 
 test('mostra a página 404 no estilo do site e volta ao portfólio', async ({
@@ -885,7 +918,7 @@ test('mostra a página 404 no estilo do site e volta ao portfólio', async ({
   const response = await page.goto('/pagina-inexistente');
   expect(response?.status()).toBe(404);
   await expect(page).toHaveTitle(
-    'Page Not Found | Bruno Garcia — Dev. Full-Stack',
+    'Page Not Found | Bruno Garcia — Full-Stack Developer',
   );
   for (const robots of await page.locator('meta[name="robots"]').all()) {
     await expect(robots).toHaveAttribute('content', /noindex/);
@@ -951,7 +984,7 @@ test('aplica os cabeçalhos de segurança sem bloquear o site', async ({
   // Exercises every section, every dialog and the form.
   const dialog = await fillFeedback(page);
   await dialog.getByRole('button', { name: 'Send' }).click();
-  await expect(page.getByText('Message Submitted')).toBeVisible();
+  await expect(page.getByText('Message sent')).toBeVisible();
   for (const id of sections.slice(1)) {
     await openSection(page, id);
   }
@@ -970,7 +1003,7 @@ test('aplica os cabeçalhos de segurança sem bloquear o site', async ({
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toBeHidden();
   await openSection(page, 'projects');
-  await page.getByRole('button', { name: 'See details about CSS' }).click();
+  await page.getByRole('button', { name: 'View details about CSS' }).click();
   await expect(page.getByRole('dialog', { name: 'CSS' })).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
   expect(
@@ -1027,7 +1060,7 @@ test('publica os metadados de busca e compartilhamento', async ({
   );
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
     'content',
-    'Bruno Garcia — Dev. Full-Stack',
+    'Bruno Garcia — Full-Stack Developer',
   );
   // Links shared on WhatsApp and LinkedIn show the large image.
   const ogImage = page.locator('meta[property="og:image"]');

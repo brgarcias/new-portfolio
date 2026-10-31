@@ -4,20 +4,16 @@
     "title": "Backend Developer",
     "start": "2024-06",
     "end": "2025-02",
-    "icon": "code",
     "stack": "Node.js, NestJS, AWS, REST APIs, Microservices, API Gateway",
     "details": [
       {
         "heading": "",
         "items": [
-          "Backend Development: Designing and implementing server-side logic to ensure high performance and responsiveness to front-end requests.",
-          "Node.js: Leveraging the power of Node.js to build efficient and scalable network applications.",
-          "NestJS: Utilizing NestJS framework to develop maintainable and modular server-side applications.",
-          "AWS: Implementing and managing cloud infrastructure using Amazon Web Services to ensure reliability and scalability.",
-          "API REST: Designing and developing RESTful APIs to enable seamless communication between client and server.",
-          "Microservices: Building and orchestrating microservices architecture to enhance modularity and improve system resilience.",
-          "API Gateway: Managing and routing API requests efficiently with API Gateway to ensure secure and consistent service delivery.",
-          "Passionate about leveraging modern technologies to solve complex problems, I thrive in dynamic environments where innovation and continuous learning are valued."
+          "Designed and built server-side logic that answers front-end requests quickly.",
+          "Built modular, maintainable services with Node.js and NestJS.",
+          "Designed and developed REST APIs for the communication between client and server.",
+          "Built and orchestrated a microservices architecture, with API Gateway routing the requests.",
+          "Implemented and managed the cloud infrastructure on AWS."
         ]
       }
     ]
@@ -27,20 +23,16 @@
     "title": "Desenvolvedor Backend",
     "start": "2024-06",
     "end": "2025-02",
-    "icon": "code",
     "stack": "Node.js, NestJS, AWS, REST APIs, Microservices, API Gateway",
     "details": [
       {
         "heading": "",
         "items": [
-          "Desenvolvimento backend: projeto e implementação da lógica do lado do servidor para garantir alto desempenho e respostas rápidas às requisições do front-end.",
-          "Node.js: uso do potencial do Node.js para criar aplicações de rede eficientes e escaláveis.",
-          "NestJS: uso do framework NestJS para desenvolver aplicações de servidor modulares e fáceis de manter.",
-          "AWS: implementação e gestão de infraestrutura em nuvem na Amazon Web Services para garantir confiabilidade e escalabilidade.",
-          "API REST: projeto e desenvolvimento de APIs RESTful para uma comunicação fluida entre cliente e servidor.",
-          "Microsserviços: construção e orquestração de uma arquitetura de microsserviços para aumentar a modularidade e a resiliência do sistema.",
-          "API Gateway: gerenciamento e roteamento eficientes das requisições de API com o API Gateway, garantindo uma entrega de serviços segura e consistente.",
-          "Apaixonado por usar tecnologias modernas para resolver problemas complexos, rendo melhor em ambientes dinâmicos que valorizam a inovação e o aprendizado contínuo."
+          "Projetei e desenvolvi a lógica do servidor para responder rapidamente às requisições do front-end.",
+          "Desenvolvi serviços modulares e fáceis de manter com Node.js e NestJS.",
+          "Projetei e desenvolvi APIs REST para a comunicação entre cliente e servidor.",
+          "Construí e orquestrei uma arquitetura de microsserviços, com o API Gateway roteando as requisições.",
+          "Implementei e gerenciei a infraestrutura em nuvem na AWS."
         ]
       }
     ]
@@ -50,20 +42,16 @@
     "title": "Desarrollador Backend",
     "start": "2024-06",
     "end": "2025-02",
-    "icon": "code",
     "stack": "Node.js, NestJS, AWS, REST APIs, Microservices, API Gateway",
     "details": [
       {
         "heading": "",
         "items": [
-          "Desarrollo backend: diseño e implementación de la lógica del lado del servidor para garantizar un alto rendimiento y respuestas rápidas a las solicitudes del front-end.",
-          "Node.js: aprovechamiento del potencial de Node.js para crear aplicaciones de red eficientes y escalables.",
-          "NestJS: uso del framework NestJS para desarrollar aplicaciones de servidor modulares y fáciles de mantener.",
-          "AWS: implementación y gestión de infraestructura en la nube con Amazon Web Services para garantizar fiabilidad y escalabilidad.",
-          "API REST: diseño y desarrollo de APIs RESTful para una comunicación fluida entre cliente y servidor.",
-          "Microservicios: construcción y orquestación de una arquitectura de microservicios para aumentar la modularidad y la resiliencia del sistema.",
-          "API Gateway: gestión y enrutamiento eficientes de las solicitudes de API con API Gateway, garantizando una entrega de servicios segura y coherente.",
-          "Apasionado por aprovechar las tecnologías modernas para resolver problemas complejos, me desenvuelvo mejor en entornos dinámicos que valoran la innovación y el aprendizaje continuo."
+          "Diseñé y desarrollé la lógica del servidor para responder rápido a las solicitudes del front-end.",
+          "Desarrollé servicios modulares y fáciles de mantener con Node.js y NestJS.",
+          "Diseñé y desarrollé APIs REST para la comunicación entre cliente y servidor.",
+          "Construí y orquesté una arquitectura de microservicios, con API Gateway enrutando las solicitudes.",
+          "Implementé y gestioné la infraestructura en la nube en AWS."
         ]
       }
     ]

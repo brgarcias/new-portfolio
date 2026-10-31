@@ -2,7 +2,7 @@
   "en": {
     "order": 1,
     "title": "Full-Stack Developer",
-    "subtitle": "ReactJS",
+    "subtitle": "React",
     "wide": false,
     "dialogTitle": "Full-Stack Developer - IGTI",
     "dialogSubtitle": "JavaScript, Node.js, React.js, MongoDB, GitHub e Heroku",
@@ -32,7 +32,7 @@
   "pt": {
     "order": 1,
     "title": "Desenvolvedor Full-Stack",
-    "subtitle": "ReactJS",
+    "subtitle": "React",
     "wide": false,
     "dialogTitle": "Desenvolvedor Full-Stack - IGTI",
     "dialogSubtitle": "JavaScript, Node.js, React.js, MongoDB, GitHub e Heroku",
@@ -62,7 +62,7 @@
   "es": {
     "order": 1,
     "title": "Desarrollador Full-Stack",
-    "subtitle": "ReactJS",
+    "subtitle": "React",
     "wide": false,
     "dialogTitle": "Desarrollador Full-Stack - IGTI",
     "dialogSubtitle": "JavaScript, Node.js, React.js, MongoDB, GitHub y Heroku",

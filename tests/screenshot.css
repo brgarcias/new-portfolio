@@ -1,0 +1,9 @@
+/* Applied while the visual tests take their captures. The values computed
+   from today's date change over time, so they are hidden: they keep their
+   place, and nothing is drawn over what is in front of them, such as a
+   dialog. */
+#experience .xp-item:first-child .xp-item__duration,
+#contact .contact-card--profile .contact-card__details li:last-child,
+.site-footer__year {
+  visibility: hidden;
+}

@@ -4,46 +4,32 @@
     "title": "Full Stack Developer",
     "start": "2021-03",
     "end": "2024-07",
-    "icon": "code",
     "stack": "React, Next.js, Node.js, NestJS, TypeScript, PHP, Laravel, GraphQL, PostgreSQL, MySQL, Redis, AWS",
     "details": [
       {
         "heading": "Full Stack Developer",
         "items": [
-          "Productively collaborated with the Product team to understand portfolio management, analysis, and risk-related business requirements and specifications.",
-          "Actively participated in creating strategic initiatives to design, code, and test innovative solutions.",
-          "Implemented and updated application modules under Product team supervision, ensuring alignment with established guidelines.",
-          "Led discussions, analysis, and development of new projects, ensuring their technical feasibility and alignment with business objectives.",
-          "Worked with a wide range of technologies, including PHP (CodeIgniter/Laravel), GraphQl/REST API, ReactJS/NextJS, NodeJS/NestJS, Python, MySQL/PostgreSQL, Jira, Jenkins, and AWS Cloud (RDS, EC2, S3, SQS, SNS, Lambda).",
-          "Led the development of five major projects, three of which focused on information distribution and idea sharing. Utilized Node.js/NestJS and PHP/Laravel for the backend with REST API and GraphQL, and React.js/Next.js and Blade (PHP) for the frontend.",
-          "Actively participated in collaborative projects emphasizing information sharing, interdisciplinary networking, and continuous communication, demonstrating resilience and adaptability."
+          "Led the development of five major projects, three of them for sharing information and ideas, with Node.js/NestJS and PHP/Laravel on the back end, REST and GraphQL APIs, and React/Next.js and Blade on the front end.",
+          "Led the discussion, analysis and development of new projects, checking their technical feasibility and their fit with business goals.",
+          "Worked with the Product team on portfolio management, analysis and risk requirements, and implemented and updated application modules under its supervision.",
+          "Worked with PHP (CodeIgniter and Laravel), GraphQL and REST APIs, React and Next.js, Node.js and NestJS, Python, MySQL and PostgreSQL, Jira, Jenkins and AWS (RDS, EC2, S3, SQS, SNS and Lambda)."
         ]
       },
       {
         "heading": "Backend Developer",
         "items": [
-          "Developing scalable and efficient web applications using Node.js, TypeScript, and Next.js.",
-          "Implementing business logic and front-end to back-end integration using GraphQL and REST APIs.",
-          "Collaborating with designers and other developers to translate business requirements into technical features.",
-          "Utilizing AWS Lambda, SQS, CloudWatch, and S3 to build serverless architectures and ensure scalability and availability.",
-          "Managing PostgreSQL and Redis databases for efficient data storage and retrieval.",
-          "Actively contributing to all stages of the software development lifecycle, from planning to delivery and maintenance.",
-          "Using GitLab and JIRA for source code management, team collaboration, and issue tracking.",
-          "Continuous learning and improvement of technical skills, staying updated with the latest industry practices and technologies."
+          "Built web applications with Node.js, TypeScript and Next.js, connecting front end and back end through GraphQL and REST APIs.",
+          "Built serverless architectures with AWS Lambda, SQS, CloudWatch and S3.",
+          "Managed PostgreSQL and Redis databases.",
+          "Turned business requirements into features with designers and other developers, from planning to delivery and maintenance, using GitLab and Jira."
         ]
       },
       {
         "heading": "Frontend Developer",
         "items": [
-          "Development of responsive and intuitive user interfaces using React.js, Material- UI, and Bootstrap.",
-          "Implementation of application logic and state management using Redux.js.",
-          "Writing clean, efficient, and modular code in JavaScript, HTML5, and CSS to ensure desired functionality and appearance.",
-          "Collaborating with designers and other developers to translate business requirements into high-quality software products.",
-          "Troubleshooting and optimizing front-end application performance.",
-          "Integrating external libraries and plugins, such as JQuery, to enhance functionality and user experience.",
-          "Adhering to web development standards and best practices to ensure code scalability and maintainability.",
-          "Actively participating in code reviews and unit testing to ensure software quality and stability.",
-          "Continuous learning and improvement of technical skills, staying updated with trends and advancements in the web development industry."
+          "Built responsive interfaces with React, Material UI and Bootstrap, with state management in Redux.",
+          "Wrote JavaScript, HTML5 and CSS, integrated libraries such as jQuery and improved front-end performance.",
+          "Took part in code reviews and unit testing."
         ]
       }
     ]
@@ -53,46 +39,32 @@
     "title": "Desenvolvedor Full Stack",
     "start": "2021-03",
     "end": "2024-07",
-    "icon": "code",
     "stack": "React, Next.js, Node.js, NestJS, TypeScript, PHP, Laravel, GraphQL, PostgreSQL, MySQL, Redis, AWS",
     "details": [
       {
         "heading": "Desenvolvedor Full Stack",
         "items": [
-          "Colaborei de forma produtiva com o time de Produto para entender os requisitos e as especificações de negócio relacionados à gestão de portfólio, à análise e ao risco.",
-          "Participei ativamente da criação de iniciativas estratégicas para projetar, codificar e testar soluções inovadoras.",
-          "Implementei e atualizei módulos das aplicações sob supervisão do time de Produto, garantindo o alinhamento com as diretrizes definidas.",
-          "Liderei discussões, análises e o desenvolvimento de novos projetos, garantindo sua viabilidade técnica e o alinhamento com os objetivos do negócio.",
-          "Trabalhei com uma ampla gama de tecnologias, incluindo PHP (CodeIgniter/Laravel), GraphQl/API REST, ReactJS/NextJS, NodeJS/NestJS, Python, MySQL/PostgreSQL, Jira, Jenkins e AWS Cloud (RDS, EC2, S3, SQS, SNS, Lambda).",
-          "Liderei o desenvolvimento de cinco grandes projetos, três deles voltados à distribuição de informações e ao compartilhamento de ideias. Usei Node.js/NestJS e PHP/Laravel no backend, com API REST e GraphQL, e React.js/Next.js e Blade (PHP) no frontend.",
-          "Participei ativamente de projetos colaborativos com ênfase em compartilhamento de informações, networking interdisciplinar e comunicação contínua, demonstrando resiliência e adaptabilidade."
+          "Liderei o desenvolvimento de cinco grandes projetos, três deles de compartilhamento de informações e ideias, com Node.js/NestJS e PHP/Laravel no back-end, APIs REST e GraphQL, e React/Next.js e Blade no front-end.",
+          "Liderei a discussão, a análise e o desenvolvimento de novos projetos, verificando a viabilidade técnica e o alinhamento com os objetivos do negócio.",
+          "Trabalhei com o time de Produto nos requisitos de gestão de carteira, análise e risco, e implementei e atualizei módulos das aplicações sob sua supervisão.",
+          "Trabalhei com PHP (CodeIgniter e Laravel), GraphQL e APIs REST, React e Next.js, Node.js e NestJS, Python, MySQL e PostgreSQL, Jira, Jenkins e AWS (RDS, EC2, S3, SQS, SNS e Lambda)."
         ]
       },
       {
         "heading": "Desenvolvedor Backend",
         "items": [
-          "Desenvolvimento de aplicações web escaláveis e eficientes com Node.js, TypeScript e Next.js.",
-          "Implementação de regras de negócio e da integração entre front-end e back-end com GraphQL e APIs REST.",
-          "Colaboração com designers e outros desenvolvedores para transformar requisitos de negócio em funcionalidades técnicas.",
-          "Uso de AWS Lambda, SQS, CloudWatch e S3 para construir arquiteturas serverless e garantir escalabilidade e disponibilidade.",
-          "Gestão de bancos de dados PostgreSQL e Redis para armazenar e recuperar dados com eficiência.",
-          "Contribuição ativa em todas as etapas do ciclo de vida do desenvolvimento de software, do planejamento à entrega e à manutenção.",
-          "Uso de GitLab e JIRA para a gestão do código-fonte, a colaboração em equipe e o acompanhamento de tarefas.",
-          "Aprendizado contínuo e aprimoramento das habilidades técnicas, acompanhando as práticas e tecnologias mais recentes do mercado."
+          "Desenvolvi aplicações web com Node.js, TypeScript e Next.js, ligando front-end e back-end por GraphQL e APIs REST.",
+          "Construí arquiteturas serverless com AWS Lambda, SQS, CloudWatch e S3.",
+          "Gerenciei bancos de dados PostgreSQL e Redis.",
+          "Transformei requisitos de negócio em funcionalidades com designers e outros desenvolvedores, do planejamento à entrega e à manutenção, usando GitLab e Jira."
         ]
       },
       {
         "heading": "Desenvolvedor Frontend",
         "items": [
-          "Desenvolvimento de interfaces responsivas e intuitivas com React.js, Material-UI e Bootstrap.",
-          "Implementação da lógica das aplicações e do gerenciamento de estado com Redux.js.",
-          "Escrita de código limpo, eficiente e modular em JavaScript, HTML5 e CSS para garantir o funcionamento e a aparência desejados.",
-          "Colaboração com designers e outros desenvolvedores para transformar requisitos de negócio em produtos de software de alta qualidade.",
-          "Resolução de problemas e otimização do desempenho das aplicações front-end.",
-          "Integração de bibliotecas e plugins externos, como o JQuery, para ampliar as funcionalidades e melhorar a experiência do usuário.",
-          "Respeito aos padrões e às boas práticas de desenvolvimento web para garantir a escalabilidade e a manutenção do código.",
-          "Participação ativa em revisões de código e testes unitários para garantir a qualidade e a estabilidade do software.",
-          "Aprendizado contínuo e aprimoramento das habilidades técnicas, acompanhando as tendências e os avanços do desenvolvimento web."
+          "Desenvolvi interfaces responsivas com React, Material UI e Bootstrap, com o estado da aplicação em Redux.",
+          "Escrevi JavaScript, HTML5 e CSS, integrei bibliotecas como jQuery e melhorei o desempenho do front-end.",
+          "Participei de revisões de código e de testes unitários."
         ]
       }
     ]
@@ -102,46 +74,32 @@
     "title": "Desarrollador Full Stack",
     "start": "2021-03",
     "end": "2024-07",
-    "icon": "code",
     "stack": "React, Next.js, Node.js, NestJS, TypeScript, PHP, Laravel, GraphQL, PostgreSQL, MySQL, Redis, AWS",
     "details": [
       {
         "heading": "Desarrollador Full Stack",
         "items": [
-          "Colaboré de forma productiva con el equipo de Producto para entender los requisitos y las especificaciones de negocio relacionados con la gestión de cartera, el análisis y el riesgo.",
-          "Participé activamente en la creación de iniciativas estratégicas para diseñar, programar y probar soluciones innovadoras.",
-          "Implementé y actualicé módulos de las aplicaciones bajo la supervisión del equipo de Producto, garantizando la alineación con las directrices establecidas.",
-          "Lideré discusiones, análisis y el desarrollo de nuevos proyectos, garantizando su viabilidad técnica y su alineación con los objetivos del negocio.",
-          "Trabajé con una amplia gama de tecnologías, incluidas PHP (CodeIgniter/Laravel), GraphQl/API REST, ReactJS/NextJS, NodeJS/NestJS, Python, MySQL/PostgreSQL, Jira, Jenkins y AWS Cloud (RDS, EC2, S3, SQS, SNS, Lambda).",
-          "Lideré el desarrollo de cinco grandes proyectos, tres de ellos centrados en la distribución de información y el intercambio de ideas. Utilicé Node.js/NestJS y PHP/Laravel en el backend, con API REST y GraphQL, y React.js/Next.js y Blade (PHP) en el frontend.",
-          "Participé activamente en proyectos colaborativos con énfasis en el intercambio de información, el networking interdisciplinario y la comunicación continua, demostrando resiliencia y adaptabilidad."
+          "Lideré el desarrollo de cinco grandes proyectos, tres de ellos para compartir información e ideas, con Node.js/NestJS y PHP/Laravel en el back-end, APIs REST y GraphQL, y React/Next.js y Blade en el front-end.",
+          "Lideré la discusión, el análisis y el desarrollo de nuevos proyectos, comprobando su viabilidad técnica y su alineación con los objetivos del negocio.",
+          "Trabajé con el equipo de Producto en los requisitos de gestión de cartera, análisis y riesgo, e implementé y actualicé módulos de las aplicaciones bajo su supervisión.",
+          "Trabajé con PHP (CodeIgniter y Laravel), GraphQL y APIs REST, React y Next.js, Node.js y NestJS, Python, MySQL y PostgreSQL, Jira, Jenkins y AWS (RDS, EC2, S3, SQS, SNS y Lambda)."
         ]
       },
       {
         "heading": "Desarrollador Backend",
         "items": [
-          "Desarrollo de aplicaciones web escalables y eficientes con Node.js, TypeScript y Next.js.",
-          "Implementación de la lógica de negocio y de la integración entre front-end y back-end con GraphQL y APIs REST.",
-          "Colaboración con diseñadores y otros desarrolladores para convertir requisitos de negocio en funcionalidades técnicas.",
-          "Uso de AWS Lambda, SQS, CloudWatch y S3 para construir arquitecturas serverless y garantizar escalabilidad y disponibilidad.",
-          "Gestión de bases de datos PostgreSQL y Redis para almacenar y recuperar datos de forma eficiente.",
-          "Contribución activa en todas las etapas del ciclo de vida del desarrollo de software, desde la planificación hasta la entrega y el mantenimiento.",
-          "Uso de GitLab y JIRA para la gestión del código fuente, la colaboración en equipo y el seguimiento de incidencias.",
-          "Aprendizaje continuo y mejora de las habilidades técnicas, manteniéndome al día con las prácticas y tecnologías más recientes del sector."
+          "Desarrollé aplicaciones web con Node.js, TypeScript y Next.js, conectando front-end y back-end mediante GraphQL y APIs REST.",
+          "Construí arquitecturas serverless con AWS Lambda, SQS, CloudWatch y S3.",
+          "Gestioné bases de datos PostgreSQL y Redis.",
+          "Convertí requisitos de negocio en funcionalidades junto con diseñadores y otros desarrolladores, de la planificación a la entrega y el mantenimiento, usando GitLab y Jira."
         ]
       },
       {
         "heading": "Desarrollador Frontend",
         "items": [
-          "Desarrollo de interfaces de usuario responsivas e intuitivas con React.js, Material-UI y Bootstrap.",
-          "Implementación de la lógica de las aplicaciones y de la gestión del estado con Redux.js.",
-          "Escritura de código limpio, eficiente y modular en JavaScript, HTML5 y CSS para garantizar el funcionamiento y la apariencia deseados.",
-          "Colaboración con diseñadores y otros desarrolladores para convertir requisitos de negocio en productos de software de alta calidad.",
-          "Resolución de problemas y optimización del rendimiento de las aplicaciones front-end.",
-          "Integración de bibliotecas y plugins externos, como JQuery, para ampliar las funcionalidades y mejorar la experiencia del usuario.",
-          "Cumplimiento de los estándares y las buenas prácticas de desarrollo web para garantizar la escalabilidad y el mantenimiento del código.",
-          "Participación activa en revisiones de código y pruebas unitarias para garantizar la calidad y la estabilidad del software.",
-          "Aprendizaje continuo y mejora de las habilidades técnicas, manteniéndome al día con las tendencias y los avances del desarrollo web."
+          "Desarrollé interfaces responsivas con React, Material UI y Bootstrap, con el estado de la aplicación en Redux.",
+          "Escribí JavaScript, HTML5 y CSS, integré bibliotecas como jQuery y mejoré el rendimiento del front-end.",
+          "Participé en revisiones de código y en pruebas unitarias."
         ]
       }
     ]

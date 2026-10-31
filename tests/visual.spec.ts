@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { expect, test, type Page } from '@playwright/test';
 import {
   openFeedbackForm,
@@ -40,20 +41,13 @@ async function settle(page: Page, scope = 'body') {
   await page.mouse.move(0, 0);
 }
 
-// Values computed from today's date change over time, so they are masked.
-function timeDependent(page: Page) {
-  return [
-    page.locator('#experience .xp-item:first-child .xp-item__duration'),
-    page
-      .locator('#contact .contact-card--profile .contact-card__details li')
-      .last(),
-    page.locator('.site-footer__year'),
-  ];
-}
+// Values computed from today's date change over time, so this stylesheet
+// hides them in the captures.
+const stylePath = fileURLToPath(new URL('./screenshot.css', import.meta.url));
 
 async function expectScreenshot(page: Page, name: string, scope = 'body') {
   await settle(page, scope);
-  await expect(page).toHaveScreenshot(name, { mask: timeDependent(page) });
+  await expect(page).toHaveScreenshot(name, { stylePath });
 }
 
 // Scrolls a section to the top, under the fixed header, and waits for its
@@ -127,7 +121,10 @@ for (const theme of ['dark', 'light'] as const) {
           behavior: 'instant',
         }),
       );
-      await expect(page.locator('#contact .contact')).toHaveCSS('opacity', '1');
+      await expect(page.locator('#contact .contact__facts')).toHaveCSS(
+        'opacity',
+        '1',
+      );
       await expectScreenshot(page, name('footer.png'), '.site-footer');
     });
 
@@ -138,9 +135,7 @@ for (const theme of ['dark', 'light'] as const) {
         await page.goto('/');
         const dialog = await openFeedbackForm(page);
         await dialog.getByRole('button', { name: 'Send' }).click();
-        await expect(
-          dialog.getByText('Please, write your name.'),
-        ).toBeVisible();
+        await expect(dialog.getByText('Enter your name.')).toBeVisible();
         await expectScreenshot(page, name('feedback-errors.png'));
       },
     );
@@ -158,7 +153,7 @@ for (const theme of ['dark', 'light'] as const) {
       await dialog.locator('textarea[name="feedback"]').fill('Gostei muito.');
       await dialog.getByRole('button', { name: 'Send' }).click();
       await expect(dialog).toBeHidden();
-      await expect(page.getByText('Message Submitted')).toBeVisible();
+      await expect(page.getByText('Message sent')).toBeVisible();
       await expectScreenshot(page, name('feedback-sent.png'));
     });
 
@@ -217,15 +212,9 @@ test('etapa da formação', { tag: '@visual' }, async ({ page }) => {
   await expect(page.locator('#education .edu-wrap')).toHaveCSS('opacity', '1');
   await page
     .locator('#education')
-    .getByRole('tab', { name: 'University Education' })
+    .getByRole('tab', { name: 'University' })
     .click();
   await expectScreenshot(page, 'education-university.png', '#education');
-});
-
-test('faixa de tecnologias', { tag: '@visual' }, async ({ page }) => {
-  await page.goto('/');
-  await scrollTo(page, '#experience .tech-ribbon');
-  await expectScreenshot(page, 'tech-ribbon.png', '#experience');
 });
 
 test('slider e detalhes de projeto', { tag: '@visual' }, async ({ page }) => {
@@ -238,15 +227,15 @@ test('slider e detalhes de projeto', { tag: '@visual' }, async ({ page }) => {
   // As with the education steps, a click while the cards finish entering
   // sometimes scrolled the page first, which moved the whole capture.
   await expect(page.locator('#projects .projects')).toHaveCSS('opacity', '1');
-  await page.getByRole('button', { name: 'Next Project' }).click();
-  await page.getByRole('button', { name: 'Next Project' }).click();
+  await page.getByRole('button', { name: 'Next project' }).click();
+  await page.getByRole('button', { name: 'Next project' }).click();
   await expect(
     page.locator('#projects [aria-current="true"] .project-card__title'),
   ).toHaveText('Reparofone');
   await waitForProjectsTrack(page);
   await expectScreenshot(page, 'projects-slider.png', '#projects');
   await page
-    .getByRole('button', { name: 'See details about Reparofone' })
+    .getByRole('button', { name: 'View details about Reparofone' })
     .click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await expectScreenshot(page, 'project-details.png', '[role="dialog"]');
@@ -276,8 +265,16 @@ test('visualizador de fotos', { tag: '@visual' }, async ({ page }) => {
 
 test('cartões de contato', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await scrollTo(page, '#contact .contact-grid');
-  await expect(page.locator('#contact .contact')).toHaveCSS('opacity', '1');
+  await scrollTo(page, '#contact .contact');
+  // The panel enters first, and the list a little after it.
+  await expect(page.locator('#contact .contact__reach')).toHaveCSS(
+    'opacity',
+    '1',
+  );
+  await expect(page.locator('#contact .contact__facts')).toHaveCSS(
+    'opacity',
+    '1',
+  );
   await expectScreenshot(page, 'contact-cards.png', '#contact');
 });
 

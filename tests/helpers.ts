@@ -88,7 +88,8 @@ export async function scrollTo(page: Page, selector: string) {
 }
 
 export async function openFeedbackForm(page: Page) {
-  await page.getByRole('button', { name: 'Leave Feedback' }).click();
+  await openSection(page, 'contact');
+  await page.getByRole('button', { name: 'Leave feedback' }).click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
   return dialog;
