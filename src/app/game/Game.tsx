@@ -3,6 +3,7 @@
 // HOOKS
 import {
   useEffect,
+  useEffectEvent,
   useMemo,
   useRef,
   useState,
@@ -28,6 +29,7 @@ import { play, setSound, storedSound } from './sound';
 import { isShipId, ships, type ShipId } from './ships';
 import { navigation } from './telemetry';
 import type { Place, Toast } from './types';
+import { useReducedMotion } from './useMediaQuery';
 import { pads } from './world/arena';
 import { biomes } from './world/biomes';
 import World from './world/World';
@@ -36,6 +38,10 @@ const storageKey = 'ship';
 // How long a notice stays, and how long the finale of the holocrons lasts.
 const toastTime = 5200;
 const finaleTime = 7400;
+// How long the chart and a section take to fade out when they close, and
+// the flight when the pilot goes back to the hangar.
+const exitTime = 180;
+const departTime = 380;
 
 // The last ship flown waits in the hangar on the next visit.
 function storedShip(): ShipId {
@@ -75,8 +81,22 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
   const [photo, setPhoto] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [finale, setFinale] = useState(false);
+  const [mapLeaving, setMapLeaving] = useState(false);
+  const [panelLeaving, setPanelLeaving] = useState(false);
+  const [departing, setDeparting] = useState(false);
+  const reduced = useReducedMotion();
   const toastKey = useRef(0);
   const explored = useRef(false);
+  const timers = useRef({ map: 0, panel: 0, depart: 0 });
+
+  useEffect(() => {
+    const pending = timers.current;
+    return () => {
+      window.clearTimeout(pending.map);
+      window.clearTimeout(pending.panel);
+      window.clearTimeout(pending.depart);
+    };
+  }, []);
   const titles = useMemo(
     () => Object.fromEntries(places.map((place) => [place.id, place.title])),
     [places],
@@ -92,24 +112,50 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
   useEffect(() => {
     if (flying && soundOn) setSound(true);
   }, [flying, soundOn]);
+  // The chart opens at once, and fades out when it closes; opening it again
+  // while it fades out keeps it.
+  const openMap = () => {
+    window.clearTimeout(timers.current.map);
+    setMapLeaving(false);
+    setMapOpen(true);
+    play('blip');
+  };
+  const closeMap = () => {
+    window.clearTimeout(timers.current.map);
+    if (reduced) {
+      setMapOpen(false);
+      return;
+    }
+    setMapLeaving(true);
+    timers.current.map = window.setTimeout(() => {
+      setMapOpen(false);
+      setMapLeaving(false);
+    }, exitTime);
+  };
+
   // M opens and closes the chart, P the photo mode, which Escape leaves too.
+  const onKey = useEffectEvent((event: KeyboardEvent) => {
+    if (event.repeat) return;
+    if (event.code === 'KeyM') {
+      event.preventDefault();
+      if (mapOpen && !mapLeaving) {
+        play('blip');
+        closeMap();
+      } else {
+        openMap();
+      }
+    } else if (event.code === 'KeyP') {
+      event.preventDefault();
+      setPhoto((value) => !value);
+    } else if (event.key === 'Escape') {
+      setPhoto(false);
+    }
+  });
   useEffect(() => {
     if (!flying || open) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.repeat) return;
-      if (event.code === 'KeyM') {
-        event.preventDefault();
-        play('blip');
-        setMapOpen((value) => !value);
-      } else if (event.code === 'KeyP') {
-        event.preventDefault();
-        setPhoto((value) => !value);
-      } else if (event.key === 'Escape') {
-        setPhoto(false);
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    const listener = (event: KeyboardEvent) => onKey(event);
+    window.addEventListener('keydown', listener);
+    return () => window.removeEventListener('keydown', listener);
   }, [flying, open]);
 
   const choose = (id: ShipId) => {
@@ -155,6 +201,10 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
 
   const land = (id: SectionId) => {
     resetInput();
+    window.clearTimeout(timers.current.map);
+    window.clearTimeout(timers.current.panel);
+    setMapLeaving(false);
+    setPanelLeaving(false);
     setMapOpen(false);
     setVisited((list) => (list.includes(id) ? list : [...list, id]));
     if (navigation.course === id) {
@@ -164,15 +214,45 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
     setOpen(id);
   };
 
-  // Back to the flight; the first time every section has been seen, the
-  // log says so.
+  // Back to the flight, once the section has faded out; the first time
+  // every section has been seen, the log says so.
   const closePanel = () => {
     const id = open;
-    setOpen(null);
-    if (id && !explored.current && visited.length >= places.length) {
-      explored.current = true;
-      notify({ kind: 'explored', id, count: visited.length });
+    const done = () => {
+      setOpen(null);
+      setPanelLeaving(false);
+      if (id && !explored.current && visited.length >= places.length) {
+        explored.current = true;
+        notify({ kind: 'explored', id, count: visited.length });
+      }
+    };
+    window.clearTimeout(timers.current.panel);
+    if (reduced) {
+      done();
+      return;
     }
+    setPanelLeaving(true);
+    timers.current.panel = window.setTimeout(done, exitTime);
+  };
+
+  // Back to the hangar: the flight fades to black, and the hangar comes in.
+  const changeShip = () => {
+    const done = () => {
+      setDeparting(false);
+      setFlying(false);
+    };
+    setPad(null);
+    window.clearTimeout(timers.current.map);
+    setMapLeaving(false);
+    setMapOpen(false);
+    setPhoto(false);
+    window.clearTimeout(timers.current.depart);
+    if (reduced) {
+      done();
+      return;
+    }
+    setDeparting(true);
+    timers.current.depart = window.setTimeout(done, departTime);
   };
 
   if (!flying) {
@@ -180,20 +260,20 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
       <Hangar
         shipId={shipId}
         onChoose={choose}
-        onTakeOff={() => {
-          setFlying(true);
+        onIgnite={() => {
           if (soundOn) {
             setSound(true);
             play('takeoff');
           }
         }}
+        onTakeOff={() => setFlying(true)}
         home={home}
       />
     );
   }
 
   return (
-    <div className="game">
+    <div className="game" data-departing={departing ? '' : undefined}>
       <Canvas
         className="game__canvas"
         dpr={[1, 1.5]}
@@ -238,18 +318,11 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         visited={visited}
         found={found}
         home={home}
-        onChangeShip={() => {
-          setPad(null);
-          setMapOpen(false);
-          setPhoto(false);
-          setFlying(false);
-        }}
+        onChangeShip={changeShip}
         mapOpen={mapOpen}
-        onOpenMap={() => {
-          setMapOpen(true);
-          play('blip');
-        }}
-        onCloseMap={() => setMapOpen(false)}
+        mapLeaving={mapLeaving}
+        onOpenMap={openMap}
+        onCloseMap={closeMap}
         course={course}
         onCourse={steer}
         soundOn={soundOn}
@@ -260,7 +333,12 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         finale={finale}
       />
       {open && (
-        <Panel id={open} home={home} onClose={closePanel}>
+        <Panel
+          id={open}
+          home={home}
+          leaving={panelLeaving}
+          onClose={closePanel}
+        >
           {panels[open]}
         </Panel>
       )}

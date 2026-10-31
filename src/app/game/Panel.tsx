@@ -20,6 +20,8 @@ import { biomes } from './world/biomes';
 
 interface PanelProps {
   id: SectionId;
+  // While it fades out, after it was closed: nothing in it answers.
+  leaving: boolean;
   home: string;
   onClose: () => void;
   // The section, as the home page renders it.
@@ -34,6 +36,7 @@ interface PanelProps {
 // and it takes its name from the section's title.
 export default function Panel({
   id,
+  leaving,
   home,
   onClose,
   children,
@@ -42,12 +45,14 @@ export default function Panel({
   const t = messages.game;
   const sheet = useRef<HTMLDivElement>(null);
   const body = useRef<HTMLDivElement>(null);
-  useDialog(sheet, onClose, body);
+  useDialog(sheet, onClose, body, !leaving);
   const index = String(sectionIds.indexOf(id) + 1).padStart(2, '0');
 
   return (
     <div
       className="game-panel"
+      data-leaving={leaving ? '' : undefined}
+      inert={leaving}
       style={{ '--accent': biomes[id].accent } as CSSProperties}
     >
       <button

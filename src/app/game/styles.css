@@ -3373,6 +3373,73 @@
   }
 }
 
+/* ─── Between the game's states ─────────────────────────── */
+/* The launch: the hangar goes dark while the ship flies off the stage,
+   and the flight comes in from the dark. Back to the hangar, the flight
+   fades out. The chart and the sections fade out as they close, and
+   nothing in them answers meanwhile. With less motion, all at once. */
+.hangar::after {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  background: #000;
+  content: '';
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hangar[data-launching] {
+  pointer-events: none;
+}
+
+.hangar__launch[aria-disabled='true'] {
+  cursor: default;
+}
+
+.game-map[data-leaving],
+.game-panel[data-leaving] {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hangar[data-launching]::after {
+    animation: launch-dark 0.42s ease-in 0.5s forwards;
+  }
+
+  .game[data-departing] {
+    animation: g-fade-out 0.38s ease-in forwards;
+  }
+
+  .game-map[data-leaving] .game-map__backdrop,
+  .game-panel[data-leaving] .game-panel__backdrop {
+    animation: g-fade-out 0.18s ease-in forwards;
+  }
+
+  .game-map[data-leaving] .game-map__sheet,
+  .game-panel[data-leaving] .game-panel__sheet {
+    animation: sheet-out 0.18s ease-in forwards;
+  }
+
+  @keyframes launch-dark {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes g-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes sheet-out {
+    to {
+      opacity: 0;
+      transform: translateY(8px) scale(0.985);
+    }
+  }
+}
+
 /* ─── Tablets ───────────────────────────────────────────── */
 @media (max-width: 1023px) {
   /* Taking off is always at hand: the dock is pinned to the bottom of
