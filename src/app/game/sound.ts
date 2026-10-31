@@ -1,8 +1,8 @@
 // The game's sounds, made on the spot with the Web Audio API, so no file
 // is downloaded and the site's policy stays as it is: the hum of the
 // engines, which rises with the thrust, the speed and the boost, the wind,
-// and short notes for a landing, a holocron found, a bump, the take-off
-// and a photo. Off until the visitor turns them on, with a button that
+// and short notes for a landing, a holocron found, a bump, the take-off,
+// the arrival out of hyperspace and a photo. Off until the visitor turns them on, with a button that
 // the browser counts as the gesture an AudioContext needs; the choice is
 // kept in localStorage.
 
@@ -162,7 +162,14 @@ function tone(
 }
 
 export type Cue =
-  'land' | 'holocron' | 'bump' | 'takeoff' | 'photo' | 'party' | 'blip';
+  | 'land'
+  | 'holocron'
+  | 'bump'
+  | 'takeoff'
+  | 'arrive'
+  | 'photo'
+  | 'party'
+  | 'blip';
 
 export function play(cue: Cue) {
   const { enabled, context, master } = sound;
@@ -201,6 +208,37 @@ export function play(cue: Cue) {
       gain.connect(master);
       osc.start(now);
       osc.stop(now + 1);
+      break;
+    }
+    case 'arrive': {
+      // Out of hyperspace: a rush of air that falls away, over a low boom.
+      const rush = context.createBufferSource();
+      rush.buffer = noise(context);
+      const band = context.createBiquadFilter();
+      band.type = 'bandpass';
+      band.Q.value = 0.8;
+      band.frequency.setValueAtTime(2600, now);
+      band.frequency.exponentialRampToValueAtTime(260, now + 0.9);
+      const gain = context.createGain();
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.22, now + 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 1);
+      rush.connect(band);
+      band.connect(gain);
+      gain.connect(master);
+      rush.start(now);
+      rush.stop(now + 1);
+      const boom = context.createOscillator();
+      boom.type = 'sine';
+      boom.frequency.setValueAtTime(70, now);
+      boom.frequency.exponentialRampToValueAtTime(36, now + 0.6);
+      const low = context.createGain();
+      low.gain.setValueAtTime(0.25, now);
+      low.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+      boom.connect(low);
+      low.connect(master);
+      boom.start(now);
+      boom.stop(now + 0.75);
       break;
     }
     case 'bump': {

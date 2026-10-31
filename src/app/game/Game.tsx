@@ -35,8 +35,10 @@ import { biomes } from './world/biomes';
 import World from './world/World';
 
 const storageKey = 'ship';
-// How long a notice stays, and how long the finale of the holocrons lasts.
+// How long a notice stays, how long a planet's title shows, and how long
+// the finale of the holocrons lasts.
 const toastTime = 5200;
+const titleTime = 3400;
 const finaleTime = 7400;
 // How long the chart and a section take to fade out when they close, and
 // the flight when the pilot goes back to the hangar.
@@ -84,10 +86,14 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
   const [mapLeaving, setMapLeaving] = useState(false);
   const [panelLeaving, setPanelLeaving] = useState(false);
   const [departing, setDeparting] = useState(false);
+  // The planet whose title shows, the first time the ship enters it.
+  const [title, setTitle] = useState<{ id: SectionId; key: number } | null>(
+    null,
+  );
   const reduced = useReducedMotion();
   const toastKey = useRef(0);
   const explored = useRef(false);
-  const timers = useRef({ map: 0, panel: 0, depart: 0 });
+  const timers = useRef({ map: 0, panel: 0, depart: 0, title: 0 });
 
   useEffect(() => {
     const pending = timers.current;
@@ -95,6 +101,7 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
       window.clearTimeout(pending.map);
       window.clearTimeout(pending.panel);
       window.clearTimeout(pending.depart);
+      window.clearTimeout(pending.title);
     };
   }, []);
   const titles = useMemo(
@@ -199,6 +206,15 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
     }
   };
 
+  // A planet's title, the first time the ship enters it; the next planet's
+  // takes its place.
+  const enter = (id: SectionId) => {
+    window.clearTimeout(timers.current.title);
+    toastKey.current += 1;
+    setTitle({ id, key: toastKey.current });
+    timers.current.title = window.setTimeout(() => setTitle(null), titleTime);
+  };
+
   const land = (id: SectionId) => {
     resetInput();
     window.clearTimeout(timers.current.map);
@@ -246,6 +262,8 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
     setMapLeaving(false);
     setMapOpen(false);
     setPhoto(false);
+    window.clearTimeout(timers.current.title);
+    setTitle(null);
     window.clearTimeout(timers.current.depart);
     if (reduced) {
       done();
@@ -286,6 +304,7 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
           onPad={setPad}
           onLand={land}
           onCollect={collect}
+          onEnter={enter}
         />
         <Labels />
         <Adaptive />
@@ -330,6 +349,7 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         photo={photo}
         onPhoto={setPhoto}
         toasts={toasts}
+        title={title}
         finale={finale}
       />
       {open && (

@@ -13,7 +13,7 @@ import { hunt } from './hunt';
 import { hum, play } from './sound';
 import { updateInstruments } from './instruments';
 import { overlay } from './overlay';
-import { createState, step } from './physics';
+import { createState, step, type ShipState } from './physics';
 import { resetTelemetry, telemetry } from './telemetry';
 import type { Ship as ShipSpec } from './ships';
 import { useReducedMotion } from './useMediaQuery';
@@ -28,6 +28,8 @@ interface ShipProps {
   onLand: (pad: SectionId) => void;
   // Called when the ship flies through a holocron.
   onCollect: (id: SectionId) => void;
+  // Called the first time, in the page, that the ship enters a planet.
+  onEnter: (id: SectionId) => void;
 }
 
 // The flight in progress, which the frame loop reads and writes: the ship's
@@ -50,7 +52,172 @@ const flight = {
   // The burst of light when the last holocron is found: where, and how
   // long ago, or less than zero for none.
   party: { x: 0, y: 0, z: 0, age: -1 },
+  // How far along the arrival out of hyperspace is, in seconds, and
+  // whether the HUD was told it is under way.
+  arrive: 0,
+  arriving: false,
 };
+
+// The arrival: the ship drops out of hyperspace, and the camera, high over
+// the platform, spirals down to its place behind the ship, faster once the
+// pilot moves. It lasts arrivalTime seconds; the streaks of hyperspace,
+// the first streakTime of them.
+const arrivalTime = 2.6;
+const streakTime = 0.75;
+
+// The streaks of hyperspace: thin rays around the camera, along its line
+// of sight, from just in front of it to far ahead, which look like light
+// rushing out of the middle of the view. As the ship drops out of
+// hyperspace, their far ends come back to their near ones and they shrink
+// into the stars.
+const streakCount = 150;
+const streakNear = new Float32Array(streakCount);
+const streakLength = new Float32Array(streakCount);
+function makeStreaks() {
+  const positions = new Float32Array(streakCount * 12);
+  const colors = new Float32Array(streakCount * 12);
+  const indices: number[] = [];
+  for (let i = 0; i < streakCount; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const radius = 0.4 + Math.random() * 3.4;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    // Each ray is a thin strip, across the line from the middle.
+    const width = 0.006 + Math.random() * 0.016;
+    const wx = -Math.sin(angle) * width;
+    const wy = Math.cos(angle) * width;
+    streakNear[i] = 4 + Math.random() * 6;
+    streakLength[i] = 30 + Math.random() * 60;
+    const near = -streakNear[i];
+    const far = near - streakLength[i];
+    positions.set(
+      [
+        x - wx,
+        y - wy,
+        near,
+        x + wx,
+        y + wy,
+        near,
+        x - wx,
+        y - wy,
+        far,
+        x + wx,
+        y + wy,
+        far,
+      ],
+      i * 12,
+    );
+    // Bright and blue where it is near, fading into the middle.
+    const bright = 0.55 + Math.random() * 0.45;
+    const head = [0.62 * bright, 0.78 * bright, bright];
+    const tail = [0.02, 0.04, 0.12];
+    colors.set([...head, ...head, ...tail, ...tail], i * 12);
+    const a = i * 4;
+    indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geometry.setIndex(indices);
+  return geometry;
+}
+const streakGeometry = makeStreaks();
+const streakMaterial = new THREE.MeshBasicMaterial({
+  vertexColors: true,
+  transparent: true,
+  opacity: 0,
+  depthTest: false,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending,
+  side: THREE.DoubleSide,
+  fog: false,
+  toneMapped: false,
+});
+
+// The streaks at a moment of the drop: left is what is left of them, from
+// 1 to 0.
+function stretch(left: number) {
+  const positions = streakGeometry.attributes.position as THREE.BufferAttribute;
+  const reach = left * left;
+  for (let i = 0; i < streakCount; i++) {
+    const far = -streakNear[i] - streakLength[i] * reach - 0.05;
+    positions.setZ(i * 4 + 2, far);
+    positions.setZ(i * 4 + 3, far);
+  }
+  positions.needsUpdate = true;
+  streakMaterial.opacity = Math.min(0.9, left * 1.8);
+}
+
+// The arrival, a frame of it: it moves on, faster once the pilot moves, and
+// says whether it is still under way. Its first frame sounds it and widens
+// the view, which narrows back as the ship slows out of hyperspace. A slow
+// frame moves it on a tenth of a second at most, so that the first frames,
+// slow while the world is prepared, do not skip it.
+function arrive(
+  camera: THREE.Camera,
+  moving: boolean,
+  dt: number,
+  reduced: boolean,
+) {
+  if (reduced) flight.arrive = arrivalTime;
+  if (flight.arrive >= arrivalTime) return false;
+  if (flight.arrive === 0) {
+    play('arrive');
+    if (camera instanceof THREE.PerspectiveCamera) {
+      camera.fov = 76;
+      camera.updateProjectionMatrix();
+    }
+  }
+  flight.arrive = Math.min(
+    arrivalTime,
+    flight.arrive + Math.min(dt, 0.1) * (moving ? 3 : 1),
+  );
+  return true;
+}
+
+// The arrival's shot, at a moment of it: from high over the platform, down
+// almost half a turn of a spiral to the camera's place behind the ship, at
+// the given distance and height, where it ends. It looks out across the
+// platform first, toward the horizon, as the ship drops out of hyperspace,
+// and then turns down to the ship's target.
+const gaze = new THREE.Vector3();
+const gazeTurn = new THREE.Quaternion();
+const targetTurn = new THREE.Quaternion();
+function descend(
+  camera: THREE.Camera,
+  state: ShipState,
+  back: number,
+  height: number,
+  target: THREE.Vector3,
+) {
+  const p = flight.arrive / arrivalTime;
+  const away = 1 - p * p * p * (p * (p * 6 - 15) + 10);
+  const angle = state.heading + away * 2.6;
+  const radius = back + away * (84 - back);
+  camera.position.set(
+    state.x + Math.sin(angle) * radius,
+    height + away * 52,
+    state.z + Math.cos(angle) * radius,
+  );
+  gaze.set(
+    camera.position.x - Math.sin(angle) * 260,
+    camera.position.y - 10,
+    camera.position.z - Math.cos(angle) * 260,
+  );
+  camera.lookAt(gaze);
+  gazeTurn.copy(camera.quaternion);
+  camera.lookAt(target);
+  targetTurn.copy(camera.quaternion);
+  const turn = Math.min(1, Math.max(0, (p - 0.1) / 0.4));
+  camera.quaternion.slerpQuaternions(
+    gazeTurn,
+    targetTurn,
+    turn * turn * (3 - 2 * turn),
+  );
+  // lookAt left the camera's matrices on the gaze: the labels of the pads,
+  // placed with them this frame, need the turn's.
+  camera.updateMatrixWorld();
+}
 
 // The burst: sparks thrown from the ship, in gold and blue, that rise,
 // fall and fade; the shader moves them with the time since the burst.
@@ -251,6 +418,7 @@ export default function Ship({
   onPad,
   onLand,
   onCollect,
+  onEnter,
 }: Readonly<ShipProps>) {
   const model = useMemo(() => ship.build(), [ship]);
   const rig = useRef<THREE.Group>(null);
@@ -259,6 +427,7 @@ export default function Ship({
   const pulseMesh = useRef<THREE.Mesh>(null);
   const wind = useRef<THREE.LineSegments>(null);
   const sparks = useRef<THREE.Points>(null);
+  const hyper = useRef<THREE.Group>(null);
   const reduced = useReducedMotion();
 
   // A new ship starts again from the hangar's spot. Its shapes are freed
@@ -274,6 +443,8 @@ export default function Ship({
     atmosphere.sector = 'hub';
     resetTelemetry();
     flight.pulse.age = 9;
+    flight.arrive = 0;
+    flight.arriving = false;
     trail.filled = 0;
     const engines: THREE.MeshStandardMaterial[] = [];
     const flames: THREE.Mesh[] = [];
@@ -406,23 +577,40 @@ export default function Ship({
     }
 
     // The camera follows from behind and above, further back at speed, and
-    // shakes after a hit.
+    // shakes after a hit; on the arrival, it comes down to that place.
     const fx = -Math.sin(state.heading);
     const fz = -Math.cos(state.heading);
     const back = 11 + state.speed * 0.12;
     const up = 5 + state.speed * 0.03;
-    chase.set(state.x - fx * back, ship.hover + up, state.z - fz * back);
-    camera.position.lerp(chase, reduced ? 1 : 1 - Math.exp(-5 * dt));
+    ahead.set(state.x + fx * 5, ship.hover + 1, state.z + fz * 5);
     flight.shake = Math.max(
       flight.shake * Math.exp(-6 * dt),
       Math.min(1, hit / 12),
     );
-    if (!reduced && flight.shake > 0.01) {
-      camera.position.x += (Math.random() - 0.5) * flight.shake * 1.2;
-      camera.position.y += (Math.random() - 0.5) * flight.shake * 0.8;
+    const moving = controls.thrust !== 0 || controls.turn !== 0;
+    if (arrive(camera, moving, dt, reduced)) {
+      descend(camera, state, back, ship.hover + up, ahead);
+    } else {
+      chase.set(state.x - fx * back, ship.hover + up, state.z - fz * back);
+      camera.position.lerp(chase, reduced ? 1 : 1 - Math.exp(-5 * dt));
+      if (!reduced && flight.shake > 0.01) {
+        camera.position.x += (Math.random() - 0.5) * flight.shake * 1.2;
+        camera.position.y += (Math.random() - 0.5) * flight.shake * 0.8;
+      }
+      camera.lookAt(ahead);
     }
-    ahead.set(state.x + fx * 5, ship.hover + 1, state.z + fz * 5);
-    camera.lookAt(ahead);
+    // The streaks of hyperspace, in front of the camera, as the arrival
+    // begins.
+    const warp = hyper.current;
+    if (warp) {
+      const left = 1 - flight.arrive / streakTime;
+      warp.visible = left > 0;
+      if (warp.visible) {
+        warp.position.copy(camera.position);
+        warp.quaternion.copy(camera.quaternion);
+        stretch(left);
+      }
+    }
     // The view widens a little under boost.
     if (camera instanceof THREE.PerspectiveCamera) {
       const fov = boosting && !reduced ? 62 : 55;
@@ -534,6 +722,11 @@ export default function Ship({
     if (sector !== flight.sector) {
       flight.sector = sector;
       atmosphere.sector = sector;
+      // The first time in a planet, its title.
+      if (sector !== 'hub' && !hunt.entered.has(sector)) {
+        hunt.entered.add(sector);
+        onEnter(sector);
+      }
       if (readout) {
         readout.dataset.sector = sector;
         for (const chip of readout.querySelectorAll<HTMLElement>(
@@ -550,6 +743,12 @@ export default function Ship({
       readout.dataset.speed = state.speed.toFixed(1);
       readout.dataset.time = flight.clock.toFixed(1);
       readout.dataset.pad = state.pad ?? '';
+      const arriving = flight.arrive < arrivalTime;
+      if (arriving !== flight.arriving) {
+        flight.arriving = arriving;
+        if (arriving) readout.dataset.arriving = '';
+        else delete readout.dataset.arriving;
+      }
     }
     // What the instruments read, and the instruments themselves.
     telemetry.x = state.x;
@@ -607,6 +806,14 @@ export default function Ship({
         visible={false}
         frustumCulled={false}
       />
+      <group ref={hyper} visible={false}>
+        <mesh
+          geometry={streakGeometry}
+          material={streakMaterial}
+          renderOrder={10}
+          frustumCulled={false}
+        />
+      </group>
       <mesh ref={pulseMesh} rotation-x={-Math.PI / 2} visible={false}>
         <ringGeometry args={[padRadius - 1.2, padRadius, 48]} />
         <meshBasicMaterial

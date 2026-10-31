@@ -26,7 +26,7 @@ import {
 import { useI18n } from '@/src/i18n/I18nProvider';
 import { format } from '@/src/i18n/messages';
 // CONTENT
-import type { SectionId } from '@/src/content/sections';
+import { sectionIds, type SectionId } from '@/src/content/sections';
 // GAME
 import Compass from './Compass';
 import { input } from './controls';
@@ -216,6 +216,29 @@ function Landing({ pad, place }: { pad: SectionId | null; place?: Place }) {
   );
 }
 
+// A planet's title, the first time the ship enters it, like a film's title
+// card: the planet's name in wide letters, the section above it and a rule
+// in its color that opens out. The name comes first for screen readers.
+function PlanetTitle({
+  id,
+  place,
+}: Readonly<{ id: SectionId; place?: Place }>) {
+  const index = String(sectionIds.indexOf(id) + 1).padStart(2, '0');
+  return (
+    <div
+      className="planet-title"
+      style={{ '--accent': biomes[id].accent } as CSSProperties}
+    >
+      <p className="planet-title__name">{biomes[id].planet}</p>
+      <p className="g-label planet-title__section">
+        <span className="g-num">{index}</span>
+        {place && ` · ${place.title}`}
+      </p>
+      <span className="planet-title__rule" aria-hidden="true" />
+    </div>
+  );
+}
+
 // The moment all seven holocrons are recovered: the frame goes wide, like
 // a film's, and the archive's title comes up, with the sparks the ship
 // throws (Ship.tsx) and the fanfare, if the sound is on.
@@ -327,8 +350,10 @@ interface HudProps {
   onToggleSound: () => void;
   photo: boolean;
   onPhoto: (on: boolean) => void;
-  // The notices of the moment, and the finale of the holocrons.
+  // The notices of the moment, the title of a planet the first time the
+  // ship enters it, and the finale of the holocrons.
   toasts: Toast[];
+  title: { id: SectionId; key: number } | null;
   finale: boolean;
 }
 
@@ -357,6 +382,7 @@ export default function Hud({
   photo,
   onPhoto,
   toasts,
+  title,
   finale,
 }: Readonly<HudProps>) {
   const t = useI18n().messages.game;
@@ -498,6 +524,16 @@ export default function Hud({
       </div>
 
       <Landing pad={pad} place={pad ? placeOf(pad) : undefined} />
+
+      <div className="planet-titles" role="status">
+        {title && !finale && (
+          <PlanetTitle
+            key={title.key}
+            id={title.id}
+            place={placeOf(title.id)}
+          />
+        )}
+      </div>
 
       <div className="toasts" role="status">
         {toasts.map((toast) => (
