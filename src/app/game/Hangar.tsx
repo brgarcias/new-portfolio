@@ -45,6 +45,14 @@ interface HangarProps {
 // down the camera's line of sight, along which the ship leaves on launch.
 const cameraAt: [number, number, number] = [6.5, 3.2, -8.5];
 const awayYaw = Math.atan2(cameraAt[0], cameraAt[2]);
+// The ship turns about its own upright and tilts about the camera's right,
+// level with the floor, so a drag down tips its top toward the camera, the
+// way the pointer goes, however the ship is turned.
+const upright = new THREE.Vector3(0, 1, 0);
+const toCamera = new THREE.Vector3(...cameraAt).normalize();
+const across = new THREE.Vector3().crossVectors(upright, toCamera).normalize();
+const heading = new THREE.Quaternion();
+const facing = new THREE.Vector3();
 // How long the launch lasts, in milliseconds, until the flight takes over.
 const launchTime = 950;
 
@@ -84,16 +92,16 @@ const angle = (radians: number) => {
 // The pedestal's ring of segments, turning slowly under the ship.
 const segments = Array.from({ length: 24 }, (_, index) => index);
 
-// The launch, a frame of it: the ship turns away from the camera, lifts off
-// the pedestal, its engines flare, and it shoots off down the line of
-// sight, faster and faster.
+// The launch, a frame of it: the ship turns away from the camera, noses up
+// a little, lifts off the pedestal, its engines flare, and it shoots off
+// down the line of sight, faster and faster.
 function flyOff(stand: THREE.Group, dt: number) {
   spin.launch += dt;
   const time = spin.launch;
   const turn = Math.PI * 2;
   const target = awayYaw + turn * Math.round((spin.yaw - awayYaw) / turn);
   spin.yaw += (target - spin.yaw) * (1 - Math.exp(-9 * dt));
-  spin.pitch += (-0.14 - spin.pitch) * (1 - Math.exp(-7 * dt));
+  spin.pitch += (0.14 - spin.pitch) * (1 - Math.exp(-7 * dt));
   const go = Math.max(0, time - 0.2);
   const distance = 60 * go * go;
   stand.position.set(
@@ -169,12 +177,20 @@ function Preview({ shipId }: { shipId: ShipId }) {
       1 - 0.35 * Math.exp(-5 * spin.appear) * Math.cos(9 * spin.appear);
     if (spin.launch >= 0) flyOff(stand.current, dt);
     stand.current.scale.setScalar(grow);
-    stand.current.rotation.y = spin.yaw;
-    stand.current.rotation.x = spin.pitch;
+    stand.current.quaternion
+      .setFromAxisAngle(across, spin.pitch)
+      .multiply(heading.setFromAxisAngle(upright, spin.yaw));
     if (ring.current && !reduced) ring.current.rotation.y -= dt * 0.18;
     if (spin.stage) {
       spin.stage.dataset.yaw = spin.yaw.toFixed(2);
       spin.stage.dataset.pitch = spin.pitch.toFixed(2);
+      // How squarely the ship's top faces the camera, from −1, when its
+      // belly does, to 1.
+      spin.stage.dataset.top = facing
+        .copy(upright)
+        .applyQuaternion(stand.current.quaternion)
+        .dot(toCamera)
+        .toFixed(2);
     }
     spin.clock += dt;
     if (spin.readout && spin.clock > 0.12) {

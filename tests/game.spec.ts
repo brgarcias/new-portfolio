@@ -243,7 +243,8 @@ test('gira a nave no hangar ao arrastar', async ({ page }) => {
   await expect
     .poll(() => stage.getAttribute('data-yaw').then(Number))
     .toBeGreaterThan(before + 1);
-  // A drag up or down tilts it.
+  // A drag up or down tilts it the way the pointer goes: down, its top
+  // turns toward the camera.
   await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.3);
   await page.mouse.down();
   await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.7, {
@@ -253,6 +254,9 @@ test('gira a nave no hangar ao arrastar', async ({ page }) => {
   await expect
     .poll(() => stage.getAttribute('data-pitch').then(Number))
     .toBeGreaterThan(0.3);
+  await expect
+    .poll(() => stage.getAttribute('data-top').then(Number))
+    .toBeGreaterThan(0.5);
 });
 
 test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
