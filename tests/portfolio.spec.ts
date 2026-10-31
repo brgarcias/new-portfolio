@@ -531,6 +531,67 @@ test('alterna as etapas da formação acadêmica', async ({ page }) => {
   );
 });
 
+test('mostra os estudos de caso e abre cada um num diálogo', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await openSection(page, 'projects');
+  const cases = page.locator('#projects .case-card');
+  await expect(cases).toHaveCount(4);
+  await expect(cases.first()).toContainText('Trocafone · 2023–2024');
+  // The system's flow, step by step, in order.
+  await expect(
+    cases
+      .first()
+      .getByRole('list', {
+        name: 'System flow — From a PHP monolith to microservices',
+      })
+      .getByRole('listitem'),
+  ).toHaveText([
+    /^Clients/,
+    /^GraphQL gateway/,
+    /^Microservices/,
+    /^Kubernetes/,
+  ]);
+  // Like the other cards, a click anywhere opens the case.
+  await expect(page.locator('#projects .cases__body')).toHaveCSS(
+    'opacity',
+    '1',
+  );
+  await cases.first().getByRole('button').click();
+  const monolith = page.getByRole('dialog', {
+    name: 'From a PHP monolith to microservices',
+  });
+  await expect(monolith).toBeVisible();
+  await expect(monolith.getByRole('heading', { level: 3 })).toHaveText([
+    'Context',
+    'My role',
+    'What I built',
+    'Result',
+  ]);
+  await expect(
+    monolith.getByRole('list', { name: 'Technologies' }),
+  ).toContainText('Kubernetes');
+  await page.keyboard.press('Escape');
+  await expect(monolith).toBeHidden();
+  // From the keyboard too; a part the content leaves empty does not show.
+  await cases.nth(2).getByRole('button').focus();
+  await page.keyboard.press('Enter');
+  const store = page.getByRole('dialog', {
+    name: 'Store orders processed in queues',
+  });
+  await expect(store).toBeVisible();
+  await expect(store.getByRole('heading', { level: 3 })).toHaveText([
+    'Context',
+    'My role',
+    'What I built',
+    'What I learned',
+  ]);
+  await expect(
+    store.getByRole('link', { name: 'See more about the website' }),
+  ).toHaveAttribute('href', 'http://www.saldofone.com.br/');
+});
+
 test('mostra os detalhes de um curso em um modal', async ({ page }) => {
   await page.goto('/');
   await openSection(page, 'courses');

@@ -22,6 +22,7 @@ import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
 import ModalComponent from '@/src/components/Modal/Lazy';
 import { openOnKey } from '@/src/components/Modal/openOnKey';
+import Cases from './Cases';
 // DEVICES
 import iPhoneImg from '@/public/images/projects/iphone.webp';
 import iPadImg from '@/public/images/projects/ipad.webp';
@@ -32,7 +33,7 @@ import AppleWatchImg from '@/public/images/projects/apple-watch.webp';
 import { useI18n } from '@/src/i18n/I18nProvider';
 import { format } from '@/src/i18n/messages';
 // CONTENT
-import type { Project, SectionHeader } from '@/src/content';
+import type { CaseStudy, Project, SectionHeader } from '@/src/content';
 // CSS
 import './styles.css';
 
@@ -92,11 +93,14 @@ function untilt(event: PointerEvent<HTMLElement>) {
 
 interface ProjectsProps {
   header: SectionHeader;
+  // The case studies, before the websites.
+  cases: CaseStudy[];
   projects: Project[];
 }
 
 export default function Projects({
   header,
+  cases,
   projects,
 }: Readonly<ProjectsProps>) {
   const t = useI18n().messages.projects;
@@ -182,6 +186,8 @@ export default function Projects({
 
   return (
     <Section header={header}>
+      <Cases cases={cases} />
+      <h3 className="projects__group">{t.websites}</h3>
       <Reveal className="projects">
         {/* Swiping scrolls the track. With the keyboard, each card's button
             scrolls its card into view when it gets focus. */}

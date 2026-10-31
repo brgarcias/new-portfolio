@@ -15,6 +15,7 @@ import Contact from '../../contact';
 import {
   getAbout,
   getContactCards,
+  getCases,
   getContributing,
   getCourses,
   getEducation,
@@ -111,7 +112,11 @@ export default async function Play({ params }: PageProps<'/[lang]/play'>) {
     ),
     courses: <Courses header={sections.courses} courses={getCourses(lang)} />,
     projects: (
-      <Projects header={sections.projects} projects={getProjects(lang)} />
+      <Projects
+        header={sections.projects}
+        cases={getCases(lang)}
+        projects={getProjects(lang)}
+      />
     ),
     contributing: (
       <Contributing

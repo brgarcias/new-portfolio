@@ -1,0 +1,98 @@
+{
+  "en": {
+    "order": 4,
+    "company": "Trocafone",
+    "period": "2023",
+    "stack": "GraphQL, Redis, PostgreSQL, AWS CloudWatch",
+    "link": "",
+    "title": "A live dashboard under heavy load",
+    "summary": "A monitoring dashboard that updates live through GraphQL subscriptions, built to stay reliable under heavy load.",
+    "context": "Trocafone needed a monitoring dashboard that showed the data as it changed and stayed reliable under heavy load.",
+    "role": "I built the live updates, the cache and the query tuning.",
+    "built": "GraphQL subscriptions push each change to the dashboard. Redis caching and tuned PostgreSQL queries keep the backend fast, and CloudWatch monitors it and raises alerts.",
+    "result": "",
+    "learned": "",
+    "flow": [
+      {
+        "label": "PostgreSQL",
+        "detail": "Tuned queries"
+      },
+      {
+        "label": "Redis",
+        "detail": "Cache"
+      },
+      {
+        "label": "GraphQL subscriptions",
+        "detail": "Live updates"
+      },
+      {
+        "label": "Dashboard",
+        "detail": ""
+      }
+    ]
+  },
+  "pt": {
+    "order": 4,
+    "company": "Trocafone",
+    "period": "2023",
+    "stack": "GraphQL, Redis, PostgreSQL, AWS CloudWatch",
+    "link": "",
+    "title": "Um dashboard ao vivo sob carga alta",
+    "summary": "Um dashboard de monitoramento que se atualiza ao vivo por subscriptions GraphQL, feito para continuar confiável sob carga alta.",
+    "context": "A Trocafone precisava de um dashboard de monitoramento que mostrasse os dados conforme mudavam e continuasse confiável sob carga alta.",
+    "role": "Construí as atualizações ao vivo, o cache e o ajuste das consultas.",
+    "built": "Subscriptions GraphQL levam cada mudança ao dashboard. O cache em Redis e as consultas ajustadas no PostgreSQL mantêm o backend rápido, e o CloudWatch o monitora e dispara alertas.",
+    "result": "",
+    "learned": "",
+    "flow": [
+      {
+        "label": "PostgreSQL",
+        "detail": "Consultas ajustadas"
+      },
+      {
+        "label": "Redis",
+        "detail": "Cache"
+      },
+      {
+        "label": "Subscriptions GraphQL",
+        "detail": "Atualizações ao vivo"
+      },
+      {
+        "label": "Dashboard",
+        "detail": ""
+      }
+    ]
+  },
+  "es": {
+    "order": 4,
+    "company": "Trocafone",
+    "period": "2023",
+    "stack": "GraphQL, Redis, PostgreSQL, AWS CloudWatch",
+    "link": "",
+    "title": "Un dashboard en vivo bajo carga alta",
+    "summary": "Un dashboard de monitoreo que se actualiza en vivo mediante subscriptions GraphQL, hecho para seguir siendo confiable bajo carga alta.",
+    "context": "Trocafone necesitaba un dashboard de monitoreo que mostrara los datos a medida que cambiaban y siguiera siendo confiable bajo carga alta.",
+    "role": "Construí las actualizaciones en vivo, la caché y el ajuste de las consultas.",
+    "built": "Las subscriptions GraphQL llevan cada cambio al dashboard. La caché en Redis y las consultas ajustadas en PostgreSQL mantienen el backend rápido, y CloudWatch lo monitorea y dispara alertas.",
+    "result": "",
+    "learned": "",
+    "flow": [
+      {
+        "label": "PostgreSQL",
+        "detail": "Consultas ajustadas"
+      },
+      {
+        "label": "Redis",
+        "detail": "Caché"
+      },
+      {
+        "label": "Subscriptions GraphQL",
+        "detail": "Actualizaciones en vivo"
+      },
+      {
+        "label": "Dashboard",
+        "detail": ""
+      }
+    ]
+  }
+}

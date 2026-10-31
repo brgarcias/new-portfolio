@@ -77,6 +77,17 @@ const pt: Messages = {
     previous: 'Projeto anterior',
     next: 'Próximo projeto',
     website: 'Conhecer o site',
+    // Os estudos de caso, antes dos sites.
+    cases: 'Estudos de caso',
+    websites: 'Sites',
+    readCase: 'Ler o estudo de caso',
+    flow: 'Fluxo do sistema — {title}',
+    context: 'Contexto',
+    role: 'Meu papel',
+    built: 'O que construí',
+    result: 'Resultado',
+    learned: 'O que aprendi',
+    stack: 'Tecnologias',
   },
   contributing: {
     previous: 'Foto anterior',

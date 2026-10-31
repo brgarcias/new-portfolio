@@ -354,6 +354,41 @@ collections:
       - { name: description, label: Descrição, widget: text, i18n: true }
       - { name: link, label: Endereço do site, widget: string, i18n: duplicate }
 
+  - name: cases
+    label: Estudos de caso
+    label_singular: Estudo de caso
+    folder: content/cases
+    format: json
+    extension: json
+    create: true
+    i18n: true
+    slug: '{{fields.order}}-{{fields.title}}'
+    summary: '{{order}}. {{title}}'
+    sortable_fields: ['order']
+    description: 'Os estudos de caso abrem a seção de projetos. Use só fatos que você pode mostrar; uma parte vazia (resultado, aprendizado, link) não aparece.'
+    fields:
+      - { name: order, label: Ordem, widget: number, value_type: int, i18n: duplicate }
+      - { name: company, label: Empresa, widget: string, i18n: duplicate }
+      - { name: period, label: Período, widget: string, i18n: duplicate, hint: 'Como "2023–2024".' }
+      - { name: title, label: Título, widget: string, i18n: true }
+      - { name: summary, label: Resumo, widget: text, i18n: true, hint: 'Uma ou duas frases, no cartão e no topo do estudo.' }
+      - { name: context, label: Contexto, widget: text, i18n: true }
+      - { name: role, label: Meu papel, widget: text, i18n: true }
+      - { name: built, label: O que construí, widget: text, i18n: true }
+      - { name: result, label: Resultado, widget: text, i18n: true, required: false }
+      - { name: learned, label: O que aprendi, widget: text, i18n: true, required: false }
+      - { name: stack, label: Tecnologias, widget: string, i18n: duplicate, hint: 'Separadas por vírgula, com os nomes oficiais.' }
+      - name: flow
+        label: Fluxo do sistema
+        label_singular: Passo
+        widget: list
+        i18n: true
+        hint: 'Os passos do diagrama, em ordem.'
+        fields:
+          - { name: label, label: Nome, widget: string }
+          - { name: detail, label: Detalhe, widget: string, required: false }
+      - { name: link, label: Link do site, widget: string, i18n: duplicate, required: false }
+
   - name: initiatives
     label: Fotos de Contribuições
     label_singular: Foto

@@ -116,6 +116,36 @@ for (const theme of ['dark', 'light'] as const) {
       await expectScreenshot(page, name('course-details.png'));
     });
 
+    test('estudos de caso', { tag: '@visual' }, async ({ page }) => {
+      await page.goto('/');
+      await scrollTo(page, '#projects .cases__grid');
+      await expect(page.locator('#projects .cases__body')).toHaveCSS(
+        'opacity',
+        '1',
+      );
+      await expectScreenshot(page, name('cases.png'), '#projects');
+    });
+
+    test(
+      'detalhes de um estudo de caso',
+      { tag: '@visual' },
+      async ({ page }) => {
+        await page.goto('/');
+        await scrollTo(page, '#projects .case-card:first-child');
+        await expect(page.locator('#projects .cases__body')).toHaveCSS(
+          'opacity',
+          '1',
+        );
+        await page
+          .locator('#projects .case-card')
+          .first()
+          .getByRole('button')
+          .click();
+        await expect(page.getByRole('dialog')).toBeVisible();
+        await expectScreenshot(page, name('case-details.png'));
+      },
+    );
+
     test('rodapé', { tag: '@visual' }, async ({ page }) => {
       await page.goto('/');
       await page.evaluate(() =>

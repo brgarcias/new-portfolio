@@ -114,6 +114,26 @@ export interface ProjectEntry {
   link: string;
 }
 
+// content/cases/*.json, one file per case study of the projects section.
+// The result and what it taught are optional: an empty part does not show.
+export interface CaseEntry {
+  order: number;
+  company: string;
+  period: string;
+  title: string;
+  summary: string;
+  context: string;
+  role: string;
+  built: string;
+  result?: string;
+  learned?: string;
+  // Separated by commas.
+  stack: string;
+  // The system, step by step, as the diagram draws it.
+  flow: { label: string; detail?: string }[];
+  link?: string;
+}
+
 // content/site/contributing.json
 export interface ContributingContent {
   storyLabel: string;

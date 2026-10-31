@@ -1,0 +1,86 @@
+{
+  "en": {
+    "order": 2,
+    "company": "Trocafone",
+    "period": "2021–2022",
+    "stack": "React, Redux, Material UI, GraphQL, PHP, Laravel, MySQL, Docker, Kubernetes",
+    "link": "https://reparofone.com.br/novaordem",
+    "title": "A 30% faster repair API",
+    "summary": "Reparofone manages smartphone repair orders. It was my first full-stack project, and I made its API 30% faster.",
+    "context": "Reparofone, Trocafone's smartphone repair service, needed a system to take repair orders and run the repair workflow.",
+    "role": "I built the React frontend and the Laravel APIs.",
+    "built": "A React app with Redux and Material UI, on GraphQL and REST APIs in PHP (Laravel) with MySQL. Legacy components moved to Docker containers deployed on Kubernetes.",
+    "result": "The API became 30% faster after I optimized the resolvers and batched the queries.",
+    "learned": "My first full-stack project, and my first page built entirely in React.",
+    "flow": [
+      {
+        "label": "React app",
+        "detail": "Redux · Material UI"
+      },
+      {
+        "label": "GraphQL and REST APIs",
+        "detail": "Laravel · batched queries"
+      },
+      {
+        "label": "MySQL",
+        "detail": ""
+      }
+    ]
+  },
+  "pt": {
+    "order": 2,
+    "company": "Trocafone",
+    "period": "2021–2022",
+    "stack": "React, Redux, Material UI, GraphQL, PHP, Laravel, MySQL, Docker, Kubernetes",
+    "link": "https://reparofone.com.br/novaordem",
+    "title": "Uma API de reparos 30% mais rápida",
+    "summary": "O Reparofone gerencia ordens de conserto de smartphones. Foi meu primeiro projeto full-stack, e deixei a API dele 30% mais rápida.",
+    "context": "O Reparofone, o serviço de conserto de smartphones da Trocafone, precisava de um sistema para receber as ordens de conserto e conduzir o fluxo do reparo.",
+    "role": "Construí o frontend em React e as APIs em Laravel.",
+    "built": "Uma aplicação React com Redux e Material UI, sobre APIs GraphQL e REST em PHP (Laravel) com MySQL. Componentes legados passaram para contêineres Docker publicados no Kubernetes.",
+    "result": "A API ficou 30% mais rápida depois que otimizei os resolvers e agrupei as consultas.",
+    "learned": "Meu primeiro projeto full-stack, e minha primeira página feita inteiramente em React.",
+    "flow": [
+      {
+        "label": "Aplicação React",
+        "detail": "Redux · Material UI"
+      },
+      {
+        "label": "APIs GraphQL e REST",
+        "detail": "Laravel · consultas agrupadas"
+      },
+      {
+        "label": "MySQL",
+        "detail": ""
+      }
+    ]
+  },
+  "es": {
+    "order": 2,
+    "company": "Trocafone",
+    "period": "2021–2022",
+    "stack": "React, Redux, Material UI, GraphQL, PHP, Laravel, MySQL, Docker, Kubernetes",
+    "link": "https://reparofone.com.br/novaordem",
+    "title": "Una API de reparaciones un 30% más rápida",
+    "summary": "Reparofone gestiona órdenes de reparación de smartphones. Fue mi primer proyecto full-stack, e hice su API un 30% más rápida.",
+    "context": "Reparofone, el servicio de reparación de smartphones de Trocafone, necesitaba un sistema para recibir las órdenes de reparación y llevar el flujo del arreglo.",
+    "role": "Construí el frontend en React y las APIs en Laravel.",
+    "built": "Una aplicación React con Redux y Material UI, sobre APIs GraphQL y REST en PHP (Laravel) con MySQL. Componentes heredados pasaron a contenedores Docker desplegados en Kubernetes.",
+    "result": "La API se volvió un 30% más rápida después de que optimicé los resolvers y agrupé las consultas.",
+    "learned": "Mi primer proyecto full-stack, y mi primera página hecha completamente en React.",
+    "flow": [
+      {
+        "label": "Aplicación React",
+        "detail": "Redux · Material UI"
+      },
+      {
+        "label": "APIs GraphQL y REST",
+        "detail": "Laravel · consultas agrupadas"
+      },
+      {
+        "label": "MySQL",
+        "detail": ""
+      }
+    ]
+  }
+}
