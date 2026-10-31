@@ -107,6 +107,15 @@ test('abre o hangar com as naves e lembra a escolhida', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Choose your ship',
   );
+  // Taking off is in sight on every screen, pinned to the bottom on the
+  // smaller ones.
+  await expect(page.getByRole('button', { name: /Take off/ })).toBeInViewport();
+  // Tab reaches the chosen ship before the take-off button.
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('radio', { name: 'X-wing' })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: /Take off/ })).toBeFocused();
   // The roster: six ships, as radio buttons, the first one chosen.
   const ships = page.getByRole('radio');
   await expect(ships).toHaveCount(6);
@@ -398,6 +407,43 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
     'Choose your ship',
   );
   expect(errors).toEqual([]);
+});
+
+test.describe('no tablet', () => {
+  test.use({
+    viewport: { width: 820, height: 1180 },
+    hasTouch: true,
+    isMobile: true,
+  });
+
+  test('deixa os controles de toque livres dos painéis do HUD', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+    // Taking off is in sight in the stacked hangar, without scrolling.
+    await page.goto('/play');
+    await expect(
+      page.getByRole('button', { name: /Take off/ }),
+    ).toBeInViewport();
+    await takeOff(page);
+    const overlap = (
+      a: { x: number; y: number; width: number; height: number },
+      b: { x: number; y: number; width: number; height: number },
+    ) =>
+      a.x < b.x + b.width &&
+      b.x < a.x + a.width &&
+      a.y < b.y + b.height &&
+      b.y < a.y + a.height;
+    const boost = (await page
+      .getByRole('button', { name: 'Boost' })
+      .boundingBox())!;
+    const joystick = (await page
+      .getByRole('slider', { name: 'Joystick' })
+      .boundingBox())!;
+    const craft = (await page.locator('.hud__craft').boundingBox())!;
+    expect(overlap(boost, craft)).toBe(false);
+    expect(overlap(joystick, craft)).toBe(false);
+  });
 });
 
 test('voa pelo joystick no celular', async ({ page, isMobile }) => {

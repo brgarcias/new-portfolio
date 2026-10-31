@@ -343,15 +343,19 @@ function Sheet({
           })}
         </dl>
       </div>
-      <button
-        type="button"
-        className="g-btn g-btn--primary hangar__launch"
-        onClick={onTakeOff}
-      >
-        <FontAwesomeIcon icon={faRocket} />
-        {t.takeOff}
-        <Keycap>Enter</Keycap>
-      </button>
+      {/* On smaller screens the dock is pinned to the bottom of the
+          screen, on a band of its own. */}
+      <div className="hangar__dock">
+        <button
+          type="button"
+          className="g-btn g-btn--primary hangar__launch"
+          onClick={onTakeOff}
+        >
+          <FontAwesomeIcon icon={faRocket} />
+          {t.takeOff}
+          <Keycap>Enter</Keycap>
+        </button>
+      </div>
     </section>
   );
 }
@@ -438,7 +442,6 @@ export default function Hangar({
           <h1 className="hangar__title">{t.chooseShip}</h1>
         </div>
         <Stage ship={ship} index={index} />
-        <Sheet ship={ship} index={index} onTakeOff={onTakeOff} />
         <div
           ref={roster}
           className="hangar__roster"
@@ -469,6 +472,7 @@ export default function Hangar({
             </button>
           ))}
         </div>
+        <Sheet ship={ship} index={index} onTakeOff={onTakeOff} />
       </div>
     </div>
   );
