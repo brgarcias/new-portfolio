@@ -352,16 +352,27 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   // A turn all the way round, back the way it came, so the ship points
   // down the lane, which is clear; the page lets go of the key on the
   // first frame past the target, so it aims a little short of the full
-  // turn and ends within a frame's turn of it.
+  // turn and ends within a frame's turn of it. On CI's software renderer
+  // one frame can take most of a second and carry the turn well past its
+  // mark, so a short turn the other way brings it back.
   // Then a burst of boost down the lane, past the top speed, which the
   // page reads every frame, so a slow machine cannot miss the peak.
   await expect
     .poll(() => reading(page, 'speed'), { timeout: 10_000 })
     .toBeLessThan(0.1);
   const heading = await reading(page, 'heading');
-  await steer(page, 'KeyD', heading - Math.PI + 0.15);
+  const back = heading - Math.PI;
+  await steer(page, 'KeyD', back + 0.15);
+  for (let correction = 0; correction < 3; correction++) {
+    const now = await reading(page, 'heading');
+    if (Math.abs(now - back) < 0.35) break;
+    if (now < back) await steer(page, 'KeyA', back - 0.1);
+    else await steer(page, 'KeyD', back + 0.1);
+  }
   const turned = await reading(page, 'heading');
-  expect(Math.abs(turned - (heading - Math.PI))).toBeLessThan(0.5);
+  // A long turn happened, and it ended facing back down the lane.
+  expect(heading - turned).toBeGreaterThan(2.5);
+  expect(Math.abs(turned - back)).toBeLessThan(0.6);
   const fastest = await hold(page, ['KeyW', 'ShiftLeft'], 1800);
   expect(fastest).toBeGreaterThan(27);
   // It coasts, and never leaves the platform.
