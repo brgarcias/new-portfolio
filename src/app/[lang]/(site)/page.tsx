@@ -8,8 +8,6 @@ import Projects from '../../projects';
 import Contact from '../../contact';
 import Contributing from '../../contributing';
 import Courses from '../../courses';
-// COMPONENTS
-import OffscreenPause from '@/src/components/OffscreenPause';
 // CONTENT
 import {
   getAbout,
@@ -26,7 +24,7 @@ import {
   getSocialLinks,
 } from '@/src/content';
 // I18N
-import { isLocale, locales } from '@/src/i18n/config';
+import { isLocale, locales, pagePath } from '@/src/i18n/config';
 import { getMessages } from '@/src/i18n/messages';
 
 // Regenerates the page once a day, so the current role's duration and the
@@ -63,10 +61,12 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
         hero={getHero(locale)}
         about={getAbout(locale)}
         social={social}
+        t={messages.hero}
+        playHref={pagePath(locale, 'play')}
         currentRole={
           current && {
             // "Software Engineer (Node.js / GraphQL Platform)" reads as
-            // "Software Engineer" in the short line under the name.
+            // "Software Engineer" in the short line under the tagline.
             title: current.title.split(' (')[0],
             company: current.company,
           }
@@ -93,7 +93,6 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
         social={social}
         socialLabel={messages.frame.socialLinks}
       />
-      <OffscreenPause />
     </main>
   );
 }

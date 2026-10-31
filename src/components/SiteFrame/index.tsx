@@ -19,12 +19,13 @@ import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import LanguageSwitch from './LanguageSwitch';
 import SiteFooter from './SiteFooter';
+import SocialLinks from './SocialLinks';
 import ThemeToggle from './ThemeToggle';
 // I18N
 import { homePath } from '@/src/i18n/config';
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
-import { resume, socialIcons, type NavItem } from './content';
+import { resume, type NavItem } from './content';
 import type { SocialLink } from '@/src/content';
 import { sectionIds, type SectionId } from '@/src/content/sections';
 // CSS
@@ -366,21 +367,7 @@ export default function SiteFrame({
         </ol>
         <div className="stack-menu__footer">
           <LanguageSwitch variant="inline" section={current} />
-          <ul className="social-links">
-            {social.map(({ id, href, text }) => (
-              <li key={id}>
-                <a
-                  className="social-links__link"
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={text}
-                >
-                  <FontAwesomeIcon icon={socialIcons[id]} />
-                </a>
-              </li>
-            ))}
-          </ul>
+          <SocialLinks links={social} label={t.socialLinks} />
           <a
             className="btn btn--ghost btn--small"
             href={resume.href}
@@ -425,7 +412,6 @@ export default function SiteFrame({
             isHome={isHome}
             name={name}
             role={role}
-            social={social}
             year={year}
           />
         </div>

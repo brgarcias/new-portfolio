@@ -3,9 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
-// CONTENT
-import { socialIcons } from './content';
-import type { SocialLink } from '@/src/content';
 
 interface SiteFooterProps {
   // The address of the home page in the page's language.
@@ -13,17 +10,17 @@ interface SiteFooterProps {
   isHome: boolean;
   name: string;
   role: string;
-  social: readonly SocialLink[];
   // Comes from the server, so the page and the browser show the same year.
   year: number;
 }
 
+// The end of every page: the signature, the year and, on the home page, the
+// way back to the top. The channels are in the contact section, just above.
 export default function SiteFooter({
   home,
   isHome,
   name,
   role,
-  social,
   year,
 }: Readonly<SiteFooterProps>) {
   const t = useI18n().messages.frame;
@@ -40,21 +37,6 @@ export default function SiteFooter({
           </a>
           <p className="site-footer__role">{role}</p>
         </div>
-        <ul className="social-links" aria-label={t.socialLinks}>
-          {social.map(({ id, href, text }) => (
-            <li key={id}>
-              <a
-                className="social-links__link"
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={text}
-              >
-                <FontAwesomeIcon icon={socialIcons[id]} />
-              </a>
-            </li>
-          ))}
-        </ul>
       </div>
 
       <div className="site-footer__bottom">

@@ -4,8 +4,6 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button,
-  useDisclosure,
 } from '@heroui/react';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
@@ -73,19 +71,16 @@ export default function ModalComponent({
   focusableBody = false,
 }: Readonly<ModalProps>) {
   const t = useI18n().messages.dialog;
-  const { onOpenChange } = useDisclosure();
-  const closeHandler = () => setVisible(false);
 
   return (
     <Modal
       closeButton
       isDismissable
-      backdrop="blur"
+      backdrop="opaque"
       aria-labelledby="modal-title"
       isOpen={visible}
-      onClose={closeHandler}
+      onClose={() => setVisible(false)}
       size={size}
-      onOpenChange={onOpenChange}
       scrollBehavior="inside"
       motionProps={motionProps}
       // Keeps the height limit NextUI used before HeroUI changed it to 8rem,
@@ -114,22 +109,17 @@ export default function ModalComponent({
             >
               {children}
             </ModalBody>
-            <ModalFooter
-              style={{
-                display: hideCloseButton ? 'none' : 'flex',
-              }}
-            >
-              <Button
-                style={{
-                  display: hideCloseButton ? 'none' : 'block',
-                }}
-                color="default"
-                variant="light"
-                onPress={onClose}
-              >
-                {t.close}
-              </Button>
-            </ModalFooter>
+            {!hideCloseButton && (
+              <ModalFooter>
+                <button
+                  type="button"
+                  className="btn btn--ghost btn--small"
+                  onClick={onClose}
+                >
+                  {t.close}
+                </button>
+              </ModalFooter>
+            )}
           </>
         )}
       </ModalContent>

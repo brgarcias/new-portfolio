@@ -1,8 +1,35 @@
-.action-button {
-  background-color: rgb(92, 94, 220);
-  border-radius: 10px;
-  padding: 5px 20px;
-  font-weight: 400;
-  color: white;
-  font-size: 0.9em;
+/* HeroUI's fields take their error color from --heroui-danger, in HSL;
+   here it is the site's --color-error of each theme. */
+.feedback-form {
+  --heroui-danger: 5 62% 74%;
+
+  display: grid;
+  gap: 1.25rem;
+}
+
+.light .feedback-form {
+  --heroui-danger: 4 64% 47%;
+}
+
+.feedback-form__failed {
+  padding: 0.75rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--color-error) 45%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-error) 8%, transparent);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.feedback-form__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+.feedback-form__actions .btn--primary:disabled {
+  cursor: progress;
+  opacity: 0.7;
 }

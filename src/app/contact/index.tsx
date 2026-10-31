@@ -1,26 +1,12 @@
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faEnvelope,
-  faGraduationCap,
-  faLanguage,
-  faUser,
-} from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
+import Feedback from '@/src/components/Feedback';
+import SocialLinks from '@/src/components/SiteFrame/SocialLinks';
 // CONTENT
 import type { ContactCard, SectionHeader, SocialLink } from '@/src/content';
-import { socialIcons } from '@/src/components/SiteFrame/content';
 // CSS
 import './styles.css';
-
-const icons = {
-  profile: faUser,
-  education: faGraduationCap,
-  contact: faEnvelope,
-  languages: faLanguage,
-};
 
 interface ContactProps {
   header: SectionHeader;
@@ -30,64 +16,91 @@ interface ContactProps {
   socialLabel: string;
 }
 
+// An address that does not fit on its line breaks before its @, not after
+// the hyphen of its name. <wbr> adds no character to copy.
+function addressText(text: string) {
+  const at = text.indexOf('@');
+  if (at < 1) return text;
+  return (
+    <>
+      {text.slice(0, at)}
+      <wbr />
+      {text.slice(at)}
+    </>
+  );
+}
+
+// What a card says: its label, a title and a line under it, each a link
+// when the content gives one, and the details.
+function CardText({ card }: Readonly<{ card: ContactCard }>) {
+  return (
+    <>
+      <p className="contact-card__label">{card.label}</p>
+      <h3 className="contact-card__title">
+        {'titleHref' in card ? (
+          <a href={card.titleHref}>{addressText(card.title)}</a>
+        ) : (
+          card.title
+        )}
+      </h3>
+      <p className="contact-card__subtitle">
+        {'subtitleHref' in card ? (
+          <a href={card.subtitleHref}>{card.subtitle}</a>
+        ) : (
+          card.subtitle
+        )}
+      </p>
+      <ul className="contact-card__details">
+        {card.details.map((detail) => (
+          <li key={detail}>{detail}</li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+// How to reach Bruno comes first, on its own panel, with the channels and
+// the way to leave a comment on the portfolio; beside it, the facts the old
+// contact card had in tabs: profile, education and languages.
 export default function Contact({
   header,
   cards,
   social,
   socialLabel,
 }: Readonly<ContactProps>) {
+  const reach = cards.find((card) => card.id === 'contact');
+  const facts = cards.filter((card) => card.id !== 'contact');
+
   return (
     <Section header={header}>
-      <Reveal className="contact">
-        <ul className="contact-grid">
-          {cards.map((card) => (
-            <li
-              key={card.id}
-              className={`contact-card contact-card--${card.id}`}
-            >
-              <span className="contact-card__icon" aria-hidden="true">
-                <FontAwesomeIcon icon={icons[card.id]} />
-              </span>
-              <p className="contact-card__label">{card.label}</p>
-              <h3 className="contact-card__title">
-                {'titleHref' in card ? (
-                  <a href={card.titleHref}>{card.title}</a>
-                ) : (
-                  card.title
-                )}
-              </h3>
-              <p className="contact-card__subtitle">
-                {'subtitleHref' in card ? (
-                  <a href={card.subtitleHref}>{card.subtitle}</a>
-                ) : (
-                  card.subtitle
-                )}
-              </p>
-              <ul className="contact-card__details">
-                {card.details.map((detail) => (
-                  <li key={detail}>{detail}</li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
-
-        <ul className="contact-links" aria-label={socialLabel}>
-          {social.map(({ id, href, text }) => (
-            <li key={id}>
-              <a
-                className="btn btn--ghost"
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
+      <div className="contact">
+        {reach && (
+          <Reveal className="contact__reach">
+            <div className="contact-card contact-card--contact">
+              <CardText card={reach} />
+            </div>
+            <SocialLinks
+              links={social}
+              variant="buttons"
+              className="contact-links"
+              label={socialLabel}
+            />
+            <Feedback />
+          </Reveal>
+        )}
+        <Reveal className="contact__facts" delay={0.08}>
+          <ul className="contact-facts">
+            {facts.map((card) => (
+              <li
+                key={card.id}
+                className={`contact-card contact-card--${card.id}`}
               >
-                <FontAwesomeIcon icon={socialIcons[id]} />
-                {text}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </Reveal>
+                <CardText card={card} />
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+      </div>
     </Section>
   );
 }

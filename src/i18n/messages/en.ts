@@ -3,8 +3,9 @@
 // "{name}" marks a value filled in when the text is shown.
 const en = {
   meta: {
-    title: 'Bruno Garcia — Dev. Full-Stack',
-    description: 'Bruno Garcia: An inspired Full-Stack Developer',
+    title: 'Bruno Garcia — Full-Stack Developer',
+    description:
+      'Portfolio of Bruno Garcia, full-stack developer working with Node.js, GraphQL, React and Next.js.',
     ogLocale: 'en_US',
     // How dates are written, as in "Oct 2025".
     dateLocale: 'en-US',
@@ -29,31 +30,31 @@ const en = {
     currently: 'Currently {role} at {company}',
     contact: 'Contact me',
     downloadCv: 'Download CV',
-    feedback: 'Leave Feedback',
     play: 'Play',
-    scrollToAbout: 'Scroll to About Me',
   },
   feedback: {
-    title: 'Welcome!',
-    subtitle:
-      'Please share your thoughts and feedback to help me improve my portfolio.',
-    nameLabel: 'Full Name',
-    namePlaceholder: 'Let me know you',
-    nameError: 'Please, write your name.',
+    // The button that opens the form, in the contact section.
+    open: 'Leave feedback',
+    title: 'Feedback on this portfolio',
+    subtitle: "Tell me what works, what doesn't and what you would change.",
+    nameLabel: 'Name',
+    namePlaceholder: 'Your name',
+    nameError: 'Enter your name.',
     emailLabel: 'Email',
-    emailPlaceholder: 'Enter your email',
-    emailError: 'Please, tell me your email.',
-    feedbackLabel: 'Feedback',
-    feedbackPlaceholder: 'Leave your feedback',
-    feedbackError: 'Please, give me your feedback.',
+    emailPlaceholder: 'you@example.com',
+    emailError: 'Enter a valid email address.',
+    feedbackLabel: 'Message',
+    feedbackPlaceholder: 'Your feedback',
+    feedbackError: 'Write a message.',
     // The label of the field robots fill in and visitors never see.
     botField: "Don't fill this out:",
-    close: 'Close',
+    close: 'Cancel',
     send: 'Send',
-    sentTitle: 'Message Submitted',
-    sentText: 'Thank you very much for your feedback!',
-    failedTitle: 'We had a problem',
-    failedText: 'An error occurred while sending your message!',
+    sending: 'Sending…',
+    sentTitle: 'Message sent',
+    sentText: 'Thanks for the feedback.',
+    // In the dialog, which stays open with the text, to try again.
+    failed: "Your message wasn't sent. Please try again.",
   },
   dialog: {
     close: 'Close',
@@ -74,12 +75,12 @@ const en = {
   },
   projects: {
     list: 'Projects',
-    details: 'See details',
-    // Read after "See details" by screen readers only.
+    details: 'View details',
+    // Read after "View details" by screen readers only.
     detailsAbout: ' about {title}',
-    previous: 'Previous Project',
-    next: 'Next Project',
-    website: 'See more about the website',
+    previous: 'Previous project',
+    next: 'Next project',
+    website: 'Visit the website',
   },
   contributing: {
     previous: 'Previous photo',
@@ -177,22 +178,16 @@ const en = {
   },
 
   notFound: {
-    label: 'Error 404',
     heading: 'Page Not Found',
     // The [link] goes back to the portfolio.
-    text: 'This page does not exist, but you can [go back to the portfolio]!',
-    quote: 'Not all those who wander are lost.',
-    author: 'J.R.R. Tolkien',
+    text: "This page doesn't exist. You can [go back to the portfolio].",
     back: 'Back to the portfolio',
   },
   error: {
-    label: 'Unexpected Error',
+    label: 'Unexpected error',
     heading: 'Something Went Wrong',
     // The [link] reloads the page.
-    text: 'Sorry, this page stopped working. Please [try again]!',
-    quote:
-      'Failure is simply the opportunity to begin again, this time more intelligently.',
-    author: 'Henry Ford',
+    text: 'Sorry, this page stopped working. Please [try again].',
     retry: 'Try again',
   },
 };

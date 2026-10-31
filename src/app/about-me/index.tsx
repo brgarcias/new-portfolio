@@ -1,36 +1,24 @@
-'use client';
-
 // NEXT
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
-// HOOKS
-import { CSSProperties, FormEvent, useEffect, useState } from 'react';
+// REACT
+import type { CSSProperties } from 'react';
 // FONTAWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faArrowDown,
   faArrowRight,
-  faCheck,
-  faCircleExclamation,
-  faComment,
   faRocket,
 } from '@fortawesome/free-solid-svg-icons';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 // IMAGES
 import AboutMeImg from '@/public/images/about-me/about-me.webp';
 // COMPONENTS
-import ModalComponent from '@/src/components/Modal/Lazy';
-import { openOnKey } from '@/src/components/Modal/openOnKey';
-import { whenIdle } from '@/src/components/Modal/whenIdle';
-import SnackbarFeedback from '@/src/components/SnackBar';
 import About from './About';
+import SocialLinks from '@/src/components/SiteFrame/SocialLinks';
 import { markup } from '@/src/components/Markup';
 // I18N
-import { useI18n } from '@/src/i18n/I18nProvider';
-import { pagePath } from '@/src/i18n/config';
-import { format } from '@/src/i18n/messages';
+import { format, type Messages } from '@/src/i18n/messages';
 // CONTENT
-import { resume, socialIcons } from '@/src/components/SiteFrame/content';
+import { resume } from '@/src/components/SiteFrame/content';
 import type {
   About as AboutContent,
   Hero,
@@ -41,179 +29,63 @@ import type {
 // CSS
 import './styles.css';
 
-// The feedback form uses HeroUI's fields, so it loads like the dialog: when
-// the browser is idle after the page, or when the dialog opens.
-const loadForm = () => import('@/src/components/Form');
-const Form = dynamic(loadForm, { ssr: false });
-
-// The form only checks strings, and lodash's isEmpty for a string or null
-// is the same as this test.
-const isEmpty = (value: string | null | undefined) => !value;
-
 interface AboutMeProps {
   header: SectionHeader;
   profile: Profile;
   hero: Hero;
   about: AboutContent;
   social: readonly SocialLink[];
-  // The experience without an end date, shown under the name.
+  // The texts of the buttons, in the page's language.
+  t: Messages['hero'];
+  // The game's page, in the page's language.
+  playHref: string;
+  // The experience without an end date, shown under the tagline.
   currentRole?: { title: string; company: string };
 }
 
+// Each element enters a little after the previous one.
+const order = (i: number) => ({ '--i': i }) as CSSProperties;
+
+// The top of the home page, then the About section. Rendered on the server:
+// nothing here needs the browser.
 export default function AboutMe({
   header,
   profile,
   hero,
   about,
   social,
+  t,
+  playHref,
   currentRole,
 }: Readonly<AboutMeProps>) {
-  const { locale, messages } = useI18n();
-  const t = messages.hero;
-  const tf = messages.feedback;
-  const [visible, setVisible] = useState(false);
-  const [fullNameValue, setFullNameValue] = useState('');
-  const [emailValue, setEmailValue] = useState('');
-  const [feedbackValue, setFeedbackValue] = useState('');
-  const [isSubmitting, setSubmitting] = useState(false);
-  const [openSnackbar, setOpenSnackbar] = useState({
-    open: false,
-    title: '',
-    description: '',
-    icon: faCheck as IconProp,
-    colorIcon: '',
-  });
-
-  useEffect(() => whenIdle(() => void loadForm()), []);
-  const [errorsState, setErrorsState] = useState({
-    fullName: false,
-    email: false,
-    feedback: false,
-  });
-  const validateField = (fieldName: string, value: string | null) => {
-    setErrorsState((prevState) => ({
-      ...prevState,
-      [fieldName]: isEmpty(value),
-    }));
-  };
-  const callValidateFields = (formDataParsed: Record<string, string>) => {
-    Object.entries(errorsState).map((item) => {
-      validateField(item[0], formDataParsed[item[0]]);
-    });
-  };
-
-  const submitForm = async (data: FormEvent<HTMLFormElement>) => {
-    data.preventDefault();
-    const formData = new FormData(data.currentTarget);
-    const formDataParsed: Record<string, string> = {};
-
-    formData.forEach(function (value, index) {
-      formDataParsed[index] = value.toString();
-    });
-
-    const validateAndSubmit = async () => {
-      try {
-        // Netlify Forms only accepts submissions posted to a static file.
-        // A POST to / reaches the Next.js server and the message is lost.
-        const response = await fetch('/contact.html', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(formDataParsed).toString(),
-        });
-
-        if (response.ok) {
-          setOpenSnackbar({
-            open: true,
-            title: tf.sentTitle,
-            description: tf.sentText,
-            icon: faCheck,
-            colorIcon: 'var(--color-success)',
-          });
-        } else {
-          console.error('Error on sending forms: ', response);
-          throw new Error('An error occurred while sending your message');
-        }
-      } catch (error) {
-        console.error('Error submitting form:', error);
-        setOpenSnackbar({
-          open: true,
-          title: tf.failedTitle,
-          description: tf.failedText,
-          icon: faCircleExclamation,
-          colorIcon: 'var(--color-error)',
-        });
-      } finally {
-        setSubmitting(false);
-        setVisible(false);
-      }
-    };
-    callValidateFields(formDataParsed);
-
-    // Only the visitor's fields are required. The form also sends form-name
-    // and the bot-field honeypot, which stays empty.
-    if (
-      Object.keys(errorsState).every((field) => !isEmpty(formDataParsed[field]))
-    ) {
-      setSubmitting(true);
-      validateAndSubmit();
-    }
-  };
-
-  const openModalFeedback = () => setVisible(true);
   return (
     <>
-      <SnackbarFeedback content={openSnackbar} setOpen={setOpenSnackbar} />
-
-      <section id="top" className="hero" aria-labelledby="hero-title" data-loop>
-        <div className="hero__backdrop" aria-hidden="true">
-          <span className="hero__glow hero__glow--brand" />
-          <span className="hero__glow hero__glow--violet" />
-          <span className="hero__glow hero__glow--cyan" />
-          <span className="hero__grid" />
-        </div>
-
+      <section id="top" className="hero" aria-labelledby="hero-title">
         <div className="hero__inner">
           <div className="hero__content">
+            <p className="hero__name hero__reveal">{profile.name}</p>
+            {/* A **highlight** in a line of the title takes the brand's
+                color. */}
+            <h1 id="hero-title" className="hero__title">
+              <span className="hero__title-line hero__reveal" style={order(1)}>
+                {markup(hero.titleTop, 'hero__title-accent')}
+              </span>{' '}
+              <span className="hero__title-line hero__reveal" style={order(2)}>
+                {markup(hero.titleBottom, 'hero__title-accent')}
+              </span>
+            </h1>
+            <p className="hero__tagline hero__reveal" style={order(3)}>
+              {hero.tagline}
+            </p>
             {currentRole && (
-              <p className="hero__status hero__reveal">
-                <span className="hero__status-dot" aria-hidden="true" />
+              <p className="hero__status hero__reveal" style={order(4)}>
                 {format(t.currently, {
                   role: currentRole.title,
                   company: currentRole.company,
                 })}
               </p>
             )}
-            <p
-              className="hero__name hero__reveal"
-              style={{ '--i': 1 } as CSSProperties}
-            >
-              {profile.name}
-            </p>
-            {/* A **highlight** in a line of the title takes the gradient. */}
-            <h1 id="hero-title" className="hero__title">
-              <span
-                className="hero__title-line hero__reveal"
-                style={{ '--i': 2 } as CSSProperties}
-              >
-                {markup(hero.titleTop, 'hero__title-accent')}
-              </span>{' '}
-              <span
-                className="hero__title-line hero__reveal"
-                style={{ '--i': 3 } as CSSProperties}
-              >
-                {markup(hero.titleBottom, 'hero__title-accent')}
-              </span>
-            </h1>
-            <p
-              className="hero__tagline hero__reveal"
-              style={{ '--i': 4 } as CSSProperties}
-            >
-              {hero.tagline}
-            </p>
-            <div
-              className="hero__actions hero__reveal"
-              style={{ '--i': 5 } as CSSProperties}
-            >
+            <div className="hero__actions hero__reveal" style={order(5)}>
               <a className="btn btn--primary" href="#contact">
                 {t.contact}
                 <FontAwesomeIcon icon={faArrowRight} />
@@ -226,100 +98,37 @@ export default function AboutMe({
                 <FontAwesomeIcon icon={faArrowDown} />
                 {t.downloadCv}
               </a>
-              <a className="btn btn--ghost" href={pagePath(locale, 'play')}>
+              <a className="btn btn--ghost" href={playHref}>
                 <FontAwesomeIcon icon={faRocket} />
                 {t.play}
               </a>
-              <button
-                type="button"
-                className="btn btn--text"
-                onClick={openModalFeedback}
-                onKeyDown={openOnKey(openModalFeedback)}
-              >
-                <FontAwesomeIcon icon={faComment} />
-                {t.feedback}
-              </button>
             </div>
-            <ul
-              className="social-links hero__social hero__reveal"
-              style={{ '--i': 6 } as CSSProperties}
-            >
-              {social.map(({ id, href, text }) => (
-                <li key={id}>
-                  <a
-                    className="social-links__link"
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={text}
-                  >
-                    <FontAwesomeIcon icon={socialIcons[id]} />
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <div className="hero__reveal" style={order(6)}>
+              <SocialLinks links={social} className="hero__social" />
+            </div>
           </div>
 
-          <div className="hero__visual">
-            <div className="hero__halo" aria-hidden="true" />
-            <div className="hero__float">
-              <Image
-                className="hero__image"
-                src={AboutMeImg}
-                alt={profile.name}
-                unoptimized
-                priority
-              />
-            </div>
-            <ul className="hero__chips" aria-hidden="true">
-              {hero.highlights.map((name, index) => (
-                <li
-                  key={name}
-                  className="hero__chip"
-                  style={{ '--i': index } as CSSProperties}
-                >
-                  {name}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <figure className="hero__visual">
+            <Image
+              className="hero__image"
+              src={AboutMeImg}
+              alt={profile.name}
+              unoptimized
+              priority
+            />
+            {/* The technologies of the day to day, under the illustration. */}
+            <figcaption>
+              <ul className="hero__stack">
+                {hero.highlights.map((name) => (
+                  <li key={name}>{name}</li>
+                ))}
+              </ul>
+            </figcaption>
+          </figure>
         </div>
-
-        <a className="hero__scroll" href="#about">
-          <span className="hero__mouse" aria-hidden="true">
-            <span />
-          </span>
-          <span className="visually-hidden">{t.scrollToAbout}</span>
-        </a>
       </section>
 
       <About header={header} about={about} />
-
-      <ModalComponent
-        title={tf.title}
-        subtitle={tf.subtitle}
-        visible={visible}
-        setVisible={setVisible}
-        size="md"
-        hideCloseButton
-      >
-        <Form
-          submitForm={submitForm}
-          isSubmitting={isSubmitting}
-          formData={{
-            emailValue,
-            feedbackValue,
-            fullNameValue,
-            setEmailValue,
-            setFeedbackValue,
-            setFullNameValue,
-          }}
-          validateField={validateField}
-          onClose={() => setVisible(false)}
-          actionButtonDisabled={isSubmitting}
-          errorsState={errorsState}
-        />
-      </ModalComponent>
     </>
   );
 }

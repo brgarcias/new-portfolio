@@ -17,8 +17,8 @@ export default function Courses({ header, courses }: Readonly<CoursesProps>) {
     <Section header={header}>
       <Reveal className="course-grid-wrap">
         <ul className="course-grid">
-          {courses.map((course, index) => (
-            <Course key={course.slug} index={index} course={course} />
+          {courses.map((course) => (
+            <Course key={course.slug} course={course} />
           ))}
         </ul>
       </Reveal>

@@ -62,10 +62,10 @@ collections:
         format: json
         i18n: true
         fields:
-          - { name: titleTop, label: Título, primeira linha, widget: string, i18n: true, hint: 'Use **destaque** para o gradiente.' }
-          - { name: titleBottom, label: Título, segunda linha, widget: string, i18n: true, hint: 'Use **destaque** para o gradiente.' }
+          - { name: titleTop, label: Título, primeira linha, widget: string, i18n: true, hint: 'Use **destaque** para a cor da marca.' }
+          - { name: titleBottom, label: Título, segunda linha, widget: string, i18n: true, hint: 'Use **destaque** para a cor da marca.' }
           - { name: tagline, label: Frase de apresentação, widget: text, i18n: true }
-          - { name: highlights, label: Tecnologias em volta da ilustração, widget: string, i18n: duplicate, hint: 'Separadas por vírgula.' }
+          - { name: highlights, label: Tecnologias sob a ilustração, widget: string, i18n: duplicate, hint: 'Separadas por vírgula, com o nome oficial (Node.js, Next.js, React).' }
       - name: about
         label: Sobre mim
         file: content/site/about.json
@@ -179,7 +179,7 @@ collections:
               - { name: suffix, label: Sufixo, widget: string, required: false, hint: 'Como o "+" de "100+".' }
               - { name: label, label: Legenda, widget: string }
           - { name: closing, label: Texto final, widget: text, i18n: true }
-          - { name: highlight, label: Frase de destaque, widget: string, i18n: true, hint: 'Use *ênfase* para o gradiente.' }
+          - { name: highlight, label: Frase de destaque, widget: string, i18n: true, required: false, hint: 'Opcional. Use *ênfase* para a cor da marca.' }
       - name: contact
         label: Cartões de contato
         file: content/site/contact.json
@@ -237,15 +237,6 @@ collections:
       - { name: title, label: Cargo, widget: string, i18n: true, hint: 'O trecho entre parênteses não aparece no topo do site.' }
       - { name: start, label: Início, widget: string, i18n: duplicate, pattern: ['^\d{4}-\d{2}$', 'Use AAAA-MM'], hint: 'AAAA-MM.' }
       - { name: end, label: Fim, widget: string, i18n: duplicate, required: false, pattern: ['^(\d{4}-\d{2})?$', 'Use AAAA-MM'], hint: 'AAAA-MM. Deixe vazio no emprego atual.' }
-      - name: icon
-        label: Ícone
-        widget: select
-        i18n: duplicate
-        options:
-          - { label: Código, value: code }
-          - { label: Computador, value: desktop }
-          - { label: Celular, value: mobile }
-          - { label: Pessoas, value: users }
       - { name: stack, label: Tecnologias, widget: string, i18n: duplicate, required: false, hint: 'Separadas por vírgula, só as que os detalhes citam, com o nome oficial (Node.js, Next.js, React).' }
       - name: details
         label: Detalhes

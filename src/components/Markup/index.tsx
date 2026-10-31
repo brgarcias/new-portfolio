@@ -2,11 +2,11 @@
 import { ReactNode } from 'react';
 
 // The little formatting the content's texts use: **highlight** takes the
-// brand gradient (or the class given), *emphasis* becomes <em>, and
+// brand's color (or the class given), *emphasis* becomes <em>, and
 // [text](address) a link. Links to other sites open in a new tab.
 const pattern = /\*\*(.+?)\*\*|\*(.+?)\*|\[(.+?)\]\((.+?)\)/g;
 
-export function markup(text: string, highlightClass = 'text-gradient') {
+export function markup(text: string, highlightClass = 'text-accent') {
   const nodes: ReactNode[] = [];
   let last = 0;
   for (const match of text.matchAll(pattern)) {

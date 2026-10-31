@@ -50,10 +50,11 @@
   place-items: center;
   border: 1px solid var(--color-border-strong);
   border-radius: 50%;
-  background: var(--color-surface);
+  background: var(--color-bg);
   color: var(--color-text-subtle);
   font-size: 0.8125rem;
-  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
   transition:
     border-color 0.3s ease,
     color 0.3s ease;
@@ -73,9 +74,9 @@
   position: absolute;
   top: calc(var(--edu-row) / 2);
   left: calc(var(--edu-node) / 2);
-  width: 2px;
+  width: 1px;
   height: calc(var(--edu-row) * (var(--count) - 1));
-  margin-left: -1px;
+  margin-left: -0.5px;
   background:
     linear-gradient(var(--color-border-strong), var(--color-border-strong))
       top / 100% calc(var(--finished) * 100%) no-repeat,
@@ -90,13 +91,7 @@
 .edu__rail-fill {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    var(--color-brand-light),
-    var(--color-violet) 60%,
-    var(--color-cyan)
-  );
-  box-shadow: 0 0 12px rgb(139 92 246 / 0.6);
+  background: var(--color-brand-light);
   transform: scaleY(var(--progress));
   transform-origin: top;
   transition: transform 0.6s var(--ease-stack);
@@ -114,12 +109,10 @@
   height: var(--edu-marker);
   place-items: center;
   border-radius: 50%;
-  background: var(--gradient-brand);
-  box-shadow:
-    0 0 0 6px rgb(92 94 220 / 0.16),
-    0 12px 28px -8px rgb(139 92 246 / 0.9);
+  background: var(--color-brand);
+  box-shadow: 0 0 0 4px var(--color-bg);
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   pointer-events: none;
   transform: translate3d(0, calc(var(--step) * var(--edu-row)), 0);
   transition: transform 0.6s var(--ease-spring);
@@ -127,23 +120,14 @@
 
 .edu-panel {
   min-height: calc(var(--edu-row) * var(--count));
-  padding: clamp(1.5rem, 4vw, 2.5rem);
-  border: 1px solid transparent;
-  border-radius: 1.25rem;
-  background:
-    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
-    linear-gradient(
-        140deg,
-        rgb(92 94 220 / 0.6),
-        rgb(var(--rgb-veil) / 0.06) 40%,
-        rgb(34 211 238 / 0.35)
-      )
-      border-box;
-  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.6);
+  padding: clamp(1.5rem, 3.5vw, 2.25rem);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
 }
 
 .edu-panel:not([hidden]) {
-  animation: edu-panel-in 0.5s var(--ease-out) both;
+  animation: edu-panel-in 0.4s var(--ease-out) both;
 }
 
 .edu-panel:focus-visible {
@@ -152,10 +136,10 @@
 }
 
 .edu-panel__step {
-  color: var(--color-brand-light);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.3em;
+  color: var(--color-text-subtle);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -163,24 +147,24 @@
   margin-top: 0.75rem;
   color: var(--color-text);
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 3vw, 2.125rem);
+  font-size: clamp(1.375rem, 2.6vw, 1.875rem);
   font-weight: 600;
   letter-spacing: -0.02em;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 .edu-panel__text {
   max-width: 62ch;
-  margin-top: 1rem;
+  margin-top: 0.875rem;
   color: var(--color-text-muted);
-  font-size: clamp(1rem, 1.6vw, 1.0625rem);
-  line-height: 1.8;
+  font-size: 1rem;
+  line-height: 1.7;
 }
 
 @keyframes edu-panel-in {
   from {
     opacity: 0;
-    transform: translate3d(0, 0.75rem, 0);
+    transform: translate3d(0, 0.5rem, 0);
   }
 }
 
@@ -206,9 +190,4 @@
   .edu-panel:not([hidden]) {
     animation: none;
   }
-}
-
-/* ─── Light theme ───────────────────────────────────────── */
-.light .edu-panel {
-  box-shadow: 0 30px 60px -30px rgb(31 33 74 / 0.25);
 }

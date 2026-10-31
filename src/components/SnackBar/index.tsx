@@ -1,53 +1,41 @@
 // REACT UTILS
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 // FONTAWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CSS
 import './styles.css';
 
-type Content = {
+interface SnackbarProps {
   open: boolean;
+  onClose: () => void;
   title: string;
   description: string;
-  icon: IconProp;
-  colorIcon: string;
-};
-
-type SnackbarProps = {
-  content: Content;
-  setOpen: Dispatch<SetStateAction<Content>>;
-};
+}
 
 const AUTO_HIDE_DURATION = 5000;
 
+// The notice that a message went out, in the corner of the screen. It is
+// rendered in the body, so no ancestor with a transform can hold it.
 export default function SnackbarFeedback({
-  content,
-  setOpen,
+  open,
+  onClose,
+  title,
+  description,
 }: Readonly<SnackbarProps>) {
   const t = useI18n().messages.dialog;
   // Stays rendered after closing until the slide-out transition ends.
-  const [rendered, setRendered] = useState(content.open);
+  const [rendered, setRendered] = useState(open);
   const timerAutoHide = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  if (content.open && !rendered) {
+  if (open && !rendered) {
     setRendered(true);
   }
 
-  const close = useCallback(
-    () => setOpen((prevState) => ({ ...prevState, open: false })),
-    [setOpen],
-  );
+  const close = useCallback(() => onClose(), [onClose]);
 
   const startTimer = useCallback(
     (duration: number) => {
@@ -66,7 +54,7 @@ export default function SnackbarFeedback({
   );
 
   useEffect(() => {
-    if (!content.open) return;
+    if (!open) return;
 
     function handleKeyDown(event: KeyboardEvent) {
       if (!event.defaultPrevented && event.key === 'Escape') close();
@@ -82,20 +70,20 @@ export default function SnackbarFeedback({
       window.removeEventListener('focus', resumeTimer);
       window.removeEventListener('blur', pauseTimer);
     };
-  }, [content.open, close, startTimer, pauseTimer, resumeTimer]);
+  }, [open, close, startTimer, pauseTimer, resumeTimer]);
 
   // Removes the notice once it has slid out. The transitionend below usually
   // does it; this covers a close during the entrance, when the slide out
   // never runs and no transitionend comes.
   useEffect(() => {
-    if (content.open || !rendered) return;
+    if (open || !rendered) return;
     const timer = setTimeout(() => setRendered(false), 400);
     return () => clearTimeout(timer);
-  }, [content.open, rendered]);
+  }, [open, rendered]);
 
   if (!rendered) return null;
 
-  return (
+  return createPortal(
     <div
       className="snackbar"
       onFocus={pauseTimer}
@@ -105,22 +93,18 @@ export default function SnackbarFeedback({
     >
       {/* A status, so screen readers announce how the sending went. */}
       <div
-        className={`snackbar__content${content.open ? '' : ' snackbar__content--exiting'}`}
+        className={`snackbar__content${open ? '' : ' snackbar__content--exiting'}`}
         role="status"
         onTransitionEnd={(event) => {
-          if (event.target === event.currentTarget && !content.open) {
+          if (event.target === event.currentTarget && !open) {
             setRendered(false);
           }
         }}
       >
-        <FontAwesomeIcon
-          className="snackbar__icon"
-          icon={content.icon}
-          style={{ color: content.colorIcon }}
-        />
+        <FontAwesomeIcon className="snackbar__icon" icon={faCheck} />
         <div className="snackbar-message">
-          <p className="snackbar-title">{content.title}</p>
-          <p className="snackbar-description">{content.description}</p>
+          <p className="snackbar-title">{title}</p>
+          <p className="snackbar-description">{description}</p>
         </div>
         <button
           type="button"
@@ -131,6 +115,7 @@ export default function SnackbarFeedback({
           <FontAwesomeIcon icon={faXmark} />
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

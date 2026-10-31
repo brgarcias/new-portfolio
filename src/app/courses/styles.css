@@ -1,6 +1,5 @@
 /* ─── Grid ──────────────────────────────────────────────── */
-/* Four columns, with the two longer courses taking two each, as the old
-   tiles did. Each card glows with the color of its old tile. */
+/* Four columns, with the two longer courses taking two each. */
 .course-grid-wrap {
   max-width: var(--container);
   margin: 0 auto;
@@ -9,30 +8,20 @@
 
 .course-grid {
   display: grid;
-  gap: clamp(0.85rem, 2vw, 1.25rem);
+  gap: clamp(0.75rem, 1.5vw, 1rem);
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .course-card {
   position: relative;
   display: flex;
-  min-height: 13rem;
+  min-height: 10.5rem;
   flex-direction: column;
-  padding: clamp(1.25rem, 2.5vw, 1.6rem);
-  overflow: hidden;
+  padding: clamp(1.25rem, 2.2vw, 1.5rem);
   border: 1px solid var(--color-border);
-  border-radius: 1.25rem;
-  background:
-    radial-gradient(
-      120% 90% at 100% 0%,
-      color-mix(in srgb, var(--accent) 30%, transparent),
-      transparent 62%
-    ),
-    var(--color-surface);
-  transition:
-    transform 0.35s var(--ease-out),
-    border-color 0.3s ease,
-    box-shadow 0.3s ease;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  transition: border-color 0.2s ease;
 }
 
 .course-card--wide {
@@ -41,41 +30,21 @@
 
 @media (hover: hover) {
   .course-card:hover {
-    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-    box-shadow: 0 24px 50px -28px
-      color-mix(in srgb, var(--accent) 75%, transparent);
-    transform: translateY(-4px);
+    border-color: var(--color-line-active);
   }
 }
 
-.course-card__index {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  color: var(--color-text-subtle);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-}
-
-.course-card__index::before {
-  content: '';
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 12px var(--accent);
+.course-card:focus-within {
+  border-color: var(--color-line-active);
 }
 
 .course-card__title {
-  margin-top: auto;
-  padding-top: 2.5rem;
   color: var(--color-text);
   font-family: var(--font-display);
-  font-size: clamp(1.2rem, 1.8vw, 1.4rem);
+  font-size: clamp(1.125rem, 1.6vw, 1.25rem);
   font-weight: 600;
   letter-spacing: -0.01em;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .course-card__button {
@@ -89,7 +58,7 @@
   position: absolute;
   z-index: 1;
   inset: 0;
-  border-radius: 1.25rem;
+  border-radius: var(--radius-md);
 }
 
 .course-card__button:focus-visible {
@@ -102,29 +71,27 @@
 }
 
 .course-card__subtitle {
-  margin-top: 0.4rem;
-  color: color-mix(in srgb, var(--accent) 50%, var(--color-text));
+  margin-top: 0.35rem;
+  color: var(--color-text-muted);
   font-size: 0.9375rem;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .course-card__more {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 1.25rem;
+  margin-top: auto;
+  padding-top: 1.25rem;
   color: var(--color-text-muted);
   font-size: 0.8125rem;
   font-weight: 600;
-  transition:
-    color 0.2s ease,
-    gap 0.3s var(--ease-out);
+  transition: color 0.2s ease;
 }
 
 .course-card:hover .course-card__more,
 .course-card:focus-within .course-card__more {
-  gap: 0.75rem;
-  color: var(--color-text);
+  color: var(--color-brand-light);
 }
 
 @media (max-width: 1023px) {
@@ -144,10 +111,6 @@
 
   .course-card--wide {
     grid-column: auto;
-  }
-
-  .course-card__title {
-    padding-top: 1.75rem;
   }
 }
 
@@ -170,7 +133,7 @@
 }
 
 .course-modules__index {
-  color: color-mix(in srgb, var(--accent) 60%, var(--color-text));
+  color: var(--color-brand-light);
   font-family: var(--font-display);
   font-size: 1.125rem;
   font-weight: 600;

@@ -4,13 +4,7 @@
 import { useId, useState } from 'react';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faChevronDown,
-  faCode,
-  faDesktopAlt,
-  faMobileRetro,
-  faUsers,
-} from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import Reveal from '@/src/components/Reveal';
 // I18N
@@ -18,30 +12,22 @@ import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
 import type { Experience } from '@/src/content';
 
-// The icon on the node of each role, as chosen in its content file.
-const icons = {
-  code: faCode,
-  desktop: faDesktopAlt,
-  mobile: faMobileRetro,
-  users: faUsers,
-};
-
 interface ExperienceItemProps {
   company: string;
-  icon: Experience['icon'];
   title: string;
   date: string;
   duration: string;
   stack: string[];
-  // The list the card opens, as HTML built from the content.
-  details: string;
+  // What the card opens: groups of items, each with an optional heading.
+  details: Experience['details'];
   current?: boolean;
   defaultOpen?: boolean;
 }
 
+// A role on the timeline: the company and the period beside a point on the
+// rail, and a card whose title opens the details.
 export default function ExperienceItem({
   company,
-  icon,
   title,
   date,
   duration,
@@ -56,9 +42,7 @@ export default function ExperienceItem({
 
   return (
     <li className={`xp-item${current ? ' xp-item--current' : ''}`}>
-      <span className="xp-item__node" aria-hidden="true">
-        <FontAwesomeIcon icon={icons[icon]} />
-      </span>
+      <span className="xp-item__node" aria-hidden="true" />
 
       <Reveal className="xp-item__meta">
         <p className="xp-item__company">{company}</p>
@@ -106,10 +90,18 @@ export default function ExperienceItem({
           className={`xp-card__details${isOpen ? ' is-open' : ''}`}
           inert={!isOpen}
         >
-          <div
-            className="xp-card__details-inner"
-            dangerouslySetInnerHTML={{ __html: details }}
-          />
+          <div className="xp-card__details-inner">
+            {details.map((group, index) => (
+              <div key={index} className="xp-card__group">
+                {group.heading && <h4>{group.heading}</h4>}
+                <ul>
+                  {group.items.map((item, position) => (
+                    <li key={position}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
       </Reveal>
     </li>

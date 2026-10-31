@@ -3,13 +3,7 @@
 // NEXT
 import Image, { type StaticImageData } from 'next/image';
 // HOOKS
-import {
-  CSSProperties,
-  PointerEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { CSSProperties, useEffect, useRef, useState } from 'react';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -69,26 +63,6 @@ function screenStyle(device: keyof typeof devices): CSSProperties {
 }
 
 const pad = (value: number) => String(value).padStart(2, '0');
-
-// The device leans towards the mouse, with a light following it. Touch and
-// pen leave it still, and "reduce motion" turns the effect off in CSS.
-function tilt(event: PointerEvent<HTMLElement>) {
-  if (event.pointerType !== 'mouse') return;
-  const card = event.currentTarget;
-  const rect = card.getBoundingClientRect();
-  const x = (event.clientX - rect.left) / rect.width - 0.5;
-  const y = (event.clientY - rect.top) / rect.height - 0.5;
-  card.style.setProperty('--tilt-x', `${(-y * 10).toFixed(2)}deg`);
-  card.style.setProperty('--tilt-y', `${(x * 14).toFixed(2)}deg`);
-  card.style.setProperty('--glare-x', `${((x + 0.5) * 100).toFixed(1)}%`);
-  card.style.setProperty('--glare-y', `${((y + 0.5) * 100).toFixed(1)}%`);
-}
-
-function untilt(event: PointerEvent<HTMLElement>) {
-  for (const name of ['--tilt-x', '--tilt-y', '--glare-x', '--glare-y']) {
-    event.currentTarget.style.removeProperty(name);
-  }
-}
 
 interface ProjectsProps {
   header: SectionHeader;
@@ -191,40 +165,32 @@ export default function Projects({
               key={item.slug}
               className="project-card"
               aria-current={index === current ? 'true' : undefined}
-              onPointerMove={tilt}
-              onPointerLeave={untilt}
             >
               <div className="project-card__stage">
-                <div className="project-card__float">
-                  <div className="project-card__device">
+                <div className="project-card__device">
+                  <Image
+                    className="project-card__frame"
+                    src={devices[item.device].frame}
+                    alt=""
+                    unoptimized
+                  />
+                  <div
+                    className="project-card__screen"
+                    style={screenStyle(item.device)}
+                  >
                     <Image
-                      className="project-card__frame"
-                      src={devices[item.device].frame}
-                      alt=""
+                      src={item.preview.src}
+                      width={item.preview.width}
+                      height={item.preview.height}
+                      alt={item.title}
                       unoptimized
                     />
-                    <div
-                      className="project-card__screen"
-                      style={screenStyle(item.device)}
-                    >
-                      <Image
-                        src={item.preview.src}
-                        width={item.preview.width}
-                        height={item.preview.height}
-                        alt={item.title}
-                        unoptimized
-                      />
-                    </div>
                   </div>
                 </div>
-                <span className="project-card__glare" aria-hidden="true" />
               </div>
 
               <div className="project-card__body">
-                <p className="project-card__eyebrow">
-                  <span aria-hidden="true">{pad(index + 1)}</span>
-                  {item.eyebrow}
-                </p>
+                <p className="project-card__eyebrow">{item.eyebrow}</p>
                 <h3 className="project-card__title">{item.title}</h3>
                 {/* The button covers the whole card. */}
                 <button

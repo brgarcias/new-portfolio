@@ -22,7 +22,6 @@ export default function NotFound() {
 
   return (
     <StatusPage
-      label={t.label}
       code="404"
       title={t.heading}
       description={
@@ -32,8 +31,6 @@ export default function NotFound() {
           {after}
         </>
       }
-      quote={t.quote}
-      author={t.author}
       actions={
         <a className="btn btn--primary" href={home}>
           {t.back}

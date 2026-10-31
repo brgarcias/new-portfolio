@@ -16,12 +16,10 @@
   padding: 1rem 0.75rem 1rem 1.1rem;
   overflow: hidden;
   border: 1px solid var(--color-border-strong);
-  border-radius: 1rem;
-  background: color-mix(in srgb, var(--color-surface-raised) 94%, transparent);
-  box-shadow: 0 24px 50px -20px rgb(0 0 0 / 0.75);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-float);
   color: var(--color-text);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
   transform: translateX(0);
   transition: transform 300ms ease;
   animation: snackbar-enter 0.6s var(--ease-spring);
@@ -39,6 +37,7 @@
 
 .snackbar__icon {
   margin-top: 0.2rem;
+  color: var(--color-success);
   font-size: 1.1rem;
 }
 
@@ -90,9 +89,4 @@
     opacity: 0;
     transform: none;
   }
-}
-
-/* ─── Light theme ───────────────────────────────────────── */
-.light .snackbar__content {
-  box-shadow: 0 24px 50px -20px rgb(31 33 74 / 0.35);
 }

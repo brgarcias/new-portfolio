@@ -1,7 +1,6 @@
 // COMPONENTS
 import Section from '@/src/components/Section';
 import ExperienceItem from './ExperienceItem';
-import TechRibbon from './TechRibbon';
 // CONTENT
 import type { Experience, SectionHeader } from '@/src/content';
 // CSS
@@ -17,11 +16,6 @@ export default function ProfessionalExperience({
   header,
   experiences,
 }: Readonly<ProfessionalExperienceProps>) {
-  // Every technology the experiences name, from the most recent role.
-  const technologies = [
-    ...new Set(experiences.flatMap((experience) => experience.stack)),
-  ];
-
   return (
     <Section header={header} className="experience">
       <div className="xp">
@@ -34,7 +28,6 @@ export default function ProfessionalExperience({
             <ExperienceItem
               key={experience.slug}
               company={experience.company}
-              icon={experience.icon}
               title={experience.title}
               date={experience.date}
               duration={experience.duration}
@@ -46,7 +39,6 @@ export default function ProfessionalExperience({
           ))}
         </ol>
       </div>
-      <TechRibbon items={technologies} />
     </Section>
   );
 }

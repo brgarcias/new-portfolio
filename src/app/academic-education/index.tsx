@@ -4,7 +4,7 @@
 import { CSSProperties, KeyboardEvent, useId, useRef, useState } from 'react';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGraduationCap, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
@@ -42,6 +42,8 @@ export default function AcademicEducation({
   const last = steps.length - 1;
   // Past the last finished step, the rail turns dashed.
   const finished = steps.filter((step) => !step.upcoming).length - 1;
+  // A share of the rail, which a single step does not have.
+  const along = (index: number) => (last > 0 ? Math.max(index, 0) / last : 0);
 
   const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     const move = keyMoves[event.key];
@@ -56,20 +58,12 @@ export default function AcademicEducation({
   const railStyle = {
     '--count': steps.length,
     '--step': active,
-    '--progress': active / last,
-    '--finished': finished / last,
+    '--progress': along(active),
+    '--finished': along(finished),
   } as CSSProperties;
 
   return (
-    <Section
-      header={header}
-      descriptionEnd={
-        <>
-          {' '}
-          <FontAwesomeIcon icon={faHeart} style={{ color: 'red' }} />
-        </>
-      }
-    >
+    <Section header={header}>
       <Reveal className="edu-wrap">
         <div className="edu" style={railStyle}>
           <div

@@ -3,11 +3,17 @@
 @tailwind utilities;
 
 /* ─── Design tokens ─────────────────────────────────────── */
+/* One column for the whole site: the bar, the top, the sections and the
+   footer share its edges. Corners come in three sizes: small for labels,
+   medium for cards and panels, large for dialogs; controls are pills. */
 :root {
   --header-height: 4.5rem;
-  --container: 72rem;
-  --container-wide: 80rem;
+  --container: 80rem;
   --gutter: clamp(1.25rem, 5vw, 3rem);
+  --section-space: clamp(4rem, 8vw, 6rem);
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
 
   /* Where the page sits while the stacked-pages menu is open. --stack-top is
      where its top edge lands on screen with --stack-push and the 3D depth. */
@@ -113,6 +119,8 @@
   --color-text-subtle: #8c8ea3;
   --color-link-hover: #fff;
   --color-brand: #5c5edc;
+  /* The primary button under the pointer, still 4.5:1 with white text. */
+  --color-brand-hover: #6466e0;
   --color-brand-light: #9091f7;
   --color-violet: #8b5cf6;
   --color-cyan: #22d3ee;
@@ -124,7 +132,14 @@
      the light brand color. */
   --rgb-veil: 255 255 255;
   --rgb-text: 240 240 245;
+  --rgb-brand: 92 94 220;
   --rgb-brand-light: 144 145 247;
+  /* The edge of what answers the pointer, under it or with focus. */
+  --color-line-active: rgb(var(--rgb-brand-light) / 0.5);
+  /* Only what floats over the page casts a shadow: menus, notices and
+     dialogs. */
+  --shadow-float: 0 24px 48px -24px rgb(0 0 0 / 0.75);
+  /* The brand mark's own colors, and nothing else's. */
   --gradient-brand: linear-gradient(
     110deg,
     var(--color-brand) 0%,
@@ -151,6 +166,7 @@
   --color-text-muted: #4a4c5e;
   --color-text-subtle: #5f6176;
   --color-link-hover: #14151c;
+  --color-brand-hover: #4f51cf;
   --color-brand-light: #4c4ed3;
   --color-violet: #7c3aed;
   --color-cyan: #0891b2;
@@ -160,6 +176,7 @@
   --rgb-veil: 23 24 45;
   --rgb-text: 20 21 28;
   --rgb-brand-light: 76 78 211;
+  --shadow-float: 0 24px 48px -24px rgb(31 33 74 / 0.3);
 }
 
 @media (max-width: 559px) {
@@ -207,9 +224,8 @@ img {
 }
 
 a {
-  color: #5c5edc;
+  color: var(--color-brand-light);
   text-decoration: none;
-  outline: none;
 }
 
 a:hover {
@@ -223,7 +239,7 @@ button:focus-visible {
 }
 
 ::selection {
-  background: rgb(92 94 220 / 0.45);
+  background: rgb(var(--rgb-brand) / 0.45);
   color: #fff;
 }
 
@@ -300,12 +316,6 @@ button:focus-visible {
     var(--ease-stack), var(--ease-stack), ease !important;
 }
 
-/* Loops wait while their part of the page is off screen (OffscreenPause). */
-[data-offscreen],
-[data-offscreen] * {
-  animation-play-state: paused !important;
-}
-
 /* ─── Helpers ───────────────────────────────────────────── */
 .visually-hidden {
   position: absolute;
@@ -319,72 +329,64 @@ button:focus-visible {
   white-space: nowrap;
 }
 
-.text-gradient {
-  background: var(--gradient-brand);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* A **highlight** in the content's texts: the brand's color, solid. */
+.text-accent {
+  color: var(--color-brand-light);
 }
 
 /* ─── Buttons ───────────────────────────────────────────── */
+/* One primary action per view, in the brand's color; the others are
+   outlined. They answer the pointer with color, not by moving. */
 .btn {
   display: inline-flex;
-  height: 3rem;
+  height: 2.75rem;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  padding: 0 1.4rem;
+  gap: 0.55rem;
+  padding: 0 1.25rem;
   border: 1px solid transparent;
   border-radius: 999px;
-  font-size: 0.95rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
   transition:
-    transform 0.3s var(--ease-out),
-    box-shadow 0.3s ease,
     background-color 0.2s ease,
-    background-position 0.5s ease,
     border-color 0.2s ease,
     color 0.2s ease;
 }
 
 .btn svg {
-  font-size: 0.9em;
+  font-size: 0.875em;
 }
 
 .btn--primary {
-  background: var(--gradient-brand);
-  background-size: 200% 100%;
-  box-shadow: 0 12px 32px -12px rgb(92 94 220 / 0.9);
+  background: var(--color-brand);
   color: #fff;
 }
 
 .btn--primary:hover,
 .btn--primary:focus-visible {
-  background-position: 100% 0;
-  box-shadow: 0 18px 40px -14px rgb(139 92 246 / 0.95);
+  background: var(--color-brand-hover);
   color: #fff;
-  transform: translateY(-2px);
 }
 
 .btn--ghost {
   border-color: var(--color-border-strong);
-  background: var(--color-fill);
+  background: transparent;
   color: var(--color-text);
 }
 
 .btn--ghost:hover,
 .btn--ghost:focus-visible {
-  border-color: rgb(92 94 220 / 0.6);
-  background: rgb(92 94 220 / 0.14);
+  border-color: var(--color-line-active);
+  background: rgb(var(--rgb-veil) / 0.04);
   color: var(--color-text);
-  transform: translateY(-2px);
 }
 
 .btn--text {
   height: auto;
-  padding: 0.5rem 0.25rem;
+  padding: 0.5rem 0;
   color: var(--color-text-muted);
   font-weight: 500;
 }
@@ -398,7 +400,7 @@ button:focus-visible {
   height: 2.5rem;
   gap: 0.5rem;
   padding: 0 1rem;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
 }
 
 /* ─── Skip link ─────────────────────────────────────────── */
@@ -410,7 +412,7 @@ button:focus-visible {
   padding: 0.65rem 1.1rem;
   border-radius: 999px;
   background: var(--color-surface-raised);
-  box-shadow: 0 12px 30px -12px rgb(0 0 0 / 0.8);
+  box-shadow: var(--shadow-float);
   color: var(--color-text);
   font-size: 0.875rem;
   font-weight: 600;
@@ -436,7 +438,7 @@ main:focus {
 }
 
 .modal-body--focusable:focus-visible {
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   outline: 2px solid var(--color-brand-light);
   outline-offset: -2px;
 }
@@ -449,30 +451,22 @@ main:focus {
 }
 
 /* ─── Tags ──────────────────────────────────────────────── */
+/* Labels, not buttons: small corners, no hover, quieter than the text. */
 .tag-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.375rem;
 }
 
 .tag {
-  padding: 0.45rem 0.85rem;
-  border: 1px solid var(--color-border-strong);
-  border-radius: 999px;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   background: var(--color-fill);
-  color: var(--color-text);
-  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
   font-weight: 500;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    transform 0.3s var(--ease-out);
-}
-
-.tag:hover {
-  border-color: rgb(92 94 220 / 0.6);
-  background: rgb(92 94 220 / 0.14);
-  transform: translateY(-2px);
+  line-height: 1.4;
 }
 
 /* ─── Sections ──────────────────────────────────────────── */
@@ -481,58 +475,48 @@ main:focus {
 .section {
   position: relative;
   display: flow-root;
-  padding-block: clamp(5rem, 10vw, 8rem);
+  padding-block: var(--section-space);
 }
 
 .section:focus {
   outline: none;
 }
 
+/* The number ties the section to its place in the menu; the title names
+   it once. */
 .section__header {
   max-width: var(--container);
-  margin: 0 auto clamp(2.5rem, 5vw, 4rem);
+  margin: 0 auto clamp(2rem, 4vw, 3rem);
   padding-inline: var(--gutter);
 }
 
-.eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  margin-bottom: 1.1rem;
+.section__index {
+  margin-bottom: 0.75rem;
   color: var(--color-brand-light);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-}
-
-.eyebrow::before {
-  content: '';
-  width: 2.5rem;
-  height: 1px;
-  background: var(--gradient-brand);
-}
-
-.eyebrow__index {
-  color: var(--color-text-subtle);
-  letter-spacing: 0.15em;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.06em;
 }
 
 .section__title {
   color: var(--color-text);
   font-family: var(--font-display);
-  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  font-size: clamp(2rem, 3.8vw, 2.875rem);
   font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.05;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  text-wrap: balance;
 }
 
 .section__description {
-  max-width: 42rem;
-  margin-top: 1.1rem;
+  max-width: 40rem;
+  margin-top: 1rem;
   color: var(--color-text-muted);
-  font-size: clamp(1rem, 1.6vw, 1.125rem);
-  line-height: 1.65;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  text-wrap: pretty;
 }
 
 .section__description a {
@@ -550,29 +534,27 @@ main:focus {
   text-decoration-color: currentColor;
 }
 
+/* A quote, when a section has one in its content. */
 .section__quote {
-  max-width: 46rem;
-  margin-top: 2rem;
-  padding: 0.25rem 0 0.25rem 1.5rem;
-  border-left: 2px solid;
-  border-image: var(--gradient-brand) 1;
+  max-width: 40rem;
+  margin-top: 1.75rem;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--color-border-strong);
 }
 
 .section__quote p {
-  color: var(--color-text);
-  font-size: clamp(1rem, 1.5vw, 1.0625rem);
+  color: var(--color-text-body);
+  font-size: 1rem;
   font-style: italic;
-  line-height: 1.7;
+  line-height: 1.65;
 }
 
 .section__quote cite {
   display: block;
   margin-top: 0.5rem;
-  color: var(--color-quote);
+  color: var(--color-text-subtle);
   font-size: 0.875rem;
   font-style: normal;
-  font-weight: 600;
-  letter-spacing: 0.02em;
 }
 
 /* ─── 404 and error pages ───────────────────────────────── */
@@ -588,26 +570,16 @@ main:focus {
   isolation: isolate;
 }
 
+/* The same quiet light as the top of the home page. */
 .status-page__backdrop {
   position: absolute;
   z-index: -1;
   inset: 0;
-  background:
-    radial-gradient(
-      60vmax 60vmax at 0% 0%,
-      rgb(92 94 220 / 0.35),
-      transparent 60%
-    ),
-    radial-gradient(
-      50vmax 50vmax at 100% 30%,
-      rgb(139 92 246 / 0.2),
-      transparent 60%
-    ),
-    radial-gradient(
-      45vmax 45vmax at 40% 110%,
-      rgb(34 211 238 / 0.12),
-      transparent 60%
-    );
+  background: radial-gradient(
+    70vmax 55vmax at 0% 0%,
+    rgb(var(--rgb-brand) / 0.16),
+    transparent 60%
+  );
   pointer-events: none;
 }
 
@@ -616,18 +588,25 @@ main:focus {
   max-width: var(--container);
   margin: 0 auto;
   padding-inline: var(--gutter);
-  animation: status-in 0.9s var(--ease-out) both;
+  animation: status-in 0.6s var(--ease-out) both;
+}
+
+.status-page__label {
+  margin-bottom: 1rem;
+  color: var(--color-text-subtle);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .status-page__code {
-  background: var(--gradient-brand);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--color-brand-light);
   font-family: var(--font-display);
-  font-size: clamp(5rem, 16vw, 10rem);
-  font-weight: 700;
-  letter-spacing: -0.06em;
+  font-size: clamp(4.5rem, 12vw, 7.5rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.05em;
   line-height: 0.9;
 }
 
@@ -635,18 +614,19 @@ main:focus {
   margin-top: 0.75rem;
   color: var(--color-text);
   font-family: var(--font-display);
-  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  font-size: clamp(2rem, 4.4vw, 3.25rem);
   font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.05;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  text-wrap: balance;
 }
 
 .status-page__description {
   max-width: 40rem;
   margin-top: 1rem;
   color: var(--color-text-muted);
-  font-size: clamp(1rem, 1.6vw, 1.125rem);
-  line-height: 1.65;
+  font-size: 1.0625rem;
+  line-height: 1.6;
 }
 
 .status-page__description a,
@@ -669,14 +649,14 @@ main:focus {
 .status-page__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem 1rem;
-  margin-top: 2.5rem;
+  gap: 0.75rem;
+  margin-top: 2.25rem;
 }
 
 @keyframes status-in {
   from {
     opacity: 0;
-    transform: translate3d(0, 1.5rem, 0);
+    transform: translate3d(0, 0.75rem, 0);
   }
 }
 
@@ -688,29 +668,14 @@ main:focus {
 
 /* ─── Light theme ───────────────────────────────────────── */
 .light ::selection {
-  background: rgb(92 94 220 / 0.22);
+  background: rgb(var(--rgb-brand) / 0.22);
   color: var(--color-text);
 }
 
-.light .skip-link {
-  box-shadow: 0 12px 30px -12px rgb(31 33 74 / 0.35);
-}
-
 .light .status-page__backdrop {
-  background:
-    radial-gradient(
-      60vmax 60vmax at 0% 0%,
-      rgb(92 94 220 / 0.22),
-      transparent 60%
-    ),
-    radial-gradient(
-      50vmax 50vmax at 100% 30%,
-      rgb(139 92 246 / 0.14),
-      transparent 60%
-    ),
-    radial-gradient(
-      45vmax 45vmax at 40% 110%,
-      rgb(34 211 238 / 0.14),
-      transparent 60%
-    );
+  background: radial-gradient(
+    70vmax 55vmax at 0% 0%,
+    rgb(var(--rgb-brand) / 0.12),
+    transparent 60%
+  );
 }

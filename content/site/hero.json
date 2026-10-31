@@ -2,19 +2,19 @@
   "en": {
     "titleTop": "**Full-Stack**",
     "titleBottom": "Developer",
-    "tagline": "Passionate about development, eager for new experiences and constantly seeking fresh challenges.",
-    "highlights": "ReactJS, NextJS, NodeJS, NestJS, GraphQL, AWS"
+    "tagline": "I build web products end to end: APIs, data and the interfaces people use.",
+    "highlights": "Node.js, NestJS, GraphQL, React, Next.js, AWS"
   },
   "pt": {
     "titleTop": "Desenvolvedor",
     "titleBottom": "**Full-Stack**",
-    "tagline": "Apaixonado por desenvolvimento, ávido por novas experiências e sempre em busca de novos desafios.",
-    "highlights": "ReactJS, NextJS, NodeJS, NestJS, GraphQL, AWS"
+    "tagline": "Construo produtos web de ponta a ponta: APIs, dados e as interfaces que as pessoas usam.",
+    "highlights": "Node.js, NestJS, GraphQL, React, Next.js, AWS"
   },
   "es": {
     "titleTop": "Desarrollador",
     "titleBottom": "**Full-Stack**",
-    "tagline": "Apasionado por el desarrollo, con ganas de nuevas experiencias y siempre en busca de nuevos desafíos.",
-    "highlights": "ReactJS, NextJS, NodeJS, NestJS, GraphQL, AWS"
+    "tagline": "Construyo productos web de principio a fin: APIs, datos y las interfaces que la gente usa.",
+    "highlights": "Node.js, NestJS, GraphQL, React, Next.js, AWS"
   }
 }

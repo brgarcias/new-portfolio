@@ -2,22 +2,22 @@
   "en": {
     "order": 4,
     "label": "Postgraduate",
-    "title": "Which course?",
-    "text": "A dream to come true...",
+    "title": "Postgraduate degree",
+    "text": "The next step in my education. The course is still to be chosen.",
     "upcoming": true
   },
   "pt": {
     "order": 4,
     "label": "Pós-graduação",
-    "title": "Qual curso?",
-    "text": "Um sonho a realizar...",
+    "title": "Pós-graduação",
+    "text": "O próximo passo da minha formação. O curso ainda está para ser escolhido.",
     "upcoming": true
   },
   "es": {
     "order": 4,
     "label": "Posgrado",
-    "title": "¿Qué curso?",
-    "text": "Un sueño por cumplir...",
+    "title": "Posgrado",
+    "text": "El próximo paso de mi formación. El curso todavía está por elegir.",
     "upcoming": true
   }
 }

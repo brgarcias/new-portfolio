@@ -43,8 +43,6 @@ export default function ErrorPage({
           {after}
         </>
       }
-      quote={t.quote}
-      author={t.author}
       actions={
         <button className="btn btn--primary" type="button" onClick={reload}>
           <FontAwesomeIcon icon={faRotateRight} />

@@ -10,36 +10,27 @@
     },
     "education": {
       "label": "Education",
-      "title": "Academic Education",
-      "description": "Postgraduate Coming Soon",
-      "quote": "The learned man is a discoverer of facts that already exist - but the wise man is a creator of values that do not exist and that he makes exist.",
-      "author": "Albert Einstein"
+      "title": "Academic Education"
     },
     "courses": {
       "label": "Courses",
       "title": "Courses & Certifications",
-      "description": "Continuous development looking for an opportunity to apply my **experience**!",
-      "quote": "The saddest aspect of life today is that science gains in knowledge faster than society in wisdom.",
-      "author": "Isaac Asimov"
+      "description": "Courses that complement my degree, from programming languages to English and physics."
     },
     "projects": {
       "label": "Projects",
       "title": "My Projects",
-      "description": "Some of the projects carried out throughout my career!"
+      "description": "Websites and products I built, with what each one taught me."
     },
     "contributing": {
       "label": "Contributing",
       "title": "Contributing",
-      "description": "Developing the community side **the most important**!",
-      "quote": "Our lives begin to end the day we remain silent about the things that matter.",
-      "author": "Martin Luther King Jr."
+      "description": "Volunteer work with children, families and older people."
     },
     "contact": {
       "label": "Contact",
       "title": "Contact",
-      "description": "My personal information, but if you prefer [text me](whatsapp)!",
-      "quote": "Facing suffering will undoubtedly contribute to the elevation of your spiritual practice, provided that you are able to transform calamity and misfortune into a path.",
-      "author": "Dalai Lama"
+      "description": "Reach me by email, or [send a WhatsApp message](whatsapp)."
     }
   },
   "pt": {
@@ -53,36 +44,27 @@
     },
     "education": {
       "label": "Formação",
-      "title": "Formação acadêmica",
-      "description": "Pós-graduação em breve",
-      "quote": "O homem culto é um descobridor de fatos que já existem, mas o sábio é um criador de valores que não existem e que ele faz existir.",
-      "author": "Albert Einstein"
+      "title": "Formação acadêmica"
     },
     "courses": {
       "label": "Cursos",
       "title": "Cursos e certificações",
-      "description": "Desenvolvimento contínuo em busca de uma oportunidade para aplicar minha **experiência**!",
-      "quote": "O aspecto mais triste da vida hoje é que a ciência ganha conhecimento mais rápido do que a sociedade ganha sabedoria.",
-      "author": "Isaac Asimov"
+      "description": "Cursos que complementam a minha formação, de linguagens de programação a inglês e física."
     },
     "projects": {
       "label": "Projetos",
       "title": "Meus projetos",
-      "description": "Alguns dos projetos que realizei ao longo da minha carreira!"
+      "description": "Sites e produtos que construí, com o que cada um me ensinou."
     },
     "contributing": {
       "label": "Contribuições",
       "title": "Contribuições",
-      "description": "Desenvolvendo o lado comunitário, **o mais importante**!",
-      "quote": "Nossas vidas começam a terminar no dia em que nos calamos sobre as coisas que importam.",
-      "author": "Martin Luther King Jr."
+      "description": "Trabalho voluntário com crianças, famílias e idosos."
     },
     "contact": {
       "label": "Contato",
       "title": "Contato",
-      "description": "Minhas informações pessoais, mas, se preferir, [me mande uma mensagem](whatsapp)!",
-      "quote": "Enfrentar o sofrimento certamente contribuirá para elevar a sua prática espiritual, desde que você seja capaz de transformar a calamidade e o infortúnio em caminho.",
-      "author": "Dalai Lama"
+      "description": "Fale comigo por e-mail ou [mande uma mensagem no WhatsApp](whatsapp)."
     }
   },
   "es": {
@@ -96,36 +78,27 @@
     },
     "education": {
       "label": "Formación",
-      "title": "Formación académica",
-      "description": "Posgrado muy pronto",
-      "quote": "El hombre culto es un descubridor de hechos que ya existen, pero el sabio es un creador de valores que no existen y que él hace existir.",
-      "author": "Albert Einstein"
+      "title": "Formación académica"
     },
     "courses": {
       "label": "Cursos",
       "title": "Cursos y certificaciones",
-      "description": "¡Desarrollo continuo en busca de una oportunidad para aplicar mi **experiencia**!",
-      "quote": "El aspecto más triste de la vida actual es que la ciencia gana en conocimiento más rápido que la sociedad en sabiduría.",
-      "author": "Isaac Asimov"
+      "description": "Cursos que complementan mi formación, de lenguajes de programación a inglés y física."
     },
     "projects": {
       "label": "Proyectos",
       "title": "Mis proyectos",
-      "description": "¡Algunos de los proyectos que realicé a lo largo de mi carrera!"
+      "description": "Sitios y productos que construí, con lo que cada uno me enseñó."
     },
     "contributing": {
       "label": "Contribuir",
       "title": "Contribuciones",
-      "description": "¡Desarrollando el lado comunitario, **el más importante**!",
-      "quote": "Nuestras vidas comienzan a terminar el día en que guardamos silencio sobre las cosas que importan.",
-      "author": "Martin Luther King Jr."
+      "description": "Voluntariado con niños, familias y personas mayores."
     },
     "contact": {
       "label": "Contacto",
       "title": "Contacto",
-      "description": "Mi información personal, pero, si lo prefieres, ¡[escríbeme](whatsapp)!",
-      "quote": "Afrontar el sufrimiento sin duda contribuirá a elevar tu práctica espiritual, siempre que seas capaz de transformar la calamidad y la desgracia en un camino.",
-      "author": "Dalai Lama"
+      "description": "Escríbeme por correo o [envíame un mensaje por WhatsApp](whatsapp)."
     }
   }
 }

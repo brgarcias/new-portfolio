@@ -142,7 +142,9 @@ export default function Contributing({
           </div>
           <div className="contrib__closing-text">
             <p>{content.closing}</p>
-            <p className="contrib__highlight">{markup(content.highlight)}</p>
+            {content.highlight && (
+              <p className="contrib__highlight">{markup(content.highlight)}</p>
+            )}
           </div>
         </Reveal>
       </div>

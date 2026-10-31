@@ -23,11 +23,11 @@ export interface ProfileContent {
 
 // content/site/hero.json: the top of the page.
 export interface HeroContent {
-  // The two lines of the title. A **highlight** takes the gradient.
+  // The two lines of the title. A **highlight** takes the brand's color.
   titleTop: string;
   titleBottom: string;
   tagline: string;
-  // Technologies floating around the illustration, separated by commas.
+  // The technologies under the illustration, separated by commas.
   highlights: string;
 }
 
@@ -70,7 +70,6 @@ export interface ExperienceEntry {
   // "YYYY-MM". The role without an end is the current one.
   start: string;
   end: string;
-  icon: 'code' | 'desktop' | 'mobile' | 'users';
   // Technologies the details name, separated by commas, shown as tags.
   stack: string;
   // Groups of items, each with an optional heading.
@@ -125,8 +124,8 @@ export interface ContributingContent {
   galleryHint: string;
   stats: { value: string; suffix?: string; label: string }[];
   closing: string;
-  // The closing line. An *emphasis* takes the gradient.
-  highlight: string;
+  // An optional line after it. An *emphasis* takes the brand's color.
+  highlight?: string;
 }
 
 // content/initiatives/*.json, one file per photo of the contributing section.
