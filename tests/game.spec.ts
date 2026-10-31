@@ -85,6 +85,14 @@ async function steer(page: Page, code: 'KeyA' | 'KeyD', target: number) {
   );
 }
 
+// Whether two boxes on the screen meet.
+type Box = { x: number; y: number; width: number; height: number };
+const overlap = (a: Box, b: Box) =>
+  a.x < b.x + b.width &&
+  b.x < a.x + a.width &&
+  a.y < b.y + b.height &&
+  b.y < a.y + a.height;
+
 async function takeOff(page: Page) {
   await page.goto('/play');
   await page.getByRole('button', { name: 'Take off' }).click();
@@ -336,6 +344,68 @@ test('liga o som e entra no modo foto', async ({ page, isMobile }) => {
   await expect(page.locator('.hud__top')).toBeVisible();
 });
 
+test('cala os motores no hangar e quando a página some', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+  test.slow();
+  // The sound is on from the start, and the page's audio is watched: its
+  // context and every volume in it, the first one being the master's.
+  await page.addInitScript(() => {
+    localStorage.setItem('sound', 'on');
+    const gains: GainNode[] = [];
+    const contexts: AudioContext[] = [];
+    Object.assign(window, { gains, contexts });
+    const Original = window.AudioContext;
+    window.AudioContext = class extends Original {
+      constructor(options?: AudioContextOptions) {
+        super(options);
+        contexts.push(this);
+      }
+      createGain() {
+        const node = super.createGain();
+        gains.push(node);
+        return node;
+      }
+    };
+  });
+  const loudest = () =>
+    page.evaluate(() =>
+      Math.max(
+        ...(window as unknown as { gains: GainNode[] }).gains
+          .slice(1)
+          .map((node) => node.gain.value),
+      ),
+    );
+  const state = () =>
+    page.evaluate(
+      () =>
+        (window as unknown as { contexts: AudioContext[] }).contexts[0]?.state,
+    );
+  await takeOff(page);
+  // In flight, the engines hum.
+  await expect.poll(loudest).toBeGreaterThan(0.04);
+  // Back in the hangar, they die down, the wind too.
+  await page.getByRole('button', { name: 'Change ship' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Choose your ship',
+  );
+  await expect.poll(loudest).toBeLessThan(0.005);
+  // A hidden page makes no sound, and the sound comes back with the page.
+  const hide = (hidden: boolean) =>
+    page.evaluate((hidden) => {
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => hidden,
+      });
+      document.dispatchEvent(new Event('visibilitychange'));
+    }, hidden);
+  await hide(true);
+  await expect.poll(state).toBe('suspended');
+  await hide(false);
+  await expect.poll(state).toBe('running');
+});
+
 test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   page,
   isMobile,
@@ -505,14 +575,6 @@ test.describe('no tablet', () => {
       page.getByRole('button', { name: /Take off/ }),
     ).toBeInViewport();
     await takeOff(page);
-    const overlap = (
-      a: { x: number; y: number; width: number; height: number },
-      b: { x: number; y: number; width: number; height: number },
-    ) =>
-      a.x < b.x + b.width &&
-      b.x < a.x + a.width &&
-      a.y < b.y + b.height &&
-      b.y < a.y + a.height;
     const boost = (await page
       .getByRole('button', { name: 'Boost' })
       .boundingBox())!;
@@ -522,6 +584,61 @@ test.describe('no tablet', () => {
     const craft = (await page.locator('.hud__craft').boundingBox())!;
     expect(overlap(boost, craft)).toBe(false);
     expect(overlap(joystick, craft)).toBe(false);
+  });
+});
+
+test.describe('no celular deitado', () => {
+  test.use({
+    viewport: { width: 750, height: 342 },
+    hasTouch: true,
+    isMobile: true,
+  });
+
+  test('cabe o hangar, o HUD e a carta na tela baixa', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+    test.slow();
+    // The ship and taking off are in sight, without scrolling.
+    await page.goto('/play');
+    await expect(page.locator('.hangar__stage')).toBeInViewport({
+      ratio: 0.5,
+    });
+    await expect(
+      page.getByRole('button', { name: /Take off/ }),
+    ).toBeInViewport();
+    await takeOff(page);
+    // The HUD keeps to the edges: all of its pieces are on the screen,
+    // and no two of them meet.
+    const pieces = {
+      back: page.locator('.hud__back'),
+      swap: page.locator('.hud__swap'),
+      log: page.locator('.hud__log'),
+      tools: page.locator('.hud__tools'),
+      radar: page.locator('.radar-button'),
+      place: page.locator('.hud__locator'),
+      boost: page.getByRole('button', { name: 'Boost' }),
+      joystick: page.getByRole('slider', { name: 'Joystick' }),
+    };
+    const boxes: [string, Box][] = [];
+    for (const [name, piece] of Object.entries(pieces)) {
+      const box = (await piece.boundingBox())!;
+      expect(box.y + box.height, name).toBeLessThanOrEqual(342);
+      expect(box.x + box.width, name).toBeLessThanOrEqual(750);
+      boxes.push([name, box]);
+    }
+    for (const [i, [name, box]] of boxes.entries()) {
+      for (const [other, next] of boxes.slice(i + 1)) {
+        expect(overlap(box, next), `${name} and ${other}`).toBe(false);
+      }
+    }
+    // The chart sits beside its destinations, all of it on the screen.
+    await page.locator('.radar-button').click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+    const chart = (await page.locator('.game-map__chart').boundingBox())!;
+    const side = (await page.locator('.game-map__side').boundingBox())!;
+    expect(overlap(chart, side)).toBe(false);
+    expect(chart.y + chart.height).toBeLessThanOrEqual(342);
   });
 });
 
@@ -558,6 +675,13 @@ test('voa pelo joystick no celular', async ({ page, isMobile }) => {
   });
   const about = page.getByRole('dialog', { name: 'About Me' });
   await expect(about).toBeVisible({ timeout: 10_000 });
+  // Both of its footer's buttons are whole on the phone's screen.
+  await expect(
+    about.getByRole('button', { name: /Back to the flight/ }),
+  ).toBeInViewport({ ratio: 1 });
+  await expect(
+    about.getByRole('link', { name: 'Open on the site' }),
+  ).toBeInViewport({ ratio: 1 });
   await about.getByRole('button', { name: 'Close' }).click();
   await expect(about).toBeHidden();
 });

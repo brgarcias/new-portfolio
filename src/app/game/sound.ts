@@ -2,9 +2,10 @@
 // is downloaded and the site's policy stays as it is: the hum of the
 // engines, which rises with the thrust, the speed and the boost, the wind,
 // and short notes for a landing, a holocron found, a bump, the take-off,
-// the arrival out of hyperspace and a photo. Off until the visitor turns them on, with a button that
-// the browser counts as the gesture an AudioContext needs; the choice is
-// kept in localStorage.
+// the arrival out of hyperspace and a photo. Off until the visitor turns
+// them on, with a button that the browser counts as the gesture an
+// AudioContext needs; the choice is kept in localStorage. The engines and
+// the wind die down in the hangar, and a hidden page makes no sound.
 
 const storageKey = 'sound';
 
@@ -86,6 +87,13 @@ function setUp() {
   sound.context = context;
   sound.master = master;
   sound.engine = { gain, filter, hum, sub, wind };
+
+  // A hidden page makes no sound: the context sleeps until the page shows
+  // again, and wakes only if the sound is still on.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) void context.suspend();
+    else if (sound.enabled) void context.resume();
+  });
 }
 
 export function setSound(on: boolean) {
@@ -102,6 +110,16 @@ export function setSound(on: boolean) {
   } else if (sound.context && sound.master) {
     sound.master.gain.setTargetAtTime(0, sound.context.currentTime, 0.05);
   }
+}
+
+// The engines and the wind die down, as the ship leaves the flight for the
+// hangar.
+export function quiet() {
+  const { context, engine } = sound;
+  if (!context || !engine) return;
+  const now = context.currentTime;
+  engine.gain.gain.setTargetAtTime(0, now, 0.12);
+  engine.wind.gain.setTargetAtTime(0, now, 0.12);
 }
 
 // Each frame: how hard the engines work, and how fast the wind blows.

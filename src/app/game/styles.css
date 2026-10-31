@@ -4010,4 +4010,338 @@
     width: 2.75rem;
     min-height: 2.75rem;
   }
+
+  /* The footer's two buttons go one under the other when they do not fit
+     side by side. */
+  .game-panel__footer {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .game-panel__footer .g-btn {
+    flex: 1 1 auto;
+    min-height: 2.75rem;
+  }
+}
+
+/* ─── Short landscape screens ───────────────────────────── */
+/* A phone on its side, or any window much wider than it is tall: the HUD
+   keeps to the edges as on a phone, the way back, the log and the tools on
+   the left and the radar and the place on the right, and the landing zone,
+   a planet's title and the notices come along the top, between them; the
+   dialogs fill the screen, the chart beside its destinations; and the
+   hangar puts the stage beside the ship's sheet, under a short header. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .hangar {
+    padding-bottom: 5.5rem;
+  }
+
+  .hangar__top {
+    padding-top: 0.75rem;
+  }
+
+  .hangar__ready,
+  .hangar__eyebrow {
+    display: none;
+  }
+
+  .hangar__layout {
+    gap: 0.75rem 1rem;
+    grid-template-areas:
+      'head head'
+      'stage spec'
+      'roster roster';
+    grid-template-columns: minmax(0, 1.1fr) minmax(16rem, 1fr);
+    padding-top: 0.75rem;
+  }
+
+  .hangar__title {
+    margin-top: 0;
+    font-size: 1.5rem;
+  }
+
+  .hangar__roster {
+    gap: 0.5rem;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .hangar__ship {
+    min-height: 0;
+    gap: 0.25rem;
+    padding: 0.6rem;
+  }
+
+  .hangar__ship-glyph {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .hangar__ship-name {
+    font-size: 0.75rem;
+  }
+
+  .hangar__ship-model {
+    display: none;
+  }
+
+  .hangar__dock {
+    padding: 1.25rem var(--gutter) calc(0.6rem + env(safe-area-inset-bottom));
+  }
+
+  .hud__top {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .compass {
+    display: none;
+  }
+
+  .hud__back {
+    width: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0;
+  }
+
+  .hud__back-label,
+  .hud__swap-label {
+    display: none;
+  }
+
+  .hud__nw {
+    gap: 0.5rem;
+  }
+
+  .hud__log {
+    min-width: 0;
+    gap: 0.35rem;
+    padding: 0.45rem 0.6rem;
+  }
+
+  .tally {
+    gap: 0.5rem;
+    grid-template-columns: auto auto auto;
+  }
+
+  .tally__label {
+    display: none;
+  }
+
+  .tally__icon {
+    display: block;
+  }
+
+  .tally__value {
+    font-size: 0.75rem;
+  }
+
+  .hud__done,
+  .hud__found {
+    font-size: 0.5625rem;
+  }
+
+  [data-tip]::after {
+    display: none;
+  }
+
+  .radar-button {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+
+  .radar-button > .g-kbd {
+    display: none;
+  }
+
+  .hud__locator {
+    max-width: 11rem;
+    padding: 0.35rem 0.6rem;
+  }
+
+  .hud__planet strong {
+    font-size: 0.8125rem;
+  }
+
+  .hud__planet small {
+    font-size: 0.6875rem;
+  }
+
+  .hud__coords {
+    display: none;
+  }
+
+  .hud__pad {
+    top: var(--edge-t);
+    min-width: 0;
+    max-width: calc(100% - 2 * var(--g-edge));
+    gap: 0.6rem;
+    padding: 0.45rem 0.8rem 0.5rem 0.5rem;
+  }
+
+  .hud__pad-zone {
+    display: none;
+  }
+
+  .hud__pad-ring {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .hud__pad-text strong {
+    overflow: hidden;
+    font-size: 0.875rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .toasts,
+  .planet-titles {
+    top: var(--edge-t);
+  }
+
+  .toasts {
+    right: 50%;
+    justify-items: center;
+    transform: translateX(50%);
+  }
+
+  .hud__pad:not(:empty) ~ .planet-titles,
+  .hud__pad:not(:empty) ~ .toasts {
+    top: calc(var(--edge-t) + 4.25rem);
+  }
+
+  .planet-titles:not(:empty) ~ .toasts {
+    top: calc(var(--edge-t) + 4.75rem);
+  }
+
+  .hud__pad:not(:empty) ~ .planet-titles:not(:empty) ~ .toasts {
+    top: calc(var(--edge-t) + 9.5rem);
+  }
+
+  .planet-title {
+    gap: 0.35rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .planet-title__name {
+    margin-right: -0.32em;
+    font-size: 1.6rem;
+    letter-spacing: 0.32em;
+  }
+
+  .planet-title__rule {
+    width: 16rem;
+  }
+
+  .toast {
+    width: min(19rem, calc(100vw - 2 * var(--g-edge)));
+    padding: 0.55rem 0.8rem;
+    grid-template-areas:
+      'icon title count'
+      'icon meta count';
+  }
+
+  .toast__icon {
+    font-size: 1.4rem;
+  }
+
+  .toast__pips {
+    display: none;
+  }
+
+  /* The ship's panel keeps only its button, beside the way back. */
+  .hud__bottom {
+    position: static;
+    display: block;
+  }
+
+  .hud__hint {
+    position: absolute;
+    right: var(--edge-r);
+    bottom: var(--edge-b);
+    left: var(--edge-l);
+  }
+
+  .hud__craft {
+    position: static;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .hud__craft-id,
+  .speedo {
+    display: none;
+  }
+
+  .hud__swap {
+    position: absolute;
+    top: var(--edge-t);
+    left: calc(var(--edge-l) + 3.25rem);
+    width: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0;
+  }
+
+  .finale__card {
+    padding: 1rem 1.25rem;
+  }
+
+  .game-map,
+  .game-panel {
+    padding: 0;
+  }
+
+  /* The chart beside its destinations, which scroll on their own. */
+  .game-map__sheet {
+    height: 100%;
+    overflow: hidden;
+    gap: 0.75rem;
+    grid-template-rows: auto minmax(0, 1fr);
+    padding: 0.75rem max(1rem, env(safe-area-inset-right)) 0.75rem
+      max(1rem, env(safe-area-inset-left));
+  }
+
+  .game-map__head {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .game-map__title {
+    font-size: 1.25rem;
+  }
+
+  .game-map__stats {
+    grid-column: auto;
+    grid-row: auto;
+    gap: 1rem;
+  }
+
+  .game-map__stats dd .g-num {
+    display: none;
+  }
+
+  .game-map__body {
+    height: 100%;
+    min-height: 0;
+    align-items: stretch;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .game-map__chart {
+    width: auto;
+    height: 100%;
+    max-width: none;
+  }
+
+  .game-map__side {
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .game-panel__sheet {
+    height: 100%;
+    border: 0;
+  }
 }
