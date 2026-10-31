@@ -9,8 +9,8 @@
     "summary": "On PayPal's Node.js and GraphQL platform, I design the schemas that services and frontends use to access data, and make their queries fetch less and answer sooner.",
     "context": "PayPal's platform services and frontend applications access data through GraphQL, in a distributed architecture where the services also talk to each other through APIs.",
     "role": "Software engineer on the Node.js and GraphQL platform, working with platform engineers and the product and frontend teams.",
-    "built": "GraphQL schemas, designed and evolved for the services and frontends that use them, and resilient Node.js APIs for the communication between services. Work on the resolvers and the queries reduces over-fetching and the response times for the clients, and clean architecture with a modular design keeps a growing TypeScript codebase maintainable.",
-    "result": "",
+    "built": "GraphQL schemas, designed and evolved for the services and frontends that use them, resilient Node.js APIs for the communication between services, and tuned resolvers and queries. Clean architecture with a modular design keeps a growing TypeScript codebase maintainable.",
+    "result": "Less over-fetching, faster responses for the clients and more efficient data access, with reliable communication between the services.",
     "learned": "",
     "flow": [
       {
@@ -37,8 +37,8 @@
     "summary": "Na plataforma de Node.js e GraphQL do PayPal, projeto os schemas que serviços e frontends usam para acessar os dados e faço as consultas buscarem menos e responderem mais rápido.",
     "context": "Os serviços da plataforma e as aplicações frontend do PayPal acessam os dados por GraphQL, numa arquitetura distribuída em que os serviços também conversam entre si por APIs.",
     "role": "Engenheiro de software na plataforma de Node.js e GraphQL, com engenheiros de plataforma e times de produto e frontend.",
-    "built": "Schemas GraphQL projetados e evoluídos para os serviços e frontends que os usam, e APIs Node.js resilientes para a comunicação entre serviços. O trabalho nos resolvers e nas consultas reduz o over-fetching e o tempo de resposta para os clientes, e a arquitetura limpa, com design modular, mantém sustentável uma base de código TypeScript em crescimento.",
-    "result": "",
+    "built": "Schemas GraphQL projetados e evoluídos para os serviços e frontends que os usam, APIs Node.js resilientes para a comunicação entre serviços, e resolvers e consultas otimizados. A arquitetura limpa, com design modular, mantém sustentável uma base de código TypeScript em crescimento.",
+    "result": "Menos over-fetching, respostas mais rápidas para os clientes e um acesso aos dados mais eficiente, com uma comunicação confiável entre os serviços.",
     "learned": "",
     "flow": [
       {
@@ -65,8 +65,8 @@
     "summary": "En la plataforma de Node.js y GraphQL de PayPal, diseño los schemas que servicios y frontends usan para acceder a los datos y hago que sus consultas traigan menos y respondan antes.",
     "context": "Los servicios de la plataforma y las aplicaciones frontend de PayPal acceden a los datos por GraphQL, en una arquitectura distribuida en la que los servicios también se comunican entre sí por APIs.",
     "role": "Ingeniero de software en la plataforma de Node.js y GraphQL, con ingenieros de plataforma y equipos de producto y frontend.",
-    "built": "Schemas GraphQL diseñados y evolucionados para los servicios y frontends que los usan, y APIs Node.js resilientes para la comunicación entre servicios. El trabajo en los resolvers y las consultas reduce el over-fetching y el tiempo de respuesta para los clientes, y la arquitectura limpia, con diseño modular, hace que una base de código TypeScript en crecimiento siga siendo mantenible.",
-    "result": "",
+    "built": "Schemas GraphQL diseñados y evolucionados para los servicios y frontends que los usan, APIs Node.js resilientes para la comunicación entre servicios, y resolvers y consultas optimizados. La arquitectura limpia, con diseño modular, hace que una base de código TypeScript en crecimiento siga siendo mantenible.",
+    "result": "Menos over-fetching, respuestas más rápidas para los clientes y un acceso a los datos más eficiente, con una comunicación confiable entre los servicios.",
     "learned": "",
     "flow": [
       {

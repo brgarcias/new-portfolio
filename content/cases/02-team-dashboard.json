@@ -10,7 +10,7 @@
     "context": "My Team Dashboard shows AB InBev's business KPIs, and it needed APIs that aggregated that data in real time.",
     "role": "I designed and implemented the GraphQL APIs, brought the automated tests into the Jenkins pipelines and deployed the microservices.",
     "built": "GraphQL APIs in NestJS aggregate the KPI data in real time. The microservices run on Azure Kubernetes Service (AKS), and the Jenkins CI/CD pipelines run automated unit and end-to-end test suites.",
-    "result": "",
+    "result": "The KPIs aggregated in real time, on a platform that scales, stays resilient and stays reliable.",
     "learned": "",
     "flow": [
       {
@@ -38,7 +38,7 @@
     "context": "O My Team Dashboard mostra os indicadores de negócio da AB InBev e precisava de APIs que agregassem esses dados em tempo real.",
     "role": "Projetei e implementei as APIs GraphQL, levei os testes automatizados para os pipelines do Jenkins e publiquei os microsserviços.",
     "built": "APIs GraphQL em NestJS agregam os dados dos indicadores em tempo real. Os microsserviços rodam no Azure Kubernetes Service (AKS), e os pipelines de CI/CD do Jenkins rodam suítes automatizadas de testes unitários e de ponta a ponta.",
-    "result": "",
+    "result": "Os indicadores agregados em tempo real, numa plataforma que escala, se mantém resiliente e continua confiável.",
     "learned": "",
     "flow": [
       {
@@ -66,7 +66,7 @@
     "context": "My Team Dashboard muestra los indicadores de negocio de AB InBev y necesitaba APIs que agregaran esos datos en tiempo real.",
     "role": "Diseñé e implementé las APIs GraphQL, llevé las pruebas automatizadas a los pipelines de Jenkins y desplegué los microservicios.",
     "built": "APIs GraphQL en NestJS agregan los datos de los indicadores en tiempo real. Los microservicios corren en Azure Kubernetes Service (AKS), y los pipelines de CI/CD de Jenkins ejecutan suites automatizadas de pruebas unitarias y de extremo a extremo.",
-    "result": "",
+    "result": "Los indicadores agregados en tiempo real, en una plataforma que escala, se mantiene resiliente y sigue siendo confiable.",
     "learned": "",
     "flow": [
       {
