@@ -161,13 +161,18 @@ function tone(
   });
 }
 
-export type Cue = 'land' | 'holocron' | 'bump' | 'takeoff' | 'photo' | 'party';
+export type Cue =
+  'land' | 'holocron' | 'bump' | 'takeoff' | 'photo' | 'party' | 'blip';
 
 export function play(cue: Cue) {
   const { enabled, context, master } = sound;
   if (!enabled || !context || !master) return;
   const now = context.currentTime;
   switch (cue) {
+    case 'blip':
+      // A soft tick for the chart and the course.
+      tone([988, 1319], [0, 0.05], 'sine', 0.16, 0.07);
+      break;
     case 'land':
       tone([523, 784], [0, 0.1], 'sine', 0.5, 0.18);
       break;

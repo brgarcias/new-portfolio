@@ -6,7 +6,10 @@ import dynamic from 'next/dynamic';
 import { useSyncExternalStore } from 'react';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowLeft,
+  faTriangleExclamation,
+} from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // GAME
@@ -18,11 +21,16 @@ function Notice({ children }: { children: React.ReactNode }) {
   return <div className="game-notice">{children}</div>;
 }
 
+// While the game downloads: the hangar's systems coming up.
 function Loading() {
   const t = useI18n().messages.game;
   return (
     <Notice>
-      <div className="game-notice__orbit" aria-hidden="true" />
+      <div className="boot" aria-hidden="true">
+        <span className="boot__ring" />
+        <span className="boot__ring boot__ring--inner" />
+        <span className="boot__core" />
+      </div>
       <p className="game-notice__text" role="status">
         {t.loading}
       </p>
@@ -65,11 +73,17 @@ export default function GameLoader({
   if (!webgl) {
     return (
       <Notice>
-        <p className="game-notice__text">{t.noWebgl}</p>
-        <a className="btn btn--primary" href={home}>
-          <FontAwesomeIcon icon={faArrowLeft} />
-          {t.backToSite}
-        </a>
+        <div className="game-notice__card">
+          <FontAwesomeIcon
+            icon={faTriangleExclamation}
+            className="game-notice__icon"
+          />
+          <p className="game-notice__text">{t.noWebgl}</p>
+          <a className="g-btn g-btn--primary" href={home}>
+            <FontAwesomeIcon icon={faArrowLeft} />
+            {t.backToSite}
+          </a>
+        </div>
       </Notice>
     );
   }

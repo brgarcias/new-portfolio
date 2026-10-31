@@ -107,23 +107,48 @@ test('abre o hangar com as naves e lembra a escolhida', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Choose your ship',
   );
-  const ships = page.locator('.hangar__ship');
-  await expect(ships).toHaveText(shipNames);
-  await expect(ships.first()).toHaveAttribute('aria-pressed', 'true');
+  // The roster: six ships, as radio buttons, the first one chosen.
+  const ships = page.getByRole('radio');
+  await expect(ships).toHaveCount(6);
+  await expect(page.locator('.hangar__ship-name')).toHaveText(shipNames);
+  await expect(ships.first()).toHaveAttribute('aria-checked', 'true');
   await expect(page.locator('.hangar__canvas canvas')).toBeVisible();
   await expect(
     page.getByRole('link', { name: 'Back to the portfolio' }),
   ).toHaveAttribute('href', '/');
 
-  await page.getByRole('button', { name: 'Millennium Falcon' }).click();
+  const falcon = page.getByRole('radio', { name: 'Millennium Falcon' });
+  await falcon.click();
   await expect(page.getByRole('heading', { level: 2 })).toHaveText(
     'Millennium Falcon',
   );
-  // The choice waits in the hangar on the next visit.
-  await page.reload();
+  // Its sheet: the model, the class and the maker, and four figures.
+  const sheet = page.locator('.hangar__spec');
+  await expect(sheet).toContainText('YT-1300f');
+  await expect(sheet).toContainText('Light freighter');
+  await expect(sheet).toContainText('Corellian Engineering Corporation');
+  await expect(sheet.locator('.stat')).toHaveCount(4);
+  // The arrows, End, Home and the numbers move through the roster.
+  await falcon.press('ArrowRight');
+  const awing = page.getByRole('radio', { name: 'A-wing' });
+  await expect(awing).toHaveAttribute('aria-checked', 'true');
+  await expect(awing).toBeFocused();
+  await page.keyboard.press('End');
   await expect(
-    page.getByRole('button', { name: 'Millennium Falcon' }),
-  ).toHaveAttribute('aria-pressed', 'true');
+    page.getByRole('radio', { name: 'Naboo N-1 starfighter' }),
+  ).toHaveAttribute('aria-checked', 'true');
+  await page.keyboard.press('Home');
+  await expect(page.getByRole('radio', { name: 'X-wing' })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
+  await page.keyboard.press('3');
+  await expect(falcon).toHaveAttribute('aria-checked', 'true');
+  // The choice waits in the hangar on the next visit, and Enter takes off.
+  await page.reload();
+  await expect(falcon).toHaveAttribute('aria-checked', 'true');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.hud__ship')).toHaveText('Millennium Falcon');
   expect(errors).toEqual([]);
 });
 
@@ -156,28 +181,48 @@ test('gira a nave no hangar ao arrastar', async ({ page }) => {
 });
 
 test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
+  // Many steps over the 3D flight, each of which can take a second on CI's
+  // software renderer.
+  test.slow();
   await takeOff(page);
-  await page.getByRole('button', { name: 'Open the map' }).click();
-  const map = page.getByRole('dialog', { name: 'Map' });
+  await page.getByRole('button', { name: 'Open the navigation chart' }).click();
+  const map = page.getByRole('dialog', { name: 'Navigation chart' });
   await expect(map).toBeVisible();
   // The seven planets, named, with their sections, none opened yet, and
   // the ship on it.
-  await expect(map.locator('.radar__name')).toHaveCount(7);
-  await expect(map.locator('.radar__name').first()).toHaveText('Tatooine');
+  await expect(map.locator('.chart__name')).toHaveCount(7);
+  await expect(map.locator('.chart__name').first()).toHaveText('Tatooine');
   const legend = map.locator('.game-map__legend li');
   await expect(legend).toHaveCount(7);
   await expect(legend.first()).toContainText('About Me');
-  await expect(legend.first()).toContainText('Not opened yet');
-  await expect(map.locator('.radar__ship')).toHaveCount(1);
+  await expect(legend.first()).toContainText('Unexplored');
+  await expect(map.locator('.chart__ship')).toHaveCount(1);
   await expect(map).toContainText('0 of 7 sections');
   // The holocrons hide on the map, none found yet.
-  await expect(map.locator('.radar__holocron')).toHaveCount(7);
-  await expect(map.locator('.radar__holocron[data-state="found"]')).toHaveCount(
+  await expect(map.locator('.chart__holocron')).toHaveCount(7);
+  await expect(map.locator('.chart__holocron[data-state="found"]')).toHaveCount(
     0,
   );
-  await expect(page.locator('.hud__holocrons')).toHaveText('0 of 7 holocrons');
+  await expect(page.locator('.hud__holocrons')).toContainText(
+    '0 of 7 holocrons',
+  );
+  // A destination sets a course, which the pad's waypoint follows; the
+  // same destination again clears it.
+  const tatooine = map.getByRole('button', { name: /Tatooine/ });
+  await tatooine.click();
+  await expect(tatooine).toHaveAttribute('aria-pressed', 'true');
+  await expect(tatooine).toContainText('Course set');
   await page.keyboard.press('Escape');
   await expect(map).toBeHidden();
+  const waypoint = page.locator('.game__label[data-course]');
+  await expect(waypoint).toHaveCount(1);
+  await expect(waypoint).toContainText('Tatooine');
+  await page.getByRole('button', { name: 'Open the navigation chart' }).click();
+  await tatooine.click();
+  await expect(tatooine).toHaveAttribute('aria-pressed', 'false');
+  await page.keyboard.press('Escape');
+  await expect(map).toBeHidden();
+  await expect(waypoint).toHaveCount(0);
   if (isMobile) return;
   // M opens and closes it, and the keys do not fly the ship meanwhile.
   await page.keyboard.press('KeyM');
@@ -190,6 +235,9 @@ test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
 });
 
 test('liga o som e entra no modo foto', async ({ page, isMobile }) => {
+  // Many steps over the 3D flight, each of which can take a second on CI's
+  // software renderer.
+  test.slow();
   await takeOff(page);
   // The sounds come on with their button, and the choice is kept.
   await page.getByRole('button', { name: 'Sound off' }).click();
@@ -231,7 +279,18 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   page.on('pageerror', (error) => errors.push(error.message));
   await takeOff(page);
   await expect(page.locator('.hud__ship')).toHaveText('X-wing');
-  await expect(page.locator('.hud__hint')).toContainText('W, A, S, D');
+  await expect(page.locator('.hud__hint')).toContainText('Fly');
+  await expect(page.locator('.hud__hint')).toContainText('Shift');
+  // Every notice over the flight, as it comes.
+  await page.evaluate(() => {
+    const log: string[] = [];
+    Object.assign(window, { notices: log });
+    new MutationObserver((changes) => {
+      for (const change of changes) {
+        for (const node of change.addedNodes) log.push(node.textContent ?? '');
+      }
+    }).observe(document.querySelector('.toasts')!, { childList: true });
+  });
 
   // Two and a half seconds of thrust: the ship picks up speed and moves
   // ahead, towards -Z. Straight ahead lies the first pad, About Me; the
@@ -244,19 +303,29 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   // Read by position, not speed: on a slow machine the pad may have caught
   // the ship before the first reading.
   await expect.poll(() => reading(page, 'z')).toBeLessThan(-5);
-  await expect(page.locator('.hud__pad')).toContainText(
-    'Landing pad: About Me',
-    { timeout: 20_000 },
-  );
+  await expect(page.locator('.hud__pad')).toContainText('About Me', {
+    timeout: 20_000,
+  });
+  await expect(page.locator('.hud__pad')).toContainText('Landing zone');
   const about = page.getByRole('dialog', { name: 'About Me' });
   await expect(about).toBeVisible({ timeout: 10_000 });
   await expect(about).toContainText(
     'Passionate and experienced Full Stack Developer',
   );
+  await expect(about).toContainText('Tatooine');
+  // The holocron on the way in was recovered, and said so.
+  expect(
+    await page.evaluate(() =>
+      (window as unknown as { notices: string[] }).notices.join(' '),
+    ),
+  ).toContain('Holocron recovered');
+  await expect(page.locator('.hud__holocrons')).toContainText(
+    '1 of 7 holocrons',
+  );
   await expect(
     about.getByRole('link', { name: 'Open on the site' }),
   ).toHaveAttribute('href', '/#about');
-  await expect(page.locator('.hud__count')).toHaveText('1 of 7 sections');
+  await expect(page.locator('.hud__count')).toContainText('1 of 7 sections');
   // The radar shows the sectors and the pads, and the one the ship is on;
   // the pad lies on its planet, which the HUD and its label name.
   await expect(page.locator('.radar .radar__sector')).toHaveCount(7);
@@ -274,23 +343,36 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   // Still on the pad, it does not open again until the ship comes back.
   await page.waitForTimeout(1500);
   await expect(about).toBeHidden();
-  await expect(page.locator('.hud__pad')).toContainText(
-    'Landing pad: About Me',
+  await expect(page.locator('.hud__pad')).toContainText('About Me');
+  await expect(page.locator('.hud__pad')).toHaveAttribute(
+    'data-phase',
+    'landed',
   );
 
   // A turn all the way round, back the way it came, so the ship points
   // down the lane, which is clear; the page lets go of the key on the
   // first frame past the target, so it aims a little short of the full
-  // turn and ends within a frame's turn of it.
+  // turn and ends within a frame's turn of it. On CI's software renderer
+  // one frame can take most of a second and carry the turn well past its
+  // mark, so a short turn the other way brings it back.
   // Then a burst of boost down the lane, past the top speed, which the
   // page reads every frame, so a slow machine cannot miss the peak.
   await expect
     .poll(() => reading(page, 'speed'), { timeout: 10_000 })
     .toBeLessThan(0.1);
   const heading = await reading(page, 'heading');
-  await steer(page, 'KeyD', heading - Math.PI + 0.15);
+  const back = heading - Math.PI;
+  await steer(page, 'KeyD', back + 0.15);
+  for (let correction = 0; correction < 3; correction++) {
+    const now = await reading(page, 'heading');
+    if (Math.abs(now - back) < 0.35) break;
+    if (now < back) await steer(page, 'KeyA', back - 0.1);
+    else await steer(page, 'KeyD', back + 0.1);
+  }
   const turned = await reading(page, 'heading');
-  expect(Math.abs(turned - (heading - Math.PI))).toBeLessThan(0.5);
+  // A long turn happened, and it ended facing back down the lane.
+  expect(heading - turned).toBeGreaterThan(2.5);
+  expect(Math.abs(turned - back)).toBeLessThan(0.6);
   const fastest = await hold(page, ['KeyW', 'ShiftLeft'], 1800);
   expect(fastest).toBeGreaterThan(27);
   // It coasts, and never leaves the platform.
@@ -346,10 +428,9 @@ test('voa pelo joystick no celular', async ({ page, isMobile }) => {
     'style',
     '',
   );
-  await expect(page.locator('.hud__pad')).toContainText(
-    'Landing pad: About Me',
-    { timeout: 20_000 },
-  );
+  await expect(page.locator('.hud__pad')).toContainText('About Me', {
+    timeout: 20_000,
+  });
   const about = page.getByRole('dialog', { name: 'About Me' });
   await expect(about).toBeVisible({ timeout: 10_000 });
   await about.getByRole('button', { name: 'Close' }).click();
