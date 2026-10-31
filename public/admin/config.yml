@@ -365,11 +365,11 @@ collections:
     slug: '{{fields.order}}-{{fields.title}}'
     summary: '{{order}}. {{title}}'
     sortable_fields: ['order']
-    description: 'Os estudos de caso abrem a seção de projetos. Use só fatos que você pode mostrar; uma parte vazia (resultado, aprendizado, link) não aparece.'
+    description: 'Os estudos de caso abrem a seção de projetos. Os quatro primeiros, pela ordem, aparecem logo, e os outros num botão abaixo deles. Use só fatos que você pode mostrar; uma parte vazia (resultado, aprendizado, link) não aparece.'
     fields:
-      - { name: order, label: Ordem, widget: number, value_type: int, i18n: duplicate }
+      - { name: order, label: Ordem, widget: number, value_type: int, i18n: duplicate, hint: 'Os quatro primeiros aparecem logo; os outros, no botão abaixo deles.' }
       - { name: company, label: Empresa, widget: string, i18n: duplicate }
-      - { name: period, label: Período, widget: string, i18n: duplicate, hint: 'Como "2023–2024".' }
+      - { name: period, label: Período, widget: string, i18n: true, hint: 'Como "2023–2024", ou "Desde 2025" num trabalho atual.' }
       - { name: title, label: Título, widget: string, i18n: true }
       - { name: summary, label: Resumo, widget: text, i18n: true, hint: 'Uma ou duas frases, no cartão e no topo do estudo.' }
       - { name: context, label: Contexto, widget: text, i18n: true }

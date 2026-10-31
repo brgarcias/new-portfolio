@@ -1,12 +1,14 @@
 'use client';
 
 // HOOKS
-import { useState } from 'react';
+import { useId, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faArrowRight,
   faArrowUpRightFromSquare,
+  faChevronDown,
 } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import Reveal from '@/src/components/Reveal';
@@ -23,7 +25,13 @@ import type { CaseStudy } from '@/src/content';
 // system's flow. The title's button covers the card and opens the whole
 // case in a dialog: the context, the part Bruno played, what was built,
 // the result and what it taught, each only when the content has it.
-function CaseCard({ item }: Readonly<{ item: CaseStudy }>) {
+// The cases after the first ones are behind the button (`more`), and
+// hidden until it shows them.
+function CaseCard({
+  item,
+  more,
+  hidden,
+}: Readonly<{ item: CaseStudy; more: boolean; hidden: boolean }>) {
   const t = useI18n().messages.projects;
   const [visible, setVisible] = useState(false);
   const where = `${item.company} · ${item.period}`;
@@ -36,7 +44,7 @@ function CaseCard({ item }: Readonly<{ item: CaseStudy }>) {
   ].filter((part) => part.text);
 
   return (
-    <li className="case-card">
+    <li className="case-card" data-more={more || undefined} hidden={hidden}>
       <p className="case-card__where">{where}</p>
       <h4 className="case-card__title">
         {/* The button covers the whole card, so a click anywhere opens it. */}
@@ -106,22 +114,71 @@ function CaseCard({ item }: Readonly<{ item: CaseStudy }>) {
   );
 }
 
+// The first cases show at once, one from each company; the others wait
+// behind a button, so the section doesn't grow long.
+const shownFirst = 4;
+
 // The case studies, before the websites: the projects where the work
 // behind the screen shows.
 export default function Cases({
   cases,
 }: Readonly<{ cases: readonly CaseStudy[] }>) {
   const t = useI18n().messages.projects;
+  const [expanded, setExpanded] = useState(false);
+  const gridId = useId();
+  const grid = useRef<HTMLUListElement>(null);
   if (!cases.length) return null;
+  const rest = cases.length - shownFirst;
+
+  // Showing the others takes the focus to the first of them, so the keyboard
+  // and screen readers go on from there. Hiding them again brings the button
+  // back into view, which otherwise went up out of the screen.
+  const toggle = (button: HTMLButtonElement) => {
+    flushSync(() => setExpanded(!expanded));
+    if (expanded) {
+      button.scrollIntoView({ block: 'nearest' });
+      return;
+    }
+    grid.current
+      ?.querySelectorAll<HTMLButtonElement>('.case-card__button')
+      [shownFirst]?.focus();
+  };
+
   return (
     <div className="cases">
       <h3 className="projects__group">{t.cases}</h3>
-      <Reveal className="cases__body">
-        <ul className="cases__grid">
-          {cases.map((item) => (
-            <CaseCard key={item.slug} item={item} />
+      {/* Tall on a phone, so it enters as soon as its top shows: at the
+          usual 15%, a phone arriving from the menu saw an empty space
+          under the section's header. */}
+      <Reveal className="cases__body" amount={0.05}>
+        <ul id={gridId} ref={grid} className="cases__grid">
+          {cases.map((item, index) => (
+            <CaseCard
+              key={item.slug}
+              item={item}
+              more={index >= shownFirst}
+              hidden={!expanded && index >= shownFirst}
+            />
           ))}
         </ul>
+        {rest > 0 && (
+          <div className="cases__more">
+            <button
+              type="button"
+              className="btn btn--ghost btn--small"
+              aria-expanded={expanded}
+              aria-controls={gridId}
+              onClick={(event) => toggle(event.currentTarget)}
+            >
+              {expanded
+                ? t.fewerCases
+                : rest === 1
+                  ? t.oneMoreCase
+                  : format(t.moreCases, { count: rest })}
+              <FontAwesomeIcon icon={faChevronDown} />
+            </button>
+          </div>
+        )}
       </Reveal>
     </div>
   );

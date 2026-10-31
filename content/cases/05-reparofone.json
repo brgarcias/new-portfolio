@@ -1,6 +1,6 @@
 {
   "en": {
-    "order": 2,
+    "order": 5,
     "company": "Trocafone",
     "period": "2021–2022",
     "stack": "React, Redux, Material UI, GraphQL, PHP, Laravel, MySQL, Docker, Kubernetes",
@@ -28,7 +28,7 @@
     ]
   },
   "pt": {
-    "order": 2,
+    "order": 5,
     "company": "Trocafone",
     "period": "2021–2022",
     "stack": "React, Redux, Material UI, GraphQL, PHP, Laravel, MySQL, Docker, Kubernetes",
@@ -56,7 +56,7 @@
     ]
   },
   "es": {
-    "order": 2,
+    "order": 5,
     "company": "Trocafone",
     "period": "2021–2022",
     "stack": "React, Redux, Material UI, GraphQL, PHP, Laravel, MySQL, Docker, Kubernetes",

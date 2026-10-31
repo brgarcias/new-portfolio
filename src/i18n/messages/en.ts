@@ -85,6 +85,10 @@ const en = {
     cases: 'Case studies',
     websites: 'Websites',
     readCase: 'Read the case study',
+    // The button under the first case studies, and its count.
+    moreCases: 'See {count} more case studies',
+    oneMoreCase: 'See one more case study',
+    fewerCases: 'Show fewer case studies',
     flow: 'System flow — {title}',
     context: 'Context',
     role: 'My role',

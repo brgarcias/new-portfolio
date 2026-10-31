@@ -1,0 +1,86 @@
+{
+  "en": {
+    "order": 2,
+    "company": "AB InBev",
+    "period": "2025–2026",
+    "stack": "NestJS, GraphQL, Azure Kubernetes Service, Jenkins",
+    "link": "",
+    "title": "Business KPIs aggregated in real time",
+    "summary": "My Team Dashboard brings together AB InBev's business KPIs. I designed its GraphQL APIs in NestJS, which aggregate the data in real time, and deployed its microservices on Azure Kubernetes Service.",
+    "context": "My Team Dashboard shows AB InBev's business KPIs, and it needed APIs that aggregated that data in real time.",
+    "role": "I designed and implemented the GraphQL APIs, brought the automated tests into the Jenkins pipelines and deployed the microservices.",
+    "built": "GraphQL APIs in NestJS aggregate the KPI data in real time. The microservices run on Azure Kubernetes Service (AKS), and the Jenkins CI/CD pipelines run automated unit and end-to-end test suites.",
+    "result": "",
+    "learned": "",
+    "flow": [
+      {
+        "label": "Business KPIs",
+        "detail": ""
+      },
+      {
+        "label": "GraphQL APIs",
+        "detail": "NestJS on AKS"
+      },
+      {
+        "label": "My Team Dashboard",
+        "detail": "Real time"
+      }
+    ]
+  },
+  "pt": {
+    "order": 2,
+    "company": "AB InBev",
+    "period": "2025–2026",
+    "stack": "NestJS, GraphQL, Azure Kubernetes Service, Jenkins",
+    "link": "",
+    "title": "Indicadores de negócio agregados em tempo real",
+    "summary": "O My Team Dashboard reúne os indicadores de negócio da AB InBev. Projetei as APIs GraphQL dele em NestJS, que agregam os dados em tempo real, e publiquei seus microsserviços no Azure Kubernetes Service.",
+    "context": "O My Team Dashboard mostra os indicadores de negócio da AB InBev e precisava de APIs que agregassem esses dados em tempo real.",
+    "role": "Projetei e implementei as APIs GraphQL, levei os testes automatizados para os pipelines do Jenkins e publiquei os microsserviços.",
+    "built": "APIs GraphQL em NestJS agregam os dados dos indicadores em tempo real. Os microsserviços rodam no Azure Kubernetes Service (AKS), e os pipelines de CI/CD do Jenkins rodam suítes automatizadas de testes unitários e de ponta a ponta.",
+    "result": "",
+    "learned": "",
+    "flow": [
+      {
+        "label": "Indicadores de negócio",
+        "detail": ""
+      },
+      {
+        "label": "APIs GraphQL",
+        "detail": "NestJS no AKS"
+      },
+      {
+        "label": "My Team Dashboard",
+        "detail": "Tempo real"
+      }
+    ]
+  },
+  "es": {
+    "order": 2,
+    "company": "AB InBev",
+    "period": "2025–2026",
+    "stack": "NestJS, GraphQL, Azure Kubernetes Service, Jenkins",
+    "link": "",
+    "title": "Indicadores de negocio agregados en tiempo real",
+    "summary": "My Team Dashboard reúne los indicadores de negocio de AB InBev. Diseñé sus APIs GraphQL en NestJS, que agregan los datos en tiempo real, y desplegué sus microservicios en Azure Kubernetes Service.",
+    "context": "My Team Dashboard muestra los indicadores de negocio de AB InBev y necesitaba APIs que agregaran esos datos en tiempo real.",
+    "role": "Diseñé e implementé las APIs GraphQL, llevé las pruebas automatizadas a los pipelines de Jenkins y desplegué los microservicios.",
+    "built": "APIs GraphQL en NestJS agregan los datos de los indicadores en tiempo real. Los microservicios corren en Azure Kubernetes Service (AKS), y los pipelines de CI/CD de Jenkins ejecutan suites automatizadas de pruebas unitarias y de extremo a extremo.",
+    "result": "",
+    "learned": "",
+    "flow": [
+      {
+        "label": "Indicadores de negocio",
+        "detail": ""
+      },
+      {
+        "label": "APIs GraphQL",
+        "detail": "NestJS en AKS"
+      },
+      {
+        "label": "My Team Dashboard",
+        "detail": "Tiempo real"
+      }
+    ]
+  }
+}

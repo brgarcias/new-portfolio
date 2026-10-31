@@ -1,6 +1,6 @@
 {
   "en": {
-    "order": 3,
+    "order": 6,
     "company": "Trocafone",
     "period": "2022–2023",
     "stack": "Node.js, NestJS, React, Next.js, AWS Lambda, SQS, Redis, CloudWatch, Jest, Jenkins",
@@ -36,7 +36,7 @@
     ]
   },
   "pt": {
-    "order": 3,
+    "order": 6,
     "company": "Trocafone",
     "period": "2022–2023",
     "stack": "Node.js, NestJS, React, Next.js, AWS Lambda, SQS, Redis, CloudWatch, Jest, Jenkins",
@@ -72,7 +72,7 @@
     ]
   },
   "es": {
-    "order": 3,
+    "order": 6,
     "company": "Trocafone",
     "period": "2022–2023",
     "stack": "Node.js, NestJS, React, Next.js, AWS Lambda, SQS, Redis, CloudWatch, Jest, Jenkins",

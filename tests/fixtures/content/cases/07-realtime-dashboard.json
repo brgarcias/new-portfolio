@@ -1,6 +1,6 @@
 {
   "en": {
-    "order": 4,
+    "order": 7,
     "company": "Trocafone",
     "period": "2023",
     "stack": "GraphQL, Redis, PostgreSQL, AWS CloudWatch",
@@ -32,7 +32,7 @@
     ]
   },
   "pt": {
-    "order": 4,
+    "order": 7,
     "company": "Trocafone",
     "period": "2023",
     "stack": "GraphQL, Redis, PostgreSQL, AWS CloudWatch",
@@ -64,7 +64,7 @@
     ]
   },
   "es": {
-    "order": 4,
+    "order": 7,
     "company": "Trocafone",
     "period": "2023",
     "stack": "GraphQL, Redis, PostgreSQL, AWS CloudWatch",
