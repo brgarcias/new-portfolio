@@ -143,7 +143,9 @@ export default function AboutMe({
     };
     // Only the visitor's fields are required. The form also sends form-name
     // and the bot-field honeypot, which stays empty. Every field is checked,
-    // the email's format included.
+    // the email's format included, and the first wrong one takes the focus.
+    // It does before the errors show, so a screen reader names the field and
+    // then reads the errors, alerts, once.
     const wrong = fields.filter(
       (field) => !isValidField(field, formDataParsed[field]),
     );
@@ -152,7 +154,11 @@ export default function AboutMe({
       email: wrong.includes('email'),
       feedback: wrong.includes('feedback'),
     });
-    if (wrong.length) return;
+    if (wrong.length) {
+      const first = data.currentTarget.elements.namedItem(wrong[0]);
+      if (first instanceof HTMLElement) first.focus();
+      return;
+    }
     setSubmitting(true);
     validateAndSubmit();
   };
