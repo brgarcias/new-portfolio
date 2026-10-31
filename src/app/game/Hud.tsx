@@ -49,6 +49,9 @@ const register = (element: HTMLDivElement | null) => {
 const registerLanding = (element: HTMLDivElement | null) => {
   overlay.landing = element;
 };
+const registerSpeedBar = (element: HTMLSpanElement | null) => {
+  overlay.speedBar = element;
+};
 
 // A joystick under the right thumb and the boost under the left one. Both
 // write straight into the controls, with no render in between.
@@ -551,7 +554,7 @@ export default function Hud({
               <small>m/s</small>
             </span>
             <span className="speedo__bar">
-              <span />
+              <span ref={registerSpeedBar} />
             </span>
             <span className="speedo__boost">{t.boost}</span>
           </div>

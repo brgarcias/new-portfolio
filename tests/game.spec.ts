@@ -181,6 +181,9 @@ test('gira a nave no hangar ao arrastar', async ({ page }) => {
 });
 
 test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
+  // Many steps over the 3D flight, each of which can take a second on CI's
+  // software renderer.
+  test.slow();
   await takeOff(page);
   await page.getByRole('button', { name: 'Open the navigation chart' }).click();
   const map = page.getByRole('dialog', { name: 'Navigation chart' });
@@ -232,6 +235,9 @@ test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
 });
 
 test('liga o som e entra no modo foto', async ({ page, isMobile }) => {
+  // Many steps over the 3D flight, each of which can take a second on CI's
+  // software renderer.
+  test.slow();
   await takeOff(page);
   // The sounds come on with their button, and the choice is kept.
   await page.getByRole('button', { name: 'Sound off' }).click();

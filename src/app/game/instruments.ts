@@ -14,14 +14,18 @@ import { holocrons, pads } from './world/arena';
 // Moves the instruments over the flight, every frame, straight in the
 // DOM: the compass's tape and marks, the radar's map around the ship, the
 // ship and the course on the chart, the readouts and the landing status.
-// Text changes ten times a second, which reads as live and costs less.
+// Nothing is written that has not changed, what moves moves by transforms
+// on layers of its own, and text changes ten times a second, which reads
+// as live and costs less.
 
 // Pixels per degree of the compass's tape, as in the stylesheet.
 export const compassScale = 4;
 // World units from the ship to the radar's ring, and that ring's radius in
-// the radar's own units.
+// the radar's own units, of which the radar is 200 across.
 export const radarRange = 64;
 export const radarRing = 86;
+// World units across the radar's map, as its SVG draws them.
+export const radarSpan = 224;
 
 const padAt = new Map(pads.map((pad) => [pad.id as string, pad]));
 const holocronAt = new Map(
@@ -30,10 +34,30 @@ const holocronAt = new Map(
 
 let textClock = 1;
 
+// The last value written to each element, so the same one is not written
+// again.
+const written = new WeakMap<Element, string>();
+const write = (element: Element, key: string, value: string) => {
+  const tag = `${key}:${value}`;
+  if (written.get(element) === tag) return false;
+  written.set(element, tag);
+  return true;
+};
+
 const show = (element: Element, visible: boolean) => {
   const value = visible ? '' : 'none';
   const style = (element as HTMLElement | SVGElement).style;
   if (style.display !== value) style.display = value;
+};
+
+const move = (element: HTMLElement | SVGElement, transform: string) => {
+  if (write(element, 'transform', transform)) {
+    element.style.transform = transform;
+  }
+};
+
+const attribute = (element: Element, name: string, value: string) => {
+  if (element.getAttribute(name) !== value) element.setAttribute(name, value);
 };
 
 const signed = (value: number) =>
@@ -53,20 +77,25 @@ const targetOf = (kind: string | undefined, id: string | undefined) => {
 function compass(bearing: number, text: boolean) {
   const tape = overlay.compassTape;
   if (!tape) return;
-  tape.style.transform = `translate3d(${(-(bearing + 90) * compassScale).toFixed(1)}px,0,0)`;
+  const half = overlay.compassHalf;
+  if (half <= 0) return;
+  move(
+    tape,
+    `translate3d(${(-(bearing + 90) * compassScale).toFixed(1)}px,0,0)`,
+  );
   if (text && overlay.compassReadout) {
-    overlay.compassReadout.textContent = String(
-      Math.round(bearing) % 360,
-    ).padStart(3, '0');
+    const value = String(Math.round(bearing) % 360).padStart(3, '0');
+    if (overlay.compassReadout.textContent !== value) {
+      overlay.compassReadout.textContent = value;
+    }
   }
   const marks = overlay.compassMarks?.children;
   if (!marks) return;
-  const half = overlay.compassHalf;
   for (const mark of marks) {
     const element = mark as HTMLElement;
     const kind = element.dataset.kind;
     const target = targetOf(kind, element.dataset.id);
-    if (!target || half <= 0) {
+    if (!target) {
       show(element, false);
       continue;
     }
@@ -75,40 +104,48 @@ function compass(bearing: number, text: boolean) {
     // The course stays on the tape, at its edge, pointing the way.
     if (kind === 'course') {
       if (outside) relative = Math.sign(relative) * half;
-      element.dataset.edge = outside ? (relative < 0 ? 'left' : 'right') : '';
+      const edge = outside ? (relative < 0 ? 'left' : 'right') : '';
+      if (element.dataset.edge !== edge) element.dataset.edge = edge;
       if (text) {
         const distance = Math.hypot(
           target.x - telemetry.x,
           target.z - telemetry.z,
         );
-        const label = element.querySelector('small');
-        if (label) label.textContent = `${Math.round(distance)} m`;
+        const label = element.firstElementChild;
+        const value = `${Math.round(distance)} m`;
+        if (label && label.textContent !== value) label.textContent = value;
       }
     } else if (outside) {
       show(element, false);
       continue;
     }
     show(element, true);
-    element.style.transform = `translate3d(${(relative * compassScale).toFixed(1)}px,0,0)`;
+    move(element, `translate3d(${(relative * compassScale).toFixed(1)}px,0,0)`);
   }
 }
 
 function radar() {
-  const world = overlay.radarWorld;
-  if (!world) return;
-  const scale = radarRing / radarRange;
+  const map = overlay.radarMap;
+  if (!map) return;
   const turn = toDegrees(telemetry.heading);
-  world.setAttribute(
-    'transform',
-    `scale(${scale.toFixed(4)}) rotate(${turn.toFixed(2)}) translate(${(-telemetry.x).toFixed(2)} ${(-telemetry.z).toFixed(2)})`,
+  // The map turns and slides under the ship, which stays in the middle.
+  move(
+    map,
+    `rotate(${turn.toFixed(2)}deg) translate(${((-telemetry.x / radarSpan) * 100).toFixed(3)}%, ${((-telemetry.z / radarSpan) * 100).toFixed(3)}%)`,
   );
-  overlay.radarNorth?.setAttribute('transform', `rotate(${turn.toFixed(2)})`);
+  if (overlay.radarNorth) {
+    move(overlay.radarNorth, `rotate(${turn.toFixed(2)}deg)`);
+  }
   const edges = overlay.radarEdges?.children;
-  if (!edges) return;
+  const size = overlay.radarSize;
+  if (!edges || size <= 0) return;
+  const scale = radarRing / radarRange;
+  // The chevrons sit just outside the ring, in pixels.
+  const reach = ((radarRing + 1) / 200) * size;
   const cos = Math.cos(telemetry.heading);
   const sin = Math.sin(telemetry.heading);
   for (const edge of edges) {
-    const element = edge as SVGElement;
+    const element = edge as HTMLElement;
     const target = targetOf(element.dataset.kind, element.dataset.id);
     if (!target) {
       show(element, false);
@@ -127,9 +164,9 @@ function radar() {
     const length = Math.hypot(rx, rz) || 1;
     const angle = toDegrees(Math.atan2(rx, -rz));
     show(element, true);
-    element.setAttribute(
-      'transform',
-      `translate(${((rx / length) * (radarRing + 1)).toFixed(2)} ${((rz / length) * (radarRing + 1)).toFixed(2)}) rotate(${angle.toFixed(1)})`,
+    move(
+      element,
+      `translate(${((rx / length) * reach).toFixed(1)}px, ${((rz / length) * reach).toFixed(1)}px) rotate(${angle.toFixed(1)}deg)`,
     );
   }
 }
@@ -152,9 +189,10 @@ function chart(text: boolean) {
   }
   const ship = overlay.chartShip;
   if (ship) {
-    ship.setAttribute(
+    attribute(
+      ship,
       'transform',
-      `translate(${telemetry.x.toFixed(2)} ${telemetry.z.toFixed(2)}) rotate(${(-toDegrees(telemetry.heading)).toFixed(1)})`,
+      `translate(${telemetry.x.toFixed(1)} ${telemetry.z.toFixed(1)}) rotate(${(-toDegrees(telemetry.heading)).toFixed(1)})`,
     );
   }
   const line = overlay.chartCourse;
@@ -162,21 +200,26 @@ function chart(text: boolean) {
   const target = navigation.course ? padAt.get(navigation.course) : undefined;
   show(line, Boolean(target));
   if (!target) return;
-  line.setAttribute('x1', telemetry.x.toFixed(2));
-  line.setAttribute('y1', telemetry.z.toFixed(2));
-  line.setAttribute('x2', target.x.toFixed(2));
-  line.setAttribute('y2', target.z.toFixed(2));
+  attribute(line, 'x1', telemetry.x.toFixed(1));
+  attribute(line, 'y1', telemetry.z.toFixed(1));
+  attribute(line, 'x2', target.x.toFixed(1));
+  attribute(line, 'y2', target.z.toFixed(1));
 }
 
 function readouts(text: boolean) {
   const root = overlay.hud;
   if (!root) return;
-  root.style.setProperty(
-    '--speed',
-    Math.min(1, telemetry.speed / 40).toFixed(3),
-  );
-  if (telemetry.boost) root.dataset.boost = '';
-  else delete root.dataset.boost;
+  if (overlay.speedBar) {
+    move(
+      overlay.speedBar,
+      `scaleX(${Math.min(1, telemetry.speed / 40).toFixed(3)})`,
+    );
+  }
+  const boost = telemetry.boost ? '' : undefined;
+  if (root.dataset.boost !== boost) {
+    if (boost === undefined) delete root.dataset.boost;
+    else root.dataset.boost = boost;
+  }
   if (!text) return;
   for (const field of root.querySelectorAll<HTMLElement>('[data-read]')) {
     const value =
@@ -198,7 +241,10 @@ function landing() {
     else phase = telemetry.speed >= 1.5 ? 'approach' : 'hold';
   }
   if (status.dataset.phase !== phase) status.dataset.phase = phase;
-  status.style.setProperty('--landing', telemetry.landing.toFixed(3));
+  const value = telemetry.landing.toFixed(2);
+  if (write(status, 'landing', value)) {
+    status.style.setProperty('--landing', value);
+  }
 }
 
 export function updateInstruments(dt: number) {
