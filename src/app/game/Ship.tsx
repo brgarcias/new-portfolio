@@ -343,6 +343,10 @@ function ribbon(
 
 const chase = new THREE.Vector3();
 const ahead = new THREE.Vector3();
+// The holocrons the ship came within reach of during a frame, checked at
+// every step of the physics: a slow frame, whose steps add up to as much
+// as a second, would otherwise carry a fast ship past one.
+const reached = new Set<SectionId>();
 const trailColor = new THREE.Color();
 
 // The flames of the engines: cones behind each engine's mouth, an outer
@@ -515,9 +519,18 @@ export default function Ship({
     flight.clock += dt;
     const controls = readInput();
     let hit = 0;
+    reached.clear();
     for (let left = dt; left > 0; left -= 1 / 60) {
       step(state, controls, ship.handling, arena, Math.min(left, 1 / 60));
       hit = Math.max(hit, state.hit);
+      for (const holocron of holocrons) {
+        if (
+          !hunt.found.has(holocron.id) &&
+          Math.hypot(state.x - holocron.x, state.z - holocron.z) < 3.5
+        ) {
+          reached.add(holocron.id);
+        }
+      }
     }
 
     const hull = rig.current;
@@ -675,20 +688,18 @@ export default function Ship({
       }
     }
 
-    // A holocron within reach is found.
+    // A holocron the ship came within reach of is found.
     for (const holocron of holocrons) {
-      if (hunt.found.has(holocron.id)) continue;
-      if (Math.hypot(state.x - holocron.x, state.z - holocron.z) < 3.5) {
-        hunt.found.add(holocron.id);
-        hunt.age.set(holocron.id, 0);
-        onCollect(holocron.id);
-        if (hunt.found.size >= holocrons.length) {
-          // The last one: a burst of sparks from the ship.
-          flight.party = { x: state.x, y: ship.hover, z: state.z, age: 0 };
-          play('party');
-        } else {
-          play('holocron');
-        }
+      if (hunt.found.has(holocron.id) || !reached.has(holocron.id)) continue;
+      hunt.found.add(holocron.id);
+      hunt.age.set(holocron.id, 0);
+      onCollect(holocron.id);
+      if (hunt.found.size >= holocrons.length) {
+        // The last one: a burst of sparks from the ship.
+        flight.party = { x: state.x, y: ship.hover, z: state.z, age: 0 };
+        play('party');
+      } else {
+        play('holocron');
       }
     }
 
