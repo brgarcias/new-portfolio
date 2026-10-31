@@ -1,8 +1,30 @@
-.action-button {
-  background-color: rgb(92, 94, 220);
-  border-radius: 10px;
-  padding: 5px 20px;
-  font-weight: 400;
-  color: white;
-  font-size: 0.9em;
+/* A field in focus takes the brand's color, as the site's other focus
+   rings do, instead of HeroUI's plain one. */
+.contact-form
+  [data-slot='base'][data-focus='true']
+  [data-slot='input-wrapper'] {
+  border-color: var(--color-brand-light);
+}
+
+/* While the message goes. */
+.contact-form .btn:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+/* The error under a field. */
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  padding-left: 0.65rem;
+  color: var(--color-error);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.form-error svg {
+  flex: none;
+  font-size: 0.85em;
 }

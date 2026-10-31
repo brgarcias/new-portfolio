@@ -948,8 +948,10 @@ test('valida os campos do formulário de feedback', async ({ page }) => {
   await expect(
     dialog.getByText('Please, give me your feedback.'),
   ).toBeVisible();
-  // Screen readers announce the errors as they appear, and each one
-  // describes its field, so it is read with it.
+  // The first wrong field takes the focus. Screen readers announce the
+  // errors as they appear, and each one describes its field, so it is read
+  // with it.
+  await expect(name).toBeFocused();
   await expect(dialog.getByRole('alert')).toHaveText([
     'Please, write your name.',
     'Please, tell me your email.',
@@ -981,6 +983,7 @@ test('valida os campos do formulário de feedback', async ({ page }) => {
   await email.fill('email-invalido');
   await feedback.fill('Gostei muito do portfólio.');
   await dialog.getByRole('button', { name: 'Send' }).click();
+  await expect(email).toBeFocused();
   await expect(email).toHaveAccessibleDescription(
     'Please, tell me your email.',
   );

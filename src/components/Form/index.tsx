@@ -3,7 +3,12 @@ import { Dispatch, FC, FormEvent, SetStateAction } from 'react';
 // HEROUI
 import { Spacer, Button } from '@heroui/react';
 // FONTAWESOME
-import { faEnvelope, faUserAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faEnvelope,
+  faPaperPlane,
+  faUserAlt,
+} from '@fortawesome/free-solid-svg-icons';
 // COMPONENT
 import InputControl from './InputControl';
 // I18N
@@ -136,12 +141,14 @@ const Form: FC<FormProps> = ({
           {t.close}
         </Button>
         <Spacer x={2} />
+        {/* The site's main button, as in the top's actions. */}
         <button
-          className="action-button"
+          className="btn btn--primary btn--small"
           disabled={actionButtonDisabled}
           type="submit"
         >
           {t.send}
+          <FontAwesomeIcon icon={faPaperPlane} />
         </button>
       </div>
     </form>
