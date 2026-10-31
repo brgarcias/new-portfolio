@@ -160,6 +160,7 @@ Capturas que variam entre execuções aparecem como teste instável no CI. As ca
 
 - Clicar num elemento enquanto o bloco dele ainda entra na tela (`Reveal`) às vezes faz o Playwright rolar a página antes do clique. Antes de clicar, espere a entrada terminar, com `toHaveCSS('opacity', '1')` no bloco.
 - Depois de um clique que abre ou fecha algo, espere as transições (`waitForTransitions`) antes de centralizar o elemento para a captura.
+- O botão do formulário de feedback fica perto do fim da página, e o clique que abre o formulário às vezes rola a página antes, numa medida que depende da máquina. Nas capturas do formulário e do aviso de envio, a página atrás vai até o fim (`toPageEnd`) antes da captura.
 - Imagens reduzidas por um `transform: scale()` sob um `filter` saíam um pouco diferentes de um quadro para outro. Os aparelhos dos projetos usam `zoom`, que desenha a imagem no tamanho final, e a captura do carrossel usa "reduzir movimento", para as setas pularem direto ao cartão, sem deslizar.
 
 Uma seção que muda de altura desloca as de baixo por frações de pixel, e o texto delas sai com outro antisserrilhado, o que reprova as imagens mesmo sem nenhuma mudança nelas. Antes de regravar, confira que a diferença é só essa: as imagens antiga e nova coincidem com um deslocamento de no máximo um pixel na vertical.

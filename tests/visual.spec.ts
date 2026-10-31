@@ -50,6 +50,28 @@ async function expectScreenshot(page: Page, name: string, scope = 'body') {
   await expect(page).toHaveScreenshot(name, { stylePath });
 }
 
+// The feedback form opens from the contact section, near the end of the
+// page. The click that opens it may scroll the page first, by an amount
+// that depends on the machine, so the page behind the dialog and the
+// notice is taken to its end before the capture.
+async function toPageEnd(page: Page) {
+  await page.evaluate(() =>
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'instant',
+    }),
+  );
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          Math.ceil(window.scrollY + window.innerHeight) >=
+          document.documentElement.scrollHeight,
+      ),
+    )
+    .toBe(true);
+}
+
 // Scrolls a section to the top, under the fixed header, and waits for its
 // header to finish entering.
 async function goToSection(page: Page, id: Section) {
@@ -136,6 +158,7 @@ for (const theme of ['dark', 'light'] as const) {
         const dialog = await openFeedbackForm(page);
         await dialog.getByRole('button', { name: 'Send' }).click();
         await expect(dialog.getByText('Enter your name.')).toBeVisible();
+        await toPageEnd(page);
         await expectScreenshot(page, name('feedback-errors.png'));
       },
     );
@@ -154,6 +177,7 @@ for (const theme of ['dark', 'light'] as const) {
       await dialog.getByRole('button', { name: 'Send' }).click();
       await expect(dialog).toBeHidden();
       await expect(page.getByText('Message sent')).toBeVisible();
+      await toPageEnd(page);
       await expectScreenshot(page, name('feedback-sent.png'));
     });
 
