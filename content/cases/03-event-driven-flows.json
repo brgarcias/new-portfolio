@@ -10,7 +10,7 @@
     "context": "Serasa's systems ran as microservices, with API Gateway routing the requests between them, and some services had to run many tasks at once.",
     "role": "Backend developer: I built the event-driven flows, the NestJS services and their tests.",
     "built": "Event-driven flows with AWS Lambda, SQS, SNS and Step Functions. Modular NestJS services with REST APIs for the integrations between services, with attention to performance, security and concurrency, containerized with Docker. Jest suites cover them with unit and end-to-end tests, the GraphQL APIs included.",
-    "result": "",
+    "result": "Scalable, highly available flows, efficient with many tasks at once, and deliveries kept reliable by the tests.",
     "learned": "",
     "flow": [
       {
@@ -42,7 +42,7 @@
     "context": "Os sistemas da Serasa rodavam como microsserviços, com o API Gateway roteando as requisições entre eles, e alguns serviços precisavam executar muitas tarefas ao mesmo tempo.",
     "role": "Desenvolvedor backend: construí os fluxos orientados a eventos, os serviços NestJS e os testes deles.",
     "built": "Fluxos orientados a eventos com AWS Lambda, SQS, SNS e Step Functions. Serviços NestJS modulares, com APIs REST para as integrações entre serviços, com atenção a desempenho, segurança e concorrência, conteinerizados com Docker. Suítes do Jest os cobrem com testes unitários e de ponta a ponta, inclusive as APIs GraphQL.",
-    "result": "",
+    "result": "Fluxos escaláveis e altamente disponíveis, eficientes com muitas tarefas ao mesmo tempo, e entregas que os testes mantêm confiáveis.",
     "learned": "",
     "flow": [
       {
@@ -74,7 +74,7 @@
     "context": "Los sistemas de Serasa corrían como microservicios, con API Gateway enrutando las solicitudes entre ellos, y algunos servicios tenían que ejecutar muchas tareas a la vez.",
     "role": "Desarrollador backend: construí los flujos orientados a eventos, los servicios NestJS y sus pruebas.",
     "built": "Flujos orientados a eventos con AWS Lambda, SQS, SNS y Step Functions. Servicios NestJS modulares, con APIs REST para las integraciones entre servicios, con atención al rendimiento, la seguridad y la concurrencia, en contenedores Docker. Suites de Jest los cubren con pruebas unitarias y de extremo a extremo, también las APIs GraphQL.",
-    "result": "",
+    "result": "Flujos escalables y de alta disponibilidad, eficientes con muchas tareas a la vez, y entregas que las pruebas mantienen confiables.",
     "learned": "",
     "flow": [
       {
