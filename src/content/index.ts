@@ -16,6 +16,7 @@ import { readCollection, readSingleton } from './read';
 import { sectionIds } from './sections';
 import type {
   AboutContent,
+  CaseEntry,
   ContactContent,
   ContributingContent,
   CourseEntry,
@@ -189,6 +190,15 @@ export function getProjects(locale: Locale) {
 }
 
 export type Project = ReturnType<typeof getProjects>[number];
+
+// The case studies of the projects section, in their order.
+export function getCases(locale: Locale) {
+  return readCollection<CaseEntry>('cases', locale)
+    .sort(byOrder)
+    .map((entry) => ({ ...entry, stack: splitList(entry.stack) }));
+}
+
+export type CaseStudy = ReturnType<typeof getCases>[number];
 
 export function getContributing(locale: Locale) {
   const contributing = readSingleton<ContributingContent>(

@@ -1,0 +1,98 @@
+{
+  "en": {
+    "order": 1,
+    "company": "Trocafone",
+    "period": "2023–2024",
+    "stack": "Node.js, Python, FastAPI, .NET Core, GraphQL, Docker, Kubernetes",
+    "link": "",
+    "title": "From a PHP monolith to microservices",
+    "summary": "As tech lead, I led the move of Trocafone's legacy PHP monolith to microservices behind a GraphQL gateway.",
+    "context": "Trocafone's systems ran on a legacy PHP monolith that had to scale and become easier to maintain.",
+    "role": "Tech lead: I led the migration.",
+    "built": "Services in Node.js, Python (FastAPI) and .NET Core took over the monolith's parts. A GraphQL gateway gave the clients unified access to the APIs, and the services ran in Docker containers orchestrated by Kubernetes.",
+    "result": "Better performance and developer experience, with more fault tolerance and scalability.",
+    "learned": "",
+    "flow": [
+      {
+        "label": "Clients",
+        "detail": ""
+      },
+      {
+        "label": "GraphQL gateway",
+        "detail": "Unified access to the APIs"
+      },
+      {
+        "label": "Microservices",
+        "detail": "Node.js · FastAPI · .NET Core"
+      },
+      {
+        "label": "Kubernetes",
+        "detail": "Docker containers"
+      }
+    ]
+  },
+  "pt": {
+    "order": 1,
+    "company": "Trocafone",
+    "period": "2023–2024",
+    "stack": "Node.js, Python, FastAPI, .NET Core, GraphQL, Docker, Kubernetes",
+    "link": "",
+    "title": "De um monólito PHP a microsserviços",
+    "summary": "Como tech lead, liderei a passagem do monólito legado em PHP da Trocafone para microsserviços atrás de um gateway GraphQL.",
+    "context": "Os sistemas da Trocafone rodavam num monólito legado em PHP, que precisava escalar e ficar mais fácil de manter.",
+    "role": "Tech lead: liderei a migração.",
+    "built": "Serviços em Node.js, Python (FastAPI) e .NET Core assumiram as partes do monólito. Um gateway GraphQL deu aos clientes acesso unificado às APIs, e os serviços rodavam em contêineres Docker orquestrados pelo Kubernetes.",
+    "result": "Mais desempenho e uma experiência melhor para quem desenvolve, com mais tolerância a falhas e escalabilidade.",
+    "learned": "",
+    "flow": [
+      {
+        "label": "Clientes",
+        "detail": ""
+      },
+      {
+        "label": "Gateway GraphQL",
+        "detail": "Acesso unificado às APIs"
+      },
+      {
+        "label": "Microsserviços",
+        "detail": "Node.js · FastAPI · .NET Core"
+      },
+      {
+        "label": "Kubernetes",
+        "detail": "Contêineres Docker"
+      }
+    ]
+  },
+  "es": {
+    "order": 1,
+    "company": "Trocafone",
+    "period": "2023–2024",
+    "stack": "Node.js, Python, FastAPI, .NET Core, GraphQL, Docker, Kubernetes",
+    "link": "",
+    "title": "De un monolito PHP a microservicios",
+    "summary": "Como tech lead, lideré el paso del monolito heredado en PHP de Trocafone a microservicios detrás de un gateway GraphQL.",
+    "context": "Los sistemas de Trocafone corrían en un monolito heredado en PHP que necesitaba escalar y ser más fácil de mantener.",
+    "role": "Tech lead: lideré la migración.",
+    "built": "Servicios en Node.js, Python (FastAPI) y .NET Core asumieron las partes del monolito. Un gateway GraphQL dio a los clientes acceso unificado a las APIs, y los servicios corrían en contenedores Docker orquestados por Kubernetes.",
+    "result": "Mejor rendimiento y una mejor experiencia para quien desarrolla, con más tolerancia a fallos y escalabilidad.",
+    "learned": "",
+    "flow": [
+      {
+        "label": "Clientes",
+        "detail": ""
+      },
+      {
+        "label": "Gateway GraphQL",
+        "detail": "Acceso unificado a las APIs"
+      },
+      {
+        "label": "Microservicios",
+        "detail": "Node.js · FastAPI · .NET Core"
+      },
+      {
+        "label": "Kubernetes",
+        "detail": "Contenedores Docker"
+      }
+    ]
+  }
+}

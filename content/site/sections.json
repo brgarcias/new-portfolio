@@ -20,7 +20,7 @@
     "projects": {
       "label": "Projects",
       "title": "My Projects",
-      "description": "Some of the projects carried out throughout my career!"
+      "description": "Case studies from my work, and websites I built."
     },
     "contributing": {
       "label": "Contributing",
@@ -56,7 +56,7 @@
     "projects": {
       "label": "Projetos",
       "title": "Meus projetos",
-      "description": "Alguns dos projetos que realizei ao longo da minha carreira!"
+      "description": "Estudos de caso do meu trabalho e sites que construí."
     },
     "contributing": {
       "label": "Contribuições",
@@ -92,7 +92,7 @@
     "projects": {
       "label": "Proyectos",
       "title": "Mis proyectos",
-      "description": "¡Algunos de los proyectos que realicé a lo largo de mi carrera!"
+      "description": "Estudios de caso de mi trabajo y sitios web que construí."
     },
     "contributing": {
       "label": "Contribuir",
