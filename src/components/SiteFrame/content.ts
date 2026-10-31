@@ -18,8 +18,8 @@ export interface NavItem {
 }
 
 export const resume = {
-  href: '/documents/cv/Bruno_Garcia_Resume.zip',
-  fileName: 'Bruno_Garcia_Resume.zip',
+  href: '/documents/cv/Bruno_Garcia_Resume.pdf',
+  fileName: 'Bruno_Garcia_Resume.pdf',
 } as const;
 
 // The icon of each channel of content/site/profile.json.

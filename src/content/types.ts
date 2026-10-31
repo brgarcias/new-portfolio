@@ -11,7 +11,6 @@ export interface ProfileContent {
   fullName: string;
   role: string;
   // "YYYY-MM-DD", for the age in the contact section.
-  birthDate: string;
   email: string;
   // As shown, such as "+55 (11) 99696-9301". The links use its digits.
   phone: string;
@@ -152,7 +151,7 @@ interface CardContent {
 // content/site/contact.json: the cards of the contact section. The profile
 // and contact cards take the name, role, e-mail and phone from the profile.
 export interface ContactContent {
-  profile: { label: string; status: string };
+  profile: { label: string; details: string[] };
   education: CardContent;
   contact: { label: string; details: string[] };
   languages: CardContent;

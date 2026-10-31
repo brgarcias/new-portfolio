@@ -28,9 +28,9 @@ test('carrega o portfólio sem erros e sem rolagem horizontal', async ({
   page.on('pageerror', (error) => errors.push(error.message));
   const response = await page.goto('/');
   expect(response?.status()).toBe(200);
-  // Regenerated daily, so the durations and the age stay current.
+  // Regenerated daily, so the durations stay current.
   expect(response?.headers()['cache-control']).toContain('s-maxage=86400');
-  await expect(page).toHaveTitle('Bruno Garcia — Dev. Full-Stack');
+  await expect(page).toHaveTitle('Bruno Garcia — Full-Stack Software Engineer');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(
     page.locator('meta[name="google-site-verification"]'),
@@ -81,9 +81,13 @@ test('mostra o site em português e em espanhol', async ({ page }) => {
   await expect(
     page.locator('#experience .xp-item').first().locator('.xp-item__period'),
   ).toContainText('out. de 2025 — Atual');
-  await expect(
-    page.locator('#contact .contact-card--profile .contact-card__details li'),
-  ).toContainText([/^Casado$/, /^\d+ anos$/]);
+  // The profile card is the name, the role and the career, with no
+  // personal details.
+  const profileCard = page.locator('#contact .contact-card--profile');
+  await expect(profileCard).toContainText('Desenvolvedor Full-Stack');
+  await expect(profileCard.locator('.contact-card__details li')).toHaveText([
+    'Desenvolvendo software desde 2018',
+  ]);
   // The other languages are linked for search engines.
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     'href',
@@ -486,22 +490,28 @@ test('alterna as etapas da formação acadêmica', async ({ page }) => {
   const panel = education.getByRole('tabpanel');
   await expect(education.getByRole('tab')).toHaveCount(5);
   await expect(panel).toHaveCount(1);
-  await expect(panel.getByRole('heading', { level: 3 })).toHaveText(
-    'Colégio Salesiano Santa Teresinha',
-  );
-  await scrollTo(page, '#education .edu');
-  await tab('University Education').click();
+  // It opens on the degree, the last finished step.
   await expect(tab('University Education')).toHaveAttribute(
     'aria-selected',
     'true',
   );
+  await expect(panel.getByRole('heading', { level: 3 })).toHaveText(
+    'Universidade São Judas Tadeu',
+  );
+  await scrollTo(page, '#education .edu');
+  await tab('Elementary School').click();
   await expect(tab('Elementary School')).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await expect(tab('University Education')).toHaveAttribute(
     'aria-selected',
     'false',
   );
   await expect(panel.getByRole('heading', { level: 3 })).toHaveText(
-    'Universidade São Judas Tadeu',
+    'Colégio Salesiano Santa Teresinha',
   );
+  await tab('University Education').click();
   // The arrow keys, Home and End move between the steps, as in any tabs.
   await page.keyboard.press('ArrowDown');
   await expect(tab('Postgraduate')).toBeFocused();
@@ -674,9 +684,13 @@ test('mostra os dados de contato', async ({ page }) => {
   await expect(
     contact.getByRole('link', { name: '+55 (11) 99696-9301' }),
   ).toHaveAttribute('href', 'tel:+5511996969301');
-  await expect(page.locator('#contact .contact-card--profile')).toContainText(
-    /\d+ years/,
-  );
+  // Only what helps to assess the work: no age, marital status or
+  // neighborhood.
+  const profile = page.locator('#contact .contact-card--profile');
+  await expect(profile).toContainText('Building software since 2018');
+  await expect(profile).not.toContainText(/\d+ years|Married/);
+  await expect(contact).toContainText('São Paulo, Brazil');
+  await expect(contact).not.toContainText('Cachoeirinha');
   const links = page.locator('#contact .contact-links a');
   await expect(links).toHaveText(['Email', 'LinkedIn', 'WhatsApp', 'GitHub']);
   for (const link of await links.all()) {
@@ -711,15 +725,25 @@ test('oferece o currículo e os canais de contato', async ({
     .getByRole('link', { name: 'Download CV', exact: true });
   await expect(resumeLink).toHaveAttribute(
     'href',
-    '/documents/cv/Bruno_Garcia_Resume.zip',
+    '/documents/cv/Bruno_Garcia_Resume.pdf',
   );
   const downloadPromise = page.waitForEvent('download');
   await resumeLink.click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe('Bruno_Garcia_Resume.zip');
-  const response = await request.get('/documents/cv/Bruno_Garcia_Resume.zip');
+  expect(download.suggestedFilename()).toBe('Bruno_Garcia_Resume.pdf');
+  // The résumé is the PDF itself, opened without unpacking anything.
+  const response = await request.get('/documents/cv/Bruno_Garcia_Resume.pdf');
   expect(response.ok()).toBe(true);
-  expect((await response.body()).subarray(0, 2).toString()).toBe('PK');
+  expect(response.headers()['content-type']).toBe('application/pdf');
+  expect((await response.body()).subarray(0, 5).toString()).toBe('%PDF-');
+  // The old ZIP's address, in links shared before, leads to the PDF.
+  const old = await request.get('/documents/cv/Bruno_Garcia_Resume.zip', {
+    maxRedirects: 0,
+  });
+  expect(old.status()).toBe(308);
+  expect(old.headers()['location']).toMatch(
+    /\/documents\/cv\/Bruno_Garcia_Resume\.pdf$/,
+  );
 
   const social = page.locator('.hero__social a');
   await expect(social).toHaveCount(4);
@@ -745,7 +769,7 @@ test('oferece o currículo e os canais de contato', async ({
   }
   await expect(page.locator('.site-header__cv')).toHaveAttribute(
     'download',
-    'Bruno_Garcia_Resume.zip',
+    'Bruno_Garcia_Resume.pdf',
   );
   await expect(page.getByRole('link', { name: 'text me' })).toHaveAttribute(
     'rel',
@@ -885,7 +909,7 @@ test('mostra a página 404 no estilo do site e volta ao portfólio', async ({
   const response = await page.goto('/pagina-inexistente');
   expect(response?.status()).toBe(404);
   await expect(page).toHaveTitle(
-    'Page Not Found | Bruno Garcia — Dev. Full-Stack',
+    'Page Not Found | Bruno Garcia — Full-Stack Software Engineer',
   );
   for (const robots of await page.locator('meta[name="robots"]').all()) {
     await expect(robots).toHaveAttribute('content', /noindex/);
@@ -1027,7 +1051,7 @@ test('publica os metadados de busca e compartilhamento', async ({
   );
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
     'content',
-    'Bruno Garcia — Dev. Full-Stack',
+    'Bruno Garcia — Full-Stack Software Engineer',
   );
   // Links shared on WhatsApp and LinkedIn show the large image.
   const ogImage = page.locator('meta[property="og:image"]');

@@ -50,7 +50,6 @@ collections:
           - { name: name, label: Nome, widget: string, i18n: duplicate }
           - { name: fullName, label: Nome completo, widget: string, i18n: duplicate }
           - { name: role, label: Cargo, widget: string, i18n: true, hint: 'Aparece no rodapé, no cartão de perfil e nos dados para buscadores.' }
-          - { name: birthDate, label: Data de nascimento, widget: string, i18n: duplicate, pattern: ['^\d{4}-\d{2}-\d{2}$', 'Use AAAA-MM-DD'], hint: 'AAAA-MM-DD. A idade é calculada a partir dela.' }
           - { name: email, label: E-mail, widget: string, i18n: duplicate }
           - { name: phone, label: Telefone, widget: string, i18n: duplicate, hint: 'Como aparece no site. O link do telefone e o do WhatsApp usam os dígitos.' }
           - { name: whatsappMessage, label: Mensagem pronta do WhatsApp, widget: string, i18n: true }
@@ -190,10 +189,10 @@ collections:
             label: Perfil
             widget: object
             i18n: true
-            hint: 'O nome, o cargo e a idade vêm do perfil.'
+            hint: 'O nome e o cargo vêm do perfil. Nos detalhes, só o que ajuda a avaliar o trabalho: nada de estado civil, idade ou endereço.'
             fields:
               - { name: label, label: Rótulo, widget: string, i18n: true }
-              - { name: status, label: Estado civil, widget: string, i18n: true }
+              - { name: details, label: Detalhes, widget: list, i18n: true, field: { name: detail, label: Detalhe, widget: string } }
           - name: education
             label: Formação
             widget: object

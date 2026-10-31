@@ -29,8 +29,8 @@ import {
 import { isLocale, locales } from '@/src/i18n/config';
 import { getMessages } from '@/src/i18n/messages';
 
-// Regenerates the page once a day, so the current role's duration and the
-// age in the contact section do not stay frozen at the last deploy.
+// Regenerates the page once a day, so the current role's duration does not
+// stay frozen at the last deploy.
 export const revalidate = 86400;
 
 // One page per language, built ahead. "/" serves the English one, through
@@ -89,7 +89,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
       />
       <Contact
         header={sections.contact}
-        cards={getContactCards(locale, profile, messages)}
+        cards={getContactCards(locale, profile)}
         social={social}
         socialLabel={messages.frame.socialLinks}
       />

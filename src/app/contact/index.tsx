@@ -63,11 +63,13 @@ export default function Contact({
                   card.subtitle
                 )}
               </p>
-              <ul className="contact-card__details">
-                {card.details.map((detail) => (
-                  <li key={detail}>{detail}</li>
-                ))}
-              </ul>
+              {card.details.length > 0 && (
+                <ul className="contact-card__details">
+                  {card.details.map((detail) => (
+                    <li key={detail}>{detail}</li>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ul>

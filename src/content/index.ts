@@ -4,13 +4,12 @@
 
 // I18N
 import type { Locale } from '@/src/i18n/config';
-import { format, type Messages } from '@/src/i18n/messages';
+import type { Messages } from '@/src/i18n/messages';
 // DATES
 import {
   calculateDuration,
   formatDateRange,
 } from '@/src/app/professional-experience/date-format';
-import { calculateAge } from '@/src/app/contact/age.utils';
 // CONTENT
 import { contentImage, type ContentImage } from './image';
 import { readCollection, readSingleton } from './read';
@@ -214,13 +213,7 @@ export function getInitiatives(locale: Locale) {
 
 export type Initiative = ReturnType<typeof getInitiatives>[number];
 
-// A function, so the age is computed on every render instead of once when
-// the module loads.
-export function getContactCards(
-  locale: Locale,
-  profile: Profile,
-  messages: Messages,
-) {
+export function getContactCards(locale: Locale, profile: Profile) {
   const {
     profile: personal,
     education,
@@ -233,10 +226,7 @@ export function getContactCards(
       label: personal.label,
       title: profile.fullName,
       subtitle: profile.role,
-      details: [
-        personal.status,
-        format(messages.contact.age, { age: calculateAge(profile.birthDate) }),
-      ],
+      details: personal.details,
     },
     { id: 'education', ...education },
     {
