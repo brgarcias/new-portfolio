@@ -771,9 +771,13 @@
   font-weight: 500;
 }
 
+.hangar__dock {
+  display: grid;
+  margin-top: auto;
+}
+
 .hangar__launch {
   min-height: 3.25rem;
-  margin-top: auto;
   font-size: 0.875rem;
   letter-spacing: 0.16em;
 }
@@ -2996,7 +3000,6 @@
 
   .hangar__head,
   .hangar__stage,
-  .hangar__spec,
   .hangar__roster {
     animation: g-rise 0.8s var(--g-ease) both;
   }
@@ -3005,8 +3008,11 @@
     animation-delay: 0.08s;
   }
 
+  /* The sheet only fades in: a transform, even a finished one, would hold
+     the take-off button, pinned to the screen on smaller screens, inside
+     the sheet. */
   .hangar__spec {
-    animation-delay: 0.16s;
+    animation: g-fade 0.8s var(--g-ease) 0.16s both;
   }
 
   .hangar__roster {
@@ -3369,6 +3375,37 @@
 
 /* ─── Tablets ───────────────────────────────────────────── */
 @media (max-width: 1023px) {
+  /* Taking off is always at hand: the dock is pinned to the bottom of
+     the screen, where the stacked hangar would leave it out of sight, on a
+     dark band that what scrolls under it fades into. The page leaves room
+     for it at its end. */
+  .hangar {
+    padding-bottom: 7.5rem;
+  }
+
+  .hangar__dock {
+    position: fixed;
+    z-index: 10;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    justify-items: center;
+    padding: 2.25rem var(--gutter) calc(0.85rem + env(safe-area-inset-bottom));
+    background: linear-gradient(
+      to top,
+      #05070d 0%,
+      rgb(5 7 13 / 0.92) 55%,
+      rgb(5 7 13 / 0)
+    );
+    pointer-events: none;
+  }
+
+  .hangar__launch {
+    width: 100%;
+    max-width: 30rem;
+    pointer-events: auto;
+  }
+
   .hangar__layout {
     grid-template-areas:
       'head'
@@ -3418,12 +3455,23 @@
   }
 }
 
-/* ─── Phones ────────────────────────────────────────────── */
-@media (max-width: 639px) {
-  .hangar {
-    padding-bottom: 6.5rem;
+/* Touch screens wider than a phone: the touch controls keep the bottom
+   corners, and the ship's panel sits above the boost. */
+@media (pointer: coarse) and (min-width: 640px) {
+  .hud__bottom {
+    position: static;
+    display: block;
   }
 
+  .hud__craft {
+    position: absolute;
+    bottom: calc(var(--edge-b) + 6.75rem);
+    left: var(--edge-l);
+  }
+}
+
+/* ─── Phones ────────────────────────────────────────────── */
+@media (max-width: 639px) {
   .hangar__top {
     padding-top: 1rem;
   }
@@ -3489,16 +3537,6 @@
   .stat {
     gap: 0.6rem;
     grid-template-columns: 6rem minmax(0, 1fr) 3.9rem;
-  }
-
-  /* Taking off is always at hand. */
-  .hangar__launch {
-    position: fixed;
-    z-index: 10;
-    right: var(--gutter);
-    bottom: calc(0.85rem + env(safe-area-inset-bottom));
-    left: var(--gutter);
-    box-shadow: 0 18px 40px -12px #000;
   }
 
   /* The HUD on a phone: the way back and the hangar side by side at the
