@@ -23,6 +23,7 @@ import type {
   EducationEntry,
   ExperienceEntry,
   HeroContent,
+  HolocronsContent,
   InitiativeEntry,
   ProfileContent,
   ProjectEntry,
@@ -213,6 +214,13 @@ export function getInitiatives(locale: Locale) {
 }
 
 export type Initiative = ReturnType<typeof getInitiatives>[number];
+
+// The records of the game's archive, one per section.
+export function getHolocrons(locale: Locale) {
+  return readSingleton<HolocronsContent>('holocrons', locale);
+}
+
+export type Holocrons = ReturnType<typeof getHolocrons>;
 
 // A function, so the age is computed on every render instead of once when
 // the module loads.

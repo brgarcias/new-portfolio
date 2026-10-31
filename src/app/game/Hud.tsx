@@ -163,6 +163,10 @@ function Legend() {
         {t.keysMap}
       </span>
       <span className="hud__hint-item">
+        <Keycap>H</Keycap>
+        {t.keysArchive}
+      </span>
+      <span className="hud__hint-item">
         <Keycap>P</Keycap>
         {t.keysPhoto}
       </span>
@@ -241,7 +245,8 @@ function PlanetTitle({
 
 // The moment all seven holocrons are recovered: the frame goes wide, like
 // a film's, and the archive's title comes up, with the sparks the ship
-// throws (Ship.tsx) and the fanfare, if the sound is on.
+// throws (Ship.tsx) and the fanfare, if the sound is on; every record is
+// then in the archive.
 function Finale({ total }: { total: number }) {
   const t = useI18n().messages.game;
   return (
@@ -259,6 +264,10 @@ function Finale({ total }: { total: number }) {
           kind="diamond"
           className="finale__pips"
         />
+        <p className="finale__archive">
+          {t.finaleArchive}
+          <Keycap>H</Keycap>
+        </p>
       </div>
     </div>
   );
@@ -343,6 +352,12 @@ interface HudProps {
   mapLeaving: boolean;
   onOpenMap: () => void;
   onCloseMap: () => void;
+  // A section read from the chart, without landing.
+  onRead: (id: SectionId) => void;
+  // The holocron archive, and how many of its records are new.
+  archiveOpen: boolean;
+  unread: number;
+  onOpenArchive: () => void;
   course: SectionId | null;
   onCourse: (id: SectionId) => void;
   // The sounds, and the photo mode, which hides everything but the picture.
@@ -375,6 +390,10 @@ export default function Hud({
   mapLeaving,
   onOpenMap,
   onCloseMap,
+  onRead,
+  archiveOpen,
+  unread,
+  onOpenArchive,
   course,
   onCourse,
   soundOn,
@@ -409,6 +428,7 @@ export default function Hud({
             <span className="hud__back-label">{t.backToSite}</span>
           </a>
           <div className="hud__log">
+            <p className="g-label hud__mission">{t.mission}</p>
             <p className="hud__count tally">
               <span className="tally__label">{t.sections}</span>
               <FontAwesomeIcon icon={faLocationDot} className="tally__icon" />
@@ -453,6 +473,27 @@ export default function Hud({
             )}
           </div>
           <div className="hud__tools">
+            <button
+              type="button"
+              className="g-btn g-btn--icon hud__tool hud__archive"
+              aria-haspopup="dialog"
+              aria-expanded={archiveOpen}
+              aria-label={
+                unread
+                  ? format(t.openArchiveNew, { count: String(unread) })
+                  : t.openArchive
+              }
+              data-tip={t.archive}
+              data-key="H"
+              onClick={onOpenArchive}
+            >
+              <HolocronIcon />
+              {unread > 0 && (
+                <span className="hud__badge g-num" aria-hidden="true">
+                  {unread}
+                </span>
+              )}
+            </button>
             <button
               type="button"
               className="g-btn g-btn--icon hud__tool"
@@ -541,9 +582,24 @@ export default function Hud({
             key={toast.key}
             className="toast"
             data-kind={toast.kind}
-            style={{ '--accent': biomes[toast.id].accent } as CSSProperties}
+            style={
+              toast.kind === 'briefing'
+                ? undefined
+                : ({ '--accent': biomes[toast.id].accent } as CSSProperties)
+            }
           >
-            {toast.kind === 'holocron' ? (
+            {toast.kind === 'briefing' ? (
+              <>
+                <HolocronIcon className="toast__icon" />
+                <p className="toast__title">{t.mission}</p>
+                <p className="toast__meta">{t.briefingText}</p>
+                <p className="toast__record">
+                  <HolocronIcon />
+                  {t.archive}
+                  <Keycap>H</Keycap>
+                </p>
+              </>
+            ) : toast.kind === 'holocron' ? (
               <>
                 <HolocronIcon className="toast__icon" />
                 <p className="toast__title">{t.holocronFound}</p>
@@ -562,6 +618,12 @@ export default function Hud({
                   fresh={toast.count - 1}
                   className="toast__pips"
                 />
+                {toast.record && (
+                  <p className="toast__record">
+                    {format(t.newRecord, { title: toast.record })}
+                    <Keycap>H</Keycap>
+                  </p>
+                )}
               </>
             ) : (
               <>
@@ -621,6 +683,7 @@ export default function Hud({
           places={places}
           course={course}
           onCourse={onCourse}
+          onRead={onRead}
           onClose={onCloseMap}
         />
       )}

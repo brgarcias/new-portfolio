@@ -65,6 +65,7 @@ export default function GameLoader({
   places,
   home,
   panels,
+  records,
 }: Readonly<GameProps>) {
   const t = useI18n().messages.game;
   const webgl = useSyncExternalStore(never, canDraw, unknown);
@@ -87,5 +88,5 @@ export default function GameLoader({
       </Notice>
     );
   }
-  return <Game places={places} home={home} panels={panels} />;
+  return <Game places={places} home={home} panels={panels} records={records} />;
 }

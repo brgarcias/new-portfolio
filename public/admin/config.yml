@@ -221,6 +221,27 @@ collections:
               - { name: subtitle, label: Subtítulo, widget: string, i18n: true }
               - { name: details, label: Detalhes, widget: list, i18n: true, field: { name: detail, label: Detalhe, widget: string } }
 
+      - name: holocrons
+        label: Registros dos holocrons (jogo)
+        file: content/site/holocrons.json
+        format: json
+        i18n: true
+        description: 'O registro que cada holocron do jogo libera no arquivo, um por seção, no planeta dela. Use só fatos que o site já mostra.'
+        fields:
+          - name: about
+            label: About (Tatooine)
+            widget: object
+            i18n: true
+            fields: &record
+              - { name: title, label: Título, widget: string, i18n: true }
+              - { name: text, label: Texto, widget: text, i18n: true }
+          - { name: experience, label: Experiência (Coruscant), widget: object, i18n: true, fields: *record }
+          - { name: education, label: Formação (Dagobah), widget: object, i18n: true, fields: *record }
+          - { name: courses, label: Cursos (Kamino), widget: object, i18n: true, fields: *record }
+          - { name: projects, label: Projetos (Naboo), widget: object, i18n: true, fields: *record }
+          - { name: contributing, label: Contribuições (Endor), widget: object, i18n: true, fields: *record }
+          - { name: contact, label: Contato (Hoth), widget: object, i18n: true, fields: *record }
+
   - name: experiences
     label: Experiências
     label_singular: Experiência

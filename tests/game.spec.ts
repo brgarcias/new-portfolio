@@ -287,7 +287,9 @@ test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
   );
   // A destination sets a course, which the pad's waypoint follows; the
   // same destination again clears it.
-  const tatooine = map.getByRole('button', { name: /Tatooine/ });
+  const tatooine = map.getByRole('button', {
+    name: /^Set a course for Tatooine/,
+  });
   await tatooine.click();
   await expect(tatooine).toHaveAttribute('aria-pressed', 'true');
   await expect(tatooine).toContainText('Course set');
@@ -311,6 +313,215 @@ test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
   expect(await reading(page, 'speed')).toBe(0);
   await page.keyboard.press('KeyM');
   await expect(map).toBeHidden();
+});
+
+test('guarda a missão para a próxima visita e recomeça só depois de confirmar', async ({
+  page,
+  isMobile,
+}) => {
+  test.slow();
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  // An earlier visit landed on About Me, recovered two holocrons and read
+  // the first record.
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      'progress',
+      JSON.stringify({
+        version: 1,
+        visited: ['about'],
+        found: ['about', 'experience'],
+        read: ['about'],
+      }),
+    ),
+  );
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await takeOff(page);
+  await expect(page.locator('.hud__count')).toContainText('1 of 7 sections');
+  await expect(page.locator('.hud__holocrons')).toContainText(
+    '2 of 7 holocrons',
+  );
+  // A returning pilot is not briefed again.
+  await expect(page.locator('.toast[data-kind="briefing"]')).toHaveCount(0);
+  // The archive opens on the record that is new since then.
+  await page
+    .getByRole('button', { name: 'Open the holocron archive (1 new)' })
+    .click();
+  const archive = page.getByRole('dialog', { name: 'Holocron archive' });
+  await expect(archive).toBeVisible();
+  await expect(archive.getByRole('article')).toHaveCount(7);
+  const fresh = archive.getByRole('article', {
+    name: 'From a PHP monolith to microservices',
+  });
+  await expect(fresh).toBeFocused();
+  await expect(fresh).toContainText('New');
+  await expect(
+    archive.getByRole('article', { name: 'Full-stack, backend first' }),
+  ).toContainText('Open on the site');
+  await expect(
+    archive.getByRole('heading', { level: 3, name: 'Locked record' }),
+  ).toHaveCount(5);
+  // A locked record sets a course for its planet.
+  const dagobah = archive.getByRole('button', {
+    name: 'Set a course for Dagobah',
+  });
+  await dagobah.click();
+  await expect(dagobah).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Escape');
+  await expect(archive).toBeHidden();
+  await expect(page.locator('.game__label[data-course]')).toContainText(
+    'Dagobah',
+  );
+  // Read now: nothing is new any more. On a keyboard, H opens it too.
+  const archiveButton = page.getByRole('button', {
+    name: 'Open the holocron archive',
+    exact: true,
+  });
+  if (isMobile) await archiveButton.click();
+  else await page.keyboard.press('KeyH');
+  await expect(archive).toBeVisible();
+  // Starting over asks first, and the safe answer keeps everything.
+  await archive.getByRole('button', { name: 'New exploration' }).click();
+  const keep = archive.getByRole('button', { name: 'Keep my progress' });
+  await expect(keep).toBeFocused();
+  await keep.click();
+  await expect(
+    archive.getByRole('button', { name: 'New exploration' }),
+  ).toBeFocused();
+  await expect(page.locator('.hud__holocrons')).toContainText(
+    '2 of 7 holocrons',
+  );
+  await archive.getByRole('button', { name: 'New exploration' }).click();
+  await archive
+    .getByRole('button', { name: 'Start over', exact: true })
+    .click();
+  await expect(archive).toBeHidden();
+  await expect(page.locator('.hud__holocrons')).toContainText(
+    '0 of 7 holocrons',
+  );
+  await expect(page.locator('.hud__count')).toContainText('0 of 7 sections');
+  // The mission begins again, and so will the next visit.
+  await expect(page.locator('.toast[data-kind="briefing"]')).toContainText(
+    'Mission: recover the archive',
+  );
+  expect(
+    await page.evaluate(() =>
+      JSON.parse(localStorage.getItem('progress') ?? '{}'),
+    ),
+  ).toMatchObject({ visited: [], found: [], read: [] });
+  expect(errors).toEqual([]);
+});
+
+test('lê uma seção pela carta sem pousar nem contar a visita', async ({
+  page,
+}) => {
+  test.slow();
+  await takeOff(page);
+  // A new exploration begins with the mission, once the ship has arrived.
+  await expect(page.locator('.toast[data-kind="briefing"]')).toContainText(
+    'Mission: recover the archive',
+    { timeout: 15_000 },
+  );
+  const x = await reading(page, 'x');
+  const z = await reading(page, 'z');
+  await page.getByRole('button', { name: 'Open the navigation chart' }).click();
+  const map = page.getByRole('dialog', { name: 'Navigation chart' });
+  await map
+    .getByRole('button', {
+      name: 'Read Coruscant, Professional Experience without landing',
+    })
+    .click();
+  await expect(map).toBeHidden();
+  const section = page.getByRole('dialog', {
+    name: 'Professional Experience',
+  });
+  await expect(section).toBeVisible();
+  await expect(section).toContainText('Remote access');
+  await page.keyboard.press('Escape');
+  await expect(section).toBeHidden();
+  // The ship stayed where it was, and Coruscant is still unexplored.
+  expect(await reading(page, 'x')).toBeCloseTo(x, 1);
+  expect(await reading(page, 'z')).toBeCloseTo(z, 1);
+  await expect(page.locator('.hud__count')).toContainText('0 of 7 sections');
+  expect(
+    await page.evaluate(
+      () => JSON.parse(localStorage.getItem('progress') ?? '{}').visited,
+    ),
+  ).toEqual([]);
+});
+
+test('aproveita de um progresso salvo só o que reconhece', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  // A save from another version, with a repeated holocron, an unknown one,
+  // a list that is not a list and a record read without its holocron.
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      'progress',
+      JSON.stringify({
+        version: 9,
+        found: ['about', 'about', 'nowhere', 42],
+        visited: 'contact',
+        read: ['contact', 'about'],
+      }),
+    ),
+  );
+  await takeOff(page);
+  await expect(page.locator('.hud__holocrons')).toContainText(
+    '1 of 7 holocrons',
+  );
+  await expect(page.locator('.hud__count')).toContainText('0 of 7 sections');
+  await expect(
+    page.getByRole('button', {
+      name: 'Open the holocron archive',
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('joga com o progresso ilegível ou sem armazenamento', async ({
+  page,
+  browser,
+}, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+  test.slow();
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  // A save cut in the middle starts a new exploration.
+  await page.addInitScript(() =>
+    localStorage.setItem('progress', '{"found": ["about"'),
+  );
+  await takeOff(page);
+  await expect(page.locator('.hud__holocrons')).toContainText(
+    '0 of 7 holocrons',
+  );
+  // And a browser that refuses the storage still plays, only forgetting.
+  // The first flight closes first: two flights at once share the software
+  // renderer and slow each other down.
+  await page.close();
+  const context = await browser.newContext({
+    baseURL: testInfo.project.use.baseURL,
+    reducedMotion: 'reduce',
+  });
+  await context.addInitScript(() =>
+    Object.defineProperty(window, 'localStorage', {
+      get() {
+        throw new Error('The storage is not available.');
+      },
+    }),
+  );
+  const closed = await context.newPage();
+  closed.on('pageerror', (error) => errors.push(error.message));
+  await takeOff(closed);
+  await expect(closed.locator('.hud__holocrons')).toContainText(
+    '0 of 7 holocrons',
+  );
+  await context.close();
+  expect(errors).toEqual([]);
 });
 
 test('liga o som e entra no modo foto', async ({ page, isMobile }) => {
@@ -478,6 +689,18 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   await expect(page.locator('.hud__holocrons')).toContainText(
     '1 of 7 holocrons',
   );
+  // It unlocked the planet's record, and the next visit will find the
+  // holocron and the section where this one left them.
+  expect(
+    await page.evaluate(() =>
+      (window as unknown as { notices: string[] }).notices.join(' '),
+    ),
+  ).toContain('New record: Full-stack, backend first');
+  expect(
+    await page.evaluate(() =>
+      JSON.parse(localStorage.getItem('progress') ?? '{}'),
+    ),
+  ).toMatchObject({ visited: ['about'], found: ['about'] });
   // Tatooine's title came up as the ship entered it.
   expect(await titles()).toEqual(['Tatooine']);
   await expect(

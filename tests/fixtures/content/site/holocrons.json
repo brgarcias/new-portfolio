@@ -1,0 +1,92 @@
+{
+  "en": {
+    "about": {
+      "title": "Full-stack, backend first",
+      "text": "I'm a full-stack software engineer with 8+ years of experience and a focus on the backend: APIs, integrations and distributed systems in Node.js and TypeScript, with React and Next.js on the frontend. Today I work on PayPal's Node.js and GraphQL platform."
+    },
+    "experience": {
+      "title": "From a PHP monolith to microservices",
+      "text": "As tech lead at Trocafone, I led the migration of a legacy PHP monolith to microservices in Node.js, Python (FastAPI) and .NET Core, with a GraphQL gateway for unified access to the APIs, deployed with Docker and Kubernetes."
+    },
+    "education": {
+      "title": "Computer Science, while already working",
+      "text": "I graduated in Computer Science from Universidade São Judas Tadeu (2018–2022). I started in Computer Engineering at Anhembi Morumbi and switched in 2018, the year I began as a software development intern at Ingenico."
+    },
+    "courses": {
+      "title": "Learning alongside the work",
+      "text": "Besides the degree, I took IGTI's full-stack bootcamp (2021–2022) and Full Cycle courses on Docker, continuous integration, SOLID and software architecture fundamentals (2024–2025)."
+    },
+    "projects": {
+      "title": "A 30% faster API",
+      "text": "Reparofone, a device repair management system, was my first full-stack project: React and Redux on the frontend, GraphQL and REST APIs in Laravel with MySQL. Optimizing the resolvers and batching the queries made its API 30% faster."
+    },
+    "contributing": {
+      "title": "Beyond the code",
+      "text": "Alongside engineering, I volunteer in initiatives for children, families in vulnerable situations and elderly communities: 4+ initiatives and 100+ volunteer hours so far."
+    },
+    "contact": {
+      "title": "Open channel",
+      "text": "I'm based in São Paulo, Brazil, available for travel and relocation, and I work in Portuguese and English. The fastest way to reach me is email or WhatsApp, and my résumé is on the site."
+    }
+  },
+  "pt": {
+    "about": {
+      "title": "Full-stack, com foco no backend",
+      "text": "Sou engenheiro de software full-stack, com mais de 8 anos de experiência e foco em backend: APIs, integrações e sistemas distribuídos em Node.js e TypeScript, com React e Next.js no frontend. Hoje trabalho na plataforma de Node.js e GraphQL do PayPal."
+    },
+    "experience": {
+      "title": "De um monólito PHP a microsserviços",
+      "text": "Como tech lead na Trocafone, liderei a migração de um monólito legado em PHP para microsserviços em Node.js, Python (FastAPI) e .NET Core, com um gateway GraphQL para acesso unificado às APIs, publicados com Docker e Kubernetes."
+    },
+    "education": {
+      "title": "Ciência da Computação, já trabalhando",
+      "text": "Me formei em Ciência da Computação na Universidade São Judas Tadeu (2018–2022). Comecei em Engenharia da Computação na Anhembi Morumbi e mudei em 2018, o ano em que comecei como estagiário de desenvolvimento na Ingenico."
+    },
+    "courses": {
+      "title": "Aprendendo junto com o trabalho",
+      "text": "Além da faculdade, fiz o bootcamp full-stack do IGTI (2021–2022) e cursos da Full Cycle de Docker, integração contínua, SOLID e fundamentos de arquitetura de software (2024–2025)."
+    },
+    "projects": {
+      "title": "Uma API 30% mais rápida",
+      "text": "O Reparofone, um sistema de gestão de reparos de aparelhos, foi meu primeiro projeto full-stack: React e Redux no frontend, APIs GraphQL e REST em Laravel com MySQL. Otimizar os resolvers e agrupar as consultas deixou a API 30% mais rápida."
+    },
+    "contributing": {
+      "title": "Além do código",
+      "text": "Junto com a engenharia, participo de iniciativas voluntárias para crianças, famílias em situação de vulnerabilidade e comunidades de idosos: mais de 4 iniciativas e mais de 100 horas de voluntariado até aqui."
+    },
+    "contact": {
+      "title": "Canal aberto",
+      "text": "Moro em São Paulo, estou disponível para viagens e mudança e trabalho em português e inglês. O jeito mais rápido de falar comigo é por e-mail ou WhatsApp, e meu currículo está no site."
+    }
+  },
+  "es": {
+    "about": {
+      "title": "Full-stack, con foco en el backend",
+      "text": "Soy ingeniero de software full-stack, con más de 8 años de experiencia y foco en el backend: APIs, integraciones y sistemas distribuidos en Node.js y TypeScript, con React y Next.js en el frontend. Hoy trabajo en la plataforma de Node.js y GraphQL de PayPal."
+    },
+    "experience": {
+      "title": "De un monolito PHP a microservicios",
+      "text": "Como tech lead en Trocafone, lideré la migración de un monolito heredado en PHP a microservicios en Node.js, Python (FastAPI) y .NET Core, con un gateway GraphQL para el acceso unificado a las APIs, desplegados con Docker y Kubernetes."
+    },
+    "education": {
+      "title": "Ciencias de la Computación, ya trabajando",
+      "text": "Me gradué en Ciencias de la Computación en la Universidade São Judas Tadeu (2018–2022). Empecé Ingeniería de Computación en la Anhembi Morumbi y me cambié en 2018, el año en que empecé como practicante de desarrollo en Ingenico."
+    },
+    "courses": {
+      "title": "Aprendiendo junto al trabajo",
+      "text": "Además de la carrera, hice el bootcamp full-stack de IGTI (2021–2022) y cursos de Full Cycle de Docker, integración continua, SOLID y fundamentos de arquitectura de software (2024–2025)."
+    },
+    "projects": {
+      "title": "Una API un 30% más rápida",
+      "text": "Reparofone, un sistema de gestión de reparaciones de dispositivos, fue mi primer proyecto full-stack: React y Redux en el frontend, APIs GraphQL y REST en Laravel con MySQL. Optimizar los resolvers y agrupar las consultas hizo su API un 30% más rápida."
+    },
+    "contributing": {
+      "title": "Más allá del código",
+      "text": "Además de la ingeniería, participo en iniciativas de voluntariado para niños, familias en situación de vulnerabilidad y comunidades de personas mayores: más de 4 iniciativas y más de 100 horas de voluntariado hasta ahora."
+    },
+    "contact": {
+      "title": "Canal abierto",
+      "text": "Vivo en São Paulo, estoy disponible para viajar y mudarme y trabajo en portugués e inglés. La forma más rápida de contactarme es por correo o WhatsApp, y mi currículum está en el sitio."
+    }
+  }
+}

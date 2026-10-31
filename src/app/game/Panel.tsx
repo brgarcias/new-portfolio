@@ -20,6 +20,8 @@ import { biomes } from './world/biomes';
 
 interface PanelProps {
   id: SectionId;
+  // Read from the chart, without landing: the bar says so.
+  remote?: boolean;
   // While it fades out, after it was closed: nothing in it answers.
   leaving: boolean;
   home: string;
@@ -32,10 +34,12 @@ interface PanelProps {
 // a transmission on the ship's terminal: a bar with the planet and the
 // landing zone, in the planet's color, the section as the site shows it,
 // and a footer with the way back to the flight and to the section on the
-// site. It closes with its button, with Escape or with a click outside,
-// and it takes its name from the section's title.
+// site. Read from the chart instead, the bar says it is a remote access,
+// not a landing. It closes with its button, with Escape or with a click
+// outside, and it takes its name from the section's title.
 export default function Panel({
   id,
+  remote = false,
   leaving,
   home,
   onClose,
@@ -51,6 +55,7 @@ export default function Panel({
   return (
     <div
       className="game-panel"
+      data-remote={remote ? '' : undefined}
       data-leaving={leaving ? '' : undefined}
       inert={leaving}
       style={{ '--accent': biomes[id].accent } as CSSProperties}
@@ -75,7 +80,7 @@ export default function Panel({
             <span className="game-panel__dot" aria-hidden="true" />
             <span className="game-panel__planet">{biomes[id].planet}</span>
             <span className="g-label">
-              {t.landingZone} {index}
+              {remote ? t.remoteAccess : `${t.landingZone} ${index}`}
             </span>
           </p>
           <button

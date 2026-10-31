@@ -132,6 +132,7 @@ const en = {
     keysBoost: 'Boost',
     keysMap: 'Chart',
     keysPhoto: 'Photo',
+    keysArchive: 'Archive',
     joystick: 'Joystick',
     // Landing on a pad, and the section it opens.
     landingZone: 'Landing zone',
@@ -140,6 +141,8 @@ const en = {
     landed: 'Landed',
     openOnSite: 'Open on the site',
     backToFlight: 'Back to the flight',
+    remoteAccess: 'Remote access',
+    readRemotely: 'Read {place} without landing',
     visited: '{count} of {total} sections',
     explored: 'Portfolio explored',
     allVisited:
@@ -149,7 +152,8 @@ const en = {
     map: 'Navigation chart',
     openMap: 'Open the navigation chart',
     closeMap: 'Close the navigation chart',
-    chartHint: 'Choose a destination to set a course.',
+    chartHint:
+      'Choose a destination to set a course, or open the book beside it to read its section without landing.',
     setCourse: 'Set a course for {place}',
     courseSet: 'Course set',
     youAreHere: 'You are here',
@@ -164,6 +168,27 @@ const en = {
     allFoundTitle: 'All seven holocrons recovered',
     allFoundLine: 'May the Force be with you.',
     allFound: 'You recovered every holocron. May the Force be with you.',
+    finaleArchive: 'Every record is in the archive',
+    // The mission and the holocron archive.
+    mission: 'Mission: recover the archive',
+    briefingText:
+      'Seven holocrons, one on each planet, hold records of my career. Find them and read them in the archive.',
+    archive: 'Holocron archive',
+    archiveIntro: 'Each holocron unlocks a record of my career, kept here.',
+    archiveDone: 'Every record recovered. Thank you for exploring.',
+    openArchive: 'Open the holocron archive',
+    openArchiveNew: 'Open the holocron archive ({count} new)',
+    closeArchive: 'Close the holocron archive',
+    records: '{count} of {total} records',
+    recordNew: 'New',
+    recordLocked: 'Locked record',
+    recordHint: 'Recover the holocron on {planet} to unlock it.',
+    newRecord: 'New record: {title}',
+    newExploration: 'New exploration',
+    resetQuestion:
+      'Start over? The holocrons and sections found on this device are cleared.',
+    resetConfirm: 'Start over',
+    resetCancel: 'Keep my progress',
     // The sounds, off until turned on, and the photo mode.
     soundOn: 'Sound on',
     soundOff: 'Sound off',

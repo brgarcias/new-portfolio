@@ -19,6 +19,7 @@ import {
   getCourses,
   getEducation,
   getExperiences,
+  getHolocrons,
   getInitiatives,
   getProfile,
   getProjects,
@@ -131,7 +132,12 @@ export default async function Play({ params }: PageProps<'/[lang]/play'>) {
 
   return (
     <main id="main" className="play" tabIndex={-1}>
-      <GameLoader places={places} home={homePath(lang)} panels={panels} />
+      <GameLoader
+        places={places}
+        home={homePath(lang)}
+        panels={panels}
+        records={getHolocrons(lang)}
+      />
     </main>
   );
 }
