@@ -5,7 +5,7 @@ import { useEffect, useRef, type CSSProperties } from 'react';
 // CONTENT
 import type { SectionId } from '@/src/content/sections';
 // GAME
-import { diamond, Texture, wedge } from './chart-parts';
+import { diamond, wedge } from './chart-parts';
 import { radarRing, radarSpan } from './instruments';
 import { overlay } from './overlay';
 import { flora, holocrons, pads, platformRadius, props } from './world/arena';
@@ -35,13 +35,14 @@ interface RadarProps {
 }
 
 // The radar in a corner of the HUD: the world around the ship, which sits
-// in the middle facing up, as far as the ring reaches. Each part that
+// in the middle facing up, as far as the ring reaches; each planet in its
+// color, with its pad, its holocron and the obstacles. Each part that
 // moves is a layer of its own, so the compositor moves it without drawing
 // it again: the map, drawn once, which the frame loop turns and slides
-// under the ship (instruments.ts); the sweep, which turns by itself; the
-// mark of the way the flight started, on the bezel; and a chevron on the
-// ring for each pad and holocron out of reach, and for the course. The
-// bezel, the range and the ship are drawn once, over it all.
+// under the ship (instruments.ts); the mark of the way the flight started,
+// on the bezel; and a chevron on the ring for each pad and holocron out of
+// reach, and for the course. The bezel, the range and the ship are drawn
+// once, over it all.
 export default function Radar({
   activePad,
   visited,
@@ -75,19 +76,6 @@ export default function Radar({
       <div className="radar__scope">
         <div ref={registerMap} className="radar__map">
           <svg viewBox={`${-half} ${-half} ${radarSpan} ${radarSpan}`}>
-            <defs>
-              {pads.map((pad) => (
-                <pattern
-                  key={pad.id}
-                  id={`radar-${pad.id}`}
-                  width="12"
-                  height="12"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <Texture id={pad.id} accent={biomes[pad.id].accent} />
-                </pattern>
-              ))}
-            </defs>
             <circle className="radar__deck" r={platformRadius} />
             {pads.map((pad) => (
               <path
@@ -96,14 +84,6 @@ export default function Radar({
                 data-id={pad.id}
                 d={wedge(pad.angle)}
                 fill={biomes[pad.id].accent}
-              />
-            ))}
-            {pads.map((pad) => (
-              <path
-                key={pad.id}
-                className="radar__texture"
-                d={wedge(pad.angle)}
-                fill={`url(#radar-${pad.id})`}
               />
             ))}
             <circle className="radar__rim" r={platformRadius} />
@@ -149,7 +129,6 @@ export default function Radar({
             )}
           </svg>
         </div>
-        <div className="radar__sweep" />
       </div>
       <svg className="radar__face" viewBox="-100 -100 200 200">
         <circle className="radar__range" r={radarRing / 2} />

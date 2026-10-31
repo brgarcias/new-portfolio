@@ -887,7 +887,6 @@
 
 .hangar__ship[aria-checked='true'] .hangar__ship-glyph {
   stroke: #fff;
-  filter: drop-shadow(0 0 6px rgb(143 145 255 / 0.8));
 }
 
 .hangar__ship[aria-checked='true'] .hangar__ship-index {
@@ -1296,7 +1295,6 @@
   width: 14px;
   height: 11px;
   background: var(--g-amber);
-  filter: drop-shadow(0 0 4px rgb(255 191 94 / 0.8));
 }
 
 .compass__mark[data-edge='left']::before {
@@ -1421,20 +1419,6 @@
   height: 100%;
 }
 
-.radar__sweep {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: conic-gradient(
-    from -50deg,
-    rgb(191 230 255 / 0) 0deg,
-    rgb(191 230 255 / 0.3) 50deg,
-    transparent 50.5deg
-  );
-  pointer-events: none;
-  will-change: transform;
-}
-
 .radar__face {
   position: absolute;
   inset: 0;
@@ -1460,10 +1444,6 @@
 .hud[data-sector='contributing'] .radar__sector[data-id='contributing'],
 .hud[data-sector='contact'] .radar__sector[data-id='contact'] {
   opacity: 0.44;
-}
-
-.radar__texture {
-  opacity: 0.4;
 }
 
 .radar__rim {
@@ -1791,7 +1771,6 @@
 .toast__icon {
   grid-area: icon;
   font-size: 1.75rem;
-  filter: drop-shadow(0 0 8px rgb(127 227 255 / 0.75));
 }
 
 .toast__icon--check {
@@ -1908,9 +1887,8 @@
   font-weight: 600;
   letter-spacing: 0.42em;
   line-height: 1;
-  text-shadow:
-    0 0 26px var(--accent),
-    0 2px 14px rgb(0 0 0 / 0.7);
+  /* Only what keeps it legible over a bright sky. */
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.55);
   text-transform: uppercase;
 }
 
@@ -1926,7 +1904,8 @@
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
 }
 
-/* The finale of the holocrons. */
+/* The finale of the holocrons: a plate in the middle of the view, the
+   world and its sparks still in sight around it. */
 .finale {
   position: absolute;
   inset: 0;
@@ -1935,54 +1914,20 @@
   place-items: center;
 }
 
-.finale__bar {
-  position: absolute;
-  right: 0;
-  left: 0;
-  height: 10vh;
-  background: #000;
-}
-
-.finale__bar--top {
-  top: 0;
-  transform-origin: top;
-}
-
-.finale__bar--bottom {
-  bottom: 0;
-  transform-origin: bottom;
-}
-
 .finale__card {
   display: grid;
+  max-width: calc(100% - 2 * var(--g-edge));
   justify-items: center;
-  gap: 0.7rem;
-  padding: 2rem 3rem;
+  gap: 0.6rem;
+  padding: 1.75rem 2.5rem;
+  border: 1px solid rgb(127 227 255 / 0.35);
+  border-radius: var(--g-radius);
+  background: var(--g-plate-2);
   text-align: center;
 }
 
-/* A band across the frame, like a film's title card, so the title holds
-   over any sky. */
-.finale::before {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  left: 0;
-  height: 18rem;
-  background: linear-gradient(
-    180deg,
-    transparent,
-    rgb(3 6 16 / 0.72) 30%,
-    rgb(3 6 16 / 0.72) 70%,
-    transparent
-  );
-  content: '';
-  transform: translateY(-50%);
-}
-
 .finale__icon {
-  font-size: 2.75rem;
-  filter: drop-shadow(0 0 16px rgb(127 227 255 / 0.85));
+  font-size: 2.25rem;
 }
 
 .finale__label {
@@ -1994,11 +1939,10 @@
   margin: 0;
   color: #fff;
   font-family: var(--g-display);
-  font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+  font-size: clamp(1.375rem, 2.8vw, 2.125rem);
   font-weight: 600;
   letter-spacing: -0.01em;
-  line-height: 1.1;
-  text-shadow: 0 0 28px rgb(127 227 255 / 0.55);
+  line-height: 1.15;
 }
 
 .finale__line {
@@ -2590,8 +2534,9 @@
   opacity: 0.22;
 }
 
+/* The ground of each planet, as a map's hatching: there, not loud. */
 .chart__texture {
-  opacity: 0.55;
+  opacity: 0.28;
 }
 
 .chart__grid {
@@ -2864,7 +2809,7 @@
 
 .destination__holocron[data-found] {
   opacity: 1;
-  filter: drop-shadow(0 0 5px rgb(127 227 255 / 0.8));
+  filter: none;
 }
 
 /* ─── A section over the flight ─────────────────────────── */
@@ -3007,24 +2952,12 @@
 }
 
 /* ─── Motion ────────────────────────────────────────────── */
-/* Systems come up like a projector: a flicker, then steady. */
+/* Systems come up with a short fade, and every motion has an end: the only
+   loop is the loader's, while the game downloads. */
 @keyframes g-boot {
-  0% {
+  from {
     opacity: 0;
     transform: translateY(-6px);
-  }
-
-  35% {
-    opacity: 0.7;
-  }
-
-  50% {
-    opacity: 0.25;
-  }
-
-  100% {
-    opacity: 1;
-    transform: none;
   }
 }
 
@@ -3087,10 +3020,6 @@
 
   .hangar__roster {
     animation-delay: 0.24s;
-  }
-
-  .hangar__ready-light {
-    animation: g-pulse 2.4s ease-in-out infinite;
   }
 
   .stage-hud__scan {
@@ -3199,54 +3128,14 @@
   }
 
   @keyframes pad-in {
-    0% {
+    from {
       opacity: 0;
       transform: translate(-50%, -8px);
     }
 
-    40% {
-      opacity: 0.7;
-    }
-
-    55% {
-      opacity: 0.3;
-    }
-
-    100% {
+    to {
       opacity: 1;
       transform: translateX(-50%);
-    }
-  }
-
-  .radar__sweep {
-    animation: g-spin 4s linear infinite;
-  }
-
-  .radar__edges .is-course {
-    animation: course-blink 1.6s ease-in-out infinite;
-  }
-
-  @keyframes course-blink {
-    50% {
-      opacity: 0.45;
-    }
-  }
-
-  .hud__tool[aria-pressed='true'] .hud__eq i {
-    animation: eq 0.9s ease-in-out infinite alternate;
-  }
-
-  .hud__tool[aria-pressed='true'] .hud__eq i:nth-child(2) {
-    animation-delay: -0.3s;
-  }
-
-  .hud__tool[aria-pressed='true'] .hud__eq i:nth-child(3) {
-    animation-delay: -0.6s;
-  }
-
-  @keyframes eq {
-    from {
-      transform: scaleY(0.25);
     }
   }
 
@@ -3257,12 +3146,10 @@
   @keyframes pip-pop {
     0% {
       background: rgb(var(--g-holo) / 0.2);
-      box-shadow: none;
     }
 
     45% {
       background: #fff;
-      box-shadow: 0 0 14px #fff;
     }
   }
 
@@ -3273,22 +3160,9 @@
   }
 
   @keyframes toast-in {
-    0% {
+    from {
       opacity: 0;
       transform: translateX(24px);
-    }
-
-    45% {
-      opacity: 0.8;
-    }
-
-    60% {
-      opacity: 0.35;
-    }
-
-    100% {
-      opacity: 1;
-      transform: none;
     }
   }
 
@@ -3299,99 +3173,42 @@
     }
   }
 
-  .finale__bar {
-    animation:
-      bar-in 0.9s var(--g-ease) both,
-      bar-out 0.9s var(--g-ease) 6.3s forwards;
-  }
-
-  @keyframes bar-in {
-    from {
-      transform: scaleY(0);
-    }
-  }
-
-  @keyframes bar-out {
-    to {
-      transform: scaleY(0);
-    }
-  }
-
-  .finale::before {
-    animation:
-      g-fade 0.8s var(--g-ease) 0.3s both,
-      band-out 0.9s var(--g-ease) 6.1s forwards;
-  }
-
-  @keyframes band-out {
-    to {
-      opacity: 0;
-    }
-  }
-
   .finale__card {
     animation:
-      finale-in 1.1s var(--g-ease) 0.45s both,
-      finale-out 0.9s var(--g-ease) 6.1s forwards;
+      finale-in 0.7s var(--g-ease) 0.3s both,
+      finale-out 0.7s var(--g-ease) 6.3s forwards;
   }
 
   @keyframes finale-in {
-    0% {
+    from {
       opacity: 0;
-      transform: scale(0.94);
-    }
-
-    30% {
-      opacity: 0.8;
-    }
-
-    42% {
-      opacity: 0.3;
-    }
-
-    100% {
-      opacity: 1;
-      transform: none;
+      transform: translateY(10px);
     }
   }
 
   @keyframes finale-out {
     to {
       opacity: 0;
-      transform: scale(1.03);
     }
   }
 
   .finale__pips .pips__pip {
     animation: pip-pop 0.6s var(--g-ease) both;
-    animation-delay: calc(1.1s + var(--i, 0) * 0.12s);
+    animation-delay: calc(0.8s + var(--i, 0) * 0.1s);
   }
 
-  /* A planet's title switches on like a projector, its rule opens out,
-     and it fades before the next one could come. */
+  /* A planet's title fades in, its rule opens out, and it fades before
+     the next one could come. */
   .planet-title {
     animation:
-      title-in 0.9s var(--g-ease) both,
+      title-in 0.8s var(--g-ease) both,
       title-out 0.7s var(--g-ease) 2.65s forwards;
   }
 
   @keyframes title-in {
-    0% {
+    from {
       opacity: 0;
-      transform: translateY(8px) scale(0.98);
-    }
-
-    30% {
-      opacity: 0.85;
-    }
-
-    42% {
-      opacity: 0.35;
-    }
-
-    100% {
-      opacity: 1;
-      transform: none;
+      transform: translateY(8px);
     }
   }
 
@@ -3450,22 +3267,9 @@
   }
 
   @keyframes sheet-in {
-    0% {
+    from {
       opacity: 0;
-      transform: translateY(14px) scale(0.97);
-    }
-
-    40% {
-      opacity: 0.8;
-    }
-
-    52% {
-      opacity: 0.4;
-    }
-
-    100% {
-      opacity: 1;
-      transform: none;
+      transform: translateY(14px) scale(0.98);
     }
   }
 
@@ -3479,16 +3283,6 @@
   .game-map__legend li {
     animation: g-rise 0.5s var(--g-ease) both;
     animation-delay: calc(0.12s + var(--i, 0) * 0.04s);
-  }
-
-  .chart__course {
-    animation: course-march 1.2s linear infinite;
-  }
-
-  @keyframes course-march {
-    to {
-      stroke-dashoffset: -11;
-    }
   }
 }
 

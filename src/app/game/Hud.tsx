@@ -239,15 +239,13 @@ function PlanetTitle({
   );
 }
 
-// The moment all seven holocrons are recovered: the frame goes wide, like
-// a film's, and the archive's title comes up, with the sparks the ship
-// throws (Ship.tsx) and the fanfare, if the sound is on.
+// The moment all seven holocrons are recovered: the archive's title comes
+// up on a plate in the middle of the view, with the sparks the ship throws
+// (Ship.tsx) and the fanfare, if the sound is on.
 function Finale({ total }: { total: number }) {
   const t = useI18n().messages.game;
   return (
     <div className="finale" aria-hidden="true">
-      <span className="finale__bar finale__bar--top" />
-      <span className="finale__bar finale__bar--bottom" />
       <div className="finale__card">
         <HolocronIcon className="finale__icon" />
         <p className="g-label finale__label">{t.archiveComplete}</p>
