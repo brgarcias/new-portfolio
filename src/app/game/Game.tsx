@@ -43,9 +43,8 @@ const storageKey = 'ship';
 const toastTime = 5200;
 const titleTime = 3400;
 const finaleTime = 7400;
-// The mission's notice, when an exploration begins, comes in after the
-// arrival from hyperspace and stays longer, to be read.
-const briefingDelay = 2800;
+// The mission's notice, when an exploration begins, stays longer, to be
+// read.
 const briefingTime = 8000;
 // How long the chart, the archive and a section take to fade out when they
 // close, and the flight when the pilot goes back to the hangar.
@@ -271,23 +270,16 @@ export default function Game({
     );
   };
 
-  // A new exploration begins with the mission, once the ship has arrived:
-  // on the first flight with nothing found yet, and after starting over.
+  // A new exploration begins with the mission, once the arrival from
+  // hyperspace is over, so the two never share the screen: on the first
+  // flight with nothing found yet, and after starting over.
   const brief = () => {
     briefed.current = true;
     notify({ kind: 'briefing', id: places[0].id, count: 0 }, briefingTime);
   };
-  const briefOnArrival = useEffectEvent(() => {
+  const arrived = () => {
     if (!briefed.current && !found.length && !visited.length) brief();
-  });
-  useEffect(() => {
-    if (!flying) return;
-    const timer = window.setTimeout(
-      briefOnArrival,
-      reduced ? 0 : briefingDelay,
-    );
-    return () => window.clearTimeout(timer);
-  }, [flying, reduced]);
+  };
 
   const steer = (id: SectionId) => {
     const next = course === id ? null : id;
@@ -392,11 +384,13 @@ export default function Game({
     timers.current.panel = window.setTimeout(done, exitTime);
   };
 
-  // Back to the hangar: the flight fades to black, and the hangar comes in.
+  // Back to the hangar: the flight fades to black, and the hangar comes in,
+  // and the flight's notices go with it.
   const changeShip = () => {
     const done = () => {
       setDeparting(false);
       setFlying(false);
+      setToasts([]);
     };
     setPad(null);
     window.clearTimeout(timers.current.map);
@@ -449,6 +443,7 @@ export default function Game({
           onLand={land}
           onCollect={collect}
           onEnter={enter}
+          onArrived={arrived}
         />
         <Labels />
         <Adaptive />

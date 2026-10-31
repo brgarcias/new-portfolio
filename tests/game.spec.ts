@@ -210,13 +210,19 @@ test('chega do hiperespaço e desce até a nave, ou começa atrás dela com meno
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+  // Two flights, one with the whole arrival, each of whose frames can take
+  // a second on CI's software renderer.
+  test.slow();
   await page.goto('/play');
   await page.getByRole('button', { name: 'Take off' }).click();
   // Out of hyperspace, the camera comes down from high over the platform
   // to its place behind the ship, and the arrival ends by itself.
   const hud = page.locator('.hud');
   await expect(hud).toHaveAttribute('data-arriving', '', { timeout: 20_000 });
+  // The mission's notice waits for the arrival, not to cover it.
+  await expect(page.locator('.toast[data-kind="briefing"]')).toHaveCount(0);
   await expect(hud).not.toHaveAttribute('data-arriving', { timeout: 30_000 });
+  await expect(page.locator('.toast[data-kind="briefing"]')).toBeVisible();
   // With less motion, the flight starts behind the ship.
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.getByRole('button', { name: 'Change ship' }).click();
