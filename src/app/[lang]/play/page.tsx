@@ -123,7 +123,7 @@ export default async function Play({ params }: PageProps<'/[lang]/play'>) {
     contact: (
       <Contact
         header={sections.contact}
-        cards={getContactCards(lang, profile, messages)}
+        cards={getContactCards(lang, profile)}
         social={social}
         socialLabel={messages.frame.socialLinks}
       />

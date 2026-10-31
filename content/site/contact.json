@@ -2,7 +2,9 @@
   "en": {
     "profile": {
       "label": "Profile",
-      "status": "Married"
+      "details": [
+        "Building software since 2018"
+      ]
     },
     "education": {
       "label": "Education",
@@ -16,8 +18,7 @@
     "contact": {
       "label": "Contact",
       "details": [
-        "Vila Nova Cachoeirinha - Limão",
-        "São Paulo, SP - Brazil"
+        "São Paulo, Brazil"
       ]
     },
     "languages": {
@@ -25,15 +26,17 @@
       "title": "Advanced English",
       "subtitle": "English Course - Number One",
       "details": [
-        "Available for travel and relocation",
-        "An exchange soon"
+        "Native Portuguese",
+        "Available for travel and relocation"
       ]
     }
   },
   "pt": {
     "profile": {
       "label": "Perfil",
-      "status": "Casado"
+      "details": [
+        "Desenvolvendo software desde 2018"
+      ]
     },
     "education": {
       "label": "Formação",
@@ -47,8 +50,7 @@
     "contact": {
       "label": "Contato",
       "details": [
-        "Vila Nova Cachoeirinha - Limão",
-        "São Paulo, SP - Brasil"
+        "São Paulo, Brasil"
       ]
     },
     "languages": {
@@ -56,15 +58,17 @@
       "title": "Inglês avançado",
       "subtitle": "Curso de inglês - Number One",
       "details": [
-        "Disponível para viagens e mudança",
-        "Intercâmbio em breve"
+        "Português nativo",
+        "Disponível para viagens e mudança"
       ]
     }
   },
   "es": {
     "profile": {
       "label": "Perfil",
-      "status": "Casado"
+      "details": [
+        "Desarrollando software desde 2018"
+      ]
     },
     "education": {
       "label": "Formación",
@@ -78,8 +82,7 @@
     "contact": {
       "label": "Contacto",
       "details": [
-        "Vila Nova Cachoeirinha - Limão",
-        "São Paulo, SP - Brasil"
+        "São Paulo, Brasil"
       ]
     },
     "languages": {
@@ -87,8 +90,8 @@
       "title": "Inglés avanzado",
       "subtitle": "Curso de inglés - Number One",
       "details": [
-        "Disponible para viajar y mudarme",
-        "Un intercambio muy pronto"
+        "Portugués nativo",
+        "Disponible para viajar y mudarme"
       ]
     }
   }

@@ -3,8 +3,9 @@ import type { Messages } from './en';
 // The interface texts in Portuguese, as spoken in Brazil.
 const pt: Messages = {
   meta: {
-    title: 'Bruno Garcia — Dev. Full-Stack',
-    description: 'Bruno Garcia: um desenvolvedor Full-Stack inspirado',
+    title: 'Bruno Garcia — Engenheiro de Software Full-Stack',
+    description:
+      'Engenheiro de software full-stack com mais de 8 anos construindo APIs, sistemas distribuídos e plataformas web com Node.js, TypeScript, GraphQL, React e AWS.',
     ogLocale: 'pt_BR',
     dateLocale: 'pt-BR',
   },
@@ -80,9 +81,6 @@ const pt: Messages = {
   contributing: {
     previous: 'Foto anterior',
     next: 'Próxima foto',
-  },
-  contact: {
-    age: '{age} anos',
   },
   game: {
     title: 'Jogar',

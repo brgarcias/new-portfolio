@@ -3,8 +3,9 @@ import type { Messages } from './en';
 // The interface texts in Spanish.
 const es: Messages = {
   meta: {
-    title: 'Bruno Garcia — Dev. Full-Stack',
-    description: 'Bruno Garcia: un desarrollador Full-Stack inspirado',
+    title: 'Bruno Garcia — Ingeniero de Software Full-Stack',
+    description:
+      'Ingeniero de software full-stack con más de 8 años construyendo APIs, sistemas distribuidos y plataformas web con Node.js, TypeScript, GraphQL, React y AWS.',
     ogLocale: 'es_ES',
     dateLocale: 'es-ES',
   },
@@ -80,9 +81,6 @@ const es: Messages = {
   contributing: {
     previous: 'Foto anterior',
     next: 'Foto siguiente',
-  },
-  contact: {
-    age: '{age} años',
   },
   game: {
     title: 'Jugar',

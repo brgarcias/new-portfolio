@@ -44,9 +44,6 @@ async function settle(page: Page, scope = 'body') {
 function timeDependent(page: Page) {
   return [
     page.locator('#experience .xp-item:first-child .xp-item__duration'),
-    page
-      .locator('#contact .contact-card--profile .contact-card__details li')
-      .last(),
     page.locator('.site-footer__year'),
   ];
 }

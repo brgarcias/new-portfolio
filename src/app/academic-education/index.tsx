@@ -36,12 +36,13 @@ export default function AcademicEducation({
   steps,
 }: Readonly<AcademicEducationProps>) {
   const t = useI18n().messages.education;
-  const [active, setActive] = useState(0);
+  const last = steps.length - 1;
+  // Past the last finished step, the rail turns dashed. The section opens on
+  // it: the degree comes before the schools that led to it.
+  const finished = steps.filter((step) => !step.upcoming).length - 1;
+  const [active, setActive] = useState(Math.max(finished, 0));
   const id = useId();
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
-  const last = steps.length - 1;
-  // Past the last finished step, the rail turns dashed.
-  const finished = steps.filter((step) => !step.upcoming).length - 1;
 
   const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     const move = keyMoves[event.key];

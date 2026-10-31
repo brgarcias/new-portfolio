@@ -1,66 +1,63 @@
 {
   "en": {
-    "company": "Ab Inbev",
+    "company": "AB InBev",
     "title": "Full Stack Developer",
     "start": "2025-02",
     "end": "2026-03",
     "icon": "code",
-    "stack": "NestJS, Next.js, GraphQL, REST APIs, SQL Server, Azure, Azure DevOps",
+    "stack": "NestJS, Next.js, GraphQL, REST APIs, SQL Server, Azure, Azure DevOps, Jenkins, Kubernetes",
     "details": [
       {
         "heading": "",
         "items": [
-          "Developing and maintaining scalable RESTful APIs and GraphQL services using NestJS.",
-          "Building high-performance web applications with Next.js, ensuring optimal user experience and performance.",
-          "Designing and optimizing relational databases using Microsoft SQL Server to support business-critical applications.",
-          "Deploying and managing cloud-based solutions on Microsoft Azure, leveraging Azure DevOps Services for CI/CD automation.",
-          "Implementing best practices in code quality, security, and performance to ensure robust and maintainable software.",
-          "Collaborating with cross-functional teams to align software solutions with business objectives.",
-          "Managing source control, pipelines, and deployments using Azure DevOps Server."
+          "Built REST APIs and GraphQL services with NestJS, including resolver and query performance work.",
+          "Designed the GraphQL APIs of My Team Dashboard, which aggregates business KPIs, and deployed its microservices on Azure Kubernetes Service (AKS).",
+          "Built Next.js applications, some of them integrating Azure AI services.",
+          "Designed and tuned the Microsoft SQL Server databases behind business-critical applications.",
+          "Set up CI/CD with Azure DevOps and Jenkins, with automated unit and end-to-end tests.",
+          "Worked with cross-functional teams to align technical solutions with business goals."
         ]
       }
     ]
   },
   "pt": {
-    "company": "Ab Inbev",
+    "company": "AB InBev",
     "title": "Desenvolvedor Full Stack",
     "start": "2025-02",
     "end": "2026-03",
     "icon": "code",
-    "stack": "NestJS, Next.js, GraphQL, REST APIs, SQL Server, Azure, Azure DevOps",
+    "stack": "NestJS, Next.js, GraphQL, REST APIs, SQL Server, Azure, Azure DevOps, Jenkins, Kubernetes",
     "details": [
       {
         "heading": "",
         "items": [
-          "Desenvolvimento e manutenção de APIs RESTful e serviços GraphQL escaláveis com NestJS.",
-          "Criação de aplicações web de alto desempenho com Next.js, garantindo a melhor experiência e desempenho para o usuário.",
-          "Modelagem e otimização de bancos de dados relacionais com Microsoft SQL Server para sustentar aplicações críticas para o negócio.",
-          "Implantação e gestão de soluções em nuvem no Microsoft Azure, usando o Azure DevOps Services para automação de CI/CD.",
-          "Aplicação de boas práticas de qualidade de código, segurança e desempenho para garantir um software robusto e fácil de manter.",
-          "Colaboração com times multidisciplinares para alinhar as soluções de software aos objetivos do negócio.",
-          "Gestão do controle de versão, de pipelines e de deploys com o Azure DevOps Server."
+          "Construí APIs REST e serviços GraphQL com NestJS, incluindo melhorias de desempenho em resolvers e consultas.",
+          "Projetei as APIs GraphQL do My Team Dashboard, que reúne indicadores de negócio, e publiquei seus microsserviços no Azure Kubernetes Service (AKS).",
+          "Desenvolvi aplicações Next.js, algumas integradas a serviços de IA do Azure.",
+          "Modelei e otimizei os bancos Microsoft SQL Server de aplicações críticas para o negócio.",
+          "Montei CI/CD com Azure DevOps e Jenkins, com testes unitários e de ponta a ponta automatizados.",
+          "Trabalhei com times multidisciplinares para alinhar as soluções técnicas aos objetivos do negócio."
         ]
       }
     ]
   },
   "es": {
-    "company": "Ab Inbev",
+    "company": "AB InBev",
     "title": "Desarrollador Full Stack",
     "start": "2025-02",
     "end": "2026-03",
     "icon": "code",
-    "stack": "NestJS, Next.js, GraphQL, REST APIs, SQL Server, Azure, Azure DevOps",
+    "stack": "NestJS, Next.js, GraphQL, REST APIs, SQL Server, Azure, Azure DevOps, Jenkins, Kubernetes",
     "details": [
       {
         "heading": "",
         "items": [
-          "Desarrollo y mantenimiento de APIs RESTful y servicios GraphQL escalables con NestJS.",
-          "Creación de aplicaciones web de alto rendimiento con Next.js, garantizando la mejor experiencia y rendimiento para el usuario.",
-          "Diseño y optimización de bases de datos relacionales con Microsoft SQL Server para sostener aplicaciones críticas para el negocio.",
-          "Despliegue y gestión de soluciones en la nube en Microsoft Azure, utilizando Azure DevOps Services para la automatización de CI/CD.",
-          "Aplicación de buenas prácticas de calidad de código, seguridad y rendimiento para garantizar un software robusto y fácil de mantener.",
-          "Colaboración con equipos multifuncionales para alinear las soluciones de software con los objetivos del negocio.",
-          "Gestión del control de versiones, de pipelines y de despliegues con Azure DevOps Server."
+          "Construí APIs REST y servicios GraphQL con NestJS, incluidas mejoras de rendimiento en resolvers y consultas.",
+          "Diseñé las APIs GraphQL de My Team Dashboard, que reúne indicadores de negocio, y desplegué sus microservicios en Azure Kubernetes Service (AKS).",
+          "Desarrollé aplicaciones Next.js, algunas integradas con servicios de IA de Azure.",
+          "Diseñé y optimicé las bases de datos Microsoft SQL Server de aplicaciones críticas para el negocio.",
+          "Configuré CI/CD con Azure DevOps y Jenkins, con pruebas unitarias y de extremo a extremo automatizadas.",
+          "Trabajé con equipos multidisciplinarios para alinear las soluciones técnicas con los objetivos del negocio."
         ]
       }
     ]

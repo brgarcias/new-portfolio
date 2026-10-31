@@ -1,20 +1,20 @@
 {
   "en": {
     "titleTop": "**Full-Stack**",
-    "titleBottom": "Developer",
-    "tagline": "Passionate about development, eager for new experiences and constantly seeking fresh challenges.",
-    "highlights": "ReactJS, NextJS, NodeJS, NestJS, GraphQL, AWS"
+    "titleBottom": "Engineer",
+    "tagline": "8+ years building APIs, distributed systems and web platforms with Node.js, TypeScript, GraphQL, React and AWS. Previously tech lead at Trocafone.",
+    "highlights": "Node.js, TypeScript, GraphQL, NestJS, React, AWS"
   },
   "pt": {
-    "titleTop": "Desenvolvedor",
+    "titleTop": "Engenheiro",
     "titleBottom": "**Full-Stack**",
-    "tagline": "Apaixonado por desenvolvimento, ávido por novas experiências e sempre em busca de novos desafios.",
-    "highlights": "ReactJS, NextJS, NodeJS, NestJS, GraphQL, AWS"
+    "tagline": "Mais de 8 anos construindo APIs, sistemas distribuídos e plataformas web com Node.js, TypeScript, GraphQL, React e AWS. Antes, tech lead na Trocafone.",
+    "highlights": "Node.js, TypeScript, GraphQL, NestJS, React, AWS"
   },
   "es": {
-    "titleTop": "Desarrollador",
+    "titleTop": "Ingeniero",
     "titleBottom": "**Full-Stack**",
-    "tagline": "Apasionado por el desarrollo, con ganas de nuevas experiencias y siempre en busca de nuevos desafíos.",
-    "highlights": "ReactJS, NextJS, NodeJS, NestJS, GraphQL, AWS"
+    "tagline": "Más de 8 años construyendo APIs, sistemas distribuidos y plataformas web con Node.js, TypeScript, GraphQL, React y AWS. Antes, tech lead en Trocafone.",
+    "highlights": "Node.js, TypeScript, GraphQL, NestJS, React, AWS"
   }
 }
