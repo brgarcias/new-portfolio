@@ -532,6 +532,61 @@ test('joga com o progresso ilegível ou sem armazenamento', async ({
   expect(errors).toEqual([]);
 });
 
+test('troca o HUD entre completo, mínimo e imersivo e lembra a escolha', async ({
+  page,
+  isMobile,
+}) => {
+  test.slow();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await takeOff(page);
+  const hud = page.locator('.hud');
+  const view = page.getByRole('button', { name: /^Change the HUD/ });
+  await expect(hud).toHaveAttribute('data-hud', 'full');
+  await expect(view).toHaveAccessibleName('Change the HUD (now full)');
+  await expect(page.locator('.hud__log')).toBeVisible();
+  // Minimal keeps the essentials.
+  await view.click();
+  await expect(hud).toHaveAttribute('data-hud', 'minimal');
+  await expect(page.locator('.compass')).toBeHidden();
+  await expect(page.locator('.hud__log')).toBeVisible();
+  await expect(page.locator('.radar-button')).toBeVisible();
+  // Immersive leaves the world, the way out, the switch back and, on
+  // touch, the controls.
+  await view.click();
+  await expect(hud).toHaveAttribute('data-hud', 'immersive');
+  await expect(page.locator('.hud__log')).toBeHidden();
+  await expect(page.locator('.radar-button')).toBeHidden();
+  await expect(page.locator('.hud__craft')).toBeHidden();
+  await expect(
+    page.getByRole('link', { name: 'Back to the portfolio' }),
+  ).toBeVisible();
+  await expect(view).toBeVisible();
+  if (isMobile) {
+    await expect(page.getByRole('slider', { name: 'Joystick' })).toBeVisible();
+  }
+  // The next visit flies with the same HUD.
+  await page.reload();
+  await page.getByRole('button', { name: /Take off/ }).click();
+  await expect(hud).toHaveAttribute('data-hud', 'immersive');
+  if (isMobile) return;
+  // V goes round the modes too.
+  await page.keyboard.press('KeyV');
+  await expect(hud).toHaveAttribute('data-hud', 'full');
+});
+
+test('mostra os controles a quem não sai do lugar', async ({
+  page,
+  isMobile,
+}) => {
+  test.slow();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await takeOff(page);
+  await expect(page.locator('.toast[data-kind="hint"]')).toContainText(
+    isMobile ? 'Drag the joystick to fly' : 'W A S D or the arrows to fly',
+    { timeout: 30_000 },
+  );
+});
+
 test('liga o som e entra no modo foto', async ({ page, isMobile }) => {
   // Many steps over the 3D flight, each of which can take a second on CI's
   // software renderer.

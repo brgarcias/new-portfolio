@@ -30,22 +30,25 @@ import Ship from './Ship';
 import Snapshot from './Snapshot';
 import { play, setSound, storedSound } from './sound';
 import { isShipId, ships, type ShipId } from './ships';
-import { navigation } from './telemetry';
-import type { Place, Toast } from './types';
+import { navigation, telemetry } from './telemetry';
+import { hudModes, type HudMode, type Place, type Toast } from './types';
 import { useReducedMotion } from './useMediaQuery';
-import { pads } from './world/arena';
+import { pads, spawn } from './world/arena';
 import { biomes } from './world/biomes';
 import World from './world/World';
 
 const storageKey = 'ship';
+const hudKey = 'hud';
 // How long a notice stays, how long a planet's title shows, and how long
 // the finale of the holocrons lasts.
 const toastTime = 5200;
 const titleTime = 3400;
 const finaleTime = 7400;
 // The mission's notice, when an exploration begins, stays longer, to be
-// read.
+// read; the controls come up for a pilot still in place a while after the
+// arrival, once that notice is gone.
 const briefingTime = 8000;
+const hintDelay = 9000;
 // How long the chart, the archive and a section take to fade out when they
 // close, and the flight when the pilot goes back to the hangar.
 const exitTime = 180;
@@ -58,6 +61,16 @@ function storedShip(): ShipId {
     return isShipId(stored) ? stored : 'xwing';
   } catch {
     return 'xwing';
+  }
+}
+
+// The HUD as the pilot left it.
+function storedHud(): HudMode {
+  try {
+    const stored = localStorage.getItem(hudKey);
+    return hudModes.find((mode) => mode === stored) ?? 'full';
+  } catch {
+    return 'full';
   }
 }
 
@@ -103,6 +116,9 @@ export default function Game({
   const [mapOpen, setMapOpen] = useState(false);
   const [course, setCourse] = useState<SectionId | null>(null);
   const [soundOn, setSoundOn] = useState(storedSound);
+  const [hudMode, setHudMode] = useState(storedHud);
+  // How many times a flight has arrived from hyperspace, in the page.
+  const [arrivals, setArrivals] = useState(0);
   const [photo, setPhoto] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [finale, setFinale] = useState(false);
@@ -117,6 +133,7 @@ export default function Game({
   const toastKey = useRef(0);
   const explored = useRef(saved.visited.length >= places.length);
   const briefed = useRef(false);
+  const hinted = useRef(false);
   const timers = useRef({
     map: 0,
     archive: 0,
@@ -212,6 +229,16 @@ export default function Game({
     }, exitTime);
   };
 
+  // The HUD goes from full to minimal to immersive and back, and stays so
+  // for the next visit.
+  const cycleHud = () => {
+    const next = hudModes[(hudModes.indexOf(hudMode) + 1) % hudModes.length];
+    setHudMode(next);
+    try {
+      localStorage.setItem(hudKey, next);
+    } catch {}
+  };
+
   // M opens and closes the chart, H the archive, P the photo mode, which
   // Escape leaves too.
   const onKey = useEffectEvent((event: KeyboardEvent) => {
@@ -232,6 +259,9 @@ export default function Game({
       } else {
         openArchive();
       }
+    } else if (event.code === 'KeyV') {
+      event.preventDefault();
+      cycleHud();
     } else if (event.code === 'KeyP') {
       event.preventDefault();
       setPhoto((value) => !value);
@@ -279,7 +309,22 @@ export default function Game({
   };
   const arrived = () => {
     if (!briefed.current && !found.length && !visited.length) brief();
+    setArrivals((count) => count + 1);
   };
+  // A pilot still where the flight began, a while after the arrival, with
+  // nothing open, gets the controls, once in the page.
+  const hintIfStill = useEffectEvent(() => {
+    if (hinted.current || open || mapOpen || archiveOpen) return;
+    const away = Math.hypot(telemetry.x - spawn.x, telemetry.z - spawn.z);
+    if (telemetry.speed > 0.5 || away > 3) return;
+    hinted.current = true;
+    notify({ kind: 'hint', id: places[0].id, count: 0 }, briefingTime);
+  });
+  useEffect(() => {
+    if (!arrivals || !flying) return;
+    const timer = window.setTimeout(hintIfStill, hintDelay);
+    return () => window.clearTimeout(timer);
+  }, [arrivals, flying]);
 
   const steer = (id: SectionId) => {
     const next = course === id ? null : id;
@@ -489,6 +534,8 @@ export default function Game({
         onCourse={steer}
         soundOn={soundOn}
         onToggleSound={toggleSound}
+        hudMode={hudMode}
+        onHudMode={cycleHud}
         photo={photo}
         onPhoto={setPhoto}
         toasts={toasts}
