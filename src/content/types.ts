@@ -10,7 +10,6 @@ export interface ProfileContent {
   name: string;
   fullName: string;
   role: string;
-  // "YYYY-MM-DD", for the age in the contact section.
   email: string;
   // As shown, such as "+55 (11) 99696-9301". The links use its digits.
   phone: string;

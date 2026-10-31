@@ -479,6 +479,19 @@ test('abre e recolhe as experiências profissionais', async ({ page }) => {
   await toggle.click();
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await expect(second.getByText('Microsoft SQL Server')).toBeHidden();
+
+  // The details are valid lists: each group's heading comes before its own
+  // list, and a list holds only items.
+  const grouped = items.nth(4).locator('.xp-card__details');
+  await expect(grouped.locator('h4')).toHaveText([
+    'Full Stack Developer',
+    'Backend Developer',
+    'Frontend Developer',
+  ]);
+  await expect(grouped.locator('ul')).toHaveCount(3);
+  await expect(
+    page.locator('#experience .xp-card__details ul > :not(li)'),
+  ).toHaveCount(0);
 });
 
 test('alterna as etapas da formação acadêmica', async ({ page }) => {
@@ -754,7 +767,10 @@ test('mostra os dados de contato', async ({ page }) => {
   await expect(contact).not.toContainText('Cachoeirinha');
   const links = page.locator('#contact .contact-links a');
   await expect(links).toHaveText(['Email', 'LinkedIn', 'WhatsApp', 'GitHub']);
-  for (const link of await links.all()) {
+  // The email stays on the page, which hands it to the mail app.
+  await expect(links.first()).not.toHaveAttribute('target');
+  for (const link of (await links.all()).slice(1)) {
+    await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   }
 });
@@ -824,10 +840,17 @@ test('oferece o currículo e os canais de contato', async ({
     'href',
     'https://github.com/brgarcias',
   );
-  for (const link of await social.all()) {
+  // A site opens in a new tab. An email or a phone number stays on the page,
+  // which hands it to the right app, without leaving an empty tab behind:
+  // in the top, the menu, the contact cards and the footer.
+  await expect(social.nth(0)).not.toHaveAttribute('target');
+  for (const link of (await social.all()).slice(1)) {
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   }
+  await expect(
+    page.locator('a[href^="mailto:"][target], a[href^="tel:"][target]'),
+  ).toHaveCount(0);
   await expect(page.locator('.site-header__cv')).toHaveAttribute(
     'download',
     'Bruno_Garcia_Resume.pdf',
@@ -865,22 +888,74 @@ test('publica ícones e manifesto que existem', async ({ page, request }) => {
 });
 
 test('valida os campos do formulário de feedback', async ({ page }) => {
+  const sent: (string | null)[] = [];
+  await page.route('**/*', async (route) => {
+    if (route.request().method() !== 'POST') return route.continue();
+    sent.push(
+      new URLSearchParams(route.request().postData() ?? '').get('email'),
+    );
+    await route.fulfill({ status: 200, body: '' });
+  });
   await page.goto('/');
-  const dialog = await openFeedbackForm(page);
+  let dialog = await openFeedbackForm(page);
+  const name = dialog.locator('input[name="fullName"]');
+  const email = dialog.locator('input[name="email"]');
+  const feedback = dialog.locator('textarea[name="feedback"]');
+  // Entering a field, or leaving it empty, says nothing before sending.
+  await name.focus();
+  await email.focus();
+  await expect(dialog.getByText('Please, write your name.')).toBeHidden();
+
   await dialog.getByRole('button', { name: 'Send' }).click();
   await expect(dialog.getByText('Please, write your name.')).toBeVisible();
   await expect(dialog.getByText('Please, tell me your email.')).toBeVisible();
   await expect(
     dialog.getByText('Please, give me your feedback.'),
   ).toBeVisible();
+  // Screen readers announce the errors as they appear, and each one
+  // describes its field, so it is read with it.
+  await expect(dialog.getByRole('alert')).toHaveText([
+    'Please, write your name.',
+    'Please, tell me your email.',
+    'Please, give me your feedback.',
+  ]);
+  await expect(name).toHaveAttribute('aria-invalid', 'true');
+  await expect(name).toHaveAccessibleDescription('Please, write your name.');
+  await expect(feedback).toHaveAccessibleDescription(
+    'Please, give me your feedback.',
+  );
 
-  await dialog.locator('input[name="email"]').fill('email-invalido');
+  await email.fill('email-invalido');
   await expect(dialog.getByText('Please, tell me your email.')).toBeVisible();
-  await dialog.locator('input[name="email"]').fill('visitante@example.com');
+  await email.fill('visitante@example.com');
   await expect(dialog.getByText('Please, tell me your email.')).toBeHidden();
+  await expect(email).not.toHaveAttribute('aria-invalid');
 
   await dialog.getByRole('button', { name: 'Close' }).last().click();
   await expect(dialog).toBeHidden();
+
+  // The form opens again empty, without the last errors.
+  dialog = await openFeedbackForm(page);
+  await expect(name).toHaveValue('');
+  await expect(dialog.getByText('Please, write your name.')).toBeHidden();
+
+  // A wrong email is not sent, and only the form's message, in the page's
+  // language, describes it: the browser doesn't add one of its own.
+  await name.fill('Visitante de Teste');
+  await email.fill('email-invalido');
+  await feedback.fill('Gostei muito do portfólio.');
+  await dialog.getByRole('button', { name: 'Send' }).click();
+  await expect(email).toHaveAccessibleDescription(
+    'Please, tell me your email.',
+  );
+  await expect(dialog).toBeVisible();
+  expect(sent).toEqual([]);
+
+  // Once fixed, a single click sends it.
+  await email.fill('visitante@example.com');
+  await dialog.getByRole('button', { name: 'Send' }).click();
+  await expect(dialog).toBeHidden();
+  expect(sent).toEqual(['visitante@example.com']);
 });
 
 test('envia o feedback ao Netlify Forms e confirma o envio', async ({
@@ -1155,6 +1230,22 @@ test('publica os metadados de busca e compartilhamento', async ({
   expect(robots).toContain(`Sitemap: ${siteUrl}/sitemap.xml`);
   const sitemap = await (await request.get('/sitemap.xml')).text();
   expect(sitemap).toContain(`<loc>${siteUrl}/</loc>`);
+
+  // The game's page, shared, shows the same image, under its whole title.
+  await page.goto('/play');
+  const gameTitle = 'Play | Bruno Garcia — Full-Stack Software Engineer';
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+    'content',
+    gameTitle,
+  );
+  await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute(
+    'content',
+    gameTitle,
+  );
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+    'content',
+    new RegExp(`^${siteUrl}/opengraph-image`),
+  );
 });
 
 test('hidrata a página com o comentário que o Netlify injeta no head', async ({

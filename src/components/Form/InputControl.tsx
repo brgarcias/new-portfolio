@@ -1,5 +1,5 @@
 // HANDLERS
-import { ChangeEventHandler, FocusEventHandler } from 'react';
+import { ChangeEventHandler, FocusEventHandler, useId } from 'react';
 // HEROUI
 import { Input, Textarea } from '@heroui/react';
 // FONTAWESOME
@@ -19,7 +19,6 @@ interface InputControlProps {
   error: boolean;
   helperText: string;
   onChangeHandler: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
-  onFocusHandler: FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   onBlurHandler: FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   disabled: boolean;
 }
@@ -36,9 +35,13 @@ export default function InputControl({
   helperText,
   onChangeHandler,
   disabled = false,
-  onFocusHandler,
   onBlurHandler,
 }: InputControlProps) {
+  // The error under the field describes it, so it is read with the field.
+  // The form checks the fields itself, in the page's language, so HeroUI
+  // doesn't add the browser's own message under it (validationBehavior).
+  const errorId = useId();
+  const describedBy = error ? errorId : undefined;
   return (
     <div>
       {isTextarea ? (
@@ -50,8 +53,10 @@ export default function InputControl({
           minRows={4}
           onChange={onChangeHandler}
           disabled={disabled}
-          onFocus={onFocusHandler}
           onBlur={onBlurHandler}
+          validationBehavior="aria"
+          aria-invalid={error || undefined}
+          aria-describedby={describedBy}
         />
       ) : (
         <Input
@@ -63,11 +68,13 @@ export default function InputControl({
           type={type}
           onChange={onChangeHandler}
           disabled={disabled}
-          onFocus={onFocusHandler}
           onBlur={onBlurHandler}
+          validationBehavior="aria"
+          aria-invalid={error || undefined}
+          aria-describedby={describedBy}
         />
       )}
-      <HelperText error={error} helperText={helperText} />
+      <HelperText id={errorId} error={error} helperText={helperText} />
     </div>
   );
 }

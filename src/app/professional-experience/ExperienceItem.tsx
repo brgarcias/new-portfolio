@@ -1,7 +1,7 @@
 'use client';
 
 // HOOKS
-import { useId, useState } from 'react';
+import { Fragment, useId, useState } from 'react';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -33,8 +33,8 @@ interface ExperienceItemProps {
   date: string;
   duration: string;
   stack: string[];
-  // The list the card opens, as HTML built from the content.
-  details: string;
+  // What the card opens: groups of items, each with an optional heading.
+  details: Experience['details'];
   current?: boolean;
   defaultOpen?: boolean;
 }
@@ -106,10 +106,24 @@ export default function ExperienceItem({
           className={`xp-card__details${isOpen ? ' is-open' : ''}`}
           inert={!isOpen}
         >
-          <div
-            className="xp-card__details-inner"
-            dangerouslySetInnerHTML={{ __html: details }}
-          />
+          <div className="xp-card__details-inner">
+            {/* Each group's heading, then its list: a list holds only its
+                items. */}
+            <div className="xp-card__list">
+              {details.map((group, index) => (
+                <Fragment key={index}>
+                  {group.heading && <h4>{group.heading}</h4>}
+                  {group.items.length > 0 && (
+                    <ul>
+                      {group.items.map((item, position) => (
+                        <li key={position}>{item}</li>
+                      ))}
+                    </ul>
+                  )}
+                </Fragment>
+              ))}
+            </div>
+          </div>
         </div>
       </Reveal>
     </li>

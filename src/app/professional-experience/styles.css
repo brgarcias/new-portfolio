@@ -245,12 +245,19 @@
   transition-delay: 0s;
 }
 
-.xp-card__details ul {
+/* The groups' headings and lists keep the spacing the items had when they
+   shared one list. */
+.xp-card__list {
   display: grid;
   gap: 0.7rem;
   margin-top: 1.25rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--color-border);
+}
+
+.xp-card__list ul {
+  display: grid;
+  gap: 0.7rem;
 }
 
 .xp-card__details li {

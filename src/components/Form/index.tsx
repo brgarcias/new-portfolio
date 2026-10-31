@@ -1,5 +1,5 @@
 // FORM PROPS
-import { Dispatch, FC, FocusEvent, FormEvent, SetStateAction } from 'react';
+import { Dispatch, FC, FormEvent, SetStateAction } from 'react';
 // HEROUI
 import { Spacer, Button } from '@heroui/react';
 // FONTAWESOME
@@ -10,8 +10,6 @@ import InputControl from './InputControl';
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CSS
 import './styles.css';
-// UTILS
-import { formatEmail } from './utils';
 
 interface FormDataValue {
   emailValue: string;
@@ -43,14 +41,16 @@ const Form: FC<FormProps> = ({
 }) => {
   const t = useI18n().messages.feedback;
 
+  // A field in error is checked again as the visitor types, so the error
+  // goes as soon as it is fixed; a field without one is left alone.
   const handleInputChange = (inputName: string, value: string) => {
-    validateField(inputName, value);
+    if (errorsState[inputName]) validateField(inputName, value);
     switch (inputName) {
       case 'fullName':
         formData.setFullNameValue(value);
         break;
       case 'email':
-        formData.setEmailValue(formatEmail(value, validateField));
+        formData.setEmailValue(value.trim());
         break;
       case 'feedback':
         formData.setFeedbackValue(value);
@@ -58,22 +58,20 @@ const Form: FC<FormProps> = ({
     }
   };
 
-  const handleInputFocus = (
-    inputName: string,
-    e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    validateField(inputName, e.target.value);
-  };
-
+  // Leaving a field checks it once something is written there; entering an
+  // empty one, or leaving it empty, says nothing until the form is sent.
   const handleInputBlur = (inputName: string, value: string) => {
-    validateField(inputName, value);
+    if (value.trim()) validateField(inputName, value);
   };
 
   return (
+    // noValidate: the form checks the fields on sending. The browser's own
+    // check stopped the sending of a wrong email with a message of its own.
     <form
       name="contact"
       className="contact-form"
       method="post"
+      noValidate
       onSubmit={submitForm}
     >
       {/* Must match the form in public/contact.html, which Netlify reads. */}
@@ -92,7 +90,6 @@ const Form: FC<FormProps> = ({
         variant="bordered"
         disabled={isSubmitting}
         onChangeHandler={(e) => handleInputChange('fullName', e.target.value)}
-        onFocusHandler={(e) => handleInputFocus('fullName', e)}
         onBlurHandler={(e) => handleInputBlur('fullName', e.target.value)}
         error={errorsState.fullName}
         helperText={t.nameError}
@@ -107,7 +104,6 @@ const Form: FC<FormProps> = ({
         variant="bordered"
         disabled={isSubmitting}
         onChangeHandler={(e) => handleInputChange('email', e.target.value)}
-        onFocusHandler={(e) => handleInputFocus('email', e)}
         onBlurHandler={(e) => handleInputBlur('email', e.target.value)}
         error={errorsState.email}
         helperText={t.emailError}
@@ -123,7 +119,6 @@ const Form: FC<FormProps> = ({
         isTextarea
         disabled={isSubmitting}
         onChangeHandler={(e) => handleInputChange('feedback', e.target.value)}
-        onFocusHandler={(e) => handleInputFocus('feedback', e)}
         onBlurHandler={(e) => handleInputBlur('feedback', e.target.value)}
         error={errorsState.feedback}
         helperText={t.feedbackError}
