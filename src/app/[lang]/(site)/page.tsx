@@ -14,6 +14,7 @@ import OffscreenPause from '@/src/components/OffscreenPause';
 import {
   getAbout,
   getContactCards,
+  getCases,
   getContributing,
   getCourses,
   getEducation,
@@ -81,7 +82,11 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
         steps={getEducation(locale)}
       />
       <Courses header={sections.courses} courses={getCourses(locale)} />
-      <Projects header={sections.projects} projects={getProjects(locale)} />
+      <Projects
+        header={sections.projects}
+        cases={getCases(locale)}
+        projects={getProjects(locale)}
+      />
       <Contributing
         header={sections.contributing}
         content={getContributing(locale)}

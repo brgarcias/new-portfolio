@@ -81,6 +81,17 @@ const en = {
     previous: 'Previous Project',
     next: 'Next Project',
     website: 'See more about the website',
+    // The case studies, before the websites.
+    cases: 'Case studies',
+    websites: 'Websites',
+    readCase: 'Read the case study',
+    flow: 'System flow — {title}',
+    context: 'Context',
+    role: 'My role',
+    built: 'What I built',
+    result: 'Result',
+    learned: 'What I learned',
+    stack: 'Technologies',
   },
   contributing: {
     previous: 'Previous photo',

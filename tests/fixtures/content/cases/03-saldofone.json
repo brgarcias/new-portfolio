@@ -1,0 +1,110 @@
+{
+  "en": {
+    "order": 3,
+    "company": "Trocafone",
+    "period": "2022–2023",
+    "stack": "Node.js, NestJS, React, Next.js, AWS Lambda, SQS, Redis, CloudWatch, Jest, Jenkins",
+    "link": "http://www.saldofone.com.br/",
+    "title": "Store orders processed in queues",
+    "summary": "Saldofone sells devices as scrap through a store on Nuvemshop. I built the backend that receives the store's orders and processes them on AWS.",
+    "context": "Saldofone's store runs on Nuvemshop, and each order placed there had to reach the backend and be processed.",
+    "role": "I built the NestJS backend, the Next.js frontend and the AWS services.",
+    "built": "The orders arrive from Nuvemshop through a webhook, and Lambda microservices and worker Lambdas process them through SQS queues, with Redis. The Next.js frontend is hosted serverless, the logs are read in CloudWatch, Jest runs the end-to-end tests and Jenkins the CI/CD.",
+    "result": "",
+    "learned": "My first project on AWS: serverless hosting, Lambda, SQS, CloudWatch and Redis.",
+    "flow": [
+      {
+        "label": "Nuvemshop store",
+        "detail": "New order"
+      },
+      {
+        "label": "Webhook",
+        "detail": "NestJS"
+      },
+      {
+        "label": "SQS queue",
+        "detail": ""
+      },
+      {
+        "label": "Worker Lambdas",
+        "detail": "Order processing"
+      },
+      {
+        "label": "Redis",
+        "detail": ""
+      }
+    ]
+  },
+  "pt": {
+    "order": 3,
+    "company": "Trocafone",
+    "period": "2022–2023",
+    "stack": "Node.js, NestJS, React, Next.js, AWS Lambda, SQS, Redis, CloudWatch, Jest, Jenkins",
+    "link": "http://www.saldofone.com.br/",
+    "title": "Pedidos da loja processados em filas",
+    "summary": "O Saldofone vende aparelhos como sucata numa loja na Nuvemshop. Construí o backend que recebe os pedidos da loja e os processa na AWS.",
+    "context": "A loja do Saldofone roda na Nuvemshop, e cada pedido feito lá precisava chegar ao backend e ser processado.",
+    "role": "Construí o backend em NestJS, o frontend em Next.js e os serviços na AWS.",
+    "built": "Os pedidos chegam da Nuvemshop por um webhook, e microsserviços e workers em Lambda os processam por filas no SQS, com Redis. O frontend em Next.js fica hospedado em serverless, os logs são lidos no CloudWatch, o Jest roda os testes de ponta a ponta e o Jenkins, o CI/CD.",
+    "result": "",
+    "learned": "Meu primeiro projeto na AWS: hospedagem serverless, Lambda, SQS, CloudWatch e Redis.",
+    "flow": [
+      {
+        "label": "Loja na Nuvemshop",
+        "detail": "Novo pedido"
+      },
+      {
+        "label": "Webhook",
+        "detail": "NestJS"
+      },
+      {
+        "label": "Fila no SQS",
+        "detail": ""
+      },
+      {
+        "label": "Workers em Lambda",
+        "detail": "Processamento do pedido"
+      },
+      {
+        "label": "Redis",
+        "detail": ""
+      }
+    ]
+  },
+  "es": {
+    "order": 3,
+    "company": "Trocafone",
+    "period": "2022–2023",
+    "stack": "Node.js, NestJS, React, Next.js, AWS Lambda, SQS, Redis, CloudWatch, Jest, Jenkins",
+    "link": "http://www.saldofone.com.br/",
+    "title": "Pedidos de la tienda procesados en colas",
+    "summary": "Saldofone vende dispositivos como chatarra en una tienda en Nuvemshop. Construí el backend que recibe los pedidos de la tienda y los procesa en AWS.",
+    "context": "La tienda de Saldofone corre en Nuvemshop, y cada pedido hecho allí tenía que llegar al backend y ser procesado.",
+    "role": "Construí el backend en NestJS, el frontend en Next.js y los servicios en AWS.",
+    "built": "Los pedidos llegan de Nuvemshop por un webhook, y microservicios y workers en Lambda los procesan mediante colas en SQS, con Redis. El frontend en Next.js está alojado en serverless, los logs se leen en CloudWatch, Jest corre las pruebas de extremo a extremo y Jenkins, el CI/CD.",
+    "result": "",
+    "learned": "Mi primer proyecto en AWS: alojamiento serverless, Lambda, SQS, CloudWatch y Redis.",
+    "flow": [
+      {
+        "label": "Tienda en Nuvemshop",
+        "detail": "Nuevo pedido"
+      },
+      {
+        "label": "Webhook",
+        "detail": "NestJS"
+      },
+      {
+        "label": "Cola en SQS",
+        "detail": ""
+      },
+      {
+        "label": "Workers en Lambda",
+        "detail": "Procesamiento del pedido"
+      },
+      {
+        "label": "Redis",
+        "detail": ""
+      }
+    ]
+  }
+}

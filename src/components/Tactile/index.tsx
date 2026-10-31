@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 const pressable = [
   '.project-card',
   '.course-card',
+  '.case-card',
   '.contrib-card',
   '.btn',
   '.theme-toggle',

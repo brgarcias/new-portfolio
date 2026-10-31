@@ -77,6 +77,17 @@ const es: Messages = {
     previous: 'Proyecto anterior',
     next: 'Proyecto siguiente',
     website: 'Conocer el sitio',
+    // Los estudios de caso, antes de los sitios.
+    cases: 'Estudios de caso',
+    websites: 'Sitios web',
+    readCase: 'Leer el estudio de caso',
+    flow: 'Flujo del sistema — {title}',
+    context: 'Contexto',
+    role: 'Mi papel',
+    built: 'Lo que construí',
+    result: 'Resultado',
+    learned: 'Lo que aprendí',
+    stack: 'Tecnologías',
   },
   contributing: {
     previous: 'Foto anterior',
