@@ -10,7 +10,7 @@ import type { SectionId } from '@/src/content/sections';
 // GAME
 import { readInput } from './controls';
 import { hunt } from './hunt';
-import { hum, play } from './sound';
+import { hum, play, quiet } from './sound';
 import { updateInstruments } from './instruments';
 import { overlay } from './overlay';
 import { createState, step, type ShipState } from './physics';
@@ -493,6 +493,7 @@ export default function Ship({
     }
     colors.needsUpdate = true;
     return () => {
+      quiet();
       flight.engines = [];
       model.traverse((object) => {
         if (object instanceof THREE.Mesh) {
