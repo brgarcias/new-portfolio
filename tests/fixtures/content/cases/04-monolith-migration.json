@@ -1,6 +1,6 @@
 {
   "en": {
-    "order": 1,
+    "order": 4,
     "company": "Trocafone",
     "period": "2023–2024",
     "stack": "Node.js, Python, FastAPI, .NET Core, GraphQL, Docker, Kubernetes",
@@ -32,7 +32,7 @@
     ]
   },
   "pt": {
-    "order": 1,
+    "order": 4,
     "company": "Trocafone",
     "period": "2023–2024",
     "stack": "Node.js, Python, FastAPI, .NET Core, GraphQL, Docker, Kubernetes",
@@ -64,7 +64,7 @@
     ]
   },
   "es": {
-    "order": 1,
+    "order": 4,
     "company": "Trocafone",
     "period": "2023–2024",
     "stack": "Node.js, Python, FastAPI, .NET Core, GraphQL, Docker, Kubernetes",
