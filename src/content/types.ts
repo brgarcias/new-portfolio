@@ -141,6 +141,13 @@ export interface InitiativeEntry {
   thumb?: string;
 }
 
+// content/site/holocrons.json: the record each holocron of the game
+// unlocks, one per section, on the section's planet.
+export type HolocronsContent = Record<
+  SectionId,
+  { title: string; text: string }
+>;
+
 interface CardContent {
   label: string;
   title: string;

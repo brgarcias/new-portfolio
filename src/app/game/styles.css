@@ -1155,6 +1155,13 @@
   font-size: 0.875rem;
 }
 
+/* The mission, over the log's counts. */
+.hud__mission {
+  margin-bottom: 0.1rem;
+  color: rgb(var(--g-holo));
+  font-size: 0.625rem;
+}
+
 /* The tools: the sound and the photo mode. */
 .hud__tools {
   display: flex;
@@ -1186,6 +1193,34 @@
 
 .hud__tool[aria-pressed='true'] .hud__eq {
   display: inline-flex;
+}
+
+.hud__archive .holocron-icon {
+  font-size: 1.05rem;
+}
+
+.hud__archive[aria-expanded='true'] {
+  --btn-line: rgb(127 227 255 / 0.85);
+
+  background: rgb(127 227 255 / 0.16);
+}
+
+.hud__badge {
+  position: absolute;
+  top: -0.45rem;
+  right: -0.45rem;
+  display: grid;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.25rem;
+  place-items: center;
+  border-radius: var(--g-radius);
+  background: var(--g-cube);
+  color: #04121a;
+  font-family: var(--g-display);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
 /* The compass along the top. */
@@ -1862,6 +1897,50 @@
   white-space: normal;
 }
 
+.toast[data-kind='holocron'] {
+  grid-template-areas:
+    'icon title count'
+    'icon meta count'
+    'pips pips pips'
+    'record record record';
+}
+
+.toast__record {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  grid-area: record;
+  margin: 0.55rem 0 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--g-line);
+  color: var(--g-ink);
+  font-size: 0.75rem;
+}
+
+.toast[data-kind='briefing'] {
+  --accent: var(--g-brand);
+
+  border-color: rgb(143 145 255 / 0.45);
+  box-shadow: 0 0 30px -12px rgb(143 145 255 / 0.6);
+  grid-template-areas:
+    'icon title title'
+    'icon meta meta'
+    'record record record';
+}
+
+.toast[data-kind='briefing']::before {
+  background: var(--g-brand);
+}
+
+.toast[data-kind='briefing'] .toast__title,
+.toast[data-kind='briefing'] .toast__meta {
+  white-space: normal;
+}
+
+.toast__record .holocron-icon {
+  font-size: 0.9375rem;
+}
+
 /* A planet's title, the first time the ship enters it: a film's title
    card in the upper third, under the landing zone, over a soft dark band
    so it holds over any sky. */
@@ -2017,6 +2096,19 @@
 .finale__pips .pips__pip {
   width: 0.625rem;
   height: 0.625rem;
+}
+
+.finale__archive {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.6rem 0 0;
+  color: var(--g-cube);
+  font-family: var(--g-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .hud__top,
@@ -2865,6 +2957,212 @@
 .destination__holocron[data-found] {
   opacity: 1;
   filter: drop-shadow(0 0 5px rgb(127 227 255 / 0.8));
+}
+
+/* Each destination with its book, which reads the section without
+   landing. */
+.game-map__legend li {
+  display: grid;
+  align-items: stretch;
+  gap: 0.375rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.destination__read {
+  width: 2.75rem;
+  height: auto;
+  border-left: 2px solid var(--accent);
+  color: var(--g-ink-2);
+}
+
+@media (hover: hover) {
+  .destination__read:hover {
+    color: var(--g-ink);
+  }
+}
+
+/* ─── The holocron archive ──────────────────────────────── */
+.archive__sheet {
+  width: min(56rem, 100%);
+  align-content: start;
+}
+
+.archive__intro {
+  margin: 0;
+  color: var(--g-ink-2);
+  font-size: 0.875rem;
+}
+
+.archive__list {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.record__card {
+  display: grid;
+  height: 100%;
+  align-content: start;
+  gap: 0.5rem;
+  padding: 0.8rem 0.95rem 0.95rem;
+  border: 1px solid var(--g-line);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--g-radius);
+  background: rgb(var(--g-holo) / 0.035);
+}
+
+.record__card:focus {
+  outline: none;
+}
+
+.record__card:focus-visible,
+.record[data-new] .record__card {
+  border-color: rgb(127 227 255 / 0.55);
+  border-left-color: var(--accent);
+  background: rgb(127 227 255 / 0.06);
+}
+
+.record[data-locked] .record__card {
+  border-style: dashed;
+  border-left-style: solid;
+  background: transparent;
+}
+
+.record__where {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0;
+  color: var(--g-ink-2);
+  font-size: 0.75rem;
+}
+
+.record__index {
+  color: var(--g-ink-3);
+  font-family: var(--g-display);
+  font-weight: 600;
+}
+
+.record__where strong {
+  color: var(--accent);
+  font-family: var(--g-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.record__new {
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--g-radius);
+  background: var(--g-cube);
+  color: #04121a;
+  font-family: var(--g-display);
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.record__cube {
+  margin-left: auto;
+  align-self: center;
+  font-size: 1rem;
+  opacity: 0.32;
+  filter: grayscale(1);
+}
+
+.record:not([data-locked]) .record__cube {
+  opacity: 1;
+  filter: drop-shadow(0 0 5px rgb(127 227 255 / 0.8));
+}
+
+.record__title {
+  margin: 0;
+  color: var(--g-ink);
+  font-family: var(--g-display);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.record[data-locked] .record__title {
+  color: var(--g-ink-3);
+}
+
+.record__text {
+  margin: 0;
+  color: var(--g-ink-2);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.record__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  justify-self: start;
+  color: rgb(var(--g-holo));
+  font-family: var(--g-display);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+@media (hover: hover) {
+  .record__link:hover {
+    color: var(--g-ink);
+  }
+}
+
+.record__link:focus-visible {
+  outline: 2px solid rgb(var(--g-holo));
+  outline-offset: 3px;
+}
+
+.record__course {
+  justify-self: start;
+}
+
+.record__course[aria-pressed='true'] {
+  --btn-line: rgb(255 191 94 / 0.65);
+
+  color: var(--g-amber);
+}
+
+.archive__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--g-line);
+}
+
+.archive__reset:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.archive__confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.archive__confirm p {
+  max-width: 28rem;
+  margin: 0;
+  color: var(--g-ink);
+  font-size: 0.8125rem;
+  line-height: 1.45;
 }
 
 /* ─── A section over the flight ─────────────────────────── */
@@ -3904,6 +4202,22 @@
     display: none;
   }
 
+  .toast[data-kind='holocron'] {
+    grid-template-areas:
+      'icon title count'
+      'icon meta count'
+      'record record record';
+  }
+
+  .hud__mission {
+    display: none;
+  }
+
+  .archive__footer > .g-btn,
+  .archive__confirm .g-btn {
+    flex: 1 1 auto;
+  }
+
   /* The ship's panel keeps only its button, beside the way back. */
   .hud__bottom {
     position: static;
@@ -4247,6 +4561,22 @@
 
   .toast__pips {
     display: none;
+  }
+
+  .toast[data-kind='holocron'] {
+    grid-template-areas:
+      'icon title count'
+      'icon meta count'
+      'record record record';
+  }
+
+  .hud__mission {
+    display: none;
+  }
+
+  .archive__footer > .g-btn,
+  .archive__confirm .g-btn {
+    flex: 1 1 auto;
   }
 
   /* The ship's panel keeps only its button, beside the way back. */

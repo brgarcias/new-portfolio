@@ -7,11 +7,13 @@ export interface Place {
   label: string;
 }
 
-// A notice that slides in over the flight for a moment: a holocron
-// recovered, or every section explored.
+// A notice that slides in over the flight for a moment: the mission, when
+// an exploration begins; a holocron recovered, with the title of the
+// record it unlocks; or every section explored.
 export interface Toast {
   key: number;
-  kind: 'holocron' | 'explored';
+  kind: 'briefing' | 'holocron' | 'explored';
   id: SectionId;
   count: number;
+  record?: string;
 }

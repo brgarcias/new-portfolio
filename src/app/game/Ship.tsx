@@ -30,6 +30,9 @@ interface ShipProps {
   onCollect: (id: SectionId) => void;
   // Called the first time, in the page, that the ship enters a planet.
   onEnter: (id: SectionId) => void;
+  // Called once the arrival from hyperspace is over, at once with less
+  // motion.
+  onArrived: () => void;
 }
 
 // The flight in progress, which the frame loop reads and writes: the ship's
@@ -52,10 +55,12 @@ const flight = {
   // The burst of light when the last holocron is found: where, and how
   // long ago, or less than zero for none.
   party: { x: 0, y: 0, z: 0, age: -1 },
-  // How far along the arrival out of hyperspace is, in seconds, and
-  // whether the HUD was told it is under way.
+  // How far along the arrival out of hyperspace is, in seconds, whether
+  // the HUD was told it is under way, and whether the game was told it is
+  // over.
   arrive: 0,
   arriving: false,
+  arrived: false,
 };
 
 // The arrival: the ship drops out of hyperspace, and the camera, high over
@@ -423,6 +428,7 @@ export default function Ship({
   onLand,
   onCollect,
   onEnter,
+  onArrived,
 }: Readonly<ShipProps>) {
   const model = useMemo(() => ship.build(), [ship]);
   const rig = useRef<THREE.Group>(null);
@@ -449,6 +455,7 @@ export default function Ship({
     flight.pulse.age = 9;
     flight.arrive = 0;
     flight.arriving = false;
+    flight.arrived = false;
     trail.filled = 0;
     const engines: THREE.MeshStandardMaterial[] = [];
     const flames: THREE.Mesh[] = [];
@@ -605,6 +612,10 @@ export default function Ship({
     if (arrive(camera, moving, dt, reduced)) {
       descend(camera, state, back, ship.hover + up, ahead);
     } else {
+      if (!flight.arrived) {
+        flight.arrived = true;
+        onArrived();
+      }
       chase.set(state.x - fx * back, ship.hover + up, state.z - fz * back);
       camera.position.lerp(chase, reduced ? 1 : 1 - Math.exp(-5 * dt));
       if (!reduced && flight.shake > 0.01) {

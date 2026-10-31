@@ -5,6 +5,7 @@ import { useRef, type CSSProperties } from 'react';
 // FONT AWESOME
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  faBookOpen,
   faCheck,
   faLocationArrow,
   faXmark,
@@ -37,6 +38,8 @@ interface GalaxyMapProps {
   places: Place[];
   course: SectionId | null;
   onCourse: (id: SectionId) => void;
+  // Opens a section without flying there.
+  onRead: (id: SectionId) => void;
   onClose: () => void;
 }
 
@@ -44,9 +47,11 @@ interface GalaxyMapProps {
 // destinations, the site's sections on their planets, each with how far
 // and which way it lies, live, whether it was explored, and its holocron.
 // Picking one sets a course, which the compass, the radar, the pad's label
-// and the chart follow; picking it again clears it. It opens from the
-// radar or with M, and closes with its button, with Escape, with M again
-// or with a click outside.
+// and the chart follow; picking it again clears it. The book beside each
+// destination reads its section at once, without landing, for whoever came
+// for the portfolio more than for the flight. It opens from the radar or
+// with M, and closes with its button, with Escape, with M again or with a
+// click outside.
 export default function GalaxyMap({
   leaving,
   ship,
@@ -56,6 +61,7 @@ export default function GalaxyMap({
   places,
   course,
   onCourse,
+  onRead,
   onClose,
 }: Readonly<GalaxyMapProps>) {
   const t = useI18n().messages.game;
@@ -214,6 +220,17 @@ export default function GalaxyMap({
                       >
                         <HolocronIcon />
                       </span>
+                    </button>
+                    <button
+                      type="button"
+                      className="g-btn g-btn--icon destination__read"
+                      aria-label={format(t.readRemotely, {
+                        place: `${biomes[place.id].planet}, ${place.title}`,
+                      })}
+                      data-tip={t.remoteAccess}
+                      onClick={() => onRead(place.id)}
+                    >
+                      <FontAwesomeIcon icon={faBookOpen} />
                     </button>
                   </li>
                 );

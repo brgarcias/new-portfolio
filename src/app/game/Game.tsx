@@ -13,9 +13,11 @@ import {
 // THREE
 import { Canvas } from '@react-three/fiber';
 // CONTENT
+import type { Holocrons } from '@/src/content';
 import type { SectionId } from '@/src/content/sections';
 // GAME
 import Adaptive from './Adaptive';
+import Archive from './Archive';
 import { listenToKeyboard, resetInput } from './controls';
 import Hangar from './Hangar';
 import Hud from './Hud';
@@ -23,6 +25,7 @@ import { hunt } from './hunt';
 import Labels from './Labels';
 import { overlay } from './overlay';
 import Panel from './Panel';
+import { loadProgress, saveProgress } from './progress';
 import Ship from './Ship';
 import Snapshot from './Snapshot';
 import { play, setSound, storedSound } from './sound';
@@ -40,8 +43,11 @@ const storageKey = 'ship';
 const toastTime = 5200;
 const titleTime = 3400;
 const finaleTime = 7400;
-// How long the chart and a section take to fade out when they close, and
-// the flight when the pilot goes back to the hangar.
+// The mission's notice, when an exploration begins, stays longer, to be
+// read.
+const briefingTime = 8000;
+// How long the chart, the archive and a section take to fade out when they
+// close, and the flight when the pilot goes back to the hangar.
 const exitTime = 180;
 const departTime = 380;
 
@@ -64,19 +70,36 @@ export interface GameProps {
   home: string;
   // The sections of the site, one per place, to show on landing.
   panels: Partial<Record<SectionId, ReactNode>>;
+  // The record each holocron unlocks in the archive.
+  records: Holocrons;
 }
 
 // The game: the hangar, then the flight over the arena, and the section
 // of the site that opens when the ship stops on a pad. Loaded by index.tsx
 // only in the browser, once it knows it can draw 3D, so the stored ship
-// can be read right away.
-export default function Game({ places, home, panels }: Readonly<GameProps>) {
+// and the progress kept from earlier visits can be read right away.
+export default function Game({
+  places,
+  home,
+  panels,
+  records,
+}: Readonly<GameProps>) {
   const [shipId, setShipId] = useState(storedShip);
   const [flying, setFlying] = useState(false);
   const [pad, setPad] = useState<SectionId | null>(null);
   const [open, setOpen] = useState<SectionId | null>(null);
-  const [visited, setVisited] = useState<SectionId[]>([]);
-  const [found, setFound] = useState<SectionId[]>([]);
+  // A section read from the chart, without landing on its planet.
+  const [remote, setRemote] = useState(false);
+  const [saved] = useState(loadProgress);
+  const [visited, setVisited] = useState(saved.visited);
+  const [found, setFound] = useState(saved.found);
+  const [read, setRead] = useState(saved.read);
+  const [archiveOpen, setArchiveOpen] = useState(false);
+  const [archiveLeaving, setArchiveLeaving] = useState(false);
+  // The records new to this opening of the archive, and the one it shows
+  // first.
+  const [fresh, setFresh] = useState<SectionId[]>([]);
+  const [archiveFocus, setArchiveFocus] = useState<SectionId | null>(null);
   const [mapOpen, setMapOpen] = useState(false);
   const [course, setCourse] = useState<SectionId | null>(null);
   const [soundOn, setSoundOn] = useState(storedSound);
@@ -92,29 +115,46 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
   );
   const reduced = useReducedMotion();
   const toastKey = useRef(0);
-  const explored = useRef(false);
-  const timers = useRef({ map: 0, panel: 0, depart: 0, title: 0 });
+  const explored = useRef(saved.visited.length >= places.length);
+  const briefed = useRef(false);
+  const timers = useRef({
+    map: 0,
+    archive: 0,
+    panel: 0,
+    depart: 0,
+    title: 0,
+  });
 
   useEffect(() => {
     const pending = timers.current;
     return () => {
       window.clearTimeout(pending.map);
+      window.clearTimeout(pending.archive);
       window.clearTimeout(pending.panel);
       window.clearTimeout(pending.depart);
       window.clearTimeout(pending.title);
     };
   }, []);
+  // The holocrons recovered on earlier visits stay recovered: the world,
+  // the radar and the compass read them from the hunt.
+  useEffect(() => {
+    for (const id of saved.found) hunt.found.add(id);
+  }, [saved]);
+  // Every step of the exploration is kept for the next visit.
+  useEffect(() => {
+    saveProgress({ visited, found, read });
+  }, [visited, found, read]);
   const titles = useMemo(
     () => Object.fromEntries(places.map((place) => [place.id, place.title])),
     [places],
   );
 
-  // The keyboard flies the ship, except while a section or the chart is
-  // open.
+  // The keyboard flies the ship, except while a section, the chart or the
+  // archive is open.
   useEffect(() => {
-    if (!flying || open || mapOpen) return;
+    if (!flying || open || mapOpen || archiveOpen) return;
     return listenToKeyboard();
-  }, [flying, open, mapOpen]);
+  }, [flying, open, mapOpen, archiveOpen]);
   // The sound comes on with the stored choice, once the game is on.
   useEffect(() => {
     if (flying && soundOn) setSound(true);
@@ -123,6 +163,9 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
   // while it fades out keeps it.
   const openMap = () => {
     window.clearTimeout(timers.current.map);
+    window.clearTimeout(timers.current.archive);
+    setArchiveOpen(false);
+    setArchiveLeaving(false);
     setMapLeaving(false);
     setMapOpen(true);
     play('blip');
@@ -140,7 +183,37 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
     }, exitTime);
   };
 
-  // M opens and closes the chart, P the photo mode, which Escape leaves too.
+  // The archive opens on the record just unlocked, if one was, and marks
+  // every record unlocked as read; the chart closes, as only one dialog
+  // shows at a time.
+  const openArchive = () => {
+    const unread = found.filter((id) => !read.includes(id));
+    window.clearTimeout(timers.current.map);
+    window.clearTimeout(timers.current.archive);
+    setMapOpen(false);
+    setMapLeaving(false);
+    setFresh(unread);
+    setArchiveFocus(unread.at(-1) ?? null);
+    setRead(found);
+    setArchiveLeaving(false);
+    setArchiveOpen(true);
+    play('blip');
+  };
+  const closeArchive = () => {
+    window.clearTimeout(timers.current.archive);
+    if (reduced) {
+      setArchiveOpen(false);
+      return;
+    }
+    setArchiveLeaving(true);
+    timers.current.archive = window.setTimeout(() => {
+      setArchiveOpen(false);
+      setArchiveLeaving(false);
+    }, exitTime);
+  };
+
+  // M opens and closes the chart, H the archive, P the photo mode, which
+  // Escape leaves too.
   const onKey = useEffectEvent((event: KeyboardEvent) => {
     if (event.repeat) return;
     if (event.code === 'KeyM') {
@@ -150,6 +223,14 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         closeMap();
       } else {
         openMap();
+      }
+    } else if (event.code === 'KeyH') {
+      event.preventDefault();
+      if (archiveOpen && !archiveLeaving) {
+        play('blip');
+        closeArchive();
+      } else {
+        openArchive();
       }
     } else if (event.code === 'KeyP') {
       event.preventDefault();
@@ -179,14 +260,25 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
   };
 
   // A notice for a moment; no more than three at once.
-  const notify = (toast: Omit<Toast, 'key'>) => {
+  const notify = (toast: Omit<Toast, 'key'>, time = toastTime) => {
     toastKey.current += 1;
     const key = toastKey.current;
     setToasts((list) => [...list.slice(-2), { ...toast, key }]);
     window.setTimeout(
       () => setToasts((list) => list.filter((item) => item.key !== key)),
-      toastTime,
+      time,
     );
+  };
+
+  // A new exploration begins with the mission, once the arrival from
+  // hyperspace is over, so the two never share the screen: on the first
+  // flight with nothing found yet, and after starting over.
+  const brief = () => {
+    briefed.current = true;
+    notify({ kind: 'briefing', id: places[0].id, count: 0 }, briefingTime);
+  };
+  const arrived = () => {
+    if (!briefed.current && !found.length && !visited.length) brief();
   };
 
   const steer = (id: SectionId) => {
@@ -202,7 +294,12 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
       setFinale(true);
       window.setTimeout(() => setFinale(false), finaleTime);
     } else {
-      notify({ kind: 'holocron', id, count: hunt.found.size });
+      notify({
+        kind: 'holocron',
+        id,
+        count: hunt.found.size,
+        record: records[id].title,
+      });
     }
   };
 
@@ -219,15 +316,51 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
     resetInput();
     window.clearTimeout(timers.current.map);
     window.clearTimeout(timers.current.panel);
+    window.clearTimeout(timers.current.archive);
     setMapLeaving(false);
     setPanelLeaving(false);
     setMapOpen(false);
+    setArchiveOpen(false);
+    setArchiveLeaving(false);
+    setRemote(false);
     setVisited((list) => (list.includes(id) ? list : [...list, id]));
     if (navigation.course === id) {
       setCourse(null);
       navigation.course = null;
     }
     setOpen(id);
+  };
+
+  // A section read from the chart, without flying there: the ship stays
+  // where it is, and the planet is not counted as explored.
+  const readRemotely = (id: SectionId) => {
+    resetInput();
+    window.clearTimeout(timers.current.map);
+    window.clearTimeout(timers.current.panel);
+    setMapLeaving(false);
+    setMapOpen(false);
+    setPanelLeaving(false);
+    setRemote(true);
+    setOpen(id);
+    play('blip');
+  };
+
+  // A new exploration: the holocrons go back to their planets, the pads
+  // and the archive start over, and the mission comes back.
+  const startOver = () => {
+    hunt.found.clear();
+    hunt.age.clear();
+    hunt.entered.clear();
+    setVisited([]);
+    setFound([]);
+    setRead([]);
+    setFresh([]);
+    setFinale(false);
+    setCourse(null);
+    navigation.course = null;
+    explored.current = false;
+    closeArchive();
+    brief();
   };
 
   // Back to the flight, once the section has faded out; the first time
@@ -251,16 +384,21 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
     timers.current.panel = window.setTimeout(done, exitTime);
   };
 
-  // Back to the hangar: the flight fades to black, and the hangar comes in.
+  // Back to the hangar: the flight fades to black, and the hangar comes in,
+  // and the flight's notices go with it.
   const changeShip = () => {
     const done = () => {
       setDeparting(false);
       setFlying(false);
+      setToasts([]);
     };
     setPad(null);
     window.clearTimeout(timers.current.map);
+    window.clearTimeout(timers.current.archive);
     setMapLeaving(false);
     setMapOpen(false);
+    setArchiveOpen(false);
+    setArchiveLeaving(false);
     setPhoto(false);
     window.clearTimeout(timers.current.title);
     setTitle(null);
@@ -305,6 +443,7 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
           onLand={land}
           onCollect={collect}
           onEnter={enter}
+          onArrived={arrived}
         />
         <Labels />
         <Adaptive />
@@ -342,6 +481,10 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         mapLeaving={mapLeaving}
         onOpenMap={openMap}
         onCloseMap={closeMap}
+        onRead={readRemotely}
+        archiveOpen={archiveOpen}
+        unread={found.filter((id) => !read.includes(id)).length}
+        onOpenArchive={openArchive}
         course={course}
         onCourse={steer}
         soundOn={soundOn}
@@ -352,10 +495,27 @@ export default function Game({ places, home, panels }: Readonly<GameProps>) {
         title={title}
         finale={finale}
       />
+      {archiveOpen && (
+        <Archive
+          leaving={archiveLeaving}
+          places={places}
+          records={records}
+          found={found}
+          fresh={fresh}
+          focus={archiveFocus}
+          course={course}
+          onCourse={steer}
+          started={found.length > 0 || visited.length > 0}
+          onStartOver={startOver}
+          home={home}
+          onClose={closeArchive}
+        />
+      )}
       {open && (
         <Panel
           id={open}
           home={home}
+          remote={remote}
           leaving={panelLeaving}
           onClose={closePanel}
         >
