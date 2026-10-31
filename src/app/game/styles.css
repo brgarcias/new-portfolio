@@ -1223,6 +1223,23 @@
   letter-spacing: 0;
 }
 
+/* The HUD's modes. Minimal keeps the essentials: the way out, the log, the
+   tools, the radar, the ship and its speed. Immersive leaves the world to
+   the way out, the switch back, the landing zone, the notices and, on
+   touch, the controls. */
+.hud[data-hud='minimal'] .compass,
+.hud[data-hud='minimal'] .hud__mission,
+.hud[data-hud='minimal'] .hud__coords,
+.hud[data-hud='minimal'] .hud__hint,
+.hud[data-hud='immersive'] .compass,
+.hud[data-hud='immersive'] .hud__log,
+.hud[data-hud='immersive'] .hud__ne,
+.hud[data-hud='immersive'] .hud__craft,
+.hud[data-hud='immersive'] .hud__hint,
+.hud[data-hud='immersive'] .hud__tool:not(.hud__view) {
+  display: none;
+}
+
 /* The compass along the top. */
 .compass {
   position: relative;
@@ -1935,6 +1952,35 @@
 .toast[data-kind='briefing'] .toast__title,
 .toast[data-kind='briefing'] .toast__meta {
   white-space: normal;
+}
+
+/* The controls, for a pilot who has not moved. */
+.toast[data-kind='hint'] {
+  border-color: rgb(var(--g-holo) / 0.45);
+  box-shadow: 0 0 30px -12px rgb(var(--g-holo) / 0.55);
+  grid-template-areas:
+    'icon title title'
+    'icon meta meta';
+}
+
+.toast[data-kind='hint']::before {
+  background: rgb(var(--g-holo));
+}
+
+.toast[data-kind='hint'] .toast__meta {
+  white-space: normal;
+}
+
+.toast__icon--hint {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid rgb(var(--g-holo) / 0.6);
+  border-radius: 50%;
+  color: rgb(var(--g-holo));
+  font-size: 0.875rem;
+  filter: none;
 }
 
 .toast__record .holocron-icon {

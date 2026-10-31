@@ -137,6 +137,7 @@ const es: Messages = {
     keysMap: 'Carta',
     keysPhoto: 'Foto',
     keysArchive: 'Archivo',
+    keysView: 'HUD',
     joystick: 'Joystick',
     landingZone: 'Zona de aterrizaje',
     slowDown: 'Frena para aterrizar',
@@ -191,6 +192,15 @@ const es: Messages = {
       '¿Empezar de nuevo? Se borran los holocrones y las secciones encontrados en este dispositivo.',
     resetConfirm: 'Empezar de nuevo',
     resetCancel: 'Mantener mi progreso',
+    // Los modos del HUD, y los controles para quien no se movió.
+    hudChange: 'Cambiar el HUD (ahora {mode})',
+    hudTip: 'HUD: {mode}',
+    hudModes: { full: 'completo', minimal: 'mínimo', immersive: 'inmersivo' },
+    hintTitle: 'Cómo pilotar',
+    hintKeys:
+      'W A S D o las flechas para volar, Shift para el turbo. Detente en una plataforma para aterrizar.',
+    hintTouch:
+      'Arrastra el joystick para volar y mantén el rayo para el turbo. Detente en una plataforma para aterrizar.',
     soundOn: 'Sonido activado',
     soundOff: 'Sonido desactivado',
     photoMode: 'Modo foto',

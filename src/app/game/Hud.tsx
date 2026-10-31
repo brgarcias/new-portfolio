@@ -18,6 +18,10 @@ import {
   faCamera,
   faCheck,
   faDownload,
+  faEye,
+  faEyeLowVision,
+  faEyeSlash,
+  faGamepad,
   faVolumeHigh,
   faVolumeXmark,
   faXmark,
@@ -36,7 +40,7 @@ import Radar from './Radar';
 import type { Ship } from './ships';
 import { snapshot } from './Snapshot';
 import { play } from './sound';
-import type { Place, Toast } from './types';
+import type { HudMode, Place, Toast } from './types';
 import { HolocronIcon, Keycap, Pips } from './ui';
 import { useMediaQuery } from './useMediaQuery';
 import { biomes } from './world/biomes';
@@ -169,6 +173,10 @@ function Legend() {
       <span className="hud__hint-item">
         <Keycap>P</Keycap>
         {t.keysPhoto}
+      </span>
+      <span className="hud__hint-item">
+        <Keycap>V</Keycap>
+        {t.keysView}
       </span>
     </p>
   );
@@ -363,6 +371,9 @@ interface HudProps {
   // The sounds, and the photo mode, which hides everything but the picture.
   soundOn: boolean;
   onToggleSound: () => void;
+  // How much of the HUD shows, and the switch to the next mode.
+  hudMode: HudMode;
+  onHudMode: () => void;
   photo: boolean;
   onPhoto: (on: boolean) => void;
   // The notices of the moment, the title of a planet the first time the
@@ -398,6 +409,8 @@ export default function Hud({
   onCourse,
   soundOn,
   onToggleSound,
+  hudMode,
+  onHudMode,
   photo,
   onPhoto,
   toasts,
@@ -418,6 +431,7 @@ export default function Hud({
       data-heading="0"
       data-speed="0"
       data-sector="hub"
+      data-hud={hudMode}
       data-photo={photo ? '' : undefined}
       data-finale={finale ? '' : undefined}
     >
@@ -520,6 +534,24 @@ export default function Hud({
             >
               <FontAwesomeIcon icon={faCamera} />
             </button>
+            <button
+              type="button"
+              className="g-btn g-btn--icon hud__tool hud__view"
+              aria-label={format(t.hudChange, { mode: t.hudModes[hudMode] })}
+              data-tip={format(t.hudTip, { mode: t.hudModes[hudMode] })}
+              data-key="V"
+              onClick={onHudMode}
+            >
+              <FontAwesomeIcon
+                icon={
+                  hudMode === 'full'
+                    ? faEye
+                    : hudMode === 'minimal'
+                      ? faEyeLowVision
+                      : faEyeSlash
+                }
+              />
+            </button>
           </div>
         </div>
         <Compass />
@@ -583,12 +615,22 @@ export default function Hud({
             className="toast"
             data-kind={toast.kind}
             style={
-              toast.kind === 'briefing'
+              toast.kind === 'briefing' || toast.kind === 'hint'
                 ? undefined
                 : ({ '--accent': biomes[toast.id].accent } as CSSProperties)
             }
           >
-            {toast.kind === 'briefing' ? (
+            {toast.kind === 'hint' ? (
+              <>
+                <span className="toast__icon toast__icon--hint">
+                  <FontAwesomeIcon icon={faGamepad} />
+                </span>
+                <p className="toast__title">{t.hintTitle}</p>
+                <p className="toast__meta">
+                  {touch ? t.hintTouch : t.hintKeys}
+                </p>
+              </>
+            ) : toast.kind === 'briefing' ? (
               <>
                 <HolocronIcon className="toast__icon" />
                 <p className="toast__title">{t.mission}</p>

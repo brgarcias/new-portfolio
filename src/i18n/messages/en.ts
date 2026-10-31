@@ -142,6 +142,7 @@ const en = {
     keysMap: 'Chart',
     keysPhoto: 'Photo',
     keysArchive: 'Archive',
+    keysView: 'HUD',
     joystick: 'Joystick',
     // Landing on a pad, and the section it opens.
     landingZone: 'Landing zone',
@@ -198,6 +199,15 @@ const en = {
       'Start over? The holocrons and sections found on this device are cleared.',
     resetConfirm: 'Start over',
     resetCancel: 'Keep my progress',
+    // The HUD's modes, and the controls for a pilot who has not moved.
+    hudChange: 'Change the HUD (now {mode})',
+    hudTip: 'HUD: {mode}',
+    hudModes: { full: 'full', minimal: 'minimal', immersive: 'immersive' },
+    hintTitle: 'How to fly',
+    hintKeys:
+      'W A S D or the arrows to fly, Shift to boost. Stop on a pad to land.',
+    hintTouch:
+      'Drag the joystick to fly and hold the bolt to boost. Stop on a pad to land.',
     // The sounds, off until turned on, and the photo mode.
     soundOn: 'Sound on',
     soundOff: 'Sound off',
