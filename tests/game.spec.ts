@@ -198,6 +198,27 @@ test('decola numa sequência de lançamento, ou na hora com menos movimento', as
   await expect(page.locator('.hud')).toBeVisible();
 });
 
+test('chega do hiperespaço e desce até a nave, ou começa atrás dela com menos movimento', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+  await page.goto('/play');
+  await page.getByRole('button', { name: 'Take off' }).click();
+  // Out of hyperspace, the camera comes down from high over the platform
+  // to its place behind the ship, and the arrival ends by itself.
+  const hud = page.locator('.hud');
+  await expect(hud).toHaveAttribute('data-arriving', '', { timeout: 20_000 });
+  await expect(hud).not.toHaveAttribute('data-arriving', { timeout: 30_000 });
+  // With less motion, the flight starts behind the ship.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.getByRole('button', { name: 'Change ship' }).click();
+  await page.getByRole('button', { name: 'Take off' }).click();
+  await expect
+    .poll(() => reading(page, 'time'), { timeout: 20_000 })
+    .toBeGreaterThan(0.5);
+  await expect(hud).not.toHaveAttribute('data-arriving');
+});
+
 test('gira a nave no hangar ao arrastar', async ({ page }) => {
   await page.goto('/play');
   const stage = page.locator('.hangar__stage');
@@ -327,16 +348,31 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   await expect(page.locator('.hud__ship')).toHaveText('X-wing');
   await expect(page.locator('.hud__hint')).toContainText('Fly');
   await expect(page.locator('.hud__hint')).toContainText('Shift');
-  // Every notice over the flight, as it comes.
+  // Every notice over the flight, and every planet's title, as they come.
   await page.evaluate(() => {
     const log: string[] = [];
-    Object.assign(window, { notices: log });
+    const titles: string[] = [];
+    Object.assign(window, { notices: log, titles });
     new MutationObserver((changes) => {
       for (const change of changes) {
         for (const node of change.addedNodes) log.push(node.textContent ?? '');
       }
     }).observe(document.querySelector('.toasts')!, { childList: true });
+    new MutationObserver((changes) => {
+      for (const change of changes) {
+        for (const node of change.addedNodes) {
+          const name = (node as HTMLElement).querySelector(
+            '.planet-title__name',
+          );
+          titles.push(name?.textContent ?? '');
+        }
+      }
+    }).observe(document.querySelector('.planet-titles')!, {
+      childList: true,
+    });
   });
+  const titles = () =>
+    page.evaluate(() => (window as unknown as { titles: string[] }).titles);
 
   // Two and a half seconds of thrust: the ship picks up speed and moves
   // ahead, towards -Z. Straight ahead lies the first pad, About Me; the
@@ -368,6 +404,8 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   await expect(page.locator('.hud__holocrons')).toContainText(
     '1 of 7 holocrons',
   );
+  // Tatooine's title came up as the ship entered it.
+  expect(await titles()).toEqual(['Tatooine']);
   await expect(
     about.getByRole('link', { name: 'Open on the site' }),
   ).toHaveAttribute('href', '/#about');
@@ -439,6 +477,10 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).toBeHidden();
   }
+  // Each planet's title came up once, the first time in it.
+  const seen = await titles();
+  expect(seen[0]).toBe('Tatooine');
+  expect(new Set(seen).size).toBe(seen.length);
   await page.getByRole('button', { name: 'Change ship' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Choose your ship',
