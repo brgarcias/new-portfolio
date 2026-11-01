@@ -88,6 +88,16 @@ export async function scrollTo(page: Page, selector: string) {
 }
 
 export async function openFeedbackForm(page: Page) {
+  // The top's buttons rise in as the page opens. A click while they moved
+  // sometimes missed, and Playwright scrolled the page to try again, which
+  // left it scrolled behind the dialog in the captures.
+  await page
+    .locator('#top .hero__actions')
+    .evaluate((actions) =>
+      Promise.all(
+        actions.getAnimations().map((animation) => animation.finished),
+      ),
+    );
   await page.getByRole('button', { name: 'Leave Feedback' }).click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
