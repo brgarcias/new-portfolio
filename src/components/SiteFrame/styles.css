@@ -791,10 +791,14 @@
   margin-right: auto;
 }
 
+/* The padding widens where a finger can tap it to 24px at least; the
+   margin keeps it in place. */
 .site-footer__top {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  margin-block: -0.25rem;
+  padding-block: 0.25rem;
   color: var(--color-text-muted);
   font-weight: 600;
   transition: color 0.2s ease;

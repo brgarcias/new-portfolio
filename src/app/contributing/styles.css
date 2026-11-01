@@ -213,9 +213,14 @@
   line-height: 1;
 }
 
+/* Raised by vertical-align, not by relative positioning: Safari leaves a
+   positioned child out of its parent's gradient text, and the "+" of "100+"
+   did not show on an iPhone. */
 .contrib-stat sup {
-  top: -0.9em;
+  position: static;
+  top: auto;
   font-size: 0.45em;
+  vertical-align: 0.9em;
 }
 
 .contrib-stat span {
@@ -335,6 +340,40 @@
 
   .photo-viewer__image {
     max-height: 50vh;
+  }
+}
+
+/* On a phone the three columns are too narrow for the labels, which ran
+   into each other or past the card: each number takes a row, its label
+   beside it. */
+@media (max-width: 479px) {
+  .contrib-stats {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.85rem;
+  }
+
+  .contrib-stat {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .contrib-stat strong {
+    min-width: 5.25rem;
+    font-size: 2.25rem;
+  }
+
+  .contrib-stat span {
+    margin-top: 0;
+  }
+}
+
+/* The narrowest phones: the photo's caption keeps to its card. */
+@media (max-width: 359px) {
+  .contrib-card__caption {
+    gap: 0.4rem;
+    padding-inline: 0.75rem;
+    font-size: 0.9375rem;
   }
 }
 

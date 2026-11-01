@@ -289,6 +289,17 @@ test('galeria de contribuições', { tag: '@visual' }, async ({ page }) => {
   await expectScreenshot(page, 'contributing-gallery.png', '#contributing');
 });
 
+// On a phone each number takes a row, with its label beside it.
+test('números das contribuições', { tag: '@visual' }, async ({ page }) => {
+  await page.goto('/');
+  await scrollTo(page, '#contributing .contrib__closing');
+  await expect(page.locator('#contributing .contrib__closing')).toHaveCSS(
+    'opacity',
+    '1',
+  );
+  await expectScreenshot(page, 'contributing-numbers.png', '#contributing');
+});
+
 test('visualizador de fotos', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
   await scrollTo(page, '#contributing .contrib-grid');

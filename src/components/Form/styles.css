@@ -6,6 +6,15 @@
   border-color: var(--color-brand-light);
 }
 
+/* On a touch screen the fields read at 16px at least: iOS zooms into a
+   smaller field on focus, and the page stayed zoomed, wider than the
+   screen. */
+@media (pointer: coarse) {
+  .contact-form :is(input, textarea) {
+    font-size: max(16px, 1rem);
+  }
+}
+
 /* While the message goes. */
 .contact-form .btn:disabled {
   cursor: progress;

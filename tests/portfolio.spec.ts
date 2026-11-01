@@ -21,6 +21,50 @@ async function fillFeedback(page: Page) {
   return dialog;
 }
 
+test('não deixa texto vazar da caixa no celular', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, 'The narrow layouts are the phones.');
+  // On the narrowest phones and on the tests' one, in the three languages:
+  // no text runs past its own box, as the contributing numbers' labels did,
+  // into each other and past their card.
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 700 });
+    for (const path of ['/', '/pt', '/es']) {
+      await page.goto(path);
+      const spills = await page.evaluate(() =>
+        [...document.querySelectorAll<HTMLElement>('body *')]
+          .filter((element) => {
+            if (element.closest('svg, [aria-hidden="true"], .visually-hidden'))
+              return false;
+            const style = getComputedStyle(element);
+            if (
+              ['inline', 'none', 'contents'].includes(style.display) ||
+              style.overflowX !== 'visible' ||
+              style.textOverflow === 'ellipsis'
+            )
+              return false;
+            const text = [...element.childNodes].some(
+              (node) =>
+                node.nodeType === Node.TEXT_NODE && node.textContent?.trim(),
+            );
+            return (
+              text &&
+              element.clientWidth > 0 &&
+              element.scrollWidth - element.clientWidth > 2
+            );
+          })
+          .map(
+            (element) =>
+              `${element.className} "${element.textContent?.trim().slice(0, 30)}"`,
+          ),
+      );
+      expect(spills, `${path} at ${width}px`).toEqual([]);
+    }
+  }
+});
+
 test('carrega o portfólio sem erros e sem rolagem horizontal', async ({
   page,
 }) => {
@@ -923,7 +967,10 @@ test('publica ícones e manifesto que existem', async ({ page, request }) => {
   }
 });
 
-test('valida os campos do formulário de feedback', async ({ page }) => {
+test('valida os campos do formulário de feedback', async ({
+  page,
+  isMobile,
+}) => {
   const sent: (string | null)[] = [];
   await page.route('**/*', async (route) => {
     if (route.request().method() !== 'POST') return route.continue();
@@ -937,6 +984,13 @@ test('valida os campos do formulário de feedback', async ({ page }) => {
   const name = dialog.locator('input[name="fullName"]');
   const email = dialog.locator('input[name="email"]');
   const feedback = dialog.locator('textarea[name="feedback"]');
+  // On a touch screen the fields read at 16px at least: iOS zooms into a
+  // smaller one on focus, and the page stayed zoomed.
+  if (isMobile) {
+    for (const field of [name, email, feedback]) {
+      await expect(field).toHaveCSS('font-size', '16px');
+    }
+  }
   // Entering a field, or leaving it empty, says nothing before sending.
   await name.focus();
   await email.focus();

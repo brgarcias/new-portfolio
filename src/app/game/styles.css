@@ -386,11 +386,14 @@
 }
 
 /* ─── Hangar ────────────────────────────────────────────── */
+/* manipulation: a quick second tap on a ship doesn't zoom the page on a
+   phone, while it still scrolls. */
 .hangar {
   position: relative;
   min-height: 100vh;
   min-height: 100dvh;
   overflow-x: clip;
+  touch-action: manipulation;
   padding-bottom: 3rem;
   background:
     radial-gradient(70% 55% at 28% 16%, rgb(92 94 220 / 0.2), transparent 70%),
@@ -2560,6 +2563,9 @@
   background: linear-gradient(180deg, rgb(9 15 32 / 0.97), rgb(5 9 20 / 0.98));
   box-shadow: 0 50px 100px -40px #000;
   overscroll-behavior: contain;
+  /* It scrolls, but a pinch doesn't zoom the page under the flight's
+     controls on a phone; the same in the section's panel. */
+  touch-action: pan-x pan-y;
 }
 
 .game-map__sheet:focus {
@@ -3317,6 +3323,7 @@
   flex: 1;
   overflow: auto;
   overscroll-behavior: contain;
+  touch-action: pan-x pan-y;
   color: var(--color-text);
 }
 
@@ -4714,6 +4721,7 @@
     min-height: 0;
     overflow: auto;
     overscroll-behavior: contain;
+    touch-action: pan-x pan-y;
   }
 
   .game-panel__sheet {

@@ -94,8 +94,11 @@
   font-size: 1rem;
 }
 
+/* The padding, on a link in a line, only widens where a finger can tap it:
+   24px at least, without moving the text. */
 .contact-card__title a,
 .contact-card__subtitle a {
+  padding-block: 0.25rem;
   color: inherit;
   text-decoration: underline;
   text-decoration-color: rgb(var(--rgb-brand-light) / 0.45);

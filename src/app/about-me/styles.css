@@ -356,6 +356,14 @@
   }
 }
 
+/* The narrowest phones: a long word of the title, as "Desenvolvedor",
+   still fits the line. */
+@media (max-width: 359px) {
+  .hero__title {
+    font-size: 2.5rem;
+  }
+}
+
 @keyframes hero-in {
   from {
     opacity: 0;

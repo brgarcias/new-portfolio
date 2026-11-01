@@ -976,6 +976,44 @@ test('voa pelo joystick no celular', async ({ page, isMobile }) => {
   await expect(about).toBeHidden();
 });
 
+test('esconde os rótulos das plataformas sob os instrumentos', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, "On a phone the HUD's corners cover more of the view.");
+  await takeOff(page);
+  await expect(page.locator('.hud')).not.toHaveAttribute('data-arriving', {
+    timeout: 30_000,
+  });
+  // The HUD's plates are see-through, so a waypoint under one hides instead
+  // of tangling with its readings: at the start, Tatooine's lies behind the
+  // mission log on a phone.
+  const tangled = () =>
+    page.evaluate(() => {
+      const pieces = [
+        ...document.querySelectorAll('.hud__nw > *, .hud__ne > *'),
+      ]
+        .map((piece) => piece.getBoundingClientRect())
+        .filter((rect) => rect.width > 0 && rect.height > 0);
+      return [...document.querySelectorAll<HTMLElement>('.game__label')]
+        .filter((label) => {
+          const style = getComputedStyle(label);
+          if (style.display === 'none' || Number(style.opacity) === 0)
+            return false;
+          const rect = label.getBoundingClientRect();
+          return pieces.some(
+            (piece) =>
+              rect.left < piece.right &&
+              rect.right > piece.left &&
+              rect.top < piece.bottom &&
+              rect.bottom > piece.top,
+          );
+        })
+        .map((label) => label.textContent);
+    });
+  await expect.poll(tangled).toEqual([]);
+});
+
 test('fala a língua da página e leva /en/play para /play', async ({
   page,
   request,
