@@ -34,7 +34,7 @@ const es: Messages = {
     scrollToAbout: 'Ir a Sobre mí',
   },
   feedback: {
-    title: '¡Te doy la bienvenida!',
+    title: 'Deja tus comentarios',
     subtitle:
       'Comparte tus impresiones y sugerencias para ayudarme a mejorar mi portafolio.',
     nameLabel: 'Nombre completo',

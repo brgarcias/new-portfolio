@@ -35,7 +35,7 @@ const en = {
     scrollToAbout: 'Scroll to About Me',
   },
   feedback: {
-    title: 'Welcome!',
+    title: 'Leave your feedback',
     subtitle:
       'Please share your thoughts and feedback to help me improve my portfolio.',
     nameLabel: 'Full Name',
