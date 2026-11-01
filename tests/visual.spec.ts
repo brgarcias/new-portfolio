@@ -48,8 +48,27 @@ function timeDependent(page: Page) {
   ];
 }
 
+// A mask takes the size of what it covers, and the current role's duration
+// grew from "1y" to "1y 1m": the mask grew with it and failed the
+// captures. Before each capture, the values take the text they had when
+// the images were recorded, in each language's format.
+async function freezeDates(page: Page) {
+  await page.evaluate(() => {
+    const duration = document.querySelector(
+      '#experience .xp-item:first-child .xp-item__duration',
+    )?.lastChild;
+    if (duration?.nodeType === Node.TEXT_NODE) {
+      duration.textContent =
+        document.documentElement.lang === 'en' ? '1y 1m' : '1a 1m';
+    }
+    const year = document.querySelector('.site-footer__year');
+    if (year) year.textContent = '2026';
+  });
+}
+
 async function expectScreenshot(page: Page, name: string, scope = 'body') {
   await settle(page, scope);
+  await freezeDates(page);
   await expect(page).toHaveScreenshot(name, { mask: timeDependent(page) });
 }
 
