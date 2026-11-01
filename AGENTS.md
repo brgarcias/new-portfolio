@@ -163,6 +163,7 @@ O Playwright grava a imagem de um teste visual novo e aprova o teste. Por isso c
 Capturas que variam entre execuções aparecem como teste instável no CI. As causas já encontradas, e o que evita cada uma:
 
 - Clicar num elemento enquanto o bloco dele ainda entra na tela (`Reveal`) às vezes faz o Playwright rolar a página antes do clique. Antes de clicar, espere a entrada terminar, com `toHaveCSS('opacity', '1')` no bloco.
+- O mesmo vale para os botões do topo, que entram por uma animação de CSS logo que a página abre: um clique em "Leave Feedback" durante a subida às vezes errava o botão, e o Playwright rolava a página para tentar de novo, deixando-a rolada atrás do diálogo do feedback. O `openFeedbackForm` espera as animações do topo terminarem (`getAnimations()`) antes de clicar.
 - Depois de um clique que abre ou fecha algo, espere as transições (`waitForTransitions`) antes de centralizar o elemento para a captura.
 - Imagens reduzidas por um `transform: scale()` sob um `filter` saíam um pouco diferentes de um quadro para outro. Os aparelhos dos projetos usam `zoom`, que desenha a imagem no tamanho final, e a captura do carrossel usa "reduzir movimento", para as setas pularem direto ao cartão, sem deslizar.
 
