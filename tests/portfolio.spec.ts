@@ -981,6 +981,10 @@ test('valida os campos do formulário de feedback', async ({
   });
   await page.goto('/');
   let dialog = await openFeedbackForm(page);
+  // The dialog is named after what it is for.
+  await expect(
+    page.getByRole('dialog', { name: 'Leave your feedback' }),
+  ).toBeVisible();
   const name = dialog.locator('input[name="fullName"]');
   const email = dialog.locator('input[name="email"]');
   const feedback = dialog.locator('textarea[name="feedback"]');
