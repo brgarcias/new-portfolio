@@ -12,6 +12,7 @@ import {
   wrap180,
 } from './telemetry';
 import { holocrons, pads } from './world/arena';
+import { atmosphere } from './world/biomes';
 
 // Moves the instruments over the flight, every frame, straight in the
 // DOM: the compass's tape and marks, the radar's map around the ship, the
@@ -285,6 +286,9 @@ function readouts(text: boolean) {
     );
   }
   const boost = telemetry.boost ? '' : undefined;
+  // How bright the sky is, for the tests: the frame reads no pixels.
+  const sky = atmosphere.horizon.toFixed(1);
+  if (root.dataset.sky !== sky) root.dataset.sky = sky;
   if (root.dataset.boost !== boost) {
     if (boost === undefined) delete root.dataset.boost;
     else root.dataset.boost = boost;

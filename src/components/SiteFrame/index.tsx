@@ -21,7 +21,13 @@ import ThemeToggle from './ThemeToggle';
 import { homePath } from '@/src/i18n/config';
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
-import { resume, linkTarget, SocialIcon, type NavItem } from './content';
+import {
+  resume,
+  linkTarget,
+  ResumeShort,
+  SocialIcon,
+  type NavItem,
+} from './content';
 import type { SocialLink } from '@/src/content';
 import { barIds, pageIds, type PageId } from '@/src/content/sections';
 // CSS
@@ -315,8 +321,7 @@ export default function SiteFrame({
               href={resume.href}
               download={resume.fileName}
             >
-              <ArrowDownIcon />
-              {t.cv}
+              <ResumeShort t={t} />
             </a>
             <button
               ref={toggleRef}
@@ -385,8 +390,13 @@ export default function SiteFrame({
             href={resume.href}
             download={resume.fileName}
           >
-            <ArrowDownIcon />
-            {t.downloadCv}
+            <span className="resume-label resume-label--full">
+              <ArrowDownIcon />
+              {t.downloadCv}
+            </span>
+            <span className="resume-label resume-label--short">
+              <ResumeShort t={t} />
+            </span>
           </a>
         </div>
       </nav>

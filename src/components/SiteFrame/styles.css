@@ -642,6 +642,14 @@
     width: 2.25rem;
     height: 2.25rem;
   }
+
+  .stack-menu__footer .resume-label--full {
+    display: none;
+  }
+
+  .stack-menu__footer .resume-label--short {
+    display: contents;
+  }
 }
 
 /* ─── Stage: the page and the sheets stacked behind it ──── */

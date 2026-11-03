@@ -33,11 +33,12 @@ export function systemTheme(): Theme {
     : 'dark';
 }
 
-export function hasStoredTheme() {
+function storedTheme(): Theme | null {
   try {
-    return localStorage.getItem(storageKey) !== null;
+    const stored = localStorage.getItem(storageKey);
+    return stored === 'light' || stored === 'dark' ? stored : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -52,6 +53,32 @@ export function storeTheme(theme: Theme) {
   }
 }
 
+// Calls back when the page should take another theme without a click on it:
+// the system changed, for who has not chosen; another tab chose; or the page
+// came back from the browser's history after a choice made elsewhere, as on the
+// way from the site to the game and back. Returns the function that stops it.
+export function followTheme(apply: (theme: Theme) => void) {
+  const check = () => {
+    const theme = storedTheme() ?? systemTheme();
+    if (theme !== currentTheme()) apply(theme);
+  };
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === storageKey || event.key === null) check();
+  };
+  const onShow = (event: PageTransitionEvent) => {
+    if (event.persisted) check();
+  };
+  const media = window.matchMedia('(prefers-color-scheme: light)');
+  media.addEventListener('change', check);
+  window.addEventListener('storage', onStorage);
+  window.addEventListener('pageshow', onShow);
+  return () => {
+    media.removeEventListener('change', check);
+    window.removeEventListener('storage', onStorage);
+    window.removeEventListener('pageshow', onShow);
+  };
+}
+
 export function applyTheme(theme: Theme) {
   const { classList } = document.documentElement;
   classList.toggle('light', theme === 'light');
@@ -59,4 +86,14 @@ export function applyTheme(theme: Theme) {
   document
     .querySelectorAll('meta[name="theme-color"]')
     .forEach((meta) => meta.setAttribute('content', themeColors[theme]));
+}
+
+// Takes a theme at once, with CSS transitions off, so nothing fades on its own.
+export function applyThemeAtOnce(theme: Theme) {
+  const root = document.documentElement;
+  root.classList.add('theme-switching');
+  applyTheme(theme);
+  // Reading a style applies the new colors while transitions are off.
+  getComputedStyle(root).getPropertyValue('color');
+  root.classList.remove('theme-switching');
 }

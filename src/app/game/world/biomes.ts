@@ -1,4 +1,5 @@
 import { sectionIds, type SectionId } from '@/src/content/sections';
+import type { Theme } from '@/src/app/theme';
 
 // Each section of the site owns a sector of the world, a slice of the
 // platform around its landing pad, dressed as a planet of the saga: its
@@ -33,6 +34,8 @@ export interface Biome {
   // The ground's two colors, mixed by a noise, and the accent of the
   // sector on the platform's edge and on the radar.
   ground: [string, string];
+  // The same, in the light theme, where it is too dark for the daylight.
+  groundByDay?: [string, string];
   accent: string;
   palette: Palette;
   weather?: Weather;
@@ -83,6 +86,7 @@ export const biomes: Record<SectionId, Biome> = {
     id: 'experience',
     planet: 'Coruscant',
     ground: ['#23263b', '#2c3050'],
+    groundByDay: ['#5a607e', '#686f90'],
     accent: '#ff7a9c',
     palette: {
       top: '#05060e',
@@ -102,6 +106,7 @@ export const biomes: Record<SectionId, Biome> = {
     id: 'education',
     planet: 'Dagobah',
     ground: ['#3a4a2c', '#2b3a22'],
+    groundByDay: ['#64784a', '#52663c'],
     accent: '#7fcf8a',
     weather: 'spores',
     weatherColor: '#b6f0a8',
@@ -165,6 +170,7 @@ export const biomes: Record<SectionId, Biome> = {
     id: 'contributing',
     planet: 'Endor',
     ground: ['#2f5a2a', '#3a4a26'],
+    groundByDay: ['#3f7a38', '#4e6432'],
     accent: '#9ad36a',
     weather: 'fireflies',
     weatherColor: '#fff0a0',
@@ -204,6 +210,61 @@ export const biomes: Record<SectionId, Biome> = {
   },
 };
 
+// The light theme is the same world by day. Tatooine, Naboo, Endor and Hoth
+// are bright already, so only what is dark in the dark theme changes: the hub,
+// a deck high in the sky; Coruscant, in the sun; the swamp, in a pale mist; and
+// the ocean world under a bright overcast.
+const daylight: Partial<Record<Sector, Palette>> = {
+  hub: {
+    top: '#5f86cf',
+    horizon: '#dbe6fb',
+    below: '#aab9d6',
+    fog: '#cfdcf3',
+    density: 0.0026,
+    stars: 0,
+    skyLight: '#ffffff',
+    groundLight: '#8a94b8',
+    sun: '#fff6e6',
+    sunIntensity: 2.2,
+  },
+  experience: {
+    top: '#4f73b8',
+    horizon: '#f3cfb4',
+    below: '#8a8fa8',
+    fog: '#c9c6d6',
+    density: 0.003,
+    stars: 0,
+    skyLight: '#e8e6ff',
+    groundLight: '#565a78',
+    sun: '#fff1dc',
+    sunIntensity: 2,
+  },
+  education: {
+    top: '#6f9a86',
+    horizon: '#c7dcb4',
+    below: '#6a8060',
+    fog: '#a9c09a',
+    density: 0.0055,
+    stars: 0,
+    skyLight: '#dcecc8',
+    groundLight: '#4a5c3a',
+    sun: '#f4f6d2',
+    sunIntensity: 1.6,
+  },
+  courses: {
+    top: '#7d95b3',
+    horizon: '#d9e2ec',
+    below: '#6d7f92',
+    fog: '#bccad8',
+    density: 0.004,
+    stars: 0,
+    skyLight: '#e4edf7',
+    groundLight: '#516274',
+    sun: '#f2f6fb',
+    sunIntensity: 1.8,
+  },
+};
+
 // The angle of a sector's middle, where its pad lies: the first one is
 // straight ahead of the spawn, at -Z.
 export const angleOf = (id: SectionId) => sectionIds.indexOf(id) * sectorAngle;
@@ -220,8 +281,9 @@ export function sectorAt(x: number, z: number): Sector {
   return sectorOfAngle(Math.atan2(x, -z));
 }
 
-export const paletteOf = (sector: Sector) =>
-  sector === 'hub' ? space : biomes[sector].palette;
+export const paletteOf = (sector: Sector, theme: Theme = 'dark'): Palette =>
+  (theme === 'light' ? daylight[sector] : undefined) ??
+  (sector === 'hub' ? space : biomes[sector].palette);
 
 // The unit vector from the middle of the platform to the middle of a sector.
 export const directionOf = (id: SectionId) => {
@@ -229,5 +291,6 @@ export const directionOf = (id: SectionId) => {
   return { x: Math.sin(angle), z: -Math.cos(angle) };
 };
 
-// Where the ship is, for the sky and the lights to follow.
-export const atmosphere = { sector: 'hub' as Sector };
+// Where the ship is, for the sky and the lights to follow, and how bright the
+// horizon is now, from 0 to 1, which the HUD exposes for the tests.
+export const atmosphere = { sector: 'hub' as Sector, horizon: 0 };

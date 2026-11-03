@@ -3,6 +3,7 @@
 // HOOKS
 import { useEffect, useMemo } from 'react';
 // GAME
+import { useTheme } from '../useTheme';
 import { Builder, litMaterial, solidMaterial } from './builder';
 import { directionOf } from './biomes';
 
@@ -138,13 +139,20 @@ function Clouds({
 }
 
 export default function Far() {
+  // The storm's clouds would be black blots on the day's sky.
+  const light = useTheme() === 'light';
   return (
     <>
       <Suns />
       <GasGiant />
       <Skyline />
       <Clouds sector="projects" color="#f7faff" height={52} count={4} />
-      <Clouds sector="courses" color="#3a4250" height={40} count={3} />
+      <Clouds
+        sector="courses"
+        color={light ? '#a3aebd' : '#3a4250'}
+        height={40}
+        count={3}
+      />
     </>
   );
 }

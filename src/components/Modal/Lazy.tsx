@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 // TYPES
 import type { ModalProps } from '.';
 // UTILS
-import { whenIdle } from './whenIdle';
+import { preloadWhenIdle } from './whenIdle';
 
 // HeroUI's dialog, with react-aria and the animation code behind it, is the
 // largest part of the page's JavaScript and only matters once a dialog
@@ -20,7 +20,7 @@ export default function LazyModal(props: Readonly<ModalProps>) {
   const [needed, setNeeded] = useState(props.visible);
   if (props.visible && !needed) setNeeded(true);
 
-  useEffect(() => whenIdle(() => void loadModal()), []);
+  useEffect(() => preloadWhenIdle(loadModal), []);
 
   return needed ? <Modal {...props} /> : null;
 }

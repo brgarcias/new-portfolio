@@ -117,6 +117,10 @@ export default async function LocaleLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: removeHeadWhitespace }} />
         <script dangerouslySetInnerHTML={{ __html: applyStoredTheme }} />
+        {/* The blocks enter by JavaScript. Without it, they are just there. */}
+        <noscript>
+          <style>{`[style*="opacity:0"]{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
         <script
           type="application/ld+json"
           // Escapes "<" so the JSON can never close the script element.

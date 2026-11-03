@@ -17,6 +17,7 @@ const es: Messages = {
     closeMenu: 'Cerrar el menú',
     backToPage: 'Volver a la página',
     cv: 'CV',
+    download: 'Descargar',
     downloadCv: 'Descargar currículum',
     language: 'Idioma',
     toLightTheme: 'Cambiar al tema claro',

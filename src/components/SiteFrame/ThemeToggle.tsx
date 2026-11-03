@@ -8,9 +8,8 @@ import { useI18n } from '@/src/i18n/I18nProvider';
 import {
   applyTheme,
   currentTheme,
-  hasStoredTheme,
+  followTheme,
   storeTheme,
-  systemTheme,
   type Theme,
 } from '@/src/app/theme';
 // ICONS
@@ -105,15 +104,10 @@ export default function ThemeToggle() {
   const t = useI18n().messages.frame;
 
   // The browser bar takes the theme's color, and the page follows the
-  // system while the visitor has not chosen a theme.
+  // system while the visitor has not chosen a theme, and other tabs.
   useEffect(() => {
     applyTheme(currentTheme());
-    const media = window.matchMedia('(prefers-color-scheme: light)');
-    const onChange = () => {
-      if (!hasStoredTheme()) switchTheme(systemTheme());
-    };
-    media.addEventListener('change', onChange);
-    return () => media.removeEventListener('change', onChange);
+    return followTheme((theme) => switchTheme(theme));
   }, []);
 
   const onClick = (event: MouseEvent<HTMLButtonElement>) => {

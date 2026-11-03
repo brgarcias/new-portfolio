@@ -194,6 +194,33 @@
   margin-top: 1.75rem;
 }
 
+/* What only a phone shows: the game as a button, and the résumé's short label
+   beside the social links. */
+.hero__play-button,
+.hero__resume-short {
+  display: none;
+}
+
+/* On a phone the game stands out among the buttons, tinted with the brand. */
+.hero__play-button {
+  border-color: rgb(var(--rgb-brand-light) / 0.65);
+  background: rgb(var(--rgb-brand-light) / 0.16);
+  box-shadow: 0 10px 28px -14px rgb(92 94 220 / 0.9);
+  color: var(--color-text);
+}
+
+.hero__play-button svg {
+  color: var(--color-brand-light);
+}
+
+.hero__play-button:hover,
+.hero__play-button:focus-visible {
+  border-color: var(--color-brand-light);
+  background: rgb(var(--rgb-brand-light) / 0.26);
+  color: var(--color-text);
+  transform: translateY(-2px);
+}
+
 /* The game: quieter than the actions, as it is not what a recruiter came
    for, but in sight for whoever is curious. */
 .hero__play {
@@ -409,6 +436,117 @@
   .hero__actions .btn--primary {
     flex-basis: 100%;
   }
+
+  .hero__actions .btn:not(.btn--primary) {
+    flex: 1 1 0;
+  }
+
+  .hero__resume,
+  .hero__play {
+    display: none;
+  }
+
+  .hero__play-button,
+  .hero__resume-short {
+    display: inline-flex;
+  }
+
+  .hero__links {
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+  }
+
+  .hero__links .social-links {
+    flex: none;
+    flex-wrap: nowrap;
+  }
+
+  .hero__resume-short {
+    height: 2.75rem;
+    flex: none;
+    padding-inline: 0.85rem;
+  }
+}
+
+/* On a laptop the first screen is short, 650 px or so once the browser takes its
+   share: the top tightens, to keep the buttons and the companies in it. From
+   900 px tall, these come to the sizes above. */
+@media (min-width: 900px) {
+  .hero {
+    padding-top: calc(var(--header-height) + clamp(1rem, 4vh, 3rem));
+  }
+
+  .hero__name {
+    margin-top: clamp(1rem, 3.2vh, 1.75rem);
+  }
+
+  .hero__title {
+    margin-top: clamp(0.6rem, 1.6vh, 0.85rem);
+    font-size: clamp(2.75rem, min(5.6vw, 9vh), 5rem);
+  }
+
+  .hero__tagline {
+    margin-top: clamp(1rem, 2.7vh, 1.5rem);
+    font-size: clamp(1.05rem, min(1.8vw, 2.25vh), 1.25rem);
+  }
+
+  .hero__actions {
+    margin-top: clamp(1.25rem, 4vh, 2.25rem);
+  }
+
+  .hero__links {
+    margin-top: clamp(0.75rem, 3.2vh, 1.75rem);
+  }
+}
+
+/* A short screen: the longest taglines, in Portuguese and Spanish, get a line
+   less, in a wider column. */
+@media (min-width: 900px) and (max-height: 760px) {
+  .hero__tagline {
+    max-width: 40rem;
+  }
+}
+
+/* A small laptop or a tablet lying down: the text takes more of the width, and
+   the three buttons stay in one row, in the three languages. */
+@media (min-width: 900px) and (max-width: 1180px) {
+  .hero__inner {
+    gap: 2rem;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
+  }
+
+  .hero__actions {
+    gap: 0.5rem;
+  }
+
+  .hero__actions .btn {
+    height: 2.75rem;
+    padding-inline: 1.05rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* On a phone the companies keep to one line. */
+@media (max-width: 559px) {
+  .hero__proof {
+    gap: 0.5rem 1.5rem;
+  }
+
+  .hero__companies {
+    gap: 0.25rem clamp(0.5rem, 3vw, 0.875rem);
+  }
+
+  .hero__companies li {
+    font-size: 0.9375rem;
+  }
+}
+
+/* The narrower phones: with a little to spare, as text is a bit wider on screens
+   of lower density. */
+@media (max-width: 379px) {
+  .hero__companies li {
+    font-size: 0.875rem;
+  }
 }
 
 /* The narrowest phones: a long word of the title, as "Desenvolvedor",
@@ -416,6 +554,14 @@
 @media (max-width: 359px) {
   .hero__title {
     font-size: 2.5rem;
+  }
+
+  .hero__links .social-links {
+    gap: 0.375rem;
+  }
+
+  .hero__resume-short {
+    padding-inline: 0.75rem;
   }
 }
 

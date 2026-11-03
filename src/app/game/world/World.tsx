@@ -9,6 +9,7 @@ import { useFrame } from '@react-three/fiber';
 import { sectionIds, type SectionId } from '@/src/content/sections';
 // GAME
 import { useReducedMotion } from '../useMediaQuery';
+import { useTheme } from '../useTheme';
 // WORLD
 import { flora, landmarks, pads, padRadius, props } from './arena';
 import Atmosphere from './Atmosphere';
@@ -55,6 +56,7 @@ function Dust() {
   }, []);
   const cloud = useRef<THREE.Points>(null);
   const reduced = useReducedMotion();
+  const light = useTheme() === 'light';
   useFrame((_, delta) => {
     if (cloud.current && !reduced) cloud.current.rotation.y += delta * 0.012;
   });
@@ -65,9 +67,9 @@ function Dust() {
       </bufferGeometry>
       <pointsMaterial
         size={0.18}
-        color="#9c9eff"
+        color={light ? '#ffffff' : '#9c9eff'}
         transparent
-        opacity={0.35}
+        opacity={light ? 0.5 : 0.35}
         sizeAttenuation
       />
     </points>

@@ -1,8 +1,8 @@
 {
   "en": {
     "order": 7,
-    "title": "C Language - Udemy",
-    "subtitle": "C",
+    "title": "C Language",
+    "subtitle": "Udemy",
     "dialogTitle": "Concepts",
     "dialogSubtitle": "Fundamentals of the programming language",
     "modules": [
@@ -26,8 +26,8 @@
   },
   "pt": {
     "order": 7,
-    "title": "Linguagem C - Udemy",
-    "subtitle": "C",
+    "title": "Linguagem C",
+    "subtitle": "Udemy",
     "dialogTitle": "Conceitos",
     "dialogSubtitle": "Fundamentos da linguagem de programação",
     "modules": [
@@ -51,8 +51,8 @@
   },
   "es": {
     "order": 7,
-    "title": "Lenguaje C - Udemy",
-    "subtitle": "C",
+    "title": "Lenguaje C",
+    "subtitle": "Udemy",
     "dialogTitle": "Conceptos",
     "dialogSubtitle": "Fundamentos del lenguaje de programación",
     "modules": [

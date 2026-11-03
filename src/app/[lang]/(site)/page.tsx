@@ -66,6 +66,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
         hero={getHero(locale)}
         social={social}
         t={messages.hero}
+        frame={messages.frame}
         playHref={pagePath(locale, 'play')}
         currentRole={
           current && {
@@ -105,6 +106,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
         contact={getContact(locale, profile)}
         social={social}
         labels={messages.contact}
+        frame={messages.frame}
       />
       <OffscreenPause />
     </main>

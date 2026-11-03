@@ -18,6 +18,7 @@ const en = {
     closeMenu: 'Close menu',
     backToPage: 'Back to the page',
     cv: 'CV',
+    download: 'Download',
     downloadCv: 'Download résumé',
     language: 'Language',
     toLightTheme: 'Switch to light theme',

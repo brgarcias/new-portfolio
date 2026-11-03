@@ -7,6 +7,8 @@ import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 // CONTENT
 import type { SectionId } from '@/src/content/sections';
+// THEME
+import { currentTheme } from '@/src/app/theme';
 // GAME
 import { readInput } from './controls';
 import { hunt } from './hunt';
@@ -153,7 +155,16 @@ function stretch(left: number) {
     positions.setZ(i * 4 + 3, far);
   }
   positions.needsUpdate = true;
-  streakMaterial.opacity = Math.min(0.9, left * 1.8);
+  const fade = Math.min(0.9, left * 1.8);
+  streakMaterial.opacity = fade;
+  // Added to a bright sky, light would not show: by day, the rays darken it
+  // instead, to a slate blue, and still fade towards the middle.
+  const day = currentTheme() === 'light';
+  streakMaterial.blending = day
+    ? THREE.SubtractiveBlending
+    : THREE.AdditiveBlending;
+  if (day) streakMaterial.color.setRGB(fade, fade * 0.8, fade * 0.5);
+  else streakMaterial.color.setRGB(1, 1, 1);
 }
 
 // The arrival, a frame of it: it moves on, faster once the pilot moves, and

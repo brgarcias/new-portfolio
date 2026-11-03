@@ -6,9 +6,8 @@
    what was explored; cyan, the holocrons; each planet's accent, its own
    things. Hairlines, brackets and chamfers instead of pills and cards,
    plates behind every reading so it holds over any sky, and motion that
-   switches on like a projector. The game's interface is the same dark
-   cockpit in both of the site's themes; the sections it opens keep the
-   site's.
+   switches on like a projector. The game follows the site's theme: the
+   same cockpit by day, at the end of this file, over the world by day.
    ═══════════════════════════════════════════════════════════ */
 
 /* ─── Tokens ────────────────────────────────────────────── */
@@ -5229,5 +5228,427 @@
   .game-panel__sheet {
     height: 100%;
     border: 0;
+  }
+}
+
+/* ─── Light theme ───────────────────────────────────────── */
+/* The same cockpit by day: bright plates, ink on them, and the deeper
+   versions of the instruments' colors, so small text keeps 4.5:1. The cinema
+   bars and the band of the finale stay dark, with their own white text. */
+.light .play {
+  --g-ink: #0d1530;
+  --g-ink-2: rgb(13 21 48 / 0.84);
+  --g-ink-3: rgb(13 21 48 / 0.7);
+  --g-holo: 24 88 168;
+  --g-plate: rgb(247 249 255 / 0.9);
+  --g-plate-2: rgb(247 249 255 / 0.96);
+  --g-brand: #4c4ed3;
+  --g-amber: #a85a00;
+  --g-teal: #0a7d60;
+  --g-cube: #0a7aa3;
+
+  background: #eef1f9;
+  color-scheme: light;
+}
+
+/* The planets' accents are pale, made for a dark plate: as text on a bright
+   one, each keeps its hue at a deeper lightness. */
+.light .game__label-planet,
+.light .hud__planet strong,
+.light .planet-title__section,
+.light .destination__name strong,
+.light .destination__state[data-state='course'],
+.light .record__where strong,
+.light .record__course[aria-pressed='true'],
+.light .game-panel__planet {
+  color: color-mix(in srgb, var(--accent) 40%, #0d1530);
+}
+
+.light .compass__mark small,
+.light .course-strip__icon,
+.light .course-strip__plan .g-label,
+.light .course-lock,
+.light .flight-plan__to .g-label {
+  color: color-mix(in srgb, var(--route) 40%, #0d1530);
+}
+
+@supports (color: oklch(from red l c h)) {
+  .light .game__label-planet,
+  .light .hud__planet strong,
+  .light .planet-title__section,
+  .light .destination__name strong,
+  .light .destination__state[data-state='course'],
+  .light .record__where strong,
+  .light .record__course[aria-pressed='true'],
+  .light .game-panel__planet {
+    color: oklch(from var(--accent) 0.46 max(c, 0.1) h);
+  }
+
+  .light .compass__mark small,
+  .light .course-strip__icon,
+  .light .course-strip__plan .g-label,
+  .light .course-lock,
+  .light .flight-plan__to .g-label {
+    color: oklch(from var(--route) 0.46 max(c, 0.1) h);
+  }
+}
+
+@media (hover: hover) {
+  .light .g-btn:hover {
+    background: rgb(255 255 255 / 0.96);
+  }
+}
+
+/* The loading screen and the hangar. */
+.light .game-notice {
+  background:
+    radial-gradient(60% 50% at 50% 42%, rgb(92 94 220 / 0.12), transparent 70%),
+    #eef1f9;
+}
+
+.light .hangar {
+  background:
+    radial-gradient(70% 55% at 28% 16%, rgb(92 94 220 / 0.14), transparent 70%),
+    radial-gradient(
+      55% 45% at 85% 92%,
+      rgb(79 182 232 / 0.12),
+      transparent 70%
+    ),
+    linear-gradient(180deg, #f6f7fd, #eef1f9 70%);
+}
+
+.light .hangar::after {
+  background: #eef1f9;
+}
+
+.light .hangar__stage {
+  background:
+    radial-gradient(55% 55% at 50% 64%, rgb(92 94 220 / 0.18), transparent 72%),
+    linear-gradient(180deg, #f8f9ff, #dfe4f4);
+}
+
+.light .stage-hud__bl,
+.light .stage-hud__br {
+  background: rgb(247 249 255 / 0.8);
+}
+
+.light .hangar__spec {
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.96),
+    rgb(244 246 253 / 0.96)
+  );
+}
+
+.light .stat__meter span.is-on {
+  background: linear-gradient(90deg, #5c5edc, #2a7fc9);
+}
+
+.light .hangar__ship[aria-checked='true'] {
+  border-color: rgb(76 78 211 / 0.8);
+  box-shadow:
+    inset 0 0 0 1px rgb(76 78 211 / 0.2),
+    0 16px 34px -24px rgb(92 94 220);
+}
+
+.light .hangar__ship[aria-checked='true'] .hangar__ship-glyph {
+  filter: none;
+  stroke: var(--g-ink);
+}
+
+/* The flight. */
+.light .game {
+  background: #dbe6fb;
+}
+
+.light .game__label {
+  background: var(--g-plate);
+}
+
+.light .hud__log,
+.light .hud__craft {
+  background: linear-gradient(90deg, var(--g-plate), rgb(247 249 255 / 0.82));
+}
+
+.light .hud__locator {
+  background: linear-gradient(270deg, var(--g-plate), rgb(247 249 255 / 0.82));
+}
+
+.light .hud__tool[aria-pressed='true'] {
+  --btn-line: rgb(76 78 211 / 0.85);
+
+  background: rgb(92 94 220 / 0.2);
+}
+
+.light .hud__archive[aria-expanded='true'] {
+  --btn-line: rgb(10 122 163 / 0.85);
+
+  background: rgb(10 122 163 / 0.14);
+}
+
+.light .hud__badge,
+.light .record__new {
+  color: #fff;
+}
+
+.light .compass__window {
+  background: linear-gradient(180deg, var(--g-plate), rgb(247 249 255 / 0.7));
+}
+
+.light .compass__caret {
+  background: var(--g-ink);
+}
+
+/* The radar. */
+.light .radar {
+  background: rgb(247 249 255 / 0.88);
+}
+
+.light .radar__sweep {
+  background: conic-gradient(
+    from -50deg,
+    rgb(24 88 168 / 0) 0deg,
+    rgb(24 88 168 / 0.22) 50deg,
+    transparent 50.5deg
+  );
+}
+
+.light .radar__deck {
+  fill: rgb(214 223 243 / 0.75);
+}
+
+.light .radar__hub,
+.light .radar__pad {
+  fill: rgb(255 255 255 / 0.94);
+}
+
+.light .radar__pad[data-state='visited'] {
+  fill: rgb(10 125 96 / 0.4);
+}
+
+.light .radar__pad[data-state='active'],
+.light .radar__arrow {
+  fill: var(--g-ink);
+}
+
+.light .radar__holocron {
+  fill: rgb(10 122 163 / 0.3);
+}
+
+.light .radar__cone {
+  fill: rgb(13 21 48 / 0.12);
+}
+
+.light .radar__arrow {
+  stroke: #fff;
+}
+
+/* The notices and the planet's title. */
+.light .toast {
+  border-color: rgb(10 122 163 / 0.4);
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.97),
+    rgb(243 248 255 / 0.97)
+  );
+  box-shadow:
+    0 14px 30px -18px rgb(13 21 48 / 0.45),
+    inset 0 1px 0 rgb(255 255 255 / 0.6);
+}
+
+.light .toast__icon,
+.light .destination__holocron[data-found],
+.light .record:not([data-locked]) .record__cube {
+  filter: none;
+}
+
+.light .toast__icon--check {
+  border-color: rgb(10 125 96 / 0.6);
+}
+
+.light .toast[data-kind='explored'] {
+  border-color: rgb(10 125 96 / 0.45);
+}
+
+.light .toast[data-kind='briefing'] {
+  border-color: rgb(76 78 211 / 0.45);
+}
+
+.light .planet-title::before {
+  background: radial-gradient(
+    closest-side,
+    rgb(255 255 255 / 0.82),
+    rgb(255 255 255 / 0.5) 62%,
+    transparent
+  );
+}
+
+.light .planet-title__name {
+  color: var(--g-ink);
+  text-shadow:
+    0 0 26px var(--accent),
+    0 1px 10px rgb(255 255 255 / 0.9);
+}
+
+/* The flight plan. */
+.light .course-lock__frame i {
+  filter: drop-shadow(0 0 3px rgb(255 255 255 / 0.9));
+}
+
+.light .course-lock__text {
+  background: rgb(247 249 255 / 0.84);
+}
+
+.light .speedo__bar span {
+  background: linear-gradient(
+    90deg,
+    rgb(var(--g-holo) / 0.5),
+    rgb(var(--g-holo))
+  );
+}
+
+.light .hud[data-boost] .speedo__bar span {
+  background: linear-gradient(90deg, #d9631b, #e8a22e);
+}
+
+/* The touch controls. */
+.light .joystick {
+  background: radial-gradient(
+    circle,
+    rgb(247 249 255 / 0.4),
+    rgb(247 249 255 / 0.74)
+  );
+}
+
+.light .boost {
+  border-color: rgb(168 90 0 / 0.6);
+  background: radial-gradient(
+    circle,
+    rgb(255 236 204 / 0.7),
+    rgb(247 249 255 / 0.74)
+  );
+}
+
+.light .photo__frame {
+  filter: drop-shadow(0 0 1px rgb(13 21 48 / 0.85));
+}
+
+.light .photo__saved {
+  border-color: rgb(10 125 96 / 0.5);
+}
+
+/* The chart and the archive. */
+.light .game-map__backdrop {
+  background:
+    radial-gradient(
+      100% 80% at 50% 35%,
+      rgb(240 244 252 / 0.72),
+      rgb(218 225 243 / 0.92)
+    ),
+    transparent;
+}
+
+.light .game-map__sheet {
+  background: linear-gradient(180deg, #fbfcff, #f1f4fb);
+  box-shadow: 0 50px 100px -50px rgb(13 21 48 / 0.55);
+}
+
+.light .game-map__sheet::after {
+  background: repeating-linear-gradient(
+    0deg,
+    rgb(13 21 48 / 0.012) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+.light .chart__deck {
+  fill: rgb(226 233 247 / 0.9);
+}
+
+.light .chart__hub,
+.light .chart__disc {
+  fill: #fff;
+}
+
+.light .chart__gates,
+.light .chart__holocron[data-state='found'],
+.light .chart__name,
+.light .chart__ship-arrow {
+  stroke: #fff;
+}
+
+.light .chart__pad[data-state='visited'] .chart__disc {
+  fill: rgb(10 125 96 / 0.28);
+}
+
+.light .chart__pad[data-state='active'] .chart__disc,
+.light .chart__ship-arrow {
+  fill: var(--g-ink);
+}
+
+.light .chart__pad[data-state='active'] .chart__index {
+  fill: #fff;
+}
+
+.light .chart__holocron {
+  fill: rgb(10 122 163 / 0.22);
+}
+
+.light .chart__ship-ring {
+  stroke: var(--g-ink);
+}
+
+.light .chart__ship-cone {
+  fill: rgb(13 21 48 / 0.12);
+}
+
+.light .flight-plan {
+  background: #f7f9ff;
+}
+
+.light .record__card:focus-visible,
+.light .record[data-new] .record__card {
+  border-color: rgb(10 122 163 / 0.55);
+  background: rgb(10 122 163 / 0.06);
+}
+
+/* The sections' panel. */
+.light .game-panel__backdrop {
+  background:
+    radial-gradient(
+      90% 60% at 50% 0%,
+      color-mix(in srgb, var(--accent) 22%, transparent),
+      transparent 65%
+    ),
+    rgb(226 232 246 / 0.84);
+}
+
+.light .game-panel__sheet {
+  box-shadow: 0 50px 100px -50px rgb(13 21 48 / 0.55);
+}
+
+.light .game-panel__bar,
+.light .game-panel__footer {
+  background: #f2f4fb;
+}
+
+@media (max-width: 1023px) {
+  .light .hangar__dock {
+    background: linear-gradient(
+      to top,
+      #eef1f9 0%,
+      rgb(238 241 249 / 0.92) 55%,
+      rgb(238 241 249 / 0)
+    );
+  }
+}
+
+@media (max-width: 639px) {
+  .light .flight-plan::before {
+    background: linear-gradient(transparent, #f7f9ff);
+  }
+
+  .light .flight-plan::after {
+    background: #f7f9ff;
   }
 }
