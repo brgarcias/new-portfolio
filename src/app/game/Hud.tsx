@@ -229,7 +229,7 @@ function Landing({ pad, place }: { pad: SectionId | null; place?: Place }) {
   );
 }
 
-// A planet's title, the first time the ship enters it, like a film's title
+// A planet's title, each time the ship enters it, like a film's title
 // card: the planet's name in wide letters, the section above it and a rule
 // in its color that opens out. The name comes first for screen readers.
 function PlanetTitle({
@@ -377,8 +377,8 @@ interface HudProps {
   onHudMode: () => void;
   photo: boolean;
   onPhoto: (on: boolean) => void;
-  // The notices of the moment, the title of a planet the first time the
-  // ship enters it, and the finale of the holocrons.
+  // The notices of the moment, the title of a planet each time the ship
+  // enters it, and the finale of the holocrons.
   toasts: Toast[];
   title: { id: SectionId; key: number } | null;
   finale: boolean;
@@ -435,6 +435,11 @@ export default function Hud({
       data-hud={hudMode}
       data-photo={photo ? '' : undefined}
       data-finale={finale ? '' : undefined}
+      style={
+        course
+          ? ({ '--route': biomes[course].accent } as CSSProperties)
+          : undefined
+      }
     >
       <div className="hud__top">
         <div className="hud__nw">

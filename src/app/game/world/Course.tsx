@@ -5,6 +5,8 @@ import { useEffect, useRef } from 'react';
 // THREE
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
+// CONTENT
+import type { SectionId } from '@/src/content/sections';
 // GAME
 import {
   followRoute,
@@ -20,19 +22,21 @@ import { telemetry } from '../telemetry';
 import { useReducedMotion } from '../useMediaQuery';
 // WORLD
 import { padRadius, pads } from './arena';
+import { biomes } from './biomes';
 import { groundHeight } from './terrain';
 
-// The flight plan over the world, in the amber of the route on the
-// instruments: a lane of light on the ground, with arrows running along it,
-// a corridor of gates at the height the ships fly, which open as the lane
-// reaches them and dissolve as the ship goes through, a column of light on
-// the pad it leads to, seen from anywhere on the platform, and chevrons
+// The flight plan over the world, in the color of the planet it leads to, as
+// on the instruments: a lane of light on the ground, with arrows running
+// along it, a corridor of gates at the height the ships fly, which open as the
+// lane reaches them and dissolve as the ship goes through, a column of light
+// on the pad it leads to, seen from anywhere on the platform, and chevrons
 // beside the ship, pointing where to turn when it faces away from all that.
 // All of it is drawn from flight-plan.ts, which works the way out. Everything
 // here writes the screen's colors straight, past the tone mapping, as the HUD
 // does, and ignores the fog, being a projection and not part of the place.
 
-// Half additive: bright over dark ground, and still amber over bright sand.
+// Part additive: bright over dark ground, and its color still over bright sand
+// or snow.
 const hologram = {
   transparent: true,
   depthWrite: false,
@@ -44,7 +48,19 @@ const hologram = {
   blendDst: THREE.OneMinusSrcAlphaFactor,
 } as const;
 
-const amberGlsl = 'vec3(1.0, 0.749, 0.369)';
+// The color of the planet the route leads to, as the screen shows it. Every
+// shader here shares it.
+const tint = { value: new THREE.Vector3(1, 1, 1) };
+const tintColor = new THREE.Color();
+const tintChannels = { r: 1, g: 1, b: 1 };
+let tinted: SectionId | null = null;
+
+function tintFor(id: SectionId) {
+  if (tinted === id) return;
+  tinted = id;
+  tintColor.set(biomes[id].accent).getRGB(tintChannels, THREE.SRGBColorSpace);
+  tint.value.set(tintChannels.r, tintChannels.g, tintChannels.b);
+}
 
 const clamp = (value: number, low = 0, high = 1) =>
   Math.min(high, Math.max(low, value));
@@ -95,7 +111,7 @@ const laneUniforms = {
 
 const laneMaterial = new THREE.ShaderMaterial({
   ...hologram,
-  uniforms: laneUniforms,
+  uniforms: { ...laneUniforms, tint },
   vertexShader: /* glsl */ `
     attribute float along;
     attribute float side;
@@ -114,6 +130,7 @@ const laneMaterial = new THREE.ShaderMaterial({
     uniform float end;
     uniform float total;
     uniform float presence;
+    uniform vec3 tint;
     varying float vAlong;
     varying float vSide;
     void main() {
@@ -129,7 +146,7 @@ const laneMaterial = new THREE.ShaderMaterial({
       arrow *= 1.0 - smoothstep(0.6, 0.68, across);
       float ahead = vAlong - progress;
       arrow *= 1.0 - smoothstep(38.0, 80.0, ahead);
-      // A dark bed, so it reads over bright sand or snow.
+      // A dark bed, so it reads over bright sand or snow, whatever its color.
       float bed = 1.0 - smoothstep(0.84, 1.0, across);
       // Only the way still to fly, and only as far as it has been drawn; the
       // tip of the drawing burns hot.
@@ -139,8 +156,8 @@ const laneMaterial = new THREE.ShaderMaterial({
       float landing = 1.0 - smoothstep(end - 4.0, end, vAlong);
       float light = max(rails * 0.8, arrow * 0.95);
       float shown = kept * front * landing * presence;
-      vec3 color = ${amberGlsl} * light + vec3(1.0, 0.92, 0.75) * tip * 0.9;
-      float alpha = 0.22 * bed + light * 0.6 + tip * 0.3;
+      vec3 color = tint * light + mix(tint, vec3(1.0), 0.75) * tip * 0.9;
+      float alpha = 0.3 * bed + light * 0.75 + tip * 0.3;
       gl_FragColor = vec4(color * shown, alpha * shown);
     }
   `,
@@ -254,6 +271,7 @@ gateGeometry.setAttribute('heat', gateHeat);
 
 const gateMaterial = new THREE.ShaderMaterial({
   ...hologram,
+  uniforms: { tint },
   vertexShader: /* glsl */ `
     attribute float tone;
     attribute float fade;
@@ -267,11 +285,12 @@ const gateMaterial = new THREE.ShaderMaterial({
     }
   `,
   fragmentShader: /* glsl */ `
+    uniform vec3 tint;
     varying float vLight;
     varying float vHeat;
     void main() {
-      vec3 color = mix(${amberGlsl}, vec3(1.0, 0.97, 0.88), vHeat);
-      gl_FragColor = vec4(color * vLight * 1.1, vLight * 0.62);
+      vec3 color = mix(tint, vec3(1.0), vHeat * 0.85);
+      gl_FragColor = vec4(color * vLight, vLight * 0.85);
     }
   `,
 });
@@ -341,7 +360,7 @@ const columnUniforms = {
 // angle, as a beam of light in the air looks.
 const columnMaterial = new THREE.ShaderMaterial({
   ...hologram,
-  uniforms: columnUniforms,
+  uniforms: { ...columnUniforms, tint },
   vertexShader: /* glsl */ `
     varying vec3 vNormal;
     varying vec3 vToEye;
@@ -358,6 +377,7 @@ const columnMaterial = new THREE.ShaderMaterial({
     uniform float time;
     uniform float risen;
     uniform float fade;
+    uniform vec3 tint;
     varying vec3 vNormal;
     varying vec3 vToEye;
     varying float vHeight;
@@ -372,7 +392,7 @@ const columnMaterial = new THREE.ShaderMaterial({
       float bands = 0.82 + 0.18 * sin((units / 6.5 - time * 0.9) * 6.2832);
       float foot = 1.0 + 1.2 * exp(-units * 0.14);
       float light = tip * falling * bands * foot * fade;
-      vec3 color = ${amberGlsl} * body * 0.62 + vec3(1.0, 0.95, 0.82) * core * 0.42;
+      vec3 color = tint * body * 0.62 + mix(tint, vec3(1.0), 0.7) * core * 0.42;
       gl_FragColor = vec4(color * light, 0.0);
     }
   `,
@@ -390,7 +410,7 @@ const ripplesUniforms = {
 
 const ripplesMaterial = new THREE.ShaderMaterial({
   ...hologram,
-  uniforms: ripplesUniforms,
+  uniforms: { ...ripplesUniforms, tint },
   vertexShader: /* glsl */ `
     varying vec2 vSpot;
     void main() {
@@ -401,6 +421,7 @@ const ripplesMaterial = new THREE.ShaderMaterial({
   fragmentShader: /* glsl */ `
     uniform float time;
     uniform float fade;
+    uniform vec3 tint;
     varying vec2 vSpot;
     void main() {
       float r = length(vSpot);
@@ -410,7 +431,7 @@ const ripplesMaterial = new THREE.ShaderMaterial({
       float edge = ${(padRadius / ripplesRadius).toFixed(3)};
       float ring = smoothstep(edge - 0.035, edge - 0.012, r) * (1.0 - smoothstep(edge + 0.012, edge + 0.035, r));
       float light = (wave * 0.6 + ring) * fade;
-      gl_FragColor = vec4(${amberGlsl} * light, light * 0.6);
+      gl_FragColor = vec4(tint * light, light * 0.6);
     }
   `,
 });
@@ -463,7 +484,7 @@ const guideUniforms = {
 
 const guideMaterial = new THREE.ShaderMaterial({
   ...hologram,
-  uniforms: guideUniforms,
+  uniforms: { ...guideUniforms, tint },
   vertexShader: /* glsl */ `
     attribute float rank;
     varying float vRank;
@@ -475,11 +496,12 @@ const guideMaterial = new THREE.ShaderMaterial({
   fragmentShader: /* glsl */ `
     uniform float time;
     uniform float fade;
+    uniform vec3 tint;
     varying float vRank;
     void main() {
       float wave = 0.5 + 0.5 * sin(time * 6.0 - vRank * 1.5);
       float light = (0.4 + 0.6 * wave) * fade;
-      gl_FragColor = vec4(${amberGlsl} * light, light * 0.7);
+      gl_FragColor = vec4(tint * light, light * 0.85);
     }
   `,
 });
@@ -569,6 +591,7 @@ export default function Course({ held, photo, cruise }: Readonly<CourseProps>) {
       shaped = route.version;
       shapeLane();
     }
+    if (route.id) tintFor(route.id);
     if (!reduced) clock += dt;
 
     laneUniforms.time.value = clock;

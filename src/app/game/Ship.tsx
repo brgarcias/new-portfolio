@@ -15,6 +15,7 @@ import { updateInstruments } from './instruments';
 import { overlay } from './overlay';
 import { createState, step, type ShipState } from './physics';
 import { resetTelemetry, telemetry } from './telemetry';
+import { enteredPlanet, newTitleWatch } from './titles';
 import type { Ship as ShipSpec } from './ships';
 import { useReducedMotion } from './useMediaQuery';
 import { arena, holocrons, padRadius, spawn } from './world/arena';
@@ -28,7 +29,7 @@ interface ShipProps {
   onLand: (pad: SectionId) => void;
   // Called when the ship flies through a holocron.
   onCollect: (id: SectionId) => void;
-  // Called the first time, in the page, that the ship enters a planet.
+  // Called each time the ship enters a planet.
   onEnter: (id: SectionId) => void;
   // Called once the arrival from hyperspace is over, at once with less
   // motion.
@@ -50,6 +51,8 @@ const flight = {
   clock: 0,
   // The sector of the world the ship is over.
   sector: 'hub' as Sector,
+  // Which planet's title has shown, and when the next one does.
+  titles: newTitleWatch(),
   // The ring that spreads over a pad when the ship lands on it.
   pulse: { x: 0, z: 0, age: 9 },
   // The burst of light when the last holocron is found: where, and how
@@ -450,6 +453,7 @@ export default function Ship({
     flight.shake = 0;
     flight.clock = 0;
     flight.sector = 'hub';
+    flight.titles = newTitleWatch();
     atmosphere.sector = 'hub';
     resetTelemetry();
     flight.pulse.age = 9;
@@ -740,16 +744,13 @@ export default function Ship({
 
     const readout = overlay.hud;
     // Crossing into another sector, the sky follows and the HUD names the
-    // planet.
+    // planet, and entering a planet brings up its title.
     const sector = sectorAt(state.x, state.z);
+    const entered = enteredPlanet(flight.titles, sector, dt);
+    if (entered) onEnter(entered);
     if (sector !== flight.sector) {
       flight.sector = sector;
       atmosphere.sector = sector;
-      // The first time in a planet, its title.
-      if (sector !== 'hub' && !hunt.entered.has(sector)) {
-        hunt.entered.add(sector);
-        onEnter(sector);
-      }
       if (readout) {
         readout.dataset.sector = sector;
         for (const chip of readout.querySelectorAll<HTMLElement>(

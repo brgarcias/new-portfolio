@@ -1001,16 +1001,6 @@
   letter-spacing: 0.08em;
 }
 
-.game__label[data-course] {
-  border-color: rgb(255 191 94 / 0.6);
-  border-top-color: var(--g-amber);
-  box-shadow: 0 0 22px -8px rgb(255 191 94 / 0.85);
-}
-
-.game__label[data-course] .game__label-distance {
-  color: var(--g-amber);
-}
-
 /* ─── The HUD ───────────────────────────────────────────── */
 .hud {
   --accent: rgb(var(--g-holo));
@@ -1019,6 +1009,8 @@
   --edge-b: max(var(--g-edge), env(safe-area-inset-bottom));
   --edge-l: max(var(--g-edge), env(safe-area-inset-left));
   --course-room: 0rem;
+  /* The color of the route: the planet it leads to, set by the HUD. */
+  --route: var(--g-amber);
 
   position: absolute;
   inset: 0;
@@ -1367,8 +1359,10 @@
   left: -7px;
   width: 14px;
   height: 11px;
-  background: var(--g-amber);
-  filter: drop-shadow(0 0 4px rgb(255 191 94 / 0.8));
+  background: var(--route);
+  filter: drop-shadow(
+    0 0 4px color-mix(in srgb, var(--route) 80%, transparent)
+  );
 }
 
 .compass__mark[data-edge='left']::before {
@@ -1383,7 +1377,7 @@
   position: absolute;
   top: 1.05rem;
   left: 0;
-  color: var(--g-amber);
+  color: var(--route);
   font-family: var(--g-display);
   font-size: 0.5625rem;
   font-weight: 600;
@@ -1495,7 +1489,7 @@
 
 .radar__route polyline {
   fill: none;
-  stroke: var(--g-amber);
+  stroke: var(--route);
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 2;
@@ -1577,7 +1571,7 @@
 }
 
 .radar__pad[data-course] {
-  stroke: var(--g-amber) !important;
+  stroke: var(--route) !important;
   stroke-width: 2.6;
 }
 
@@ -1661,7 +1655,7 @@
 }
 
 .radar__edges .is-course {
-  --c: var(--g-amber);
+  --c: var(--route);
 
   z-index: 1;
   width: 12px;
@@ -2240,15 +2234,15 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.4rem 0.45rem 0.5rem 0.75rem;
-  border: 1px solid rgb(255 191 94 / 0.38);
-  border-top: 2px solid var(--g-amber);
+  border: 1px solid color-mix(in srgb, var(--route) 38%, transparent);
+  border-top: 2px solid var(--route);
   background: var(--g-plate-2);
   transform: translateX(-50%);
 }
 
 .course-strip__icon {
   flex: none;
-  color: var(--g-amber);
+  color: var(--route);
   font-size: 0.875rem;
 }
 
@@ -2263,7 +2257,7 @@
 .course-strip__plan .g-label {
   position: relative;
   grid-column: 1 / -1;
-  color: var(--g-amber);
+  color: var(--route);
   font-size: 0.5625rem;
   white-space: nowrap;
 }
@@ -2335,13 +2329,13 @@
   bottom: 0;
   left: 0;
   height: 2px;
-  background: rgb(255 191 94 / 0.16);
+  background: color-mix(in srgb, var(--route) 16%, transparent);
 }
 
 .course-strip__bar span {
   position: absolute;
   inset: 0;
-  background: var(--g-amber);
+  background: var(--route);
   transform: scaleX(0);
   transform-origin: left;
   will-change: transform;
@@ -2356,7 +2350,7 @@
   left: 0;
   width: 0;
   height: 0;
-  color: var(--g-amber);
+  color: var(--route);
   will-change: transform;
 }
 
@@ -3059,14 +3053,14 @@
 
 .chart__course {
   fill: none;
-  stroke: var(--g-amber);
+  stroke: var(--route);
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.4;
 }
 
 .chart__gates {
-  fill: var(--g-amber);
+  fill: var(--route);
   stroke: rgb(5 9 20 / 0.85);
   stroke-width: 0.5;
 }
@@ -3103,12 +3097,12 @@
 }
 
 .chart__pad[data-course] .chart__disc {
-  stroke: var(--g-amber);
+  stroke: var(--route);
   stroke-width: 2;
 }
 
 .chart__pad[data-course] .chart__halo {
-  fill: var(--g-amber);
+  fill: var(--route);
   opacity: 0.18;
 }
 
@@ -3175,8 +3169,8 @@
   gap: 0.5rem 1rem;
   grid-template-columns: minmax(0, 1fr) auto;
   padding: 0.65rem 0.75rem 0.75rem;
-  border: 1px solid rgb(255 191 94 / 0.38);
-  border-top: 2px solid var(--g-amber);
+  border: 1px solid color-mix(in srgb, var(--route) 38%, transparent);
+  border-top: 2px solid var(--route);
   background: rgb(6 10 22 / 0.96);
 }
 
@@ -3187,7 +3181,7 @@
 }
 
 .flight-plan__to .g-label {
-  color: var(--g-amber);
+  color: var(--route);
 }
 
 .flight-plan__to strong {
@@ -3253,9 +3247,9 @@
 }
 
 .destination[aria-pressed='true'] {
-  border-color: rgb(255 191 94 / 0.65);
-  border-left-color: var(--g-amber);
-  background: rgb(255 191 94 / 0.08);
+  border-color: color-mix(in srgb, var(--accent) 65%, transparent);
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
 .destination__index {
@@ -3326,7 +3320,7 @@
 }
 
 .destination__state[data-state='course'] {
-  color: var(--g-amber);
+  color: var(--accent);
 }
 
 .destination__holocron {
@@ -3513,9 +3507,9 @@
 }
 
 .record__course[aria-pressed='true'] {
-  --btn-line: rgb(255 191 94 / 0.65);
+  --btn-line: color-mix(in srgb, var(--accent) 65%, transparent);
 
-  color: var(--g-amber);
+  color: var(--accent);
 }
 
 .archive__footer {

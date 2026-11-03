@@ -252,8 +252,8 @@ function Pads({ activePad, visited, course }: Readonly<PadsProps>) {
       rings.current?.setColorAt(index, color);
       centers.current?.setColorAt(index, color);
       glows.current?.setColorAt(index, color);
-      // The beam of the pad the course leads to burns amber.
-      if (pad.id === course) color.set('#ffbf5e');
+      // The beam of the pad the course leads to burns in the planet's color.
+      if (pad.id === course) color.set(biomes[pad.id].accent);
       else color.set('#8f8fff').multiplyScalar(active ? 1 : 0.55);
       beams.current?.setColorAt(index, color);
     });

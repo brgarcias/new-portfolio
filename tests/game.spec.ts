@@ -6,12 +6,14 @@ import {
   plotRoute,
   routeStep,
 } from '../src/app/game/flight-plan';
+import { enteredPlanet, newTitleWatch } from '../src/app/game/titles';
 import {
   arena,
   pads,
   padRadius,
   platformRadius,
 } from '../src/app/game/world/arena';
+import { biomes } from '../src/app/game/world/biomes';
 
 // The game at /play: the hangar, the flight and the ways around it. The
 // headless Chromium draws its WebGL by software, so it runs in CI too. The
@@ -277,6 +279,62 @@ test('gira a nave no hangar ao arrastar', async ({ page }) => {
   await expect
     .poll(() => stage.getAttribute('data-top').then(Number))
     .toBeGreaterThan(0.5);
+});
+
+test('mostra o nome do planeta a cada entrada, sem piscar na fronteira', async ({}, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+  const fly = (legs: [Parameters<typeof enteredPlanet>[1], number][]) => {
+    const watch = newTitleWatch();
+    const shown: string[] = [];
+    for (const [sector, seconds] of legs) {
+      for (let time = 0; time < seconds; time += 1 / 60) {
+        const planet = enteredPlanet(watch, sector, 1 / 60);
+        if (planet) shown.push(planet);
+      }
+    }
+    return shown;
+  };
+  // Each entry, into another planet or back into the same one.
+  expect(fly([['about', 1]])).toEqual(['about']);
+  expect(
+    fly([
+      ['hub', 1],
+      ['about', 3],
+      ['experience', 3],
+      ['about', 3],
+    ]),
+  ).toEqual(['about', 'experience', 'about']);
+  expect(
+    fly([
+      ['about', 3],
+      ['hub', 4],
+      ['about', 3],
+    ]),
+  ).toEqual(['about', 'about']);
+  // The hub has no title.
+  expect(fly([['hub', 5]])).toEqual([]);
+  // A moment out of a planet is not leaving it.
+  expect(
+    fly([
+      ['about', 3],
+      ['hub', 1],
+      ['about', 3],
+    ]),
+  ).toEqual(['about']);
+  // Along a border, one frame on each side, the name does not blink: only the
+  // first shows, once the ship has stayed long enough to enter a planet.
+  const border = fly([
+    ['about', 3],
+    ...Array.from(
+      { length: 600 },
+      (_, frame) =>
+        [frame % 2 ? 'about' : 'experience', 1 / 60] as [
+          Parameters<typeof enteredPlanet>[1],
+          number,
+        ],
+    ),
+  ]);
+  expect(border).toEqual(['about']);
 });
 
 test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
@@ -631,6 +689,45 @@ test('traça o plano de novo numa nova decolagem, a partir de onde a nave está'
   await expect.poll(left).toBeGreaterThanOrEqual(whole - 1);
   expect(await reading(page, 'route-flown')).toBe(0);
   expect(errors).toEqual([]);
+});
+
+test('leva a rota na cor do planeta de destino', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Once is enough.');
+  test.slow();
+  await takeOff(page);
+  // Two planets, each with its own color, on the strip, the lock, the radar
+  // and the chart.
+  for (const [place, id] of [
+    ['Coruscant', 'experience'],
+    ['Kamino', 'courses'],
+  ] as const) {
+    await setCourse(page, place);
+    const accent = biomes[id].accent;
+    const channels = [1, 3, 5].map((at) =>
+      Number.parseInt(accent.slice(at, at + 2), 16),
+    );
+    const rgb = `rgb(${channels.join(', ')})`;
+    await expect(page.locator('.course-strip')).toHaveCSS(
+      'border-top-color',
+      rgb,
+    );
+    await expect(page.locator('.course-lock')).toHaveCSS('color', rgb);
+    await expect(page.locator('.radar__route polyline')).toHaveCSS(
+      'stroke',
+      rgb,
+    );
+    await page
+      .getByRole('button', { name: 'Open the navigation chart' })
+      .click();
+    const map = page.getByRole('dialog', { name: 'Navigation chart' });
+    await expect(map.locator('.chart__course')).toHaveCSS('stroke', rgb);
+    // Picking the destination again clears the course, for the next one.
+    await map
+      .getByRole('button', { name: new RegExp(`^Set a course for ${place}`) })
+      .click();
+    await page.keyboard.press('Escape');
+    await expect(map).toBeHidden();
+  }
 });
 
 test('deixa só o quadro no modo foto, e a mira no HUD imersivo', async ({
@@ -1073,6 +1170,90 @@ test('cala os motores no hangar e quando a página some', async ({
   await expect.poll(state).toBe('running');
 });
 
+test('mostra de novo o nome do planeta quando a nave sai e volta', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'Phones fly with the joystick.');
+  test.slow();
+  await takeOff(page);
+  await page.evaluate(() => {
+    const titles: string[] = [];
+    Object.assign(window, { titles });
+    new MutationObserver((changes) => {
+      for (const change of changes) {
+        for (const node of change.addedNodes) {
+          const name = (node as HTMLElement).querySelector(
+            '.planet-title__name',
+          );
+          titles.push(name?.textContent ?? '');
+        }
+      }
+    }).observe(document.querySelector('.planet-titles')!, { childList: true });
+  });
+  const titles = () =>
+    page.evaluate(() => (window as unknown as { titles: string[] }).titles);
+  // Flies to a point, turning and thrusting by the HUD's readings, every
+  // frame, in the page: a command from the test can arrive late.
+  const flyTo = (x: number, z: number) =>
+    page.evaluate(
+      ([x, z]) =>
+        new Promise<void>((done, fail) => {
+          const hud = document.querySelector<HTMLElement>('.hud')!;
+          const send = (type: string, code: string) =>
+            document.body.dispatchEvent(
+              new KeyboardEvent(type, { code, bubbles: true }),
+            );
+          const held = new Set<string>();
+          const want = (code: string, on: boolean) => {
+            if (on === held.has(code)) return;
+            if (on) held.add(code);
+            else held.delete(code);
+            send(on ? 'keydown' : 'keyup', code);
+          };
+          const started = performance.now();
+          const check = () => {
+            const dx = x - Number(hud.dataset.x);
+            const dz = z - Number(hud.dataset.z);
+            const heading = Number(hud.dataset.heading);
+            const wanted = Math.atan2(-dx, -dz);
+            const turn = Math.atan2(
+              Math.sin(wanted - heading),
+              Math.cos(wanted - heading),
+            );
+            const arrived = Math.hypot(dx, dz) < 6;
+            const late = performance.now() - started > 40_000;
+            want('KeyA', !arrived && !late && turn > 0.08);
+            want('KeyD', !arrived && !late && turn < -0.08);
+            want('KeyW', !arrived && !late && Math.abs(turn) < 0.6);
+            if (arrived) done();
+            else if (late) fail(new Error(`Still ${dx}, ${dz} away.`));
+            else requestAnimationFrame(check);
+          };
+          requestAnimationFrame(check);
+        }),
+      [x, z] as const,
+    );
+  // Into Tatooine, the first planet ahead, short of its pad.
+  await flyTo(0, -26);
+  await expect.poll(titles).toEqual(['Tatooine']);
+  // Back over the hub, for long enough to have left the planet, and in again.
+  // The ship may coast on across the hub, into the planet beyond, which names
+  // itself too.
+  await flyTo(0, 0);
+  await expect
+    .poll(() => reading(page, 'speed'), { timeout: 20_000 })
+    .toBeLessThan(1);
+  await page.waitForTimeout(2500);
+  await flyTo(0, -26);
+  await expect
+    .poll(() =>
+      titles().then((names) => names.filter((n) => n === 'Tatooine').length),
+    )
+    .toBe(2);
+  expect((await titles()).at(-1)).toBe('Tatooine');
+});
+
 test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   page,
   isMobile,
@@ -1226,7 +1407,8 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).toBeHidden();
   }
-  // Each planet's title came up once, the first time in it.
+  // The title of each planet the ship entered, as it entered, the first one
+  // Tatooine; flying straight on, it never entered the same one twice.
   const seen = await titles();
   expect(seen[0]).toBe('Tatooine');
   expect(new Set(seen).size).toBe(seen.length);

@@ -126,7 +126,7 @@ export default function Game({
   const [mapLeaving, setMapLeaving] = useState(false);
   const [panelLeaving, setPanelLeaving] = useState(false);
   const [departing, setDeparting] = useState(false);
-  // The planet whose title shows, the first time the ship enters it.
+  // The planet whose title shows, as the ship enters it.
   const [title, setTitle] = useState<{ id: SectionId; key: number } | null>(
     null,
   );
@@ -349,7 +349,7 @@ export default function Game({
     }
   };
 
-  // A planet's title, the first time the ship enters it; the next planet's
+  // A planet's title, each time the ship enters it; the next planet's
   // takes its place.
   const enter = (id: SectionId) => {
     window.clearTimeout(timers.current.title);
@@ -396,7 +396,6 @@ export default function Game({
   const startOver = () => {
     hunt.found.clear();
     hunt.age.clear();
-    hunt.entered.clear();
     setVisited([]);
     setFound([]);
     setRead([]);
