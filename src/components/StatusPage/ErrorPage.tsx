@@ -2,14 +2,13 @@
 
 // HOOKS
 import { useEffect } from 'react';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import StatusPage from '@/src/components/StatusPage';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 import { splitLink } from '@/src/i18n/messages';
+// ICONS
+import { RotateCwIcon } from '@/src/components/Icon';
 
 // A full reload also hooks the bar up to the new sections again, which
 // re-rendering the segment with reset() would not do.
@@ -47,7 +46,7 @@ export default function ErrorPage({
       author={t.author}
       actions={
         <button className="btn btn--primary" type="button" onClick={reload}>
-          <FontAwesomeIcon icon={faRotateRight} />
+          <RotateCwIcon />
           {t.retry}
         </button>
       }

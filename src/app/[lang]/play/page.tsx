@@ -1,6 +1,8 @@
 // NEXT
 import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
+// NEXT GOOGLE FONT
+import { Space_Grotesk } from 'next/font/google';
 // GAME
 import GameLoader from '../../game';
 // SECTIONS
@@ -14,7 +16,7 @@ import Contact from '../../contact';
 // CONTENT
 import {
   getAbout,
-  getContactCards,
+  getContact,
   getCases,
   getContributing,
   getCourses,
@@ -26,8 +28,9 @@ import {
   getProjects,
   getSections,
   getSocialLinks,
+  type SectionHeader,
 } from '@/src/content';
-import { sectionIds } from '@/src/content/sections';
+import { sectionIds, type SectionId } from '@/src/content/sections';
 // I18N
 import {
   defaultLocale,
@@ -37,6 +40,12 @@ import {
   pagePath,
 } from '@/src/i18n/config';
 import { getMessages } from '@/src/i18n/messages';
+
+// The game's instruments keep their own face, as --font-game.
+const gameFont = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-game',
+});
 
 // The sections show the current role's duration, as the home page does, so
 // this page is regenerated once a day too.
@@ -102,7 +111,15 @@ export default async function Play({ params }: PageProps<'/[lang]/play'>) {
   const messages = getMessages(lang);
   const profile = getProfile(lang);
   const social = getSocialLinks(profile, messages);
-  const sections = getSections(lang, profile);
+  const pageSections = getSections(lang, profile);
+  // In the game, a section goes by the number of its landing pad, in the order
+  // of the planets, and not by its place on the home page.
+  const sections = Object.fromEntries(
+    sectionIds.map((id, index) => [
+      id,
+      { ...pageSections[id], number: String(index + 1).padStart(2, '0') },
+    ]),
+  ) as Record<SectionId, SectionHeader>;
   const places = sectionIds.map((id) => ({
     id,
     title: sections[id].title,
@@ -140,15 +157,15 @@ export default async function Play({ params }: PageProps<'/[lang]/play'>) {
     contact: (
       <Contact
         header={sections.contact}
-        cards={getContactCards(lang, profile)}
+        contact={getContact(lang, profile)}
         social={social}
-        socialLabel={messages.frame.socialLinks}
+        labels={messages.contact}
       />
     ),
   };
 
   return (
-    <main id="main" className="play" tabIndex={-1}>
+    <main id="main" className={`play ${gameFont.variable}`} tabIndex={-1}>
       <GameLoader
         places={places}
         home={homePath(lang)}

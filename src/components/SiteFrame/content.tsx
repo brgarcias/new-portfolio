@@ -1,18 +1,19 @@
-import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import {
-  faGithub,
-  faLinkedin,
-  faWhatsapp,
-} from '@fortawesome/free-brands-svg-icons';
 // CONTENT
 import type { SocialLink } from '@/src/content';
-import type { SectionId } from '@/src/content/sections';
+import type { PageId } from '@/src/content/sections';
+// ICONS
+import {
+  GithubIcon,
+  LinkedinIcon,
+  MailIcon,
+  WhatsappIcon,
+  type IconComponent,
+} from '@/src/components/Icon';
 
 // What the bar and the menu show of each section, from its header in
 // content/site/sections.json.
 export interface NavItem {
-  id: SectionId;
+  id: PageId;
   label: string;
   title: string;
 }
@@ -30,9 +31,14 @@ export const linkTarget = (href: string) =>
     : {};
 
 // The icon of each channel of content/site/profile.json.
-export const socialIcons: Record<SocialLink['id'], IconDefinition> = {
-  email: faEnvelope,
-  linkedin: faLinkedin,
-  whatsapp: faWhatsapp,
-  github: faGithub,
-};
+const socialIcons = {
+  email: MailIcon,
+  linkedin: LinkedinIcon,
+  whatsapp: WhatsappIcon,
+  github: GithubIcon,
+} satisfies Record<SocialLink['id'], IconComponent>;
+
+export function SocialIcon({ id }: Readonly<{ id: SocialLink['id'] }>) {
+  const Icon = socialIcons[id];
+  return <Icon />;
+}

@@ -1,0 +1,185 @@
+{
+  "en": {
+    "whereLabel": "Where",
+    "areas": [
+      {
+        "title": "Backend Engineering",
+        "text": "API design, from the schema and resolvers down to query performance, and the webhooks and third-party integrations around it. FastAPI and .NET Core where the system called for them.",
+        "stack": "Node.js, TypeScript, NestJS, GraphQL, REST APIs, Python (FastAPI), .NET Core",
+        "where": "PayPal, AB InBev, Serasa, Domy, Trocafone",
+        "metric": "30%",
+        "metricLabel": "faster API, after optimizing resolvers and batching queries"
+      },
+      {
+        "title": "Distributed Systems",
+        "text": "Microservices behind API and GraphQL gateways, event-driven flows, asynchronous processing on queues, idempotent message processing and services that run many tasks at once.",
+        "stack": "SQS, SNS, Step Functions, API Gateway",
+        "where": "PayPal, Serasa, Domy, Trocafone",
+        "metric": "",
+        "metricLabel": ""
+      },
+      {
+        "title": "Cloud Architecture",
+        "text": "Serverless flows and containerized services in production, on AWS and on Azure Kubernetes Service.",
+        "stack": "AWS Lambda, API Gateway, SQS, SNS, DynamoDB, ECS, Step Functions, EventBridge, CloudFront, CloudWatch, S3, Docker, Kubernetes, Azure",
+        "where": "Serasa, Domy, AB InBev, Trocafone",
+        "metric": "40%",
+        "metricLabel": "lower latency in real-time APIs, with serverless processing on S3, SQS and Lambda"
+      },
+      {
+        "title": "Databases & Data",
+        "text": "Query tuning on relational databases and caching in Redis, as in the real-time dashboard at Trocafone.",
+        "stack": "PostgreSQL, MySQL, SQL Server, Redis, DynamoDB, BigQuery",
+        "where": "AB InBev, Trocafone",
+        "metric": "",
+        "metricLabel": ""
+      },
+      {
+        "title": "Frontend Engineering",
+        "text": "Product interfaces, and dashboards that update live through GraphQL subscriptions.",
+        "stack": "React, Next.js, TypeScript, JavaScript, Redux, Material UI",
+        "where": "AB InBev, Trocafone, Art Seven",
+        "metric": "",
+        "metricLabel": ""
+      },
+      {
+        "title": "Testing & Quality",
+        "text": "Unit and end-to-end suites, GraphQL APIs included, running in CI/CD, plus monitoring and alerts in production.",
+        "stack": "Jest, Jenkins, Azure DevOps, GitLab CI, CloudWatch",
+        "where": "Serasa, AB InBev, Trocafone",
+        "metric": "",
+        "metricLabel": ""
+      },
+      {
+        "title": "Technical Leadership",
+        "text": "Tech lead at Trocafone: I led a monolith migration and five major projects, and worked with Product to turn requirements into technically feasible plans. Code reviews and architecture decisions with the team.",
+        "stack": "",
+        "where": "Trocafone",
+        "metric": "",
+        "metricLabel": ""
+      }
+    ]
+  },
+  "pt": {
+    "whereLabel": "Onde",
+    "areas": [
+      {
+        "title": "Engenharia de backend",
+        "text": "Design de APIs, do schema e dos resolvers à performance das queries, e os webhooks e integrações com terceiros em volta delas. FastAPI e .NET Core quando o sistema pediu.",
+        "stack": "Node.js, TypeScript, NestJS, GraphQL, REST APIs, Python (FastAPI), .NET Core",
+        "where": "PayPal, AB InBev, Serasa, Domy, Trocafone",
+        "metric": "30%",
+        "metricLabel": "mais rápida a API, depois de otimizar resolvers e agrupar consultas"
+      },
+      {
+        "title": "Sistemas distribuídos",
+        "text": "Microsserviços atrás de gateways de API e GraphQL, fluxos orientados a eventos, processamento assíncrono em filas, processamento idempotente de mensagens e serviços que executam muitas tarefas ao mesmo tempo.",
+        "stack": "SQS, SNS, Step Functions, API Gateway",
+        "where": "PayPal, Serasa, Domy, Trocafone",
+        "metric": "",
+        "metricLabel": ""
+      },
+      {
+        "title": "Arquitetura em nuvem",
+        "text": "Fluxos serverless e serviços em contêineres em produção, na AWS e no Azure Kubernetes Service.",
+        "stack": "AWS Lambda, API Gateway, SQS, SNS, DynamoDB, ECS, Step Functions, EventBridge, CloudFront, CloudWatch, S3, Docker, Kubernetes, Azure",
+        "where": "Serasa, Domy, AB InBev, Trocafone",
+        "metric": "40%",
+        "metricLabel": "menos latência em APIs em tempo real, com processamento serverless em S3, SQS e Lambda"
+      },
+      {
+        "title": "Bancos de dados",
+        "text": "Ajuste de queries em bancos relacionais e cache no Redis, como no dashboard em tempo real da Trocafone.",
+        "stack": "PostgreSQL, MySQL, SQL Server, Redis, DynamoDB, BigQuery",
+        "where": "AB InBev, Trocafone",
+        "metric": "",
+        "metricLabel": ""
+      },
+      {
+        "title": "Engenharia de frontend",
+        "text": "Interfaces de produto e dashboards que atualizam ao vivo por GraphQL subscriptions.",
+        "stack": "React, Next.js, TypeScript, JavaScript, Redux, Material UI",
+        "where": "AB InBev, Trocafone, Art Seven",
+        "metric": "",
+        "metricLabel": ""
+      },
+      {
+        "title": "Testes e qualidade",
+        "text": "Suítes unitárias e de ponta a ponta, inclusive de APIs GraphQL, rodando em CI/CD, além de monitoramento e alertas em produção.",
+        "stack": "Jest, Jenkins, Azure DevOps, GitLab CI, CloudWatch",
+        "where": "Serasa, AB InBev, Trocafone",
+        "metric": "",
+        "metricLabel": ""
+      },
+      {
+        "title": "Liderança técnica",
+        "text": "Tech lead na Trocafone: liderei a migração de um monólito e cinco grandes projetos, e trabalhei com Produto para transformar requisitos em planos tecnicamente viáveis. Revisão de código e decisões de arquitetura com o time.",
+        "stack": "",
+        "where": "Trocafone",
+        "metric": "",
+        "metricLabel": ""
+      }
+    ]
+  },
+  "es": {
+    "whereLabel": "Dónde",
+    "areas": [
+      {
+        "title": "Ingeniería de backend",
+        "text": "Diseño de APIs, desde el esquema y los resolvers hasta el rendimiento de las consultas, y los webhooks e integraciones con terceros a su alrededor. FastAPI y .NET Core cuando el sistema lo pidió.",
+        "stack": "Node.js, TypeScript, NestJS, GraphQL, REST APIs, Python (FastAPI), .NET Core",
+        "where": "PayPal, AB InBev, Serasa, Domy, Trocafone",
+        "metric": "30%",
+        "metricLabel": "más rápida la API, tras optimizar resolvers y agrupar consultas"
+      },
+      {
+        "title": "Sistemas distribuidos",
+        "text": "Microservicios detrás de gateways de API y GraphQL, flujos orientados a eventos, procesamiento asíncrono en colas, procesamiento idempotente de mensajes y servicios que ejecutan muchas tareas a la vez.",
+        "stack": "SQS, SNS, Step Functions, API Gateway",
+        "where": "PayPal, Serasa, Domy, Trocafone",
+        "metric": "",
+        "metricLabel": ""
+      },
+      {
+        "title": "Arquitectura en la nube",
+        "text": "Flujos serverless y servicios en contenedores en producción, en AWS y en Azure Kubernetes Service.",
+        "stack": "AWS Lambda, API Gateway, SQS, SNS, DynamoDB, ECS, Step Functions, EventBridge, CloudFront, CloudWatch, S3, Docker, Kubernetes, Azure",
+        "where": "Serasa, Domy, AB InBev, Trocafone",
+        "metric": "40%",
+        "metricLabel": "menos latencia en APIs en tiempo real, con procesamiento serverless en S3, SQS y Lambda"
+      },
+      {
+        "title": "Bases de datos",
+        "text": "Ajuste de consultas en bases de datos relacionales y caché en Redis, como en el dashboard en tiempo real de Trocafone.",
+        "stack": "PostgreSQL, MySQL, SQL Server, Redis, DynamoDB, BigQuery",
+        "where": "AB InBev, Trocafone",
+        "metric": "",
+        "metricLabel": ""
+      },
+      {
+        "title": "Ingeniería de frontend",
+        "text": "Interfaces de producto y dashboards que se actualizan en vivo con GraphQL subscriptions.",
+        "stack": "React, Next.js, TypeScript, JavaScript, Redux, Material UI",
+        "where": "AB InBev, Trocafone, Art Seven",
+        "metric": "",
+        "metricLabel": ""
+      },
+      {
+        "title": "Pruebas y calidad",
+        "text": "Suites unitarias y de extremo a extremo, también de APIs GraphQL, en pipelines de CI/CD, además de monitoreo y alertas en producción.",
+        "stack": "Jest, Jenkins, Azure DevOps, GitLab CI, CloudWatch",
+        "where": "Serasa, AB InBev, Trocafone",
+        "metric": "",
+        "metricLabel": ""
+      },
+      {
+        "title": "Liderazgo técnico",
+        "text": "Tech lead en Trocafone: lideré la migración de un monolito y cinco grandes proyectos, y trabajé con Producto para convertir los requisitos en planes técnicamente viables. Revisión de código y decisiones de arquitectura con el equipo.",
+        "stack": "",
+        "where": "Trocafone",
+        "metric": "",
+        "metricLabel": ""
+      }
+    ]
+  }
+}

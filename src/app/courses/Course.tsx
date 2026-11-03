@@ -2,9 +2,8 @@
 
 // HOOKS
 import { CSSProperties, useState } from 'react';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+// ICONS
+import { ArrowRightIcon } from '@/src/components/Icon';
 // COMPONENTS
 import ModalComponent from '@/src/components/Modal/Lazy';
 import { openOnKey } from '@/src/components/Modal/openOnKey';
@@ -28,63 +27,66 @@ interface CourseProps {
   index: number;
 }
 
+// A course as a line of the list. With modules to show, the line is a button
+// that opens them in a dialog.
 export default function Course({ course, index }: Readonly<CourseProps>) {
   const t = useI18n().messages.courses;
-  const { title, subtitle, wide, dialogTitle, dialogSubtitle, modules } =
-    course;
+  const { title, subtitle, dialogTitle, dialogSubtitle, modules = [] } = course;
   const [visible, setVisible] = useState(false);
   const accent = {
     '--accent': accents[index % accents.length],
   } as CSSProperties;
 
   return (
-    <li
-      className={`course-card${wide ? ' course-card--wide' : ''}`}
-      style={accent}
-    >
-      <span className="course-card__index" aria-hidden="true">
-        {String(index + 1).padStart(2, '0')}
-      </span>
-      {/* The button covers the whole card, so a click anywhere opens it. */}
-      <h3 className="course-card__title">
-        <button
-          type="button"
-          className="course-card__button"
-          aria-haspopup="dialog"
-          onClick={() => setVisible(true)}
-          onKeyDown={openOnKey(() => setVisible(true))}
-        >
-          {title}
-        </button>
+    <li className="course" style={accent}>
+      <span className="course__dot" aria-hidden="true" />
+      <h3 className="course__title">
+        {modules.length > 0 ? (
+          <button
+            type="button"
+            className="course__button"
+            aria-haspopup="dialog"
+            onClick={() => setVisible(true)}
+            onKeyDown={openOnKey(() => setVisible(true))}
+          >
+            {title}
+          </button>
+        ) : (
+          title
+        )}
       </h3>
-      <p className="course-card__subtitle">{subtitle}</p>
-      <span className="course-card__more" aria-hidden="true">
-        {t.details}
-        <FontAwesomeIcon icon={faArrowRight} />
-      </span>
+      <p className="course__subtitle">{subtitle}</p>
+      {modules.length > 0 && (
+        <span className="course__more" aria-hidden="true">
+          {t.details}
+          <ArrowRightIcon />
+        </span>
+      )}
 
-      <ModalComponent
-        visible={visible}
-        setVisible={setVisible}
-        size="3xl"
-        title={dialogTitle}
-        subtitle={dialogSubtitle}
-        focusableBody
-      >
-        <ol className="course-modules" style={accent}>
-          {modules.map((item, position) => (
-            <li key={item.title} className="course-modules__item">
-              <span className="course-modules__index" aria-hidden="true">
-                {String(position + 1).padStart(2, '0')}
-              </span>
-              <div>
-                <p className="course-modules__title">{item.title}</p>
-                <p className="course-modules__text">{item.description}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </ModalComponent>
+      {modules.length > 0 && (
+        <ModalComponent
+          visible={visible}
+          setVisible={setVisible}
+          size="3xl"
+          title={dialogTitle ?? title}
+          subtitle={dialogSubtitle}
+          focusableBody
+        >
+          <ol className="course-modules" style={accent}>
+            {modules.map((item, position) => (
+              <li key={item.title} className="course-modules__item">
+                <span className="course-modules__index" aria-hidden="true">
+                  {String(position + 1).padStart(2, '0')}
+                </span>
+                <div>
+                  <p className="course-modules__title">{item.title}</p>
+                  <p className="course-modules__text">{item.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </ModalComponent>
+      )}
     </li>
   );
 }

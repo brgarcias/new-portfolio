@@ -57,6 +57,39 @@
   gap: clamp(1.5rem, 3vw, 2.25rem);
 }
 
+.xp__list[hidden] {
+  display: none;
+}
+
+.xp__list + .xp__list {
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+/* The button of the early roles, in line with the cards. */
+.xp__earlier {
+  position: relative;
+  z-index: 1;
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+  padding-left: calc(var(--xp-meta) + var(--xp-node) + 2 * var(--xp-gap));
+}
+
+/* A long label wraps on the narrowest phones. */
+.xp__earlier .btn {
+  height: auto;
+  min-height: 2.5rem;
+  padding-block: 0.5rem;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+.xp__earlier svg {
+  transition: transform 0.35s var(--ease-out);
+}
+
+.xp__earlier [aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
 .xp-item {
   display: grid;
   grid-template-columns: var(--xp-meta) var(--xp-node) minmax(0, 1fr);
@@ -303,6 +336,10 @@
 
   .xp__rail {
     left: calc(var(--gutter) + var(--xp-node) / 2);
+  }
+
+  .xp__earlier {
+    padding-left: calc(var(--xp-node) + var(--xp-gap));
   }
 
   .xp-item {

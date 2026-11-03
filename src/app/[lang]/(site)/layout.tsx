@@ -2,7 +2,7 @@
 import SiteFrame from '@/src/components/SiteFrame';
 // CONTENT
 import { getProfile, getSections, getSocialLinks } from '@/src/content';
-import { sectionIds } from '@/src/content/sections';
+import { pageIds } from '@/src/content/sections';
 // I18N
 import { defaultLocale, isLocale, type Locale } from '@/src/i18n/config';
 import { getMessages } from '@/src/i18n/messages';
@@ -21,7 +21,7 @@ export default async function SiteLayout({
   const locale = localeOf((await params).lang);
   const profile = getProfile(locale);
   const sections = getSections(locale, profile);
-  const nav = sectionIds.map((id) => {
+  const nav = pageIds.map((id) => {
     const { label, title } = sections[id];
     return { id, label, title };
   });

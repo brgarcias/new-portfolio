@@ -6,40 +6,39 @@
     },
     "experience": {
       "label": "Experience",
-      "title": "Professional Experience"
+      "title": "Professional Experience",
+      "description": "From customizing payment terminals to PayPal's GraphQL platform."
     },
     "education": {
       "label": "Education",
-      "title": "Academic Education",
-      "description": "Postgraduate Coming Soon",
-      "quote": "The learned man is a discoverer of facts that already exist - but the wise man is a creator of values that do not exist and that he makes exist.",
-      "author": "Albert Einstein"
+      "title": "Academic Education"
     },
     "courses": {
       "label": "Courses",
       "title": "Courses & Certifications",
-      "description": "Continuous development looking for an opportunity to apply my **experience**!",
-      "quote": "The saddest aspect of life today is that science gains in knowledge faster than society in wisdom.",
-      "author": "Isaac Asimov"
+      "description": "What I kept studying along the way, most recent first."
     },
     "projects": {
-      "label": "Projects",
-      "title": "My Projects",
-      "description": "Some of the projects carried out throughout my career!"
+      "label": "Work",
+      "title": "Selected Work",
+      "description": "Production systems I designed, built or led, and how their parts fit together."
     },
     "contributing": {
       "label": "Contributing",
       "title": "Contributing",
-      "description": "Developing the community side **the most important**!",
+      "description": "Volunteer work I do **alongside engineering**.",
       "quote": "Our lives begin to end the day we remain silent about the things that matter.",
       "author": "Martin Luther King Jr."
     },
     "contact": {
       "label": "Contact",
       "title": "Contact",
-      "description": "My personal information, but if you prefer [text me](whatsapp)!",
-      "quote": "Facing suffering will undoubtedly contribute to the elevation of your spiritual practice, provided that you are able to transform calamity and misfortune into a path.",
-      "author": "Dalai Lama"
+      "description": "The fastest way to reach me is by email, or [text me](whatsapp)."
+    },
+    "expertise": {
+      "label": "Expertise",
+      "title": "Engineering Expertise",
+      "description": "What I do, by area, and where I've done it."
     }
   },
   "pt": {
@@ -49,40 +48,39 @@
     },
     "experience": {
       "label": "Experiência",
-      "title": "Experiência profissional"
+      "title": "Experiência profissional",
+      "description": "Da customização de terminais de pagamento à plataforma GraphQL do PayPal."
     },
     "education": {
       "label": "Formação",
-      "title": "Formação acadêmica",
-      "description": "Pós-graduação em breve",
-      "quote": "O homem culto é um descobridor de fatos que já existem, mas o sábio é um criador de valores que não existem e que ele faz existir.",
-      "author": "Albert Einstein"
+      "title": "Formação acadêmica"
     },
     "courses": {
       "label": "Cursos",
       "title": "Cursos e certificações",
-      "description": "Desenvolvimento contínuo em busca de uma oportunidade para aplicar minha **experiência**!",
-      "quote": "O aspecto mais triste da vida hoje é que a ciência ganha conhecimento mais rápido do que a sociedade ganha sabedoria.",
-      "author": "Isaac Asimov"
+      "description": "O que continuei estudando ao longo da carreira, do mais recente para o mais antigo."
     },
     "projects": {
       "label": "Projetos",
-      "title": "Meus projetos",
-      "description": "Alguns dos projetos que realizei ao longo da minha carreira!"
+      "title": "Projetos em destaque",
+      "description": "Sistemas em produção que projetei, construí ou liderei, e como as partes se encaixam."
     },
     "contributing": {
       "label": "Contribuições",
       "title": "Contribuições",
-      "description": "Desenvolvendo o lado comunitário, **o mais importante**!",
+      "description": "O voluntariado que faço **além da engenharia**.",
       "quote": "Nossas vidas começam a terminar no dia em que nos calamos sobre as coisas que importam.",
       "author": "Martin Luther King Jr."
     },
     "contact": {
       "label": "Contato",
       "title": "Contato",
-      "description": "Minhas informações pessoais, mas, se preferir, [me mande uma mensagem](whatsapp)!",
-      "quote": "Enfrentar o sofrimento certamente contribuirá para elevar a sua prática espiritual, desde que você seja capaz de transformar a calamidade e o infortúnio em caminho.",
-      "author": "Dalai Lama"
+      "description": "O jeito mais rápido de falar comigo é por e-mail, ou [me mande uma mensagem](whatsapp)."
+    },
+    "expertise": {
+      "label": "Competências",
+      "title": "Competências técnicas",
+      "description": "O que faço, por área, e onde já fiz."
     }
   },
   "es": {
@@ -92,40 +90,39 @@
     },
     "experience": {
       "label": "Experiencia",
-      "title": "Experiencia profesional"
+      "title": "Experiencia profesional",
+      "description": "De personalizar terminales de pago a la plataforma GraphQL de PayPal."
     },
     "education": {
       "label": "Formación",
-      "title": "Formación académica",
-      "description": "Posgrado muy pronto",
-      "quote": "El hombre culto es un descubridor de hechos que ya existen, pero el sabio es un creador de valores que no existen y que él hace existir.",
-      "author": "Albert Einstein"
+      "title": "Formación académica"
     },
     "courses": {
       "label": "Cursos",
       "title": "Cursos y certificaciones",
-      "description": "¡Desarrollo continuo en busca de una oportunidad para aplicar mi **experiencia**!",
-      "quote": "El aspecto más triste de la vida actual es que la ciencia gana en conocimiento más rápido que la sociedad en sabiduría.",
-      "author": "Isaac Asimov"
+      "description": "Lo que seguí estudiando a lo largo de mi carrera, de lo más reciente a lo más antiguo."
     },
     "projects": {
       "label": "Proyectos",
-      "title": "Mis proyectos",
-      "description": "¡Algunos de los proyectos que realicé a lo largo de mi carrera!"
+      "title": "Proyectos destacados",
+      "description": "Sistemas en producción que diseñé, construí o lideré, y cómo encajan sus partes."
     },
     "contributing": {
       "label": "Contribuir",
       "title": "Contribuciones",
-      "description": "¡Desarrollando el lado comunitario, **el más importante**!",
+      "description": "El voluntariado que hago **además de la ingeniería**.",
       "quote": "Nuestras vidas comienzan a terminar el día en que guardamos silencio sobre las cosas que importan.",
       "author": "Martin Luther King Jr."
     },
     "contact": {
       "label": "Contacto",
       "title": "Contacto",
-      "description": "Mi información personal, pero, si lo prefieres, ¡[escríbeme](whatsapp)!",
-      "quote": "Afrontar el sufrimiento sin duda contribuirá a elevar tu práctica espiritual, siempre que seas capaz de transformar la calamidad y la desgracia en un camino.",
-      "author": "Dalai Lama"
+      "description": "La forma más rápida de hablar conmigo es por correo, o [escríbeme](whatsapp)."
+    },
+    "expertise": {
+      "label": "Competencias",
+      "title": "Competencias técnicas",
+      "description": "Lo que hago, por área, y dónde lo he hecho."
     }
   }
 }

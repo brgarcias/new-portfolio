@@ -1,22 +1,18 @@
 'use client'; // Error boundaries must be Client Components
 
 // NEXT GOOGLE FONT
-import { Inter, Space_Grotesk } from 'next/font/google';
+import { Bricolage_Grotesque, Inter } from 'next/font/google';
 // HOOKS
 import { useSyncExternalStore } from 'react';
 // GLOBAL CSS
 import './globals.css';
-// FONT AWESOME CONFIGS
-import { config } from '@fortawesome/fontawesome-svg-core';
-import '@fortawesome/fontawesome-svg-core/styles.css';
-config.autoAddCss = false;
 // COMPONENTS
 import ErrorPage from '@/src/components/StatusPage/ErrorPage';
 // THEME
 import { currentTheme, type Theme } from './theme';
 
 const inter = Inter({ subsets: ['latin'] });
-const display = Space_Grotesk({
+const display = Bricolage_Grotesque({
   subsets: ['latin'],
   variable: '--font-display',
 });

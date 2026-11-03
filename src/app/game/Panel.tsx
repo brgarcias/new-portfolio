@@ -2,13 +2,6 @@
 
 // HOOKS
 import { useRef, type CSSProperties, type ReactNode } from 'react';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faArrowLeft,
-  faArrowUpRightFromSquare,
-  faXmark,
-} from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
@@ -17,6 +10,8 @@ import { sectionIds, type SectionId } from '@/src/content/sections';
 import { Keycap } from './ui';
 import { useDialog } from './useDialog';
 import { biomes } from './world/biomes';
+// ICONS
+import { ArrowLeftIcon, ExternalLinkIcon, XIcon } from '@/src/components/Icon';
 
 interface PanelProps {
   id: SectionId;
@@ -89,7 +84,7 @@ export default function Panel({
             aria-label={messages.dialog.close}
             onClick={onClose}
           >
-            <FontAwesomeIcon icon={faXmark} />
+            <XIcon />
           </button>
         </header>
         <div ref={body} className="game-panel__body" tabIndex={-1}>
@@ -97,13 +92,13 @@ export default function Panel({
         </div>
         <footer className="game-panel__footer">
           <button type="button" className="g-btn" onClick={onClose}>
-            <FontAwesomeIcon icon={faArrowLeft} />
+            <ArrowLeftIcon />
             {t.backToFlight}
             <Keycap>Esc</Keycap>
           </button>
           <a className="g-btn" href={`${home}#${id}`}>
             {t.openOnSite}
-            <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+            <ExternalLinkIcon />
           </a>
         </footer>
       </div>

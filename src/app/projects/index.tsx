@@ -3,26 +3,14 @@
 // NEXT
 import Image, { type StaticImageData } from 'next/image';
 // HOOKS
-import {
-  CSSProperties,
-  PointerEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faArrowLeft,
-  faArrowRight,
-  faArrowUpRightFromSquare,
-} from '@fortawesome/free-solid-svg-icons';
+import { CSSProperties, useEffect, useRef, useState } from 'react';
 // COMPONENTS
 import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
 import ModalComponent from '@/src/components/Modal/Lazy';
 import { openOnKey } from '@/src/components/Modal/openOnKey';
 import Cases from './Cases';
+import { tilt, untilt } from './tilt';
 // DEVICES
 import iPhoneImg from '@/public/images/projects/iphone.webp';
 import iPadImg from '@/public/images/projects/ipad.webp';
@@ -36,6 +24,12 @@ import { format } from '@/src/i18n/messages';
 import type { CaseStudy, Project, SectionHeader } from '@/src/content';
 // CSS
 import './styles.css';
+// ICONS
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ExternalLinkIcon,
+} from '@/src/components/Icon';
 
 // The frame of each device a project can be shown in, and where its screen
 // sits in the frame's image, in that image's pixels: left, top, width and
@@ -70,26 +64,6 @@ function screenStyle(device: keyof typeof devices): CSSProperties {
 }
 
 const pad = (value: number) => String(value).padStart(2, '0');
-
-// The device leans towards the mouse, with a light following it. Touch and
-// pen leave it still, and "reduce motion" turns the effect off in CSS.
-function tilt(event: PointerEvent<HTMLElement>) {
-  if (event.pointerType !== 'mouse') return;
-  const card = event.currentTarget;
-  const rect = card.getBoundingClientRect();
-  const x = (event.clientX - rect.left) / rect.width - 0.5;
-  const y = (event.clientY - rect.top) / rect.height - 0.5;
-  card.style.setProperty('--tilt-x', `${(-y * 10).toFixed(2)}deg`);
-  card.style.setProperty('--tilt-y', `${(x * 14).toFixed(2)}deg`);
-  card.style.setProperty('--glare-x', `${((x + 0.5) * 100).toFixed(1)}%`);
-  card.style.setProperty('--glare-y', `${((y + 0.5) * 100).toFixed(1)}%`);
-}
-
-function untilt(event: PointerEvent<HTMLElement>) {
-  for (const name of ['--tilt-x', '--tilt-y', '--glare-x', '--glare-y']) {
-    event.currentTarget.style.removeProperty(name);
-  }
-}
 
 interface ProjectsProps {
   header: SectionHeader;
@@ -244,7 +218,7 @@ export default function Projects({
                   <span className="visually-hidden">
                     {format(t.detailsAbout, { title: item.title })}
                   </span>
-                  <FontAwesomeIcon icon={faArrowRight} />
+                  <ArrowRightIcon />
                 </button>
               </div>
             </li>
@@ -265,7 +239,7 @@ export default function Projects({
               aria-label={t.previous}
               onClick={() => go(-1)}
             >
-              <FontAwesomeIcon icon={faArrowLeft} />
+              <ArrowLeftIcon />
             </button>
             <button
               type="button"
@@ -273,7 +247,7 @@ export default function Projects({
               aria-label={t.next}
               onClick={() => go(1)}
             >
-              <FontAwesomeIcon icon={faArrowRight} />
+              <ArrowRightIcon />
             </button>
           </div>
         </div>
@@ -298,15 +272,17 @@ export default function Projects({
           />
           <div className="project-details__text">
             <p>{project.description}</p>
-            <a
-              className="btn btn--primary btn--small"
-              href={project.link}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t.website}
-              <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-            </a>
+            {project.link && (
+              <a
+                className="btn btn--primary btn--small"
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t.website}
+                <ExternalLinkIcon />
+              </a>
+            )}
           </div>
         </div>
       </ModalComponent>

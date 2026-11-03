@@ -119,20 +119,26 @@ for (const theme of ['dark', 'light'] as const) {
 
     test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
       await page.goto('/');
-      await scrollTo(page, '#courses .course-card:first-child');
-      // Like the other captures that click, it waits for the cards to finish
+      await scrollTo(page, '#courses .course-list');
+      // Like the other captures that click, it waits for the list to finish
       // entering, so the page behind the dialog is always in the same place.
-      await expect(page.locator('#courses .course-grid-wrap')).toHaveCSS(
+      await expect(page.locator('#courses .course-list-wrap')).toHaveCSS(
         'opacity',
         '1',
       );
-      await page
-        .locator('#courses .course-card')
-        .first()
-        .getByRole('button')
-        .click();
+      await page.locator('#courses .course__button').first().click();
       await expect(page.getByRole('dialog')).toBeVisible();
       await expectScreenshot(page, name('course-details.png'));
+    });
+
+    test('estudo de caso em destaque', { tag: '@visual' }, async ({ page }) => {
+      await page.goto('/');
+      await scrollTo(page, '#projects .case-feature');
+      await expect(page.locator('#projects .case-feature-wrap')).toHaveCSS(
+        'opacity',
+        '1',
+      );
+      await expectScreenshot(page, name('case-feature.png'), '#projects');
     });
 
     test('estudos de caso', { tag: '@visual' }, async ({ page }) => {
@@ -244,7 +250,7 @@ for (const locale of ['pt', 'es'] as const) {
 // The other views, in the dark theme only.
 test('experiência expandida', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  const second = '#experience .xp-item:nth-child(2)';
+  const second = '#experience .xp__list:first-of-type .xp-item:nth-child(2)';
   await scrollTo(page, second);
   // The click waits for the card to finish entering, and the centring below
   // for the details to finish opening. Otherwise the capture moved around.
@@ -253,19 +259,6 @@ test('experiência expandida', { tag: '@visual' }, async ({ page }) => {
   await waitForTransitions(page);
   await scrollTo(page, second);
   await expectScreenshot(page, 'experience-expanded.png', '#experience');
-});
-
-test('etapa da formação', { tag: '@visual' }, async ({ page }) => {
-  await page.goto('/');
-  await scrollTo(page, '#education .edu');
-  // A click as the steps finished entering sometimes scrolled the page
-  // before clicking, which moved the steps to the bottom of the screen.
-  await expect(page.locator('#education .edu-wrap')).toHaveCSS('opacity', '1');
-  await page
-    .locator('#education')
-    .getByRole('tab', { name: 'University Education' })
-    .click();
-  await expectScreenshot(page, 'education-university.png', '#education');
 });
 
 test('faixa de tecnologias', { tag: '@visual' }, async ({ page }) => {
@@ -311,8 +304,8 @@ test('galeria de contribuições', { tag: '@visual' }, async ({ page }) => {
 // On a phone each number takes a row, with its label beside it.
 test('números das contribuições', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await scrollTo(page, '#contributing .contrib__closing');
-  await expect(page.locator('#contributing .contrib__closing')).toHaveCSS(
+  await scrollTo(page, '#contributing .contrib-stats');
+  await expect(page.locator('#contributing .contrib__story')).toHaveCSS(
     'opacity',
     '1',
   );
@@ -331,11 +324,11 @@ test('visualizador de fotos', { tag: '@visual' }, async ({ page }) => {
   await expectScreenshot(page, 'photo-viewer.png', '[role="dialog"]');
 });
 
-test('cartões de contato', { tag: '@visual' }, async ({ page }) => {
+test('painel de contato', { tag: '@visual' }, async ({ page }) => {
   await page.goto('/');
-  await scrollTo(page, '#contact .contact-grid');
+  await scrollTo(page, '#contact .contact__panel');
   await expect(page.locator('#contact .contact')).toHaveCSS('opacity', '1');
-  await expectScreenshot(page, 'contact-cards.png', '#contact');
+  await expectScreenshot(page, 'contact-panel.png', '#contact');
 });
 
 test('página de erro', { tag: '@visual' }, async ({ page }) => {

@@ -1331,9 +1331,7 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   await expect(page.locator('.hud__pad')).toContainText('Landing zone');
   const about = page.getByRole('dialog', { name: 'About Me' });
   await expect(about).toBeVisible({ timeout: 10_000 });
-  await expect(about).toContainText(
-    'Passionate and experienced Full Stack Developer',
-  );
+  await expect(about).toContainText('with a focus on the backend');
   await expect(about).toContainText('Tatooine');
   // The holocron on the way in was recovered, and said so.
   expect(

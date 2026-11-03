@@ -1,9 +1,8 @@
 {
   "en": {
-    "order": 2,
+    "order": 6,
     "title": "JavaScript - Udemy",
     "subtitle": "JavaScript",
-    "wide": false,
     "dialogTitle": "Modern Web Course - Udemy",
     "dialogSubtitle": "JavaScript, Node.js, HTML5, CSS3, Ajax, jQuery, Bootstrap, React.js, Express",
     "modules": [
@@ -26,10 +25,9 @@
     ]
   },
   "pt": {
-    "order": 2,
+    "order": 6,
     "title": "JavaScript - Udemy",
     "subtitle": "JavaScript",
-    "wide": false,
     "dialogTitle": "Curso Web Moderno - Udemy",
     "dialogSubtitle": "JavaScript, Node.js, HTML5, CSS3, Ajax, jQuery, Bootstrap, React.js, Express",
     "modules": [
@@ -52,10 +50,9 @@
     ]
   },
   "es": {
-    "order": 2,
+    "order": 6,
     "title": "JavaScript - Udemy",
     "subtitle": "JavaScript",
-    "wide": false,
     "dialogTitle": "Curso de Web Moderna - Udemy",
     "dialogSubtitle": "JavaScript, Node.js, HTML5, CSS3, Ajax, jQuery, Bootstrap, React.js, Express",
     "modules": [

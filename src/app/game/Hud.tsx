@@ -8,24 +8,6 @@ import {
   type CSSProperties,
   type PointerEvent,
 } from 'react';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faArrowLeft,
-  faArrowRightArrowLeft,
-  faBolt,
-  faLocationDot,
-  faCamera,
-  faCheck,
-  faDownload,
-  faEye,
-  faEyeLowVision,
-  faEyeSlash,
-  faGamepad,
-  faVolumeHigh,
-  faVolumeXmark,
-  faXmark,
-} from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 import { format } from '@/src/i18n/messages';
@@ -45,6 +27,23 @@ import type { HudMode, Place, Toast } from './types';
 import { HolocronIcon, Keycap, Pips } from './ui';
 import { useMediaQuery } from './useMediaQuery';
 import { biomes } from './world/biomes';
+// ICONS
+import {
+  ArrowLeftIcon,
+  ArrowLeftRightIcon,
+  BoltIcon,
+  CameraIcon,
+  CheckIcon,
+  DownloadIcon,
+  EyeClosedIcon,
+  EyeIcon,
+  EyeOffIcon,
+  HandIcon,
+  MapPinIcon,
+  VolumeIcon,
+  VolumeOffIcon,
+  XIcon,
+} from '@/src/components/Icon';
 
 const stickRadius = 44;
 
@@ -138,7 +137,7 @@ function TouchControls() {
         onPointerLeave={boost(false)}
         onContextMenu={(event) => event.preventDefault()}
       >
-        <FontAwesomeIcon icon={faBolt} />
+        <BoltIcon />
         <span aria-hidden="true">{t.boost}</span>
       </button>
     </div>
@@ -317,22 +316,22 @@ function PhotoMode({ onLeave }: { onLeave: () => void }) {
       <span className="photo__frame" aria-hidden="true" />
       <div className="photo__bar">
         <span className="g-label photo__label">
-          <FontAwesomeIcon icon={faCamera} />
+          <CameraIcon />
           {t.photoMode}
         </span>
         <button type="button" className="g-btn g-btn--primary" onClick={save}>
-          <FontAwesomeIcon icon={faDownload} />
+          <DownloadIcon />
           {t.savePhoto}
         </button>
         <button type="button" className="g-btn" onClick={onLeave}>
-          <FontAwesomeIcon icon={faXmark} />
+          <XIcon />
           {t.leavePhoto}
           <Keycap>Esc</Keycap>
         </button>
       </div>
       {saved && (
         <p className="photo__saved" role="status">
-          <FontAwesomeIcon icon={faCheck} />
+          <CheckIcon />
           {t.photoSaved}
           <span className="g-num">{saved}</span>
         </p>
@@ -444,14 +443,14 @@ export default function Hud({
       <div className="hud__top">
         <div className="hud__nw">
           <a className="g-btn hud__back" href={home} aria-label={t.backToSite}>
-            <FontAwesomeIcon icon={faArrowLeft} />
+            <ArrowLeftIcon />
             <span className="hud__back-label">{t.backToSite}</span>
           </a>
           <div className="hud__log">
             <p className="g-label hud__mission">{t.mission}</p>
             <p className="hud__count tally">
               <span className="tally__label">{t.sections}</span>
-              <FontAwesomeIcon icon={faLocationDot} className="tally__icon" />
+              <MapPinIcon className="tally__icon" />
               <Pips count={visited.length} total={total} />
               <span className="tally__value g-num" aria-hidden="true">
                 {visited.length}/{total}
@@ -479,7 +478,7 @@ export default function Hud({
             </p>
             {visited.length >= total && (
               <p className="hud__done" role="status">
-                <FontAwesomeIcon icon={faCheck} />
+                <CheckIcon />
                 <span aria-hidden="true">{t.explored}</span>
                 <span className="g-sr">{t.allVisited}</span>
               </p>
@@ -522,7 +521,7 @@ export default function Hud({
               data-tip={soundOn ? t.soundOn : t.soundOff}
               onClick={onToggleSound}
             >
-              <FontAwesomeIcon icon={soundOn ? faVolumeHigh : faVolumeXmark} />
+              {soundOn ? <VolumeIcon /> : <VolumeOffIcon />}
               <span className="hud__eq" aria-hidden="true">
                 <i />
                 <i />
@@ -538,7 +537,7 @@ export default function Hud({
               data-key="P"
               onClick={() => onPhoto(!photo)}
             >
-              <FontAwesomeIcon icon={faCamera} />
+              <CameraIcon />
             </button>
             <button
               type="button"
@@ -548,15 +547,13 @@ export default function Hud({
               data-key="V"
               onClick={onHudMode}
             >
-              <FontAwesomeIcon
-                icon={
-                  hudMode === 'full'
-                    ? faEye
-                    : hudMode === 'minimal'
-                      ? faEyeLowVision
-                      : faEyeSlash
-                }
-              />
+              {hudMode === 'full' ? (
+                <EyeIcon />
+              ) : hudMode === 'minimal' ? (
+                <EyeClosedIcon />
+              ) : (
+                <EyeOffIcon />
+              )}
             </button>
           </div>
         </div>
@@ -644,7 +641,7 @@ export default function Hud({
             {toast.kind === 'hint' ? (
               <>
                 <span className="toast__icon toast__icon--hint">
-                  <FontAwesomeIcon icon={faGamepad} />
+                  <HandIcon />
                 </span>
                 <p className="toast__title">{t.hintTitle}</p>
                 <p className="toast__meta">
@@ -691,7 +688,7 @@ export default function Hud({
             ) : (
               <>
                 <span className="toast__icon toast__icon--check">
-                  <FontAwesomeIcon icon={faCheck} />
+                  <CheckIcon />
                 </span>
                 <p className="toast__title">{t.explored}</p>
                 <p className="toast__meta">{t.allVisited}</p>
@@ -728,7 +725,7 @@ export default function Hud({
             aria-label={t.changeShip}
             onClick={onChangeShip}
           >
-            <FontAwesomeIcon icon={faArrowRightArrowLeft} />
+            <ArrowLeftRightIcon />
             <span className="hud__swap-label">{t.changeShip}</span>
           </button>
         </div>

@@ -1,5 +1,6 @@
 // COMPONENTS
 import Section from '@/src/components/Section';
+import EarlierRoles from './EarlierRoles';
 import ExperienceItem from './ExperienceItem';
 import TechRibbon from './TechRibbon';
 // CONTENT
@@ -13,10 +14,32 @@ interface ProfessionalExperienceProps {
   experiences: Experience[];
 }
 
+const itemProps = ({
+  company,
+  icon,
+  title,
+  date,
+  duration,
+  stack,
+  details,
+  current,
+}: Experience) => ({
+  company,
+  icon,
+  title,
+  date,
+  duration,
+  stack,
+  details,
+  current,
+});
+
 export default function ProfessionalExperience({
   header,
   experiences,
 }: Readonly<ProfessionalExperienceProps>) {
+  const recent = experiences.filter((experience) => !experience.earlier);
+  const earlier = experiences.filter((experience) => experience.earlier);
   // Every technology the experiences name, from the most recent role.
   const technologies = [
     ...new Set(experiences.flatMap((experience) => experience.stack)),
@@ -30,21 +53,24 @@ export default function ProfessionalExperience({
           <span className="xp__rail-fill" />
         </span>
         <ol className="xp__list">
-          {experiences.map((experience, index) => (
+          {recent.map((experience, index) => (
             <ExperienceItem
               key={experience.slug}
-              company={experience.company}
-              icon={experience.icon}
-              title={experience.title}
-              date={experience.date}
-              duration={experience.duration}
-              stack={experience.stack}
-              details={experience.details}
-              current={experience.current}
+              {...itemProps(experience)}
               defaultOpen={index === 0}
             />
           ))}
         </ol>
+        {earlier.length > 0 && (
+          <EarlierRoles count={earlier.length}>
+            {earlier.map((experience) => (
+              <ExperienceItem
+                key={experience.slug}
+                {...itemProps(experience)}
+              />
+            ))}
+          </EarlierRoles>
+        )}
       </div>
       <TechRibbon items={technologies} />
     </Section>

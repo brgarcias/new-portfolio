@@ -1,6 +1,6 @@
 {
   "en": {
-    "order": 1,
+    "order": 2,
     "company": "PayPal",
     "period": "Since 2025",
     "stack": "Node.js, TypeScript, GraphQL",
@@ -25,10 +25,12 @@
         "label": "Node.js APIs",
         "detail": "Service to service"
       }
-    ]
+    ],
+    "image": "",
+    "decisions": []
   },
   "pt": {
-    "order": 1,
+    "order": 2,
     "company": "PayPal",
     "period": "Desde 2025",
     "stack": "Node.js, TypeScript, GraphQL",
@@ -53,10 +55,12 @@
         "label": "APIs Node.js",
         "detail": "Entre serviços"
       }
-    ]
+    ],
+    "image": "",
+    "decisions": []
   },
   "es": {
-    "order": 1,
+    "order": 2,
     "company": "PayPal",
     "period": "Desde 2025",
     "stack": "Node.js, TypeScript, GraphQL",
@@ -81,6 +85,8 @@
         "label": "APIs Node.js",
         "detail": "Entre servicios"
       }
-    ]
+    ],
+    "image": "",
+    "decisions": []
   }
 }

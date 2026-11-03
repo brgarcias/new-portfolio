@@ -2,15 +2,6 @@
 
 // HOOKS
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faArrowLeft,
-  faArrowUpRightFromSquare,
-  faLocationArrow,
-  faRotateLeft,
-  faXmark,
-} from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 import { format } from '@/src/i18n/messages';
@@ -22,6 +13,14 @@ import type { Place } from './types';
 import { HolocronIcon, Keycap, Pips } from './ui';
 import { useDialog } from './useDialog';
 import { biomes } from './world/biomes';
+// ICONS
+import {
+  ArrowLeftIcon,
+  ExternalLinkIcon,
+  RotateCcwIcon,
+  SendIcon,
+  XIcon,
+} from '@/src/components/Icon';
 
 interface ArchiveProps {
   // While it fades out, after it was closed: nothing in it answers.
@@ -135,7 +134,7 @@ export default function Archive({
             aria-label={t.closeArchive}
             onClick={onClose}
           >
-            <FontAwesomeIcon icon={faXmark} />
+            <XIcon />
             <Keycap>Esc</Keycap>
           </button>
         </header>
@@ -186,7 +185,7 @@ export default function Archive({
                       <p className="record__text">{records[place.id].text}</p>
                       <a className="record__link" href={`${home}#${place.id}`}>
                         {t.openOnSite}
-                        <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                        <ExternalLinkIcon />
                       </a>
                     </>
                   ) : (
@@ -204,7 +203,7 @@ export default function Archive({
                         aria-pressed={picked}
                         onClick={() => onCourse(place.id)}
                       >
-                        <FontAwesomeIcon icon={faLocationArrow} />
+                        <SendIcon />
                         {picked
                           ? t.courseSet
                           : format(t.setCourse, { place: planet })}
@@ -248,12 +247,12 @@ export default function Archive({
               disabled={!started}
               onClick={() => setConfirming(true)}
             >
-              <FontAwesomeIcon icon={faRotateLeft} />
+              <RotateCcwIcon />
               {t.newExploration}
             </button>
           )}
           <button type="button" className="g-btn" onClick={onClose}>
-            <FontAwesomeIcon icon={faArrowLeft} />
+            <ArrowLeftIcon />
             {t.backToFlight}
             <Keycap>Esc</Keycap>
           </button>

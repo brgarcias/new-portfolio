@@ -2,9 +2,6 @@
 
 // HOOKS
 import { MouseEvent, useEffect } from 'react';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // THEME
@@ -16,6 +13,8 @@ import {
   systemTheme,
   type Theme,
 } from '@/src/app/theme';
+// ICONS
+import { MoonIcon, SunIcon } from '@/src/components/Icon';
 
 // Switches still running, so quick clicks keep transitions off until the
 // last one ends.
@@ -127,14 +126,8 @@ export default function ThemeToggle() {
   // labels are in the page, and CSS shows the ones for the current theme.
   return (
     <button type="button" className="theme-toggle" onClick={onClick}>
-      <FontAwesomeIcon
-        className="theme-toggle__icon theme-toggle__icon--sun"
-        icon={faSun}
-      />
-      <FontAwesomeIcon
-        className="theme-toggle__icon theme-toggle__icon--moon"
-        icon={faMoon}
-      />
+      <SunIcon className="theme-toggle__icon theme-toggle__icon--sun" />
+      <MoonIcon className="theme-toggle__icon theme-toggle__icon--moon" />
       <span className="visually-hidden theme-toggle__label--to-light">
         {t.toLightTheme}
       </span>

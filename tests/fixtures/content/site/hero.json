@@ -1,20 +1,26 @@
 {
   "en": {
     "titleTop": "**Full-Stack**",
-    "titleBottom": "Developer",
-    "tagline": "Passionate about development, eager for new experiences and constantly seeking fresh challenges.",
-    "highlights": "ReactJS, NextJS, NodeJS, NestJS, GraphQL, AWS"
+    "titleBottom": "Software Engineer",
+    "tagline": "I design and ship GraphQL and REST APIs, event-driven services on AWS and the React apps on top of them. 8+ years, from writing the code to migrating a legacy monolith as tech lead.",
+    "highlights": "Node.js, TypeScript, GraphQL, NestJS, React, AWS",
+    "companiesLabel": "8+ years of experience, including",
+    "companies": "PayPal, AB InBev, Serasa, Domy, Trocafone"
   },
   "pt": {
-    "titleTop": "Desenvolvedor",
+    "titleTop": "Engenheiro de Software",
     "titleBottom": "**Full-Stack**",
-    "tagline": "Apaixonado por desenvolvimento, ávido por novas experiências e sempre em busca de novos desafios.",
-    "highlights": "ReactJS, NextJS, NodeJS, NestJS, GraphQL, AWS"
+    "tagline": "Projeto e coloco em produção APIs GraphQL e REST, serviços orientados a eventos na AWS e as aplicações React por cima deles. São mais de 8 anos, do código à migração de um monólito legado como tech lead.",
+    "highlights": "Node.js, TypeScript, GraphQL, NestJS, React, AWS",
+    "companiesLabel": "Mais de 8 anos de experiência, incluindo",
+    "companies": "PayPal, AB InBev, Serasa, Domy, Trocafone"
   },
   "es": {
-    "titleTop": "Desarrollador",
+    "titleTop": "Ingeniero de Software",
     "titleBottom": "**Full-Stack**",
-    "tagline": "Apasionado por el desarrollo, con ganas de nuevas experiencias y siempre en busca de nuevos desafíos.",
-    "highlights": "ReactJS, NextJS, NodeJS, NestJS, GraphQL, AWS"
+    "tagline": "Diseño y pongo en producción APIs GraphQL y REST, servicios orientados a eventos en AWS y las aplicaciones React sobre ellos. Más de 8 años, desde el código hasta la migración de un monolito heredado como tech lead.",
+    "highlights": "Node.js, TypeScript, GraphQL, NestJS, React, AWS",
+    "companiesLabel": "Más de 8 años de experiencia, incluyendo",
+    "companies": "PayPal, AB InBev, Serasa, Domy, Trocafone"
   }
 }

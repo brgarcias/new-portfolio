@@ -56,14 +56,17 @@ test('carrega o portfólio sem erros e sem rolagem horizontal', async ({
     page.locator('meta[name="google-site-verification"]'),
   ).toHaveAttribute('content', 'zE-A_JWezHcTY0RPEAiraoj-ORR540i46tyJwSk0T3s');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    'Full-Stack Developer',
+    'Full-Stack Software Engineer',
   );
   await expect(page.locator('#top .hero__status')).toHaveText(
     'Currently Software Engineer at PayPal',
   );
-  for (const id of sections) {
-    await expect(page.locator(`main > section#${id}`)).toHaveCount(1);
-  }
+  // The work comes right after the top, and the sections in this order.
+  expect(
+    await page
+      .locator('main section[id]')
+      .evaluateAll((all) => all.map((section) => section.id)),
+  ).toEqual(['top', ...sections]);
   expect(await pageOverflow(page)).toBeLessThanOrEqual(0);
   expect(errors).toEqual([]);
 });
@@ -85,7 +88,7 @@ test('mostra o site em português e em espanhol', async ({ page }) => {
   await page.goto('/pt');
   await expect(page.locator('html')).toHaveAttribute('lang', 'pt');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    'Desenvolvedor Full-Stack',
+    'Engenheiro de Software Full-Stack',
   );
   await expect(page.locator('#top .hero__status')).toHaveText(
     'Atualmente Engenheiro de Software na PayPal',
@@ -97,13 +100,7 @@ test('mostra o site em português e em espanhol', async ({ page }) => {
   await expect(
     page.locator('#experience .xp-item').first().locator('.xp-item__period'),
   ).toContainText('out. de 2025 — Atual');
-  // The profile card is the name, the role and the career, with no
-  // personal details.
-  const profileCard = page.locator('#contact .contact-card--profile');
-  await expect(profileCard).toContainText('Desenvolvedor Full-Stack');
-  await expect(profileCard.locator('.contact-card__details li')).toHaveText([
-    'Desenvolvendo software desde 2018',
-  ]);
+  await expect(page.locator('#contact')).toContainText('São Paulo, Brasil');
   // The other languages are linked for search engines.
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     'href',
@@ -123,7 +120,7 @@ test('mostra o site em português e em espanhol', async ({ page }) => {
   await page.goto('/es');
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    'Desarrollador Full-Stack',
+    'Ingeniero de Software Full-Stack',
   );
   await expect(page.locator('#contact h2')).toHaveText('Contacto');
 });
@@ -148,7 +145,7 @@ test('troca o idioma e mantém a seção na tela', async ({ page, isMobile }) =>
   }
   await expect(page).toHaveURL('/pt#projects');
   await expect(page.locator('html')).toHaveAttribute('lang', 'pt');
-  await expect(page.locator('#projects h2')).toHaveText('Meus projetos');
+  await expect(page.locator('#projects h2')).toHaveText('Projetos em destaque');
   await expect(page.locator('#projects h2')).toBeInViewport();
 });
 
@@ -176,6 +173,32 @@ test('navega por todas as seções pelo menu e fecha o menu com Escape', async (
   await expect(page.locator('.menu-toggle')).toBeFocused();
 });
 
+test('mantém os links do menu abaixo da barra em telas baixas', async ({
+  page,
+}) => {
+  // A small phone, and one lying down: the page goes further down, and the links
+  // ran under the bar.
+  for (const [width, height] of [
+    [320, 568],
+    [874, 370],
+  ]) {
+    await page.setViewportSize({ width, height });
+    await page.goto('/pt');
+    await openMenu(page);
+    const bar = (await page.locator('.site-header').boundingBox())!;
+    const first = (await page
+      .locator('.stack-menu__link')
+      .first()
+      .boundingBox())!;
+    expect(first.y, `${width}x${height}`).toBeGreaterThanOrEqual(
+      bar.y + bar.height,
+    );
+    await expect(page.locator('.stage-catcher')).toBeInViewport();
+    await page.keyboard.press('Escape');
+    await expectMenuClosed(page);
+  }
+});
+
 test('pula a barra com o primeiro Tab', async ({ page }) => {
   await page.goto('/');
   await page.keyboard.press('Tab');
@@ -192,13 +215,20 @@ test('destaca na barra a seção que está na tela', async ({
 }) => {
   test.skip(isMobile, 'The section links appear in the bar on wide screens.');
   await page.goto('/');
-  await page
-    .locator('.site-nav')
-    .getByRole('link', { name: 'Projects' })
-    .click();
-  await expect(
-    page.locator('.site-nav').getByRole('link', { name: 'Projects' }),
-  ).toHaveAttribute('aria-current', 'location');
+  const nav = page.locator('.site-nav');
+  // The bar has the sections a visitor looks for; the menu has them all.
+  await expect(nav.getByRole('link')).toHaveText([
+    'Work',
+    'Expertise',
+    'Experience',
+    'About',
+    'Contact',
+  ]);
+  await nav.getByRole('link', { name: 'Work' }).click();
+  await expect(nav.getByRole('link', { name: 'Work' })).toHaveAttribute(
+    'aria-current',
+    'location',
+  );
   await expect(page.locator('.site-header')).toHaveClass(
     /site-header--scrolled/,
   );
@@ -421,8 +451,8 @@ test('encolhe os botões sob o dedo e os solta com uma mola', async ({
 
 test('abre uma experiência pela seta do título', async ({ page }) => {
   await page.goto('/');
-  await scrollTo(page, '#experience .xp-item:nth-child(2) .xp-card');
   const card = page.locator('#experience .xp-item').nth(1).locator('.xp-card');
+  await card.scrollIntoViewIfNeeded();
   await expect(card).toHaveCSS('opacity', '1');
   const toggle = card.locator('.xp-card__toggle');
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
@@ -439,15 +469,15 @@ test('abre uma experiência pela seta do título', async ({ page }) => {
 test('pausa as animações em loop fora da tela', async ({ page }) => {
   await page.goto('/');
   const hero = page.locator('#top');
-  const chip = hero.locator('.hero__chip').first();
-  await expect(chip).toHaveCSS('animation-play-state', 'running');
+  const float = hero.locator('.hero__float');
+  await expect(float).toHaveCSS('animation-play-state', 'running');
   await openSection(page, 'contact');
   await expect(hero).toHaveAttribute('data-offscreen');
-  await expect(chip).toHaveCSS('animation-play-state', 'paused');
+  await expect(float).toHaveCSS('animation-play-state', 'paused');
   await openSection(page, 'about');
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
   await expect(hero).not.toHaveAttribute('data-offscreen');
-  await expect(chip).toHaveCSS('animation-play-state', 'running');
+  await expect(float).toHaveCSS('animation-play-state', 'running');
 });
 
 test('abre e recolhe as experiências profissionais', async ({ page }) => {
@@ -455,6 +485,20 @@ test('abre e recolhe as experiências profissionais', async ({ page }) => {
   await openSection(page, 'experience');
   const items = page.locator('#experience .xp-item');
   await expect(items).toHaveCount(8);
+  // The early roles wait behind a button, which takes the focus to the first
+  // of them.
+  const shown = page.locator('#experience .xp-item:visible');
+  await expect(shown).toHaveCount(5);
+  await expect(items.nth(5)).toBeHidden();
+  const earlier = page.getByRole('button', { name: 'Show 3 earlier roles' });
+  await expect(earlier).toHaveAttribute('aria-expanded', 'false');
+  await earlier.click();
+  await expect(shown).toHaveCount(8);
+  await expect(items.nth(5).locator('.xp-card__toggle')).toBeFocused();
+  const later = page.getByRole('button', { name: 'Hide earlier roles' });
+  await expect(later).toHaveAttribute('aria-expanded', 'true');
+  await later.click();
+  await expect(shown).toHaveCount(5);
   await expect(items.first().getByRole('heading', { level: 3 })).toHaveText(
     'Software Engineer (Node.js / GraphQL Platform)',
   );
@@ -500,9 +544,9 @@ test('abre e recolhe as experiências profissionais', async ({ page }) => {
   // list, and a list holds only items.
   const grouped = items.nth(4).locator('.xp-card__details');
   await expect(grouped.locator('h4')).toHaveText([
-    'Full Stack Developer',
-    'Backend Developer',
-    'Frontend Developer',
+    'Tech Lead (2023–2024)',
+    'Backend Developer (2022–2023)',
+    'Frontend Developer (2021–2022)',
   ]);
   await expect(grouped.locator('ul')).toHaveCount(3);
   await expect(
@@ -510,54 +554,155 @@ test('abre e recolhe as experiências profissionais', async ({ page }) => {
   ).toHaveCount(0);
 });
 
-test('alterna as etapas da formação acadêmica', async ({ page }) => {
+test('mostra a formação em computação, sem o histórico escolar', async ({
+  page,
+}) => {
   await page.goto('/');
   await openSection(page, 'education');
   const education = page.locator('#education');
-  const tab = (name: string) => education.getByRole('tab', { name });
-  // Only the chosen step's panel is shown.
-  const panel = education.getByRole('tabpanel');
-  await expect(education.getByRole('tab')).toHaveCount(5);
-  await expect(panel).toHaveCount(1);
-  // It opens on the degree, the last finished step.
-  await expect(tab('University Education')).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
-  await expect(panel.getByRole('heading', { level: 3 })).toHaveText(
+  await expect(education.getByRole('heading', { level: 3 })).toHaveText([
     'Universidade São Judas Tadeu',
+  ]);
+  await expect(education).toContainText('Bachelor of Computer Science');
+  // What does not help to assess the work stays out.
+  await expect(education).not.toContainText('Colégio');
+  await expect(education.getByRole('tab')).toHaveCount(0);
+});
+
+test('mostra o que o Bruno faz, por área e com onde fez', async ({ page }) => {
+  await page.goto('/');
+  await openSection(page, 'expertise');
+  const expertise = page.locator('#expertise');
+  await expect(expertise.getByRole('heading', { level: 3 })).toHaveText([
+    'Backend Engineering',
+    'Distributed Systems',
+    'Cloud Architecture',
+    'Databases & Data',
+    'Frontend Engineering',
+    'Testing & Quality',
+    'Technical Leadership',
+  ]);
+  // Each area says where it was done, and a number only with what it measures.
+  const rows = expertise.locator('.ledger__row');
+  await expect(rows).toHaveCount(7);
+  await expect(rows.locator('.ledger__where')).toHaveCount(7);
+  await expect(rows.first().locator('.ledger__metric')).toContainText(
+    '30%faster API',
   );
-  await scrollTo(page, '#education .edu');
-  await tab('Elementary School').click();
-  await expect(tab('Elementary School')).toHaveAttribute(
-    'aria-selected',
-    'true',
+  await expect(rows.nth(1).locator('.ledger__metric')).toHaveCount(0);
+  await expect(rows.nth(2).locator('.ledger__stack')).toContainText(
+    'AWS Lambda · API Gateway · SQS',
   );
-  await expect(tab('University Education')).toHaveAttribute(
-    'aria-selected',
-    'false',
+  // No skill bars or percentages of knowledge.
+  await expect(expertise.getByRole('progressbar')).toHaveCount(0);
+});
+
+test('leva ao trabalho, ao currículo e ao contato pelos botões do topo', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const top = page.locator('#top');
+  await expect(top.locator('.hero__proof li')).toHaveText([
+    'PayPal',
+    'AB InBev',
+    'Serasa',
+    'Domy',
+    'Trocafone',
+  ]);
+  await expect(top.getByRole('link', { name: 'Contact me' })).toHaveAttribute(
+    'href',
+    '#contact',
   );
-  await expect(panel.getByRole('heading', { level: 3 })).toHaveText(
-    'Colégio Salesiano Santa Teresinha',
+  await top
+    .locator('.hero__actions')
+    .evaluate((actions) =>
+      Promise.all(
+        actions.getAnimations().map((animation) => animation.finished),
+      ),
+    );
+  await top.getByRole('link', { name: 'Explore my work' }).click();
+  await expect(page).toHaveURL(/#projects$/);
+  await expect(page.locator('#projects h2')).toBeInViewport();
+});
+
+test('destaca um estudo de caso, com a tela real e o fluxo do sistema', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await openSection(page, 'projects');
+  const featured = page.locator('#projects .case-feature');
+  await expect(featured.getByRole('heading', { level: 3 })).toHaveText(
+    'Store orders processed in queues',
   );
-  await tab('University Education').click();
-  // The arrow keys, Home and End move between the steps, as in any tabs.
-  await page.keyboard.press('ArrowDown');
-  await expect(tab('Postgraduate')).toBeFocused();
-  await expect(panel.getByRole('heading', { level: 3 })).toHaveText(
-    'Which course?',
+  await expect(featured.locator('.case-feature__label')).toHaveText(
+    'Featured case study',
   );
-  await page.keyboard.press('End');
-  await expect(tab('Doctorate Degree')).toHaveAttribute(
-    'aria-selected',
-    'true',
+  await expect(
+    featured.getByRole('img', { name: 'Store orders processed in queues' }),
+  ).toBeVisible();
+  // The system's flow, step by step, in order, with the data going through it.
+  await expect(
+    featured
+      .getByRole('list', {
+        name: 'System flow — Store orders processed in queues',
+      })
+      .getByRole('listitem'),
+  ).toHaveText([
+    /^Nuvemshop store/,
+    /^Webhook/,
+    /^SQS queue/,
+    /^Worker Lambdas/,
+    /^Redis/,
+  ]);
+  await expect(featured.locator('.flow__pulse').first()).toHaveCSS(
+    'animation-name',
+    'flow-pulse',
   );
-  await page.keyboard.press('ArrowDown');
-  await expect(tab('Elementary School')).toBeFocused();
-  await expect(tab('Elementary School')).toHaveAttribute(
-    'aria-selected',
-    'true',
+  await expect(page.locator('#projects .case-feature-wrap')).toHaveCSS(
+    'opacity',
+    '1',
   );
+  await featured.getByRole('button', { name: 'Read the case study' }).click();
+  const store = page.getByRole('dialog', {
+    name: 'Store orders processed in queues',
+  });
+  await expect(store).toBeVisible();
+  await expect(store.getByRole('heading', { level: 3 })).toHaveText([
+    'Context',
+    'My role',
+    'What I built',
+    'Engineering decisions',
+    'What I learned',
+  ]);
+  await expect(store.locator('.case-details__decisions li')).toHaveCount(2);
+  await expect(
+    store.getByRole('img', { name: 'Store orders processed in queues' }),
+  ).toBeVisible();
+  // Its site is no longer up, so there is no link to it.
+  await expect(store.getByRole('link')).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await expect(store).toBeHidden();
+  await expect(
+    featured.getByRole('button', { name: 'Read the case study' }),
+  ).toBeFocused();
+});
+
+test.describe('com "reduzir movimento"', () => {
+  test.use({ reducedMotion: 'reduce' });
+
+  test('não anima o fluxo do estudo em destaque', async ({ page }) => {
+    await page.goto('/');
+    await openSection(page, 'projects');
+    const featured = page.locator('#projects .case-feature');
+    await expect(featured.locator('.flow__pulse').first()).toHaveCSS(
+      'animation-name',
+      'none',
+    );
+    await expect(featured.locator('.flow__pulse').first()).toHaveCSS(
+      'opacity',
+      '0',
+    );
+  });
 });
 
 test('mostra os estudos de caso e abre cada um num diálogo', async ({
@@ -567,16 +712,16 @@ test('mostra os estudos de caso e abre cada um num diálogo', async ({
   await openSection(page, 'projects');
   const cases = page.locator('#projects .case-card');
   const shown = page.locator('#projects .case-card:visible');
-  // One from each company first; a button shows the others.
-  await expect(cases).toHaveCount(7);
+  // After the featured case, one from each company; a button shows the others.
+  await expect(cases).toHaveCount(6);
   await expect(shown.locator('.case-card__where')).toHaveText([
     'PayPal · Since 2025',
     'AB InBev · 2025–2026',
-    'Serasa · 2024–2025',
     'Trocafone · 2023–2024',
+    'Serasa · 2024–2025',
   ]);
   // The system's flow, step by step, in order.
-  const migration = cases.nth(3);
+  const migration = cases.nth(2);
   await expect(
     migration
       .getByRole('list', {
@@ -590,6 +735,7 @@ test('mostra os estudos de caso e abre cada um num diálogo', async ({
     /^Kubernetes/,
   ]);
   // Like the other cards, a click anywhere opens the case.
+  await scrollTo(page, '#projects .cases__grid');
   await expect(page.locator('#projects .cases__body')).toHaveCSS(
     'opacity',
     '1',
@@ -603,6 +749,7 @@ test('mostra os estudos de caso e abre cada um num diálogo', async ({
     'Context',
     'My role',
     'What I built',
+    'Engineering decisions',
     'Result',
   ]);
   await expect(
@@ -619,6 +766,7 @@ test('mostra os estudos de caso e abre cada um num diálogo', async ({
     'Context',
     'My role',
     'What I built',
+    'Result',
   ]);
   await expect(platform.getByRole('link')).toHaveCount(0);
   await page.keyboard.press('Escape');
@@ -626,31 +774,23 @@ test('mostra os estudos de caso e abre cada um num diálogo', async ({
 
   // The button shows the other cases and takes the focus to the first of
   // them, so the keyboard goes on from there.
-  const more = page.getByRole('button', { name: 'See 3 more case studies' });
+  const more = page.getByRole('button', { name: 'See 2 more case studies' });
   await expect(more).toHaveAttribute('aria-expanded', 'false');
   await more.click();
-  await expect(shown).toHaveCount(7);
+  await expect(shown).toHaveCount(6);
   await expect(cases.nth(4).getByRole('button')).toBeFocused();
   const fewer = page.getByRole('button', { name: 'Show fewer case studies' });
   await expect(fewer).toHaveAttribute('aria-expanded', 'true');
   // From the keyboard too.
   await cases.nth(5).getByRole('button').focus();
   await page.keyboard.press('Enter');
-  const store = page.getByRole('dialog', {
-    name: 'Store orders processed in queues',
-  });
-  await expect(store).toBeVisible();
-  await expect(store.getByRole('heading', { level: 3 })).toHaveText([
-    'Context',
-    'My role',
-    'What I built',
-    'What I learned',
-  ]);
+  const repairs = page.getByRole('dialog', { name: /repair/i });
+  await expect(repairs).toBeVisible();
   await expect(
-    store.getByRole('link', { name: 'See more about the website' }),
-  ).toHaveAttribute('href', 'http://www.saldofone.com.br/');
+    repairs.getByRole('link', { name: 'See more about the website' }),
+  ).toHaveAttribute('href', 'https://reparofone.com.br/novaordem');
   await page.keyboard.press('Escape');
-  await expect(store).toBeHidden();
+  await expect(repairs).toBeHidden();
   // Hiding them again keeps the button on the screen.
   await fewer.click();
   await expect(shown).toHaveCount(4);
@@ -660,8 +800,17 @@ test('mostra os estudos de caso e abre cada um num diálogo', async ({
 test('mostra os detalhes de um curso em um modal', async ({ page }) => {
   await page.goto('/');
   await openSection(page, 'courses');
-  const courses = page.locator('#courses .course-card');
-  await expect(courses).toHaveCount(6);
+  await expect(page.locator('#courses .course')).toHaveCount(9);
+  // A course without modules has nothing to open.
+  const courses = page.locator('#courses .course:has(.course__button)');
+  await expect(courses).toHaveCount(5);
+  await expect(
+    page.locator('#courses .course').first().getByRole('button'),
+  ).toHaveCount(0);
+  await expect(page.locator('#courses .course-list-wrap')).toHaveCSS(
+    'opacity',
+    '1',
+  );
   await courses.first().getByRole('button').click();
   // The dialog is named after the course.
   const dialog = page.getByRole('dialog', {
@@ -677,13 +826,13 @@ test('mostra os detalhes de um curso em um modal', async ({ page }) => {
   await dialog.locator('footer').getByRole('button', { name: 'Close' }).click();
   await expect(dialog).toBeHidden();
 
-  // The cards open from the keyboard too. The focus goes into the dialog
-  // and back to the card when it closes.
+  // The lines open from the keyboard too. The focus goes into the dialog
+  // and back to the line when it closes.
   const last = courses.last().getByRole('button');
   await last.focus();
   await page.keyboard.press('Enter');
-  const physics = page.getByRole('dialog', { name: 'Advanced Physics' });
-  await expect(physics).toBeVisible();
+  const webDevelopment = page.getByRole('dialog', { name: 'Web Development' });
+  await expect(webDevelopment).toBeVisible();
   await expect
     .poll(() =>
       page.evaluate(() =>
@@ -692,7 +841,7 @@ test('mostra os detalhes de um curso em um modal', async ({ page }) => {
     )
     .toBe(true);
   await page.keyboard.press('Escape');
-  await expect(physics).toBeHidden();
+  await expect(webDevelopment).toBeHidden();
   await expect(last).toBeFocused();
 });
 
@@ -796,35 +945,42 @@ test('abre as fotos das iniciativas de contribuição', async ({ page }) => {
 test('mostra os dados de contato', async ({ page }) => {
   await page.goto('/');
   await openSection(page, 'contact');
-  const cards = page.locator('#contact .contact-card');
-  await expect(cards.getByRole('heading', { level: 3 })).toHaveText([
-    'Bruno Garcia da Silva',
-    'Bachelor of Computer Science',
-    'bruno-151299@hotmail.com',
-    'Advanced English',
+  const contact = page.locator('#contact');
+  // The email first, on the page, which hands it to the mail app.
+  const email = contact.locator('.contact__email');
+  await expect(email).toHaveText('bruno-151299@hotmail.com');
+  await expect(email).toHaveAttribute(
+    'href',
+    'mailto:bruno-151299@hotmail.com',
+  );
+  await expect(email).not.toHaveAttribute('target');
+  await expect(contact.locator('.contact__links a')).toHaveText([
+    'LinkedIn',
+    'GitHub',
+    'Download résumé',
   ]);
-  const contact = page.locator('#contact .contact-card--contact');
-  await expect(
-    contact.getByRole('link', { name: 'bruno-151299@hotmail.com' }),
-  ).toHaveAttribute('href', 'mailto:bruno-151299@hotmail.com');
-  await expect(
-    contact.getByRole('link', { name: '+55 (11) 99696-9301' }),
-  ).toHaveAttribute('href', 'tel:+5511996969301');
-  // Only what helps to assess the work: no age, marital status or
-  // neighborhood.
-  const profile = page.locator('#contact .contact-card--profile');
-  await expect(profile).toContainText('Building software since 2018');
-  await expect(profile).not.toContainText(/\d+ years|Married/);
-  await expect(contact).toContainText('São Paulo, Brazil');
-  await expect(contact).not.toContainText('Cachoeirinha');
-  const links = page.locator('#contact .contact-links a');
-  await expect(links).toHaveText(['Email', 'LinkedIn', 'WhatsApp', 'GitHub']);
-  // The email stays on the page, which hands it to the mail app.
-  await expect(links.first()).not.toHaveAttribute('target');
-  for (const link of (await links.all()).slice(1)) {
+  for (const name of ['LinkedIn', 'GitHub']) {
+    const link = contact.getByRole('link', { name, exact: true });
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   }
+  await expect(
+    contact.getByRole('link', { name: 'Download résumé' }),
+  ).toHaveAttribute('download', 'Bruno_Garcia_Resume.pdf');
+  await expect(
+    contact.getByRole('link', { name: 'WhatsApp', exact: true }),
+  ).toHaveAttribute('target', '_blank');
+  const phone = contact.getByRole('link', {
+    name: 'Phone: +55 (11) 99696-9301',
+  });
+  await expect(phone).toHaveAttribute('href', 'tel:+5511996969301');
+  await expect(phone).not.toHaveAttribute('target');
+  await expect(contact.locator('.contact__facts')).toContainText(
+    'São Paulo, Brazil',
+  );
+  // Only what helps to assess the work: no age, marital status or
+  // neighborhood.
+  await expect(contact).not.toContainText(/\d+ years|Married|Cachoeirinha/);
 });
 
 test('fecha a página com o rodapé', async ({ page }) => {
@@ -851,7 +1007,7 @@ test('oferece o currículo e os canais de contato', async ({
   await page.goto('/');
   const resumeLink = page
     .locator('#top')
-    .getByRole('link', { name: 'Download CV', exact: true });
+    .getByRole('link', { name: 'Download résumé', exact: true });
   await expect(resumeLink).toHaveAttribute(
     'href',
     '/documents/cv/Bruno_Garcia_Resume.pdf',
@@ -874,7 +1030,7 @@ test('oferece o currículo e os canais de contato', async ({
     /\/documents\/cv\/Bruno_Garcia_Resume\.pdf$/,
   );
 
-  const social = page.locator('.hero__social a');
+  const social = page.locator('.hero__links .social-links a');
   await expect(social).toHaveCount(4);
   await expect(social.nth(0)).toHaveAttribute(
     'href',
@@ -1181,11 +1337,7 @@ test('aplica os cabeçalhos de segurança sem bloquear o site', async ({
     await openSection(page, id);
   }
   await openSection(page, 'courses');
-  await page
-    .locator('#courses .course-card')
-    .first()
-    .getByRole('button')
-    .click();
+  await page.locator('#courses .course__button').first().click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toBeHidden();
@@ -1282,7 +1434,7 @@ test('publica os metadados de busca e compartilhamento', async ({
   expect(person).toMatchObject({
     '@type': 'Person',
     name: 'Bruno Garcia',
-    jobTitle: 'Full-Stack Developer',
+    jobTitle: 'Full-Stack Software Engineer',
     url: `${siteUrl}/`,
   });
   expect(person.sameAs).toEqual([

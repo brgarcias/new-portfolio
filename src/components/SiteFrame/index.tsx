@@ -13,9 +13,6 @@ import {
   useRef,
   useState,
 } from 'react';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import LanguageSwitch from './LanguageSwitch';
 import SiteFooter from './SiteFooter';
@@ -24,11 +21,13 @@ import ThemeToggle from './ThemeToggle';
 import { homePath } from '@/src/i18n/config';
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
-import { resume, linkTarget, socialIcons, type NavItem } from './content';
+import { resume, linkTarget, SocialIcon, type NavItem } from './content';
 import type { SocialLink } from '@/src/content';
-import { sectionIds, type SectionId } from '@/src/content/sections';
+import { barIds, pageIds, type PageId } from '@/src/content/sections';
 // CSS
 import './styles.css';
+// ICONS
+import { ArrowDownIcon } from '@/src/components/Icon';
 
 // closed: the page scrolls normally. locked: the page is pinned where it was,
 // ready to move. open: the page sits back in 3D under the menu. closing: the
@@ -84,6 +83,7 @@ export default function SiteFrame({
 }: Readonly<SiteFrameProps>) {
   const { locale, messages } = useI18n();
   const t = messages.frame;
+  const barItems = nav.filter(({ id }) => barIds.includes(id));
   const pathname = usePathname();
   const home = homePath(locale);
   // The server renders the English home page as /en, which / rewrites to,
@@ -91,9 +91,9 @@ export default function SiteFrame({
   const isHome = pathname === home || pathname === `/${locale}`;
   const [menu, setMenu] = useState<MenuState>('closed');
   const [scroll, setScroll] = useState({ saved: 0, target: 0 });
-  const [targetId, setTargetId] = useState<SectionId | null>(null);
+  const [targetId, setTargetId] = useState<PageId | null>(null);
   const [scrolled, setScrolled] = useState(false);
-  const [active, setActive] = useState<SectionId | null>(null);
+  const [active, setActive] = useState<PageId | null>(null);
   const [shift, setShift] = useState(0);
   const sheetRef = useRef<HTMLDivElement>(null);
   const resumeRef = useRef<HTMLAnchorElement>(null);
@@ -114,7 +114,7 @@ export default function SiteFrame({
   }, []);
 
   const closeMenu = useCallback(
-    (id?: SectionId) => {
+    (id?: PageId) => {
       const sheet = sheetRef.current;
       let target = scroll.saved;
       const element = id ? document.getElementById(id) : null;
@@ -209,7 +209,7 @@ export default function SiteFrame({
   // without IntersectionObserver simply get no highlight.
   useEffect(() => {
     if (!isHome || !('IntersectionObserver' in window)) return;
-    const elements = ['top', ...sectionIds]
+    const elements = ['top', ...pageIds]
       .map((id) => document.getElementById(id))
       .filter((element): element is HTMLElement => element !== null);
     const observer = new IntersectionObserver(
@@ -218,7 +218,7 @@ export default function SiteFrame({
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
           const id = entry.target.id;
-          setActive(id === 'top' ? null : (id as SectionId));
+          setActive(id === 'top' ? null : (id as PageId));
         }
       },
       { rootMargin: '-45% 0px -50% 0px' },
@@ -234,7 +234,7 @@ export default function SiteFrame({
 
   // On the home page the menu brings the chosen section forward. Elsewhere
   // the link simply opens the home page at that section.
-  const onMenuLink = (event: MouseEvent<HTMLAnchorElement>, id: SectionId) => {
+  const onMenuLink = (event: MouseEvent<HTMLAnchorElement>, id: PageId) => {
     if (!isHome) return;
     event.preventDefault();
     closeMenu(id);
@@ -254,7 +254,7 @@ export default function SiteFrame({
       }
     : undefined;
 
-  const sectionHref = (id: SectionId) => (isHome ? `#${id}` : `${home}#${id}`);
+  const sectionHref = (id: PageId) => (isHome ? `#${id}` : `${home}#${id}`);
 
   return (
     <>
@@ -285,7 +285,7 @@ export default function SiteFrame({
 
           <nav className="site-nav" aria-label={t.sections}>
             <ul>
-              {nav.map(({ id, label }) => (
+              {barItems.map(({ id, label }) => (
                 <li key={id}>
                   <a
                     className={`site-nav__link${current === id ? ' is-active' : ''}`}
@@ -315,7 +315,7 @@ export default function SiteFrame({
               href={resume.href}
               download={resume.fileName}
             >
-              <FontAwesomeIcon icon={faArrowDown} />
+              <ArrowDownIcon />
               {t.cv}
             </a>
             <button
@@ -375,7 +375,7 @@ export default function SiteFrame({
                   {...linkTarget(href)}
                   aria-label={text}
                 >
-                  <FontAwesomeIcon icon={socialIcons[id]} />
+                  <SocialIcon id={id} />
                 </a>
               </li>
             ))}
@@ -385,7 +385,7 @@ export default function SiteFrame({
             href={resume.href}
             download={resume.fileName}
           >
-            <FontAwesomeIcon icon={faArrowDown} />
+            <ArrowDownIcon />
             {t.downloadCv}
           </a>
         </div>

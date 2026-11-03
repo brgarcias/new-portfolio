@@ -8,7 +8,7 @@
     "image": "/images/projects/trocafone_reparos.webp",
     "dialogTitle": "Reparofone",
     "dialogSubtitle": "Smartphone Repair",
-    "description": "This was my first page developed entirely in React and my first experience working as a Full-Stack developer. On the frontend side, I used technologies and libraries associated with React, including Redux for application state management, Material UI for creating components and styling, and GraphQL for consuming APIs. For building the APIs and the backend structure, I used PHP with the Laravel framework and a MySQL database.",
+    "description": "A React app with Redux and Material UI that consumes GraphQL APIs, over a backend in PHP with Laravel and MySQL.",
     "link": "https://reparofone.com.br/novaordem"
   },
   "pt": {
@@ -20,7 +20,7 @@
     "image": "/images/projects/trocafone_reparos.webp",
     "dialogTitle": "Reparofone",
     "dialogSubtitle": "Conserto de smartphones",
-    "description": "Esta foi minha primeira página desenvolvida inteiramente em React e minha primeira experiência como desenvolvedor Full-Stack. No frontend, usei tecnologias e bibliotecas do ecossistema React, incluindo Redux para o gerenciamento de estado da aplicação, Material UI para criar componentes e estilos e GraphQL para consumir APIs. Para construir as APIs e a estrutura do backend, usei PHP com o framework Laravel e um banco de dados MySQL.",
+    "description": "Uma aplicação React com Redux e Material UI que consome APIs GraphQL, sobre um backend em PHP com Laravel e MySQL.",
     "link": "https://reparofone.com.br/novaordem"
   },
   "es": {
@@ -32,7 +32,7 @@
     "image": "/images/projects/trocafone_reparos.webp",
     "dialogTitle": "Reparofone",
     "dialogSubtitle": "Reparación de smartphones",
-    "description": "Fue mi primera página desarrollada completamente en React y mi primera experiencia como desarrollador Full-Stack. En el frontend, usé tecnologías y bibliotecas del ecosistema de React, incluidos Redux para la gestión del estado de la aplicación, Material UI para crear componentes y estilos y GraphQL para consumir APIs. Para construir las APIs y la estructura del backend, usé PHP con el framework Laravel y una base de datos MySQL.",
+    "description": "Una aplicación React con Redux y Material UI que consume APIs GraphQL, sobre un backend en PHP con Laravel y MySQL.",
     "link": "https://reparofone.com.br/novaordem"
   }
 }

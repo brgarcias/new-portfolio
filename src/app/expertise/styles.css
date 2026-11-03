@@ -1,0 +1,140 @@
+/* ─── Ledger ────────────────────────────────────────────── */
+/* A line per area, not cards or logos: the area, what Bruno does in it, the
+   technologies in passing and, on the side, where he did it. */
+.ledger-wrap {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+}
+
+.ledger {
+  border-top: 1px solid var(--color-border-strong);
+}
+
+.ledger__row {
+  position: relative;
+  display: grid;
+  gap: 0.85rem clamp(1.5rem, 3.5vw, 3rem);
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.5fr) minmax(0, 0.85fr);
+  padding-block: clamp(1.4rem, 2.6vw, 2rem);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Under the pointer, the line lights up from the left. */
+.ledger__row::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 1px;
+  background: var(--gradient-brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease-stack);
+}
+
+@media (hover: hover) {
+  .ledger__row:hover::after {
+    transform: scaleX(1);
+  }
+
+  .ledger__row:hover .ledger__title {
+    color: var(--color-brand-light);
+  }
+}
+
+.ledger__title {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  transition: color 0.2s ease;
+}
+
+.ledger__text {
+  color: var(--color-text-body);
+  font-size: 1rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.ledger__stack {
+  margin-top: 0.6rem;
+  color: var(--color-text-subtle);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1.7;
+}
+
+.ledger__side {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+}
+
+.ledger__metric {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.ledger__metric strong {
+  width: fit-content;
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.ledger__metric span {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.ledger__where {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.ledger__where span {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: var(--color-text-subtle);
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1023px) {
+  .ledger__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ledger__side {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 479px) {
+  .ledger__side {
+    grid-auto-flow: row;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ledger__row::after,
+  .ledger__title {
+    transition: none;
+  }
+}

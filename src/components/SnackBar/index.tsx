@@ -7,20 +7,18 @@ import {
   useRef,
   useState,
 } from 'react';
-// FONTAWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CSS
 import './styles.css';
+// ICONS
+import { XIcon, type IconComponent } from '@/src/components/Icon';
 
 type Content = {
   open: boolean;
   title: string;
   description: string;
-  icon: IconProp;
+  icon: IconComponent;
   colorIcon: string;
 };
 
@@ -113,11 +111,9 @@ export default function SnackbarFeedback({
           }
         }}
       >
-        <FontAwesomeIcon
-          className="snackbar__icon"
-          icon={content.icon}
-          style={{ color: content.colorIcon }}
-        />
+        <span className="snackbar__icon" style={{ color: content.colorIcon }}>
+          <content.icon />
+        </span>
         <div className="snackbar-message">
           <p className="snackbar-title">{content.title}</p>
           <p className="snackbar-description">{content.description}</p>
@@ -128,7 +124,7 @@ export default function SnackbarFeedback({
           aria-label={t.closeNotice}
           onClick={close}
         >
-          <FontAwesomeIcon icon={faXmark} />
+          <XIcon />
         </button>
       </div>
     </div>

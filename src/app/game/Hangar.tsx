@@ -14,13 +14,6 @@ import {
 // THREE
 import * as THREE from 'three';
 import { Canvas, useFrame } from '@react-three/fiber';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faArrowLeft,
-  faArrowsRotate,
-  faRocket,
-} from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 import { format } from '@/src/i18n/messages';
@@ -28,6 +21,8 @@ import { format } from '@/src/i18n/messages';
 import { shipIds, ships, specOf, specs, type Ship, type ShipId } from './ships';
 import { Keycap, ShipGlyph } from './ui';
 import { useReducedMotion } from './useMediaQuery';
+// ICONS
+import { ArrowLeftIcon, RefreshIcon, RocketIcon } from '@/src/components/Icon';
 
 interface HangarProps {
   shipId: ShipId;
@@ -344,7 +339,7 @@ function Stage({
           <span>/{String(shipIds.length).padStart(2, '0')}</span>
         </p>
         <p className="stage-hud__bl">
-          <FontAwesomeIcon icon={faArrowsRotate} />
+          <RefreshIcon />
           {t.dragToTurn}
         </p>
         <p className="stage-hud__br g-num" aria-hidden="true">
@@ -435,7 +430,7 @@ function Sheet({
           aria-disabled={launching || undefined}
           onClick={onTakeOff}
         >
-          <FontAwesomeIcon icon={faRocket} />
+          <RocketIcon />
           {launching ? t.launching : t.takeOff}
           {!launching && <Keycap>Enter</Keycap>}
         </button>
@@ -547,7 +542,7 @@ export default function Hangar({
     <div className="hangar" data-launching={launching ? '' : undefined}>
       <header className="hangar__top">
         <a className="g-btn hangar__back" href={home}>
-          <FontAwesomeIcon icon={faArrowLeft} />
+          <ArrowLeftIcon />
           {t.backToSite}
         </a>
         <p className="g-label hangar__ready">

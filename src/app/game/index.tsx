@@ -4,18 +4,14 @@
 import dynamic from 'next/dynamic';
 // HOOKS
 import { useSyncExternalStore } from 'react';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faArrowLeft,
-  faTriangleExclamation,
-} from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // GAME
 import type { GameProps } from './Game';
 // CSS
 import './styles.css';
+// ICONS
+import { AlertTriangleIcon, ArrowLeftIcon } from '@/src/components/Icon';
 
 function Notice({ children }: { children: React.ReactNode }) {
   return <div className="game-notice">{children}</div>;
@@ -75,13 +71,10 @@ export default function GameLoader({
     return (
       <Notice>
         <div className="game-notice__card">
-          <FontAwesomeIcon
-            icon={faTriangleExclamation}
-            className="game-notice__icon"
-          />
+          <AlertTriangleIcon className="game-notice__icon" />
           <p className="game-notice__text">{t.noWebgl}</p>
           <a className="g-btn g-btn--primary" href={home}>
-            <FontAwesomeIcon icon={faArrowLeft} />
+            <ArrowLeftIcon />
             {t.backToSite}
           </a>
         </div>

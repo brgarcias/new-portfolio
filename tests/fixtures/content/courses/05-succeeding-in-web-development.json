@@ -1,9 +1,8 @@
 {
   "en": {
-    "order": 5,
+    "order": 9,
     "title": "Succeeding in Web Development",
     "subtitle": "Becoming a Web Developer",
-    "wide": true,
     "dialogTitle": "Web Development",
     "dialogSubtitle": "LinkedIn",
     "modules": [
@@ -38,10 +37,9 @@
     ]
   },
   "pt": {
-    "order": 5,
+    "order": 9,
     "title": "Succeeding in Web Development",
     "subtitle": "Tornando-se um desenvolvedor web",
-    "wide": true,
     "dialogTitle": "Desenvolvimento web",
     "dialogSubtitle": "LinkedIn",
     "modules": [
@@ -76,10 +74,9 @@
     ]
   },
   "es": {
-    "order": 5,
+    "order": 9,
     "title": "Succeeding in Web Development",
     "subtitle": "Cómo convertirse en desarrollador web",
-    "wide": true,
     "dialogTitle": "Desarrollo web",
     "dialogSubtitle": "LinkedIn",
     "modules": [

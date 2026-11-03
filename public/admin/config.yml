@@ -49,7 +49,7 @@ collections:
         fields:
           - { name: name, label: Nome, widget: string, i18n: duplicate }
           - { name: fullName, label: Nome completo, widget: string, i18n: duplicate }
-          - { name: role, label: Cargo, widget: string, i18n: true, hint: 'Aparece no rodapé, no cartão de perfil e nos dados para buscadores.' }
+          - { name: role, label: Cargo, widget: string, i18n: true, hint: 'Aparece no rodapé e nos dados para buscadores.' }
           - { name: email, label: E-mail, widget: string, i18n: duplicate }
           - { name: phone, label: Telefone, widget: string, i18n: duplicate, hint: 'Como aparece no site. O link do telefone e o do WhatsApp usam os dígitos.' }
           - { name: whatsappMessage, label: Mensagem pronta do WhatsApp, widget: string, i18n: true }
@@ -64,7 +64,9 @@ collections:
           - { name: titleTop, label: Título, primeira linha, widget: string, i18n: true, hint: 'Use **destaque** para o gradiente.' }
           - { name: titleBottom, label: Título, segunda linha, widget: string, i18n: true, hint: 'Use **destaque** para o gradiente.' }
           - { name: tagline, label: Frase de apresentação, widget: text, i18n: true }
-          - { name: highlights, label: Tecnologias em volta da ilustração, widget: string, i18n: duplicate, hint: 'Separadas por vírgula.' }
+          - { name: highlights, label: Tecnologias em volta da ilustração, widget: string, i18n: duplicate, hint: 'Separadas por vírgula. No celular, a terceira e a quarta não aparecem.' }
+          - { name: companiesLabel, label: Rótulo das empresas, widget: string, i18n: true, hint: 'A linha no pé do topo. Os "8+ anos" contam a partir de abril de 2018.' }
+          - { name: companies, label: Empresas, widget: string, i18n: duplicate, hint: 'Separadas por vírgula.' }
       - name: about
         label: Sobre mim
         file: content/site/about.json
@@ -73,8 +75,16 @@ collections:
         fields:
           - { name: lead, label: Primeiro parágrafo, widget: text, i18n: true }
           - { name: body, label: Outros parágrafos, widget: text, i18n: true, hint: 'Separe os parágrafos com uma linha em branco.' }
-          - { name: stackTitle, label: Título da lista de tecnologias, widget: string, i18n: true }
-          - { name: technologies, label: Tecnologias, widget: string, i18n: duplicate, hint: 'Separadas por vírgula. Repetem as que o texto cita.' }
+          - { name: principlesTitle, label: Título de como trabalho, widget: string, i18n: true }
+          - name: principles
+            label: Como trabalho
+            label_singular: Princípio
+            widget: list
+            i18n: true
+            hint: 'Só o que o seu trabalho mostra, sem frases genéricas.'
+            fields:
+              - { name: title, label: Título, widget: string }
+              - { name: text, label: Texto, widget: text }
       - name: sections
         label: Cabeçalhos das seções
         file: content/site/sections.json
@@ -83,6 +93,17 @@ collections:
         fields:
           - name: about
             label: Sobre mim
+            widget: object
+            i18n: true
+            collapsed: true
+            fields:
+              - { name: label, label: Nome curto, widget: string, i18n: true, hint: 'Na barra, no menu do celular e acima do título. Precisa caber na barra.' }
+              - { name: title, label: Título, widget: string, i18n: true }
+              - { name: description, label: Descrição, widget: string, i18n: true, required: false, hint: 'Aceita **destaque** e [link](endereço). Um link para whatsapp ou email leva ao contato do perfil.' }
+              - { name: quote, label: Citação, widget: text, i18n: true, required: false }
+              - { name: author, label: Autor da citação, widget: string, i18n: true, required: false }
+          - name: expertise
+            label: Competências
             widget: object
             i18n: true
             collapsed: true
@@ -177,48 +198,36 @@ collections:
               - { name: value, label: Número, widget: string }
               - { name: suffix, label: Sufixo, widget: string, required: false, hint: 'Como o "+" de "100+".' }
               - { name: label, label: Legenda, widget: string }
-          - { name: closing, label: Texto final, widget: text, i18n: true }
-          - { name: highlight, label: Frase de destaque, widget: string, i18n: true, hint: 'Use *ênfase* para o gradiente.' }
+      - name: expertise
+        label: Competências
+        file: content/site/expertise.json
+        format: json
+        i18n: true
+        description: 'Uma linha por área, com o que você faz e onde fez. Só o que o seu trabalho mostra: sem níveis, porcentagens de habilidade ou certificações que você não tem.'
+        fields:
+          - { name: whereLabel, label: Rótulo de onde, widget: string, i18n: true }
+          - name: areas
+            label: Áreas
+            label_singular: Área
+            widget: list
+            i18n: true
+            fields:
+              - { name: title, label: Área, widget: string }
+              - { name: text, label: O que você faz, widget: text }
+              - { name: stack, label: Tecnologias, widget: string, required: false, hint: 'Separadas por vírgula.' }
+              - { name: where, label: Onde, widget: string, hint: 'As empresas em que fez isso.' }
+              - { name: metric, label: Número, widget: string, required: false, hint: 'Só um número que você pode mostrar, como "30%".' }
+              - { name: metricLabel, label: O que o número mede, widget: string, required: false }
       - name: contact
-        label: Cartões de contato
+        label: Contato
         file: content/site/contact.json
         format: json
         i18n: true
+        hint: 'O e-mail, o telefone e as redes vêm do perfil.'
         fields:
-          - name: profile
-            label: Perfil
-            widget: object
-            i18n: true
-            hint: 'O nome e o cargo vêm do perfil. Nos detalhes, só o que ajuda a avaliar o trabalho: nada de estado civil, idade ou endereço.'
-            fields:
-              - { name: label, label: Rótulo, widget: string, i18n: true }
-              - { name: details, label: Detalhes, widget: list, i18n: true, field: { name: detail, label: Detalhe, widget: string } }
-          - name: education
-            label: Formação
-            widget: object
-            i18n: true
-            fields:
-              - { name: label, label: Rótulo, widget: string, i18n: true }
-              - { name: title, label: Título, widget: string, i18n: true }
-              - { name: subtitle, label: Subtítulo, widget: string, i18n: true }
-              - { name: details, label: Detalhes, widget: list, i18n: true, field: { name: detail, label: Detalhe, widget: string } }
-          - name: contact
-            label: Contato
-            widget: object
-            i18n: true
-            hint: 'O e-mail e o telefone vêm do perfil.'
-            fields:
-              - { name: label, label: Rótulo, widget: string, i18n: true }
-              - { name: details, label: Detalhes, widget: list, i18n: true, field: { name: detail, label: Detalhe, widget: string } }
-          - name: languages
-            label: Idiomas
-            widget: object
-            i18n: true
-            fields:
-              - { name: label, label: Rótulo, widget: string, i18n: true }
-              - { name: title, label: Título, widget: string, i18n: true }
-              - { name: subtitle, label: Subtítulo, widget: string, i18n: true }
-              - { name: details, label: Detalhes, widget: list, i18n: true, field: { name: detail, label: Detalhe, widget: string } }
+          - { name: location, label: Cidade, widget: string, i18n: true, hint: 'Só a cidade: nada de bairro, estado civil ou idade.' }
+          - { name: availability, label: Disponibilidade, widget: string, i18n: true }
+          - { name: languages, label: Idiomas, widget: string, i18n: true }
 
       - name: holocrons
         label: Registros dos holocrons (jogo)
@@ -257,6 +266,7 @@ collections:
       - { name: title, label: Cargo, widget: string, i18n: true, hint: 'O trecho entre parênteses não aparece no topo do site.' }
       - { name: start, label: Início, widget: string, i18n: duplicate, pattern: ['^\d{4}-\d{2}$', 'Use AAAA-MM'], hint: 'AAAA-MM.' }
       - { name: end, label: Fim, widget: string, i18n: duplicate, required: false, pattern: ['^(\d{4}-\d{2})?$', 'Use AAAA-MM'], hint: 'AAAA-MM. Deixe vazio no emprego atual.' }
+      - { name: earlier, label: Início da carreira, widget: boolean, default: false, i18n: duplicate, hint: 'Fica atrás de um botão, depois dos outros cargos.' }
       - name: icon
         label: Ícone
         widget: select
@@ -292,7 +302,6 @@ collections:
       - { name: label, label: Etapa, widget: string, i18n: true }
       - { name: title, label: Escola ou título, widget: string, i18n: true }
       - { name: text, label: Texto, widget: text, i18n: true }
-      - { name: upcoming, label: Ainda por vir, widget: boolean, default: false, i18n: duplicate }
 
   - name: courses
     label: Cursos
@@ -307,15 +316,16 @@ collections:
     sortable_fields: ['order']
     fields:
       - { name: order, label: Ordem, widget: number, value_type: int, i18n: duplicate }
-      - { name: title, label: Nome no cartão, widget: string, i18n: true }
-      - { name: subtitle, label: Subtítulo no cartão, widget: string, i18n: true }
-      - { name: wide, label: Ocupa duas colunas, widget: boolean, default: false, i18n: duplicate }
-      - { name: dialogTitle, label: Título dos detalhes, widget: string, i18n: true }
-      - { name: dialogSubtitle, label: Subtítulo dos detalhes, widget: string, i18n: true }
+      - { name: title, label: Nome na lista, widget: string, i18n: true }
+      - { name: subtitle, label: Subtítulo na lista, widget: string, i18n: true }
+      - { name: dialogTitle, label: Título dos detalhes, widget: string, i18n: true, required: false }
+      - { name: dialogSubtitle, label: Subtítulo dos detalhes, widget: string, i18n: true, required: false }
       - name: modules
         label: Módulos
         widget: list
         i18n: true
+        required: false
+        hint: 'Com módulos, a linha do curso abre os detalhes.'
         fields:
           - { name: title, label: Módulo, widget: string }
           - { name: description, label: Descrição, widget: text }
@@ -352,7 +362,7 @@ collections:
       - { name: dialogTitle, label: Título dos detalhes, widget: string, i18n: true }
       - { name: dialogSubtitle, label: Subtítulo dos detalhes, widget: string, i18n: true }
       - { name: description, label: Descrição, widget: text, i18n: true }
-      - { name: link, label: Endereço do site, widget: string, i18n: duplicate }
+      - { name: link, label: Endereço do site, widget: string, i18n: duplicate, required: false, hint: 'Deixe vazio quando o site não estiver no ar: o botão some.' }
 
   - name: cases
     label: Estudos de caso
@@ -365,9 +375,11 @@ collections:
     slug: '{{fields.order}}-{{fields.title}}'
     summary: '{{order}}. {{title}}'
     sortable_fields: ['order']
-    description: 'Os estudos de caso abrem a seção de projetos. Os quatro primeiros, pela ordem, aparecem logo, e os outros num botão abaixo deles. Use só fatos que você pode mostrar; uma parte vazia (resultado, aprendizado, link) não aparece.'
+    description: 'Os estudos de caso abrem a seção de projetos. O primeiro, pela ordem, é o destaque, com a tela e o diagrama animado; os quatro seguintes aparecem logo, e os outros num botão abaixo deles. Use só fatos que você pode mostrar; uma parte vazia (imagem, decisões, resultado, aprendizado, link) não aparece.'
+    media_folder: /public/images/projects
+    public_folder: /images/projects
     fields:
-      - { name: order, label: Ordem, widget: number, value_type: int, i18n: duplicate, hint: 'Os quatro primeiros aparecem logo; os outros, no botão abaixo deles.' }
+      - { name: order, label: Ordem, widget: number, value_type: int, i18n: duplicate, hint: 'O primeiro é o destaque; os quatro seguintes aparecem logo; os outros, no botão abaixo deles.' }
       - { name: company, label: Empresa, widget: string, i18n: duplicate }
       - { name: period, label: Período, widget: string, i18n: true, hint: 'Como "2023–2024", ou "Desde 2025" num trabalho atual.' }
       - { name: title, label: Título, widget: string, i18n: true }
@@ -375,6 +387,16 @@ collections:
       - { name: context, label: Contexto, widget: text, i18n: true }
       - { name: role, label: Meu papel, widget: text, i18n: true }
       - { name: built, label: O que construí, widget: text, i18n: true }
+      - name: decisions
+        label: Decisões técnicas
+        label_singular: Decisão
+        widget: list
+        i18n: true
+        required: false
+        hint: 'O que foi decidido e por quê, com o que se abriu mão.'
+        fields:
+          - { name: title, label: Decisão, widget: string }
+          - { name: text, label: Por quê, widget: text }
       - { name: result, label: Resultado, widget: text, i18n: true, required: false }
       - { name: learned, label: O que aprendi, widget: text, i18n: true, required: false }
       - { name: stack, label: Tecnologias, widget: string, i18n: duplicate, hint: 'Separadas por vírgula, com os nomes oficiais.' }
@@ -387,6 +409,7 @@ collections:
         fields:
           - { name: label, label: Nome, widget: string }
           - { name: detail, label: Detalhe, widget: string, required: false }
+      - { name: image, label: Tela do sistema, widget: image, i18n: duplicate, required: false, hint: 'Uma captura real, em WebP. Aparece no destaque e no estudo.' }
       - { name: link, label: Link do site, widget: string, i18n: duplicate, required: false }
 
   - name: initiatives

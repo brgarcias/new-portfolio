@@ -25,10 +25,6 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.7.2",
-    "@fortawesome/free-brands-svg-icons": "^6.7.2",
-    "@fortawesome/free-solid-svg-icons": "^6.7.2",
-    "@fortawesome/react-fontawesome": "^0.2.6",
     "@heroui/react": "2.7.11",
     "@heroui/theme": "2.4.17",
     "@react-three/fiber": "9.8.2",
@@ -45,6 +41,7 @@
     "@types/react-dom": "^19.2.0",
     "@types/three": "~0.186.0",
     "autoprefixer": "^10.6.2",
+    "axe-core": "^4.14.0",
     "eslint": "^10.14.0",
     "eslint-config-next": "16.4.3",
     "eslint-config-prettier": "^10.1.0",

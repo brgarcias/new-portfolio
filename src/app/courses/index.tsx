@@ -14,9 +14,9 @@ interface CoursesProps {
 
 export default function Courses({ header, courses }: Readonly<CoursesProps>) {
   return (
-    <Section header={header}>
-      <Reveal className="course-grid-wrap">
-        <ul className="course-grid">
+    <Section header={header} className="courses">
+      <Reveal className="course-list-wrap">
+        <ul className="course-list">
           {courses.map((course, index) => (
             <Course key={course.slug} index={index} course={course} />
           ))}

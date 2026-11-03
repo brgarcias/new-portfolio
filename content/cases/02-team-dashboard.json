@@ -1,6 +1,6 @@
 {
   "en": {
-    "order": 2,
+    "order": 3,
     "company": "AB InBev",
     "period": "2025–2026",
     "stack": "NestJS, GraphQL, Azure Kubernetes Service, Jenkins",
@@ -25,10 +25,12 @@
         "label": "My Team Dashboard",
         "detail": "Real time"
       }
-    ]
+    ],
+    "image": "",
+    "decisions": []
   },
   "pt": {
-    "order": 2,
+    "order": 3,
     "company": "AB InBev",
     "period": "2025–2026",
     "stack": "NestJS, GraphQL, Azure Kubernetes Service, Jenkins",
@@ -53,10 +55,12 @@
         "label": "My Team Dashboard",
         "detail": "Tempo real"
       }
-    ]
+    ],
+    "image": "",
+    "decisions": []
   },
   "es": {
-    "order": 2,
+    "order": 3,
     "company": "AB InBev",
     "period": "2025–2026",
     "stack": "NestJS, GraphQL, Azure Kubernetes Service, Jenkins",
@@ -81,6 +85,8 @@
         "label": "My Team Dashboard",
         "detail": "Tiempo real"
       }
-    ]
+    ],
+    "image": "",
+    "decisions": []
   }
 }

@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 // Cards that a button covers shrink as a whole.
 const pressable = [
   '.project-card',
-  '.course-card',
+  '.course:has(.course__button)',
   '.case-card',
   '.contrib-card',
   '.btn',
@@ -20,7 +20,6 @@ const pressable = [
   '.site-footer__top',
   '.projects__arrow',
   '.photo-viewer__arrow',
-  '.edu-step',
   '.xp-card__toggle',
   '.snackbar__close',
 ].join(', ');

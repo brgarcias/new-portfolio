@@ -1,6 +1,5 @@
-// FONTAWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+// ICONS
+import { AlertCircleIcon } from '@/src/components/Icon';
 
 type HelperTextProps = {
   id: string;
@@ -13,7 +12,7 @@ type HelperTextProps = {
 export const HelperText = ({ id, error, helperText }: HelperTextProps) => {
   return error ? (
     <span id={id} role="alert" className="form-error">
-      <FontAwesomeIcon icon={faCircleExclamation} />
+      <AlertCircleIcon />
       {helperText}
     </span>
   ) : null;

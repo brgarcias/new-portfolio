@@ -2,14 +2,13 @@
 import { ChangeEventHandler, FocusEventHandler, useId } from 'react';
 // HEROUI
 import { Input, Textarea } from '@heroui/react';
-// FONTAWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 // HELPER TEXT COMPONENT
 import { HelperText } from './HelperText';
+// ICONS
+import type { IconComponent } from '@/src/components/Icon';
 
 interface InputControlProps {
-  icon: IconProp;
+  icon: IconComponent;
   label: string;
   name: string;
   placeholder: string;
@@ -24,7 +23,7 @@ interface InputControlProps {
 }
 
 export default function InputControl({
-  icon,
+  icon: Icon,
   label,
   name,
   placeholder,
@@ -60,7 +59,7 @@ export default function InputControl({
         />
       ) : (
         <Input
-          endContent={<FontAwesomeIcon icon={icon} />}
+          endContent={<Icon />}
           label={label}
           name={name}
           placeholder={placeholder}

@@ -15,7 +15,8 @@
           "Used the HR systems for payroll, attendance and performance tracking."
         ]
       }
-    ]
+    ],
+    "earlier": true
   },
   "pt": {
     "company": "Ingenico",
@@ -33,7 +34,8 @@
           "Usei os sistemas de RH de folha de pagamento, controle de ponto e avaliação de desempenho."
         ]
       }
-    ]
+    ],
+    "earlier": true
   },
   "es": {
     "company": "Ingenico",
@@ -51,6 +53,7 @@
           "Usé los sistemas de RR. HH. de nómina, control de asistencia y evaluación del desempeño."
         ]
       }
-    ]
+    ],
+    "earlier": true
   }
 }
