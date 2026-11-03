@@ -541,6 +541,14 @@
   }
 }
 
+/* The narrower phones: with a little to spare, as text is a bit wider on screens
+   of lower density. */
+@media (max-width: 379px) {
+  .hero__companies li {
+    font-size: 0.875rem;
+  }
+}
+
 /* The narrowest phones: a long word of the title, as "Desenvolvedor",
    still fits the line. */
 @media (max-width: 359px) {
