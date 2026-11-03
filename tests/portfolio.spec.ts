@@ -602,6 +602,8 @@ test('no celular, deixa o CV ao lado das redes e o jogo como botão', async ({
   isMobile,
 }) => {
   test.skip(!isMobile, 'Only phones change them.');
+  // Measured with nothing moving: the top's buttons rise in as the page opens.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   // Beside: in the same row, right after the last one.
   const expectBeside = async (first: Locator, second: Locator) => {
     const left = (await first.boundingBox())!;
