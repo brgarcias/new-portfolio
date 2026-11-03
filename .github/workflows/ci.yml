@@ -17,11 +17,11 @@ env:
   NEXT_TELEMETRY_DISABLED: 1
 
 jobs:
-  # Whether the browser tests have anything to check. They run on a fixed copy
-  # of the content, so a pull request that only changes the content or the
+  # Whether the main browser tests have anything to check. They run on a fixed
+  # copy of the content, so a pull request that only changes the content or the
   # documentation, as those of the content panel do, cannot change what they
-  # see. The Netlify Deploy Preview still builds the real content, and main
-  # always runs everything. When in doubt, they run.
+  # see. The content job below still opens the real content, and main always
+  # runs everything. When in doubt, they run.
   changes:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -61,6 +61,36 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
+
+  # A build of the real content, in the browser: the only tests that see it. The
+  # others run on a fixed copy, and the Netlify Deploy Preview only builds it.
+  # Every pull request runs this, those of the content panel above all.
+  content:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm exec playwright test tests/content.spec.ts --workers=4
+      - name: Summarize the tests
+        if: ${{ !cancelled() }}
+        run: node .github/test-summary.mjs content >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results-content
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
 
   # The browser tests, on six machines of about the same load, each with its
   # own build: the site's, and the game's, which take most of the time because
@@ -151,7 +181,7 @@ jobs:
 
   quality:
     name: quality
-    needs: [changes, check, e2e]
+    needs: [changes, check, content, e2e]
     # Runs even when another job fails, to fail in turn. It is the check that
     # main requires, so the jobs above can change without touching that rule.
     if: always()
@@ -162,11 +192,13 @@ jobs:
         env:
           CHANGES: ${{ needs.changes.result }}
           CHECK: ${{ needs.check.result }}
+          CONTENT: ${{ needs.content.result }}
           E2E: ${{ needs.e2e.result }}
           BROWSER: ${{ needs.changes.outputs.browser }}
         run: |
           test "$CHANGES" = success
           test "$CHECK" = success
+          test "$CONTENT" = success
           if [ "$BROWSER" = true ]; then
             test "$E2E" = success
           else
