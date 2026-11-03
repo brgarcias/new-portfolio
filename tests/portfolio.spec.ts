@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
   countViewTransitions,
   expectMenuClosed,
@@ -597,6 +597,69 @@ test('mostra o que o Bruno faz, por área e com onde fez', async ({ page }) => {
   await expect(expertise.getByRole('progressbar')).toHaveCount(0);
 });
 
+test('no celular, deixa o CV ao lado das redes e o jogo como botão', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, 'Only phones change them.');
+  // Beside: in the same row, right after the last one.
+  const expectBeside = async (first: Locator, second: Locator) => {
+    const left = (await first.boundingBox())!;
+    const right = (await second.boundingBox())!;
+    expect(
+      Math.abs(right.y + right.height / 2 - (left.y + left.height / 2)),
+    ).toBeLessThan(2);
+    expect(right.x).toBeGreaterThanOrEqual(left.x + left.width);
+  };
+  for (const width of [320, 390, 440]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto('/pt');
+    const top = page.locator('#top');
+    const cv = top.getByRole('link', { name: 'Baixar CV', exact: true });
+    await expect(cv).toHaveAttribute('download', 'Bruno_Garcia_Resume.pdf');
+    await expect(cv.locator('svg')).toBeVisible();
+    await expectBeside(top.locator('.social-links li').last(), cv);
+    await expect(
+      top.getByRole('link', { name: 'Baixar currículo' }),
+    ).toHaveCount(0);
+    // The game is a button among the actions, and only there.
+    const play = top.getByRole('link', { name: 'Jogar' });
+    await expect(play).toHaveCount(1);
+    await expect(play).toHaveClass(/btn/);
+    await expect(play).toHaveAttribute('href', '/pt/play');
+    await expectBeside(top.getByRole('link', { name: 'Fale comigo' }), play);
+
+    // The menu, as the top.
+    await openMenu(page);
+    const menu = page.locator('.stack-menu');
+    await expectBeside(
+      menu.locator('.social-links li').last(),
+      menu.getByRole('link', { name: 'Baixar CV', exact: true }),
+    );
+    await page.keyboard.press('Escape');
+    await expectMenuClosed(page);
+
+    // The contact, as the top.
+    const links = page.locator('#contact .contact__links');
+    await expectBeside(
+      links.getByRole('link', { name: 'GitHub' }),
+      links.getByRole('link', { name: 'Baixar CV', exact: true }),
+    );
+  }
+});
+
+test('segue o tema escolhido em outra aba', async ({ page, context }) => {
+  await page.goto('/');
+  const html = page.locator('html');
+  await expect(html).toHaveClass(/dark/);
+  const other = await context.newPage();
+  await other.goto('/');
+  await other.locator('.site-header .theme-toggle').click();
+  await expect(html).toHaveClass(/light/);
+  await other.locator('.site-header .theme-toggle').click();
+  await expect(html).toHaveClass(/dark/);
+});
+
 test('leva ao trabalho, ao currículo e ao contato pelos botões do topo', async ({
   page,
 }) => {
@@ -942,7 +1005,7 @@ test('abre as fotos das iniciativas de contribuição', async ({ page }) => {
   await expect(photos.first()).toBeFocused();
 });
 
-test('mostra os dados de contato', async ({ page }) => {
+test('mostra os dados de contato', async ({ page, isMobile }) => {
   await page.goto('/');
   await openSection(page, 'contact');
   const contact = page.locator('#contact');
@@ -954,19 +1017,25 @@ test('mostra os dados de contato', async ({ page }) => {
     'mailto:bruno-151299@hotmail.com',
   );
   await expect(email).not.toHaveAttribute('target');
-  await expect(contact.locator('.contact__links a')).toHaveText([
-    'LinkedIn',
-    'GitHub',
-    'Download résumé',
-  ]);
+  // On a phone the résumé's button is short, in the same row.
+  const resume = isMobile ? 'Download CV' : 'Download résumé';
+  await expect(
+    contact.locator('.contact__links').getByRole('link'),
+  ).toHaveCount(3);
+  for (const name of ['LinkedIn', 'GitHub', resume]) {
+    await expect(
+      contact.locator('.contact__links').getByRole('link', { name }),
+    ).toBeVisible();
+  }
   for (const name of ['LinkedIn', 'GitHub']) {
     const link = contact.getByRole('link', { name, exact: true });
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   }
-  await expect(
-    contact.getByRole('link', { name: 'Download résumé' }),
-  ).toHaveAttribute('download', 'Bruno_Garcia_Resume.pdf');
+  await expect(contact.getByRole('link', { name: resume })).toHaveAttribute(
+    'download',
+    'Bruno_Garcia_Resume.pdf',
+  );
   await expect(
     contact.getByRole('link', { name: 'WhatsApp', exact: true }),
   ).toHaveAttribute('target', '_blank');
@@ -1003,11 +1072,13 @@ test('fecha a página com o rodapé', async ({ page }) => {
 test('oferece o currículo e os canais de contato', async ({
   page,
   request,
+  isMobile,
 }) => {
   await page.goto('/');
-  const resumeLink = page
-    .locator('#top')
-    .getByRole('link', { name: 'Download résumé', exact: true });
+  const resumeLink = page.locator('#top').getByRole('link', {
+    name: isMobile ? 'Download CV' : 'Download résumé',
+    exact: true,
+  });
   await expect(resumeLink).toHaveAttribute(
     'href',
     '/documents/cv/Bruno_Garcia_Resume.pdf',

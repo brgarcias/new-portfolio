@@ -429,6 +429,26 @@ button:focus-visible {
   font-size: 0.85rem;
 }
 
+/* The résumé's two labels in one button: on a phone, the short one, as in the
+   bar, so it fits beside the social links. Their children are the button's. */
+.resume-label--full {
+  display: contents;
+}
+
+.resume-label--short {
+  display: none;
+}
+
+@media (max-width: 559px) {
+  .resume-label--full {
+    display: none;
+  }
+
+  .resume-label--short {
+    display: contents;
+  }
+}
+
 /* ─── Skip link ─────────────────────────────────────────── */
 .skip-link {
   position: fixed;

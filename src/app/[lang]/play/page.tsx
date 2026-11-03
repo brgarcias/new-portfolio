@@ -160,6 +160,7 @@ export default async function Play({ params }: PageProps<'/[lang]/play'>) {
         contact={getContact(lang, profile)}
         social={social}
         labels={messages.contact}
+        frame={messages.frame}
       />
     ),
   };

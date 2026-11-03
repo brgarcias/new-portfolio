@@ -3,6 +3,7 @@ import type { SocialLink } from '@/src/content';
 import type { PageId } from '@/src/content/sections';
 // ICONS
 import {
+  ArrowDownIcon,
   GithubIcon,
   LinkedinIcon,
   MailIcon,
@@ -22,6 +23,20 @@ export const resume = {
   href: '/documents/cv/Bruno_Garcia_Resume.pdf',
   fileName: 'Bruno_Garcia_Resume.pdf',
 } as const;
+
+// The résumé's short label, as in the bar: the arrow and "CV", which a screen
+// reader hears as "Download CV".
+export function ResumeShort({
+  t,
+}: Readonly<{ t: { download: string; cv: string } }>) {
+  return (
+    <>
+      <ArrowDownIcon />
+      <span className="visually-hidden">{t.download} </span>
+      {t.cv}
+    </>
+  );
+}
 
 // A site opens in a new tab; an email or a phone number stays on the page,
 // which hands it to the right app, instead of leaving an empty tab behind.

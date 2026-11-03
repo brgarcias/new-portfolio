@@ -18,6 +18,7 @@ import { format, type Messages } from '@/src/i18n/messages';
 import {
   resume,
   linkTarget,
+  ResumeShort,
   SocialIcon,
 } from '@/src/components/SiteFrame/content';
 import type { Hero as HeroContent, Profile, SocialLink } from '@/src/content';
@@ -31,6 +32,7 @@ interface HeroProps {
   // The experience without an end date, shown over the name.
   currentRole?: { title: string; company: string };
   t: Messages['hero'];
+  frame: Messages['frame'];
   // The address of the game, in the page's language.
   playHref: string;
 }
@@ -56,6 +58,7 @@ export default function Hero({
   social,
   currentRole,
   t,
+  frame,
   playHref,
 }: Readonly<HeroProps>) {
   return (
@@ -108,7 +111,7 @@ export default function Hero({
               <ArrowRightIcon />
             </a>
             <a
-              className="btn btn--ghost"
+              className="btn btn--ghost hero__resume"
               href={resume.href}
               download={resume.fileName}
             >
@@ -117,6 +120,12 @@ export default function Hero({
             </a>
             <a className="btn btn--ghost" href="#contact">
               {t.contact}
+            </a>
+            {/* On a phone the game is a button here, and the résumé goes beside
+                the social links; only one of each is ever displayed. */}
+            <a className="btn hero__play-button" href={playHref}>
+              <RocketIcon />
+              {t.play}
             </a>
           </div>
           <div
@@ -137,6 +146,13 @@ export default function Hero({
                 </li>
               ))}
             </ul>
+            <a
+              className="btn btn--ghost hero__resume-short"
+              href={resume.href}
+              download={resume.fileName}
+            >
+              <ResumeShort t={frame} />
+            </a>
             <a className="hero__play" href={playHref}>
               <RocketIcon />
               {t.play}

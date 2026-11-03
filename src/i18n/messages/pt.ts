@@ -17,6 +17,7 @@ const pt: Messages = {
     closeMenu: 'Fechar o menu',
     backToPage: 'Voltar para a página',
     cv: 'CV',
+    download: 'Baixar',
     downloadCv: 'Baixar currículo',
     language: 'Idioma',
     toLightTheme: 'Mudar para o tema claro',

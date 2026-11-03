@@ -15,6 +15,7 @@ import type {
 import {
   linkTarget,
   resume,
+  ResumeShort,
   SocialIcon,
 } from '@/src/components/SiteFrame/content';
 // CSS
@@ -25,6 +26,7 @@ interface ContactProps {
   contact: ContactContent;
   social: readonly SocialLink[];
   labels: Messages['contact'];
+  frame: Messages['frame'];
 }
 
 // How to reach Bruno: the email first, large, then LinkedIn, GitHub and the
@@ -34,6 +36,7 @@ export default function Contact({
   contact,
   social,
   labels,
+  frame,
 }: Readonly<ContactProps>) {
   const channel = (id: SocialLink['id']) =>
     social.find((link) => link.id === id);
@@ -65,8 +68,13 @@ export default function Contact({
                 href={resume.href}
                 download={resume.fileName}
               >
-                <DownloadIcon />
-                {labels.resume}
+                <span className="resume-label resume-label--full">
+                  <DownloadIcon />
+                  {labels.resume}
+                </span>
+                <span className="resume-label resume-label--short">
+                  <ResumeShort t={frame} />
+                </span>
               </a>
             </li>
           </ul>
