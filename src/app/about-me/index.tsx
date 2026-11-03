@@ -153,6 +153,7 @@ export default function Hero({
               alt={format(t.illustration, { name: profile.name })}
               unoptimized
               priority
+              fetchPriority="high"
             />
             <svg
               className="hero__leaders"

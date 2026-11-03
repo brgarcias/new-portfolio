@@ -29,9 +29,11 @@ const display = Bricolage_Grotesque({
   variable: '--font-display',
 });
 // For the small technical labels, as --font-mono. Only in small text, so it is
-// not preloaded: the page does not wait for it.
+// not preloaded, and in one weight, half the size of the variable font: the page
+// does not wait for it.
 const mono = JetBrains_Mono({
   subsets: ['latin'],
+  weight: '500',
   variable: '--font-mono',
   preload: false,
 });

@@ -91,13 +91,14 @@
 /* Each element enters a little after the previous one. CSS keeps the text
    visible from the first paint, without waiting for JavaScript. */
 .hero__reveal {
-  animation: hero-in 0.9s var(--ease-out) both;
-  animation-delay: calc(0.1s + var(--i, 0) * 0.08s);
+  animation: hero-in 0.8s var(--ease-out) both;
+  animation-delay: calc(0.06s + var(--i, 0) * 0.06s);
 }
 
-/* The title, the largest thing on the first screen, starts at once: its
-   delay is what the page's largest paint had to wait for. */
-.hero__title-line.hero__reveal {
+/* The largest things on the first screen start at once: their delay was what
+   the page's largest paint had to wait for. */
+.hero__title-line.hero__reveal,
+.hero__tagline.hero__reveal {
   animation-delay: 0s;
 }
 
@@ -222,7 +223,7 @@
   position: relative;
   display: grid;
   place-items: center;
-  animation: hero-visual-in 1.1s var(--ease-out) 0.25s both;
+  animation: hero-visual-in 0.9s var(--ease-out) both;
 }
 
 .hero__halo {
