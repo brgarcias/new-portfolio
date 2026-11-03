@@ -3171,7 +3171,7 @@
   padding: 0.65rem 0.75rem 0.75rem;
   border: 1px solid color-mix(in srgb, var(--route) 38%, transparent);
   border-top: 2px solid var(--route);
-  background: rgb(6 10 22 / 0.96);
+  background: rgb(6 10 22);
 }
 
 .flight-plan__to {
