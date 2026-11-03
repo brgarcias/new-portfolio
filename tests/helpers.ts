@@ -12,6 +12,71 @@ export const sections = [
 
 export type Section = (typeof sections)[number];
 
+// How far the page runs past the screen. Measured against clientWidth, and not
+// window.innerWidth: on a phone, or in Playwright's emulation of one, the browser
+// zooms out to fit what is too wide, innerWidth grows with it, and a page with a
+// 1200 px block on a 390 px screen looked fine.
+export const pageOverflow = (page: Page) =>
+  page.evaluate(
+    () =>
+      document.documentElement.scrollWidth -
+      document.documentElement.clientWidth,
+  );
+
+// The texts that run past their box: wider than it, or making it wider than
+// what holds it, as a long word in a card's button does, which then gets cut
+// off or covers the next one with no scroll to show for it.
+export const findSpills = (page: Page, root = 'body', allowed = 'svg') =>
+  page.evaluate(
+    ([root, allowed]) => {
+      const past = (element: HTMLElement) => {
+        const parent = element.parentElement;
+        if (!parent) return false;
+        const parentStyle = getComputedStyle(parent);
+        // What scrolls sideways, like the carousels, runs past on purpose.
+        if (['auto', 'scroll'].includes(parentStyle.overflowX)) return false;
+        const box = element.getBoundingClientRect();
+        const holder = parent.getBoundingClientRect();
+        return box.right > holder.right + 2 || box.left < holder.left - 2;
+      };
+      return [...document.querySelectorAll<HTMLElement>(`${root} *`)]
+        .filter((element) => {
+          if (
+            element.closest(
+              `svg, [aria-hidden="true"], .visually-hidden, ${allowed}`,
+            )
+          ) {
+            return false;
+          }
+          const style = getComputedStyle(element);
+          if (
+            ['none', 'contents'].includes(style.display) ||
+            style.position === 'absolute' ||
+            style.position === 'fixed' ||
+            style.overflowX !== 'visible' ||
+            style.textOverflow === 'ellipsis'
+          ) {
+            return false;
+          }
+          const hasText = [...element.childNodes].some(
+            (node) =>
+              node.nodeType === Node.TEXT_NODE && node.textContent?.trim(),
+          );
+          if (!hasText || element.getClientRects().length === 0) return false;
+          const wider =
+            style.display !== 'inline' &&
+            element.clientWidth > 0 &&
+            element.scrollWidth - element.clientWidth > 2;
+          return wider || past(element);
+        })
+        .map(
+          (element) =>
+            `${element.tagName.toLowerCase()}.${element.className} "${element.textContent?.trim().slice(0, 30)}"`,
+        );
+    },
+    [root, allowed],
+  );
+
 // The stacked-pages menu is driven by CSS transitions, so interactions wait
 // for them to finish like a visitor would.
 export async function waitForTransitions(page: Page) {

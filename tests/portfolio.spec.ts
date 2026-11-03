@@ -2,9 +2,11 @@ import { expect, test, type Page } from '@playwright/test';
 import {
   countViewTransitions,
   expectMenuClosed,
+  findSpills,
   openFeedbackForm,
   openMenu,
   openSection,
+  pageOverflow,
   scrollTo,
   sections,
   waitForProjectsTrack,
@@ -33,33 +35,7 @@ test('não deixa texto vazar da caixa no celular', async ({
     await page.setViewportSize({ width, height: 700 });
     for (const path of ['/', '/pt', '/es']) {
       await page.goto(path);
-      const spills = await page.evaluate(() =>
-        [...document.querySelectorAll<HTMLElement>('body *')]
-          .filter((element) => {
-            if (element.closest('svg, [aria-hidden="true"], .visually-hidden'))
-              return false;
-            const style = getComputedStyle(element);
-            if (
-              ['inline', 'none', 'contents'].includes(style.display) ||
-              style.overflowX !== 'visible' ||
-              style.textOverflow === 'ellipsis'
-            )
-              return false;
-            const text = [...element.childNodes].some(
-              (node) =>
-                node.nodeType === Node.TEXT_NODE && node.textContent?.trim(),
-            );
-            return (
-              text &&
-              element.clientWidth > 0 &&
-              element.scrollWidth - element.clientWidth > 2
-            );
-          })
-          .map(
-            (element) =>
-              `${element.className} "${element.textContent?.trim().slice(0, 30)}"`,
-          ),
-      );
+      const spills = await findSpills(page);
       expect(spills, `${path} at ${width}px`).toEqual([]);
     }
   }
@@ -88,11 +64,7 @@ test('carrega o portfólio sem erros e sem rolagem horizontal', async ({
   for (const id of sections) {
     await expect(page.locator(`main > section#${id}`)).toHaveCount(1);
   }
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth,
-    ),
-  ).toBe(true);
+  expect(await pageOverflow(page)).toBeLessThanOrEqual(0);
   expect(errors).toEqual([]);
 });
 
@@ -1161,11 +1133,7 @@ test('mostra a página 404 no estilo do site e volta ao portfólio', async ({
   ).toHaveAttribute('href', '/#contact');
   await page.keyboard.press('Escape');
   await expectMenuClosed(page);
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth,
-    ),
-  ).toBe(true);
+  expect(await pageOverflow(page)).toBeLessThanOrEqual(0);
 
   await page
     .getByRole('link', { name: 'go back to the portfolio', exact: true })

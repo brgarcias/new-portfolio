@@ -13,22 +13,44 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NEXT_TELEMETRY_DISABLED: 1
+
 jobs:
-  # The browser tests take most of the time, so two machines share them, each
-  # with its own build. The quality job below waits for both: it is the check
-  # that main requires.
-  e2e:
-    name: e2e (${{ matrix.shard }}/2)
+  # Whether the main browser tests have anything to check. They run on a fixed
+  # copy of the content, so a pull request that only changes the content or the
+  # documentation, as those of the content panel do, cannot change what they
+  # see. The content job below still opens the real content, and main always
+  # runs everything. When in doubt, they run.
+  changes:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2]
-    # The screenshots in tests/snapshots are recorded in this image. Keep its
-    # tag equal to the @playwright/test version in package.json.
-    container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      browser: ${{ steps.files.outputs.browser }}
+    steps:
+      - id: files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          browser=true
+          if [ -n "$PR" ]; then
+            files=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --paginate \
+              --jq '.[] | .filename, .previous_filename // empty') || files=unknown
+            printf '%s\n' "$files"
+            if ! printf '%s\n' "$files" | grep -Eqv '^content/|\.md$'; then
+              browser=false
+            fi
+          fi
+          echo "browser=$browser" >> "$GITHUB_OUTPUT"
+
+  # Lint, types and formatting, on their own for a quick answer.
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       # Reads the pnpm version from packageManager in package.json.
@@ -38,9 +60,71 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # Lint, types and formatting do not depend on the shard.
       - run: pnpm check
-        if: matrix.shard == 1
+
+  # A build of the real content, in the browser: the only tests that see it. The
+  # others run on a fixed copy, and the Netlify Deploy Preview only builds it.
+  # Every pull request runs this, those of the content panel above all.
+  content:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm exec playwright test tests/content.spec.ts --workers=4
+      - name: Summarize the tests
+        if: ${{ !cancelled() }}
+        run: node .github/test-summary.mjs content >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results-content
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  # The browser tests, on six machines of about the same load, each with its
+  # own build: the site's, and the game's, which take most of the time because
+  # the WebGL is drawn by software, more slowly on the desktop's larger screen.
+  # Sharding alone divides by count, along the projects, which left the slow
+  # ones together. The job has no name of its own, so that it shows as a single
+  # "e2e" when it is skipped, and as "e2e (site-desktop)" and so on when it runs.
+  e2e:
+    needs: changes
+    if: needs.changes.outputs.browser == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        part:
+          - site-desktop
+          - site-mobile
+          - game-desktop-1
+          - game-desktop-2
+          - game-desktop-3
+          - game-mobile
+    # The screenshots in tests/snapshots are recorded in this image. Keep its
+    # tag equal to the @playwright/test version in package.json.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       # The tests check a fixed copy of the content, so edits made in the
       # content panel do not fail them. The Netlify Deploy Preview builds
       # the real content.
@@ -51,7 +135,18 @@ jobs:
         run: |
           mkdir -p tests/snapshots
           find tests/snapshots -type f | sort > "$RUNNER_TEMP/snapshots-before.txt"
-      - run: pnpm test:e2e --shard=${{ matrix.shard }}/2
+      - name: Run the tests
+        env:
+          PART: ${{ matrix.part }}
+        run: |
+          case "$PART" in
+            site-desktop) pnpm test:site --project=desktop --workers=4 ;;
+            site-mobile) pnpm test:site --project=mobile --workers=4 ;;
+            game-desktop-1) pnpm test:game --project=desktop --shard=1/3 ;;
+            game-desktop-2) pnpm test:game --project=desktop --shard=2/3 ;;
+            game-desktop-3) pnpm test:game --project=desktop --shard=3/3 ;;
+            game-mobile) pnpm test:game --project=mobile ;;
+          esac
       - name: Fail on new screenshots
         run: |
           find tests/snapshots -type f | sort > "$RUNNER_TEMP/snapshots-after.txt"
@@ -61,23 +156,51 @@ jobs:
             echo "::error::New screenshots were recorded. Review them in the test-results artifacts and commit them to tests/snapshots."
             exit 1
           fi
+      - name: Summarize the tests
+        if: ${{ !cancelled() }}
+        env:
+          PART: ${{ matrix.part }}
+        run: node .github/test-summary.mjs "$PART" >> "$GITHUB_STEP_SUMMARY"
+      # What failed, even if it passed on the retry: the diagnosis of an
+      # unstable test is here.
       - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results-${{ matrix.part }}
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Upload the screenshots
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: test-results-${{ matrix.shard }}
-          path: |
-            test-results/
-            tests/snapshots/
+          name: snapshots-${{ matrix.part }}
+          path: tests/snapshots/
           retention-days: 7
 
   quality:
     name: quality
-    needs: e2e
-    # Runs even when a shard fails, to fail in turn.
+    needs: [changes, check, content, e2e]
+    # Runs even when another job fails, to fail in turn. It is the check that
+    # main requires, so the jobs above can change without touching that rule.
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Require both shards to pass
-        run: test "${{ needs.e2e.result }}" = success
+      - name: Require every job to pass
+        env:
+          CHANGES: ${{ needs.changes.result }}
+          CHECK: ${{ needs.check.result }}
+          CONTENT: ${{ needs.content.result }}
+          E2E: ${{ needs.e2e.result }}
+          BROWSER: ${{ needs.changes.outputs.browser }}
+        run: |
+          test "$CHANGES" = success
+          test "$CHECK" = success
+          test "$CONTENT" = success
+          if [ "$BROWSER" = true ]; then
+            test "$E2E" = success
+          else
+            test "$E2E" = skipped
+          fi
