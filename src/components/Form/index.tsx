@@ -2,19 +2,14 @@
 import { Dispatch, FC, FormEvent, SetStateAction } from 'react';
 // HEROUI
 import { Spacer, Button } from '@heroui/react';
-// FONTAWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faEnvelope,
-  faPaperPlane,
-  faUserAlt,
-} from '@fortawesome/free-solid-svg-icons';
 // COMPONENT
 import InputControl from './InputControl';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CSS
 import './styles.css';
+// ICONS
+import { MailIcon, SendIcon, UserIcon } from '@/src/components/Icon';
 
 interface FormDataValue {
   emailValue: string;
@@ -87,7 +82,7 @@ const Form: FC<FormProps> = ({
         </label>
       </p>
       <InputControl
-        icon={faUserAlt}
+        icon={UserIcon}
         label={t.nameLabel}
         name="fullName"
         placeholder={t.namePlaceholder}
@@ -101,7 +96,7 @@ const Form: FC<FormProps> = ({
       />
       <Spacer y={2} />
       <InputControl
-        icon={faEnvelope}
+        icon={MailIcon}
         label={t.emailLabel}
         name="email"
         placeholder={t.emailPlaceholder}
@@ -119,7 +114,7 @@ const Form: FC<FormProps> = ({
         placeholder={t.feedbackPlaceholder}
         variant="bordered"
         name="feedback"
-        icon={faEnvelope}
+        icon={MailIcon}
         type="text"
         isTextarea
         disabled={isSubmitting}
@@ -148,7 +143,7 @@ const Form: FC<FormProps> = ({
           type="submit"
         >
           {t.send}
-          <FontAwesomeIcon icon={faPaperPlane} />
+          <SendIcon />
         </button>
       </div>
     </form>

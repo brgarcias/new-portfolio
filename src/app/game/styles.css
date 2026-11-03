@@ -31,7 +31,7 @@
   --g-fast: 160ms;
   --g-dur: 240ms;
   --g-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --g-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  --g-display: var(--font-game), ui-sans-serif, system-ui, sans-serif;
 
   min-height: 100vh;
   min-height: 100dvh;

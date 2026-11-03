@@ -1,13 +1,9 @@
 // NEXT METADATA
 import type { Metadata } from 'next';
 // NEXT GOOGLE FONT
-import { Inter, Space_Grotesk } from 'next/font/google';
+import { Bricolage_Grotesque, Inter, JetBrains_Mono } from 'next/font/google';
 // GLOBAL CSS
 import '../globals.css';
-// FONT AWESOME CONFIGS
-import { config } from '@fortawesome/fontawesome-svg-core';
-import '@fortawesome/fontawesome-svg-core/styles.css';
-config.autoAddCss = false;
 // PROVIDERS
 import { Providers } from '../providers';
 // SITE
@@ -28,9 +24,16 @@ import { I18nProvider } from '@/src/i18n/I18nProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 // Display font for headings, exposed as --font-display.
-const display = Space_Grotesk({
+const display = Bricolage_Grotesque({
   subsets: ['latin'],
   variable: '--font-display',
+});
+// For the small technical labels, as --font-mono. Only in small text, so it is
+// not preloaded: the page does not wait for it.
+const mono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  preload: false,
 });
 
 // The layout of every page, in its language: the document, the theme, the
@@ -106,7 +109,7 @@ export default async function LocaleLayout({
     // why the class on <html> may differ from the server's.
     <html
       lang={locale}
-      className={`dark ${display.variable}`}
+      className={`dark ${display.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
       <head>

@@ -1,14 +1,13 @@
 'use client';
 
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import StatusPage from '.';
 // I18N
 import { homePath } from '@/src/i18n/config';
 import { useI18n } from '@/src/i18n/I18nProvider';
 import { splitLink } from '@/src/i18n/messages';
+// ICONS
+import { ArrowRightIcon } from '@/src/components/Icon';
 
 // The 404 in the language of the page around it, with links back to that
 // language's home page. The links load the page again: the 404 renders the
@@ -37,7 +36,7 @@ export default function NotFound() {
       actions={
         <a className="btn btn--primary" href={home}>
           {t.back}
-          <FontAwesomeIcon icon={faArrowRight} />
+          <ArrowRightIcon />
         </a>
       }
     />

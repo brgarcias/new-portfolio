@@ -1,11 +1,10 @@
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
-import { linkTarget, socialIcons } from './content';
+import { linkTarget, SocialIcon } from './content';
 import type { SocialLink } from '@/src/content';
+// ICONS
+import { ArrowUpIcon } from '@/src/components/Icon';
 
 interface SiteFooterProps {
   // The address of the home page in the page's language.
@@ -49,7 +48,7 @@ export default function SiteFooter({
                 {...linkTarget(href)}
                 aria-label={text}
               >
-                <FontAwesomeIcon icon={socialIcons[id]} />
+                <SocialIcon id={id} />
               </a>
             </li>
           ))}
@@ -63,7 +62,7 @@ export default function SiteFooter({
         {isHome && (
           <a className="site-footer__top" href="#top">
             {t.backToTop}
-            <FontAwesomeIcon icon={faArrowUp} />
+            <ArrowUpIcon />
           </a>
         )}
       </div>

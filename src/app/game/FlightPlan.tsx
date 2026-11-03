@@ -1,8 +1,5 @@
 'use client';
 
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRoute, faXmark } from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
@@ -10,6 +7,8 @@ import type { SectionId } from '@/src/content/sections';
 // GAME
 import { overlay } from './overlay';
 import { biomes } from './world/biomes';
+// ICONS
+import { MapIcon, XIcon } from '@/src/components/Icon';
 
 const registerLock = (element: HTMLDivElement | null) => {
   overlay.courseLock = element;
@@ -97,7 +96,7 @@ export function CourseStrip({
   const t = useI18n().messages.game;
   return (
     <div ref={registerStrip} className="course-strip">
-      <FontAwesomeIcon icon={faRoute} className="course-strip__icon" />
+      <MapIcon className="course-strip__icon" />
       <p className="course-strip__plan" aria-hidden="true">
         <span className="g-label">
           <span className="course-strip__label">{t.flightPlan}</span>
@@ -115,7 +114,7 @@ export function CourseStrip({
         aria-label={t.clearCourse}
         onClick={onClear}
       >
-        <FontAwesomeIcon icon={faXmark} />
+        <XIcon />
       </button>
       <span className="course-strip__bar" aria-hidden="true">
         <span ref={registerBar} />

@@ -2,14 +2,6 @@
 
 // HOOKS
 import { useRef, type CSSProperties } from 'react';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faBookOpen,
-  faCheck,
-  faLocationArrow,
-  faXmark,
-} from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 import { format } from '@/src/i18n/messages';
@@ -24,6 +16,8 @@ import type { Place } from './types';
 import { HolocronIcon, Keycap, Pips } from './ui';
 import { useDialog } from './useDialog';
 import { biomes } from './world/biomes';
+// ICONS
+import { BookIcon, CheckIcon, SendIcon, XIcon } from '@/src/components/Icon';
 
 const registerList = (element: HTMLOListElement | null) => {
   overlay.chartList = element;
@@ -141,7 +135,7 @@ export default function GalaxyMap({
             aria-label={t.closeMap}
             onClick={onClose}
           >
-            <FontAwesomeIcon icon={faXmark} />
+            <XIcon />
             <Keycap>Esc</Keycap>
           </button>
         </header>
@@ -206,10 +200,8 @@ export default function GalaxyMap({
                         className="destination__state"
                         data-state={picked ? 'course' : state}
                       >
-                        {picked && <FontAwesomeIcon icon={faLocationArrow} />}
-                        {!picked && state === 'visited' && (
-                          <FontAwesomeIcon icon={faCheck} />
-                        )}
+                        {picked && <SendIcon />}
+                        {!picked && state === 'visited' && <CheckIcon />}
                         {status}
                       </span>
                       <span
@@ -233,7 +225,7 @@ export default function GalaxyMap({
                       data-tip={t.remoteAccess}
                       onClick={() => onRead(place.id)}
                     >
-                      <FontAwesomeIcon icon={faBookOpen} />
+                      <BookIcon />
                     </button>
                   </li>
                 );
@@ -253,7 +245,7 @@ export default function GalaxyMap({
                   className="g-btn g-btn--primary flight-plan__fly"
                   onClick={onClose}
                 >
-                  <FontAwesomeIcon icon={faLocationArrow} />
+                  <SendIcon />
                   {t.flyCourse}
                 </button>
               </div>
