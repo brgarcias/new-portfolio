@@ -1,17 +1,17 @@
 {
   "en": {
-    "order": 6,
+    "order": 1,
     "company": "Trocafone",
     "period": "2022–2023",
     "stack": "Node.js, NestJS, React, Next.js, AWS Lambda, SQS, Redis, CloudWatch, Jest, Jenkins",
-    "link": "http://www.saldofone.com.br/",
+    "link": "",
     "title": "Store orders processed in queues",
     "summary": "Saldofone sells devices as scrap through a store on Nuvemshop. I built the backend that receives the store's orders and processes them on AWS.",
     "context": "Saldofone's store runs on Nuvemshop, and each order placed there had to reach the backend and be processed.",
     "role": "I built the NestJS backend, the Next.js frontend and the AWS services.",
-    "built": "The orders arrive from Nuvemshop through a webhook, and Lambda microservices and worker Lambdas process them through SQS queues, with Redis. The Next.js frontend is hosted serverless, the logs are read in CloudWatch, Jest runs the end-to-end tests and Jenkins the CI/CD.",
+    "built": "The orders arrive from Nuvemshop through a webhook, and Lambda microservices and worker Lambdas process them through SQS queues, with Redis. The Next.js frontend is hosted serverless and the logs are read in CloudWatch. Jest runs the end-to-end tests, and Jenkins the CI/CD across staging and production.",
     "result": "",
-    "learned": "My first project on AWS: serverless hosting, Lambda, SQS, CloudWatch and Redis.",
+    "learned": "Where I learned AWS in production: serverless hosting, Lambda, SQS, CloudWatch and Redis.",
     "flow": [
       {
         "label": "Nuvemshop store",
@@ -33,21 +33,32 @@
         "label": "Redis",
         "detail": ""
       }
+    ],
+    "image": "/images/projects/saldofone-dashboard-preview.webp",
+    "decisions": [
+      {
+        "title": "A queue behind the webhook",
+        "text": "The webhook hands each order to SQS, and worker Lambdas process it apart from the request, so slow processing doesn't keep the store's call waiting."
+      },
+      {
+        "title": "Lambda for the processing",
+        "text": "The microservices and the workers run as Lambda functions, and the frontend is hosted serverless too, with the logs read in CloudWatch."
+      }
     ]
   },
   "pt": {
-    "order": 6,
+    "order": 1,
     "company": "Trocafone",
     "period": "2022–2023",
     "stack": "Node.js, NestJS, React, Next.js, AWS Lambda, SQS, Redis, CloudWatch, Jest, Jenkins",
-    "link": "http://www.saldofone.com.br/",
+    "link": "",
     "title": "Pedidos da loja processados em filas",
     "summary": "O Saldofone vende aparelhos como sucata numa loja na Nuvemshop. Construí o backend que recebe os pedidos da loja e os processa na AWS.",
     "context": "A loja do Saldofone roda na Nuvemshop, e cada pedido feito lá precisava chegar ao backend e ser processado.",
     "role": "Construí o backend em NestJS, o frontend em Next.js e os serviços na AWS.",
-    "built": "Os pedidos chegam da Nuvemshop por um webhook, e microsserviços e workers em Lambda os processam por filas no SQS, com Redis. O frontend em Next.js fica hospedado em serverless, os logs são lidos no CloudWatch, o Jest roda os testes de ponta a ponta e o Jenkins, o CI/CD.",
+    "built": "Os pedidos chegam da Nuvemshop por um webhook, e microsserviços e lambdas de processamento em Lambda cuidam deles por filas do SQS, com Redis. O frontend em Next.js fica em hospedagem serverless e os logs são lidos no CloudWatch. O Jest roda os testes de ponta a ponta, e o Jenkins o CI/CD em homologação e produção.",
     "result": "",
-    "learned": "Meu primeiro projeto na AWS: hospedagem serverless, Lambda, SQS, CloudWatch e Redis.",
+    "learned": "Onde aprendi AWS em produção: hospedagem serverless, Lambda, SQS, CloudWatch e Redis.",
     "flow": [
       {
         "label": "Loja na Nuvemshop",
@@ -69,21 +80,32 @@
         "label": "Redis",
         "detail": ""
       }
+    ],
+    "image": "/images/projects/saldofone-dashboard-preview.webp",
+    "decisions": [
+      {
+        "title": "Uma fila atrás do webhook",
+        "text": "O webhook entrega cada pedido ao SQS, e lambdas de processamento cuidam dele fora da requisição, então um processamento lento não deixa a chamada da loja esperando."
+      },
+      {
+        "title": "Lambda para o processamento",
+        "text": "Os microsserviços e os workers rodam como funções Lambda, e o frontend também fica em hospedagem serverless, com os logs lidos no CloudWatch."
+      }
     ]
   },
   "es": {
-    "order": 6,
+    "order": 1,
     "company": "Trocafone",
     "period": "2022–2023",
     "stack": "Node.js, NestJS, React, Next.js, AWS Lambda, SQS, Redis, CloudWatch, Jest, Jenkins",
-    "link": "http://www.saldofone.com.br/",
+    "link": "",
     "title": "Pedidos de la tienda procesados en colas",
     "summary": "Saldofone vende dispositivos como chatarra en una tienda en Nuvemshop. Construí el backend que recibe los pedidos de la tienda y los procesa en AWS.",
     "context": "La tienda de Saldofone corre en Nuvemshop, y cada pedido hecho allí tenía que llegar al backend y ser procesado.",
     "role": "Construí el backend en NestJS, el frontend en Next.js y los servicios en AWS.",
-    "built": "Los pedidos llegan de Nuvemshop por un webhook, y microservicios y workers en Lambda los procesan mediante colas en SQS, con Redis. El frontend en Next.js está alojado en serverless, los logs se leen en CloudWatch, Jest corre las pruebas de extremo a extremo y Jenkins, el CI/CD.",
+    "built": "Los pedidos llegan de Nuvemshop por un webhook, y microservicios y lambdas de procesamiento en Lambda los atienden mediante colas de SQS, con Redis. El frontend en Next.js está alojado en serverless y los logs se leen en CloudWatch. Jest ejecuta las pruebas de extremo a extremo, y Jenkins el CI/CD en staging y producción.",
     "result": "",
-    "learned": "Mi primer proyecto en AWS: alojamiento serverless, Lambda, SQS, CloudWatch y Redis.",
+    "learned": "Donde aprendí AWS en producción: alojamiento serverless, Lambda, SQS, CloudWatch y Redis.",
     "flow": [
       {
         "label": "Tienda en Nuvemshop",
@@ -104,6 +126,17 @@
       {
         "label": "Redis",
         "detail": ""
+      }
+    ],
+    "image": "/images/projects/saldofone-dashboard-preview.webp",
+    "decisions": [
+      {
+        "title": "Una cola detrás del webhook",
+        "text": "El webhook entrega cada pedido a SQS, y lambdas de procesamiento lo atienden fuera de la solicitud, así un procesamiento lento no deja esperando la llamada de la tienda."
+      },
+      {
+        "title": "Lambda para el procesamiento",
+        "text": "Los microservicios y los workers corren como funciones Lambda, y el frontend también está alojado en serverless, con los logs leídos en CloudWatch."
       }
     ]
   }

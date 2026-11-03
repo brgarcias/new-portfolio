@@ -1,6 +1,6 @@
 {
   "en": {
-    "order": 7,
+    "order": 6,
     "company": "Trocafone",
     "period": "2023",
     "stack": "GraphQL, Redis, PostgreSQL, AWS CloudWatch",
@@ -29,10 +29,12 @@
         "label": "Dashboard",
         "detail": ""
       }
-    ]
+    ],
+    "image": "",
+    "decisions": []
   },
   "pt": {
-    "order": 7,
+    "order": 6,
     "company": "Trocafone",
     "period": "2023",
     "stack": "GraphQL, Redis, PostgreSQL, AWS CloudWatch",
@@ -61,10 +63,12 @@
         "label": "Dashboard",
         "detail": ""
       }
-    ]
+    ],
+    "image": "",
+    "decisions": []
   },
   "es": {
-    "order": 7,
+    "order": 6,
     "company": "Trocafone",
     "period": "2023",
     "stack": "GraphQL, Redis, PostgreSQL, AWS CloudWatch",
@@ -93,6 +97,8 @@
         "label": "Dashboard",
         "detail": ""
       }
-    ]
+    ],
+    "image": "",
+    "decisions": []
   }
 }

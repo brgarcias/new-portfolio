@@ -8,8 +8,8 @@
     "image": "/images/projects/css-solucoes.webp",
     "dialogTitle": "CSS - Integrated Solutions",
     "dialogSubtitle": "Specialized services for terminals",
-    "description": "This was the first website I developed entirely on my own, starting from scratch. Since the company offers a wide range of services, I had to create multiple pages to accommodate all the information. The service names were quite lengthy, which challenged me to ensure that the design was responsive and that the layout of the menus (header, footer, and sidebar) was correct in all situations.",
-    "link": "http://csssolucoes.com.br/"
+    "description": "A multi-page site for a company with a wide range of terminal services, built from scratch on my own. The long service names were the hard part: the header, footer and sidebar menus had to hold up at every screen size.",
+    "link": ""
   },
   "pt": {
     "order": 1,
@@ -20,8 +20,8 @@
     "image": "/images/projects/css-solucoes.webp",
     "dialogTitle": "CSS - Soluções Integradas",
     "dialogSubtitle": "Serviços especializados para terminais",
-    "description": "Este foi o primeiro site que desenvolvi inteiramente sozinho, do zero. Como a empresa oferece uma grande variedade de serviços, precisei criar várias páginas para acomodar todas as informações. Os nomes dos serviços eram bem longos, o que me desafiou a garantir que o design fosse responsivo e que o layout dos menus (cabeçalho, rodapé e barra lateral) ficasse correto em todas as situações.",
-    "link": "http://csssolucoes.com.br/"
+    "description": "Um site de várias páginas para uma empresa com uma grande variedade de serviços para terminais, construído do zero, sozinho. Os nomes longos dos serviços foram o desafio: os menus do cabeçalho, do rodapé e da barra lateral precisavam funcionar em qualquer tamanho de tela.",
+    "link": ""
   },
   "es": {
     "order": 1,
@@ -32,7 +32,7 @@
     "image": "/images/projects/css-solucoes.webp",
     "dialogTitle": "CSS - Soluciones Integradas",
     "dialogSubtitle": "Servicios especializados para terminales",
-    "description": "Este fue el primer sitio web que desarrollé completamente solo, desde cero. Como la empresa ofrece una gran variedad de servicios, tuve que crear varias páginas para incluir toda la información. Los nombres de los servicios eran bastante largos, lo que me desafió a asegurar que el diseño fuera responsivo y que la disposición de los menús (encabezado, pie de página y barra lateral) fuera correcta en todas las situaciones.",
-    "link": "http://csssolucoes.com.br/"
+    "description": "Un sitio de varias páginas para una empresa con una gran variedad de servicios para terminales, construido desde cero, yo solo. Los nombres largos de los servicios fueron el desafío: los menús del encabezado, del pie de página y de la barra lateral debían funcionar en cualquier tamaño de pantalla.",
+    "link": ""
   }
 }

@@ -17,7 +17,8 @@
           "Implemented and managed the cloud infrastructure on AWS."
         ]
       }
-    ]
+    ],
+    "earlier": false
   },
   "pt": {
     "company": "Domy",
@@ -37,7 +38,8 @@
           "Implementei e gerenciei a infraestrutura em nuvem na AWS."
         ]
       }
-    ]
+    ],
+    "earlier": false
   },
   "es": {
     "company": "Domy",
@@ -57,6 +59,7 @@
           "Implementé y gestioné la infraestructura en la nube en AWS."
         ]
       }
-    ]
+    ],
+    "earlier": false
   }
 }

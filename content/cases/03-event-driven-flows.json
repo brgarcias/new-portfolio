@@ -1,6 +1,6 @@
 {
   "en": {
-    "order": 3,
+    "order": 5,
     "company": "Serasa",
     "period": "2024–2025",
     "stack": "Node.js, NestJS, AWS Lambda, SQS, SNS, Step Functions, API Gateway, Docker, Jest",
@@ -29,10 +29,12 @@
         "label": "Lambda and Step Functions",
         "detail": "Serverless flows"
       }
-    ]
+    ],
+    "image": "",
+    "decisions": []
   },
   "pt": {
-    "order": 3,
+    "order": 5,
     "company": "Serasa",
     "period": "2024–2025",
     "stack": "Node.js, NestJS, AWS Lambda, SQS, SNS, Step Functions, API Gateway, Docker, Jest",
@@ -61,10 +63,12 @@
         "label": "Lambda e Step Functions",
         "detail": "Fluxos serverless"
       }
-    ]
+    ],
+    "image": "",
+    "decisions": []
   },
   "es": {
-    "order": 3,
+    "order": 5,
     "company": "Serasa",
     "period": "2024–2025",
     "stack": "Node.js, NestJS, AWS Lambda, SQS, SNS, Step Functions, API Gateway, Docker, Jest",
@@ -93,6 +97,8 @@
         "label": "Lambda y Step Functions",
         "detail": "Flujos serverless"
       }
-    ]
+    ],
+    "image": "",
+    "decisions": []
   }
 }

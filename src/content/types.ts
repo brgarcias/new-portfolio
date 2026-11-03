@@ -1,9 +1,9 @@
 // The fields of each content file, as they are saved in content/. Texts may
 // use **highlight**, *emphasis* and [link](address), see Markup.
 
-import type { SectionId } from './sections';
+import type { PageId, SectionId } from './sections';
 
-export type { SectionId };
+export type { PageId, SectionId };
 
 // content/site/profile.json: who Bruno is and how to reach him.
 export interface ProfileContent {
@@ -25,8 +25,12 @@ export interface HeroContent {
   titleTop: string;
   titleBottom: string;
   tagline: string;
-  // Technologies floating around the illustration, separated by commas.
+  // The technologies around the illustration, separated by commas.
   highlights: string;
+  // The line along the foot of the top: where Bruno has worked.
+  companiesLabel: string;
+  // Separated by commas, from the most recent.
+  companies: string;
 }
 
 // content/site/about.json
@@ -34,9 +38,25 @@ export interface AboutContent {
   lead: string;
   // Paragraphs separated by a blank line.
   body: string;
-  stackTitle: string;
-  // Separated by commas. They repeat the ones the text names.
-  technologies: string;
+  principlesTitle: string;
+  principles: { title: string; text: string }[];
+}
+
+// content/site/expertise.json: what Bruno does, by area, and where he has done
+// it. Nothing goes in without a place to back it up.
+export interface ExpertiseContent {
+  whereLabel: string;
+  areas: {
+    title: string;
+    text: string;
+    // Separated by commas.
+    stack: string;
+    // The companies, separated by commas.
+    where: string;
+    // A result from a real project, as "40%" and what it measures. Optional.
+    metric?: string;
+    metricLabel?: string;
+  }[];
 }
 
 interface SectionHeaderContent {
@@ -49,10 +69,10 @@ interface SectionHeaderContent {
 }
 
 // content/site/sections.json: the header of each section.
-export type SectionsContent = Record<SectionId, SectionHeaderContent>;
+export type SectionsContent = Record<PageId, SectionHeaderContent>;
 
 export interface SectionHeader {
-  id: SectionId;
+  id: PageId;
   // "01" for the first section.
   number: string;
   label: string;
@@ -73,6 +93,9 @@ export interface ExperienceEntry {
   stack: string;
   // Groups of items, each with an optional heading.
   details: { heading?: string; items: string[] }[];
+  // Early roles, shown behind a button so the timeline leads with the work
+  // that matters most today.
+  earlier?: boolean;
 }
 
 // content/education/*.json, one file per step.
@@ -81,8 +104,6 @@ export interface EducationEntry {
   label: string;
   title: string;
   text: string;
-  // Steps that are still ahead.
-  upcoming: boolean;
 }
 
 // content/courses/*.json, one file per course.
@@ -90,11 +111,11 @@ export interface CourseEntry {
   order: number;
   title: string;
   subtitle: string;
-  // Takes two columns of the grid.
-  wide: boolean;
-  dialogTitle: string;
-  dialogSubtitle: string;
-  modules: { title: string; description: string }[];
+  // The details, when the course has modules to show. Without them, the course
+  // is only a line.
+  dialogTitle?: string;
+  dialogSubtitle?: string;
+  modules?: { title: string; description: string }[];
 }
 
 // content/projects/*.json, one file per project.
@@ -110,11 +131,13 @@ export interface ProjectEntry {
   dialogTitle: string;
   dialogSubtitle: string;
   description: string;
-  link: string;
+  // Empty when the site is no longer online.
+  link?: string;
 }
 
 // content/cases/*.json, one file per case study of the projects section.
-// The result and what it taught are optional: an empty part does not show.
+// The result, the decisions and what it taught are optional: an empty part does
+// not show. The first by order is the featured one.
 export interface CaseEntry {
   order: number;
   company: string;
@@ -124,6 +147,8 @@ export interface CaseEntry {
   context: string;
   role: string;
   built: string;
+  // Why the system is built the way it is, only from what is on record.
+  decisions?: { title: string; text: string }[];
   result?: string;
   learned?: string;
   // Separated by commas.
@@ -131,6 +156,8 @@ export interface CaseEntry {
   // The system, step by step, as the diagram draws it.
   flow: { label: string; detail?: string }[];
   link?: string;
+  // A real screenshot of the system, a path in public/.
+  image?: string;
 }
 
 // content/site/contributing.json
@@ -142,9 +169,6 @@ export interface ContributingContent {
   galleryTitle: string;
   galleryHint: string;
   stats: { value: string; suffix?: string; label: string }[];
-  closing: string;
-  // The closing line. An *emphasis* takes the gradient.
-  highlight: string;
 }
 
 // content/initiatives/*.json, one file per photo of the contributing section.
@@ -167,18 +191,10 @@ export type HolocronsContent = Record<
   { title: string; text: string }
 >;
 
-interface CardContent {
-  label: string;
-  title: string;
-  subtitle: string;
-  details: string[];
-}
-
-// content/site/contact.json: the cards of the contact section. The profile
-// and contact cards take the name, role, e-mail and phone from the profile.
+// content/site/contact.json: what goes with the channels of the contact
+// section, which come from the profile.
 export interface ContactContent {
-  profile: { label: string; details: string[] };
-  education: CardContent;
-  contact: { label: string; details: string[] };
-  languages: CardContent;
+  location: string;
+  languages: string;
+  availability: string;
 }

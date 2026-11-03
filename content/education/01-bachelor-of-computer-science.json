@@ -1,0 +1,20 @@
+{
+  "en": {
+    "order": 1,
+    "label": "Bachelor of Computer Science",
+    "title": "Universidade São Judas Tadeu",
+    "text": "2018–2022. I started in Computer Engineering at Anhembi Morumbi and switched to Computer Science at São Judas the same year, when I also began as a software development intern at Ingenico."
+  },
+  "pt": {
+    "order": 1,
+    "label": "Bacharelado em Ciência da Computação",
+    "title": "Universidade São Judas Tadeu",
+    "text": "2018–2022. Comecei em Engenharia da Computação na Anhembi Morumbi e mudei para Ciência da Computação na São Judas no mesmo ano, quando também comecei como estagiário de desenvolvimento de software na Ingenico."
+  },
+  "es": {
+    "order": 1,
+    "label": "Licenciatura en Ciencias de la Computación",
+    "title": "Universidade São Judas Tadeu",
+    "text": "2018–2022. Empecé en Ingeniería Informática en Anhembi Morumbi y me cambié a Ciencias de la Computación en São Judas el mismo año, cuando también comencé como pasante de desarrollo de software en Ingenico."
+  }
+}

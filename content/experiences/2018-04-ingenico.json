@@ -17,7 +17,8 @@
           "Learned the foundations of web infrastructure: backend and frontend structure, databases and servers."
         ]
       }
-    ]
+    ],
+    "earlier": true
   },
   "pt": {
     "company": "Ingenico",
@@ -37,7 +38,8 @@
           "Aprendi os fundamentos da infraestrutura web: estrutura de backend e frontend, bancos de dados e servidores."
         ]
       }
-    ]
+    ],
+    "earlier": true
   },
   "es": {
     "company": "Ingenico",
@@ -57,6 +59,7 @@
           "Aprendí los fundamentos de la infraestructura web: estructura de backend y frontend, bases de datos y servidores."
         ]
       }
-    ]
+    ],
+    "earlier": true
   }
 }

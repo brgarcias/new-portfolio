@@ -37,7 +37,8 @@
           "Investigated and fixed frontend performance problems, and took part in code reviews and unit testing."
         ]
       }
-    ]
+    ],
+    "earlier": false
   },
   "pt": {
     "company": "Trocafone",
@@ -77,7 +78,8 @@
           "Investiguei e corrigi problemas de desempenho no frontend e participei de code reviews e testes unitários."
         ]
       }
-    ]
+    ],
+    "earlier": false
   },
   "es": {
     "company": "Trocafone",
@@ -117,6 +119,7 @@
           "Investigué y corregí problemas de rendimiento en el frontend y participé en code reviews y pruebas unitarias."
         ]
       }
-    ]
+    ],
+    "earlier": false
   }
 }

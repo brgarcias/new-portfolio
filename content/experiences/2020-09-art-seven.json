@@ -15,7 +15,8 @@
           "Worked with HTML/CSS, JavaScript, jQuery and React on the frontend, and PHP, Node.js, MySQL and WordPress on the backend."
         ]
       }
-    ]
+    ],
+    "earlier": true
   },
   "pt": {
     "company": "Art Seven",
@@ -33,7 +34,8 @@
           "Trabalhei com HTML/CSS, JavaScript, jQuery e React no frontend, e PHP, Node.js, MySQL e WordPress no backend."
         ]
       }
-    ]
+    ],
+    "earlier": true
   },
   "es": {
     "company": "Art Seven",
@@ -51,6 +53,7 @@
           "Trabajé con HTML/CSS, JavaScript, jQuery y React en el frontend, y PHP, Node.js, MySQL y WordPress en el backend."
         ]
       }
-    ]
+    ],
+    "earlier": true
   }
 }

@@ -1,98 +1,17 @@
 {
   "en": {
-    "profile": {
-      "label": "Profile",
-      "details": [
-        "Building software since 2018"
-      ]
-    },
-    "education": {
-      "label": "Education",
-      "title": "Bachelor of Computer Science",
-      "subtitle": "Universidade São Judas Tadeu - USJT",
-      "details": [
-        "Concluded",
-        "06/2018 - 06/2022"
-      ]
-    },
-    "contact": {
-      "label": "Contact",
-      "details": [
-        "São Paulo, Brazil"
-      ]
-    },
-    "languages": {
-      "label": "Languages",
-      "title": "Advanced English",
-      "subtitle": "English Course - Number One",
-      "details": [
-        "Native Portuguese",
-        "Available for travel and relocation"
-      ]
-    }
+    "location": "São Paulo, Brazil",
+    "languages": "Portuguese (native), English (advanced)",
+    "availability": "Available for travel and relocation"
   },
   "pt": {
-    "profile": {
-      "label": "Perfil",
-      "details": [
-        "Desenvolvendo software desde 2018"
-      ]
-    },
-    "education": {
-      "label": "Formação",
-      "title": "Bacharelado em Ciência da Computação",
-      "subtitle": "Universidade São Judas Tadeu - USJT",
-      "details": [
-        "Concluído",
-        "06/2018 - 06/2022"
-      ]
-    },
-    "contact": {
-      "label": "Contato",
-      "details": [
-        "São Paulo, Brasil"
-      ]
-    },
-    "languages": {
-      "label": "Idiomas",
-      "title": "Inglês avançado",
-      "subtitle": "Curso de inglês - Number One",
-      "details": [
-        "Português nativo",
-        "Disponível para viagens e mudança"
-      ]
-    }
+    "location": "São Paulo, Brasil",
+    "languages": "Português (nativo), inglês (avançado)",
+    "availability": "Disponível para viagens e mudança"
   },
   "es": {
-    "profile": {
-      "label": "Perfil",
-      "details": [
-        "Desarrollando software desde 2018"
-      ]
-    },
-    "education": {
-      "label": "Formación",
-      "title": "Licenciatura en Ciencias de la Computación",
-      "subtitle": "Universidade São Judas Tadeu - USJT",
-      "details": [
-        "Concluido",
-        "06/2018 - 06/2022"
-      ]
-    },
-    "contact": {
-      "label": "Contacto",
-      "details": [
-        "São Paulo, Brasil"
-      ]
-    },
-    "languages": {
-      "label": "Idiomas",
-      "title": "Inglés avanzado",
-      "subtitle": "Curso de inglés - Number One",
-      "details": [
-        "Portugués nativo",
-        "Disponible para viajar y mudarme"
-      ]
-    }
+    "location": "São Paulo, Brasil",
+    "languages": "Portugués (nativo), inglés (avanzado)",
+    "availability": "Disponible para viajar y mudarme"
   }
 }

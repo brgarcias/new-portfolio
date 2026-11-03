@@ -13,7 +13,7 @@ import {
 // CONTENT
 import { contentImage, type ContentImage } from './image';
 import { readCollection, readSingleton } from './read';
-import { sectionIds } from './sections';
+import { pageIds } from './sections';
 import type {
   AboutContent,
   CaseEntry,
@@ -22,13 +22,14 @@ import type {
   CourseEntry,
   EducationEntry,
   ExperienceEntry,
+  ExpertiseContent,
   HeroContent,
   HolocronsContent,
   InitiativeEntry,
   ProfileContent,
   ProjectEntry,
+  PageId,
   SectionHeader,
-  SectionId,
   SectionsContent,
 } from './types';
 
@@ -95,7 +96,7 @@ export function getSections(locale: Locale, profile: Profile) {
     email: `mailto:${profile.email}`,
   };
   return Object.fromEntries(
-    sectionIds.map((id, index) => {
+    pageIds.map((id, index) => {
       const { description, quote, author, ...header } = sections[id];
       return [
         id,
@@ -111,26 +112,39 @@ export function getSections(locale: Locale, profile: Profile) {
         },
       ];
     }),
-  ) as Record<SectionId, SectionHeader>;
+  ) as Record<PageId, SectionHeader>;
 }
 
 export function getHero(locale: Locale) {
   const hero = readSingleton<HeroContent>('hero', locale);
-  return { ...hero, highlights: splitList(hero.highlights) };
+  return {
+    ...hero,
+    highlights: splitList(hero.highlights),
+    companies: splitList(hero.companies),
+  };
 }
 
 export type Hero = ReturnType<typeof getHero>;
 
 export function getAbout(locale: Locale) {
   const about = readSingleton<AboutContent>('about', locale);
-  return {
-    ...about,
-    body: splitParagraphs(about.body),
-    technologies: splitList(about.technologies),
-  };
+  return { ...about, body: splitParagraphs(about.body) };
 }
 
 export type About = ReturnType<typeof getAbout>;
+
+export function getExpertise(locale: Locale) {
+  const expertise = readSingleton<ExpertiseContent>('expertise', locale);
+  return {
+    ...expertise,
+    areas: expertise.areas.map((area) => ({
+      ...area,
+      stack: splitList(area.stack),
+    })),
+  };
+}
+
+export type Expertise = ReturnType<typeof getExpertise>;
 
 // From the most recent role. A function, so the current role's duration is
 // computed on every render instead of once when the module loads.
@@ -139,11 +153,12 @@ export function getExperiences(locale: Locale, messages: Messages) {
   const { dateLocale } = messages.meta;
   return readCollection<ExperienceEntry>('experiences', locale)
     .sort((a, b) => b.start.localeCompare(a.start))
-    .map(({ slug, company, title, start, end, icon, stack, details }) => ({
+    .map(({ slug, company, title, start, end, icon, stack, details, earlier }) => ({
       slug,
       company,
       title,
       icon,
+      earlier: Boolean(earlier),
       current: !end,
       stack: splitList(stack),
       date: formatDateRange(start, end || undefined, { dateLocale, present }),
@@ -182,7 +197,11 @@ export type Project = ReturnType<typeof getProjects>[number];
 export function getCases(locale: Locale) {
   return readCollection<CaseEntry>('cases', locale)
     .sort(byOrder)
-    .map((entry) => ({ ...entry, stack: splitList(entry.stack) }));
+    .map((entry) => ({
+      ...entry,
+      stack: splitList(entry.stack),
+      image: entry.image ? contentImage(entry.image) : undefined,
+    }));
 }
 
 export type CaseStudy = ReturnType<typeof getCases>[number];
@@ -218,33 +237,16 @@ export function getHolocrons(locale: Locale) {
 
 export type Holocrons = ReturnType<typeof getHolocrons>;
 
-export function getContactCards(locale: Locale, profile: Profile) {
-  const {
-    profile: personal,
-    education,
-    contact,
-    languages,
-  } = readSingleton<ContactContent>('contact', locale);
-  return [
-    {
-      id: 'profile',
-      label: personal.label,
-      title: profile.fullName,
-      subtitle: profile.role,
-      details: personal.details,
-    },
-    { id: 'education', ...education },
-    {
-      id: 'contact',
-      label: contact.label,
-      title: profile.email,
-      titleHref: `mailto:${profile.email}`,
-      subtitle: profile.phone,
-      subtitleHref: profile.phoneHref,
-      details: contact.details,
-    },
-    { id: 'languages', ...languages },
-  ] as const;
+// The channels of the contact section, from the profile, and what goes with
+// them.
+export function getContact(locale: Locale, profile: Profile) {
+  return {
+    ...readSingleton<ContactContent>('contact', locale),
+    email: profile.email,
+    emailHref: `mailto:${profile.email}`,
+    phone: profile.phone,
+    phoneHref: profile.phoneHref,
+  };
 }
 
-export type ContactCard = ReturnType<typeof getContactCards>[number];
+export type Contact = ReturnType<typeof getContact>;

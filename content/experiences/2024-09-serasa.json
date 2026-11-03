@@ -3,7 +3,7 @@
     "company": "Serasa",
     "title": "Backend Developer",
     "start": "2024-09",
-    "end": "2025-02",
+    "end": "2025-03",
     "icon": "code",
     "stack": "Node.js, NestJS, GraphQL, Jest, AWS Lambda, SQS, SNS, Step Functions, API Gateway, Docker, Microservices, REST APIs",
     "details": [
@@ -17,13 +17,14 @@
           "Worked in a microservices architecture, with API Gateway routing requests between services, and containerized services with Docker."
         ]
       }
-    ]
+    ],
+    "earlier": false
   },
   "pt": {
     "company": "Serasa",
     "title": "Desenvolvedor Backend",
     "start": "2024-09",
-    "end": "2025-02",
+    "end": "2025-03",
     "icon": "code",
     "stack": "Node.js, NestJS, GraphQL, Jest, AWS Lambda, SQS, SNS, Step Functions, API Gateway, Docker, Microservices, REST APIs",
     "details": [
@@ -37,13 +38,14 @@
           "Atuei numa arquitetura de microsserviços, com o API Gateway roteando as requisições entre serviços, e conteinerizei serviços com Docker."
         ]
       }
-    ]
+    ],
+    "earlier": false
   },
   "es": {
     "company": "Serasa",
     "title": "Desarrollador Backend",
     "start": "2024-09",
-    "end": "2025-02",
+    "end": "2025-03",
     "icon": "code",
     "stack": "Node.js, NestJS, GraphQL, Jest, AWS Lambda, SQS, SNS, Step Functions, API Gateway, Docker, Microservices, REST APIs",
     "details": [
@@ -57,6 +59,7 @@
           "Trabajé en una arquitectura de microservicios, con API Gateway enrutando las solicitudes entre servicios, y contenedoricé servicios con Docker."
         ]
       }
-    ]
+    ],
+    "earlier": false
   }
 }

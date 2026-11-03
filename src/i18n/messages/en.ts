@@ -18,7 +18,7 @@ const en = {
     closeMenu: 'Close menu',
     backToPage: 'Back to the page',
     cv: 'CV',
-    downloadCv: 'Download CV',
+    downloadCv: 'Download résumé',
     language: 'Language',
     toLightTheme: 'Switch to light theme',
     toDarkTheme: 'Switch to dark theme',
@@ -28,11 +28,11 @@ const en = {
   },
   hero: {
     currently: 'Currently {role} at {company}',
+    work: 'Explore my work',
+    illustration: 'Illustration of {name} working on a laptop',
     contact: 'Contact me',
-    downloadCv: 'Download CV',
-    feedback: 'Leave Feedback',
+    downloadCv: 'Download résumé',
     play: 'Play',
-    scrollToAbout: 'Scroll to About Me',
   },
   feedback: {
     title: 'Leave your feedback',
@@ -61,19 +61,21 @@ const en = {
     closeNotice: 'Close notification',
   },
   experience: {
+    earlier: 'Show {count} earlier roles',
+    fewerEarlier: 'Hide earlier roles',
     technologies: 'Technologies',
     present: 'Present',
     // The duration of a role, such as "1y 1m".
     years: '{count}y',
     months: '{count}m',
   },
-  education: {
-    steps: 'Education',
-  },
   courses: {
     details: 'View details',
   },
   projects: {
+    featured: 'Featured case study',
+    moreCaseStudies: 'More case studies',
+    decisions: 'Engineering decisions',
     list: 'Projects',
     details: 'See details',
     // Read after "See details" by screen readers only.
@@ -90,12 +92,22 @@ const en = {
     oneMoreCase: 'See one more case study',
     fewerCases: 'Show fewer case studies',
     flow: 'System flow — {title}',
+    screenshot: 'Screenshot of the system — {title}',
     context: 'Context',
     role: 'My role',
     built: 'What I built',
     result: 'Result',
     learned: 'What I learned',
     stack: 'Technologies',
+  },
+  contact: {
+    email: 'Email',
+    phone: 'Phone',
+    resume: 'Download résumé',
+    channels: 'Other ways to reach me',
+    location: 'Based in',
+    languages: 'Languages',
+    feedback: 'Leave feedback on this site',
   },
   contributing: {
     previous: 'Previous photo',

@@ -29,6 +29,17 @@
         "label": "Kubernetes",
         "detail": "Docker containers"
       }
+    ],
+    "image": "",
+    "decisions": [
+      {
+        "title": "A gateway in front of the services",
+        "text": "A GraphQL gateway gave the clients one API to talk to, whichever service was behind it."
+      },
+      {
+        "title": "Containers for the legacy code too",
+        "text": "The legacy PHP systems also went into Docker containers and onto Kubernetes clusters, which made deployments more reliable."
+      }
     ]
   },
   "pt": {
@@ -61,6 +72,17 @@
         "label": "Kubernetes",
         "detail": "Contêineres Docker"
       }
+    ],
+    "image": "",
+    "decisions": [
+      {
+        "title": "Um gateway na frente dos serviços",
+        "text": "Um gateway GraphQL deu aos clientes uma única API, qualquer que fosse o serviço por trás dela."
+      },
+      {
+        "title": "Contêineres também para o legado",
+        "text": "Os sistemas legados em PHP também foram para contêineres Docker e clusters Kubernetes, o que deixou as publicações mais confiáveis."
+      }
     ]
   },
   "es": {
@@ -92,6 +114,17 @@
       {
         "label": "Kubernetes",
         "detail": "Contenedores Docker"
+      }
+    ],
+    "image": "",
+    "decisions": [
+      {
+        "title": "Un gateway delante de los servicios",
+        "text": "Un gateway GraphQL dio a los clientes una sola API, fuera cual fuera el servicio detrás de ella."
+      },
+      {
+        "title": "Contenedores también para lo heredado",
+        "text": "Los sistemas heredados en PHP también pasaron a contenedores Docker y clústeres Kubernetes, lo que hizo los despliegues más confiables."
       }
     ]
   }

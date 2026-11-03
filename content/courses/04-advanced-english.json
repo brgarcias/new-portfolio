@@ -1,9 +1,8 @@
 {
   "en": {
-    "order": 4,
+    "order": 8,
     "title": "Advanced English",
     "subtitle": "Number One",
-    "wide": false,
     "dialogTitle": "Corporate English",
     "dialogSubtitle": "Grammar and Conversation.",
     "modules": [
@@ -30,10 +29,9 @@
     ]
   },
   "pt": {
-    "order": 4,
+    "order": 8,
     "title": "Inglês avançado",
     "subtitle": "Number One",
-    "wide": false,
     "dialogTitle": "Inglês corporativo",
     "dialogSubtitle": "Gramática e conversação.",
     "modules": [
@@ -60,10 +58,9 @@
     ]
   },
   "es": {
-    "order": 4,
+    "order": 8,
     "title": "Inglés avanzado",
     "subtitle": "Number One",
-    "wide": false,
     "dialogTitle": "Inglés corporativo",
     "dialogSubtitle": "Gramática y conversación.",
     "modules": [

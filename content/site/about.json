@@ -1,20 +1,59 @@
 {
   "en": {
-    "lead": "I'm a full-stack software engineer with 8+ years of experience and a focus on the backend: REST and GraphQL APIs, integrations and distributed systems with Node.js and TypeScript, and web applications with React and Next.js. Today I work on PayPal's Node.js and GraphQL platform.",
-    "body": "At Trocafone I went from frontend to backend developer and then tech lead. I led five major projects and the migration of a legacy PHP monolith to microservices in Node.js, Python (FastAPI) and .NET Core, behind a GraphQL gateway and deployed with Docker and Kubernetes.\n\nSince then I've built serverless, event-driven services on AWS with Lambda, API Gateway, SQS, SNS and Step Functions; GraphQL services with NestJS and Next.js applications on Azure; and, at PayPal, GraphQL schemas and resolvers used by several platform services. I work with PostgreSQL, MySQL, SQL Server, DynamoDB and Redis.\n\nI care about what keeps a system reliable once it's in production: idempotent message processing, tests with Jest, CI/CD pipelines and observability. I also review code and take part in architecture decisions with the team.",
-    "stackTitle": "Technologies & tools",
-    "technologies": "Node.js, TypeScript, NestJS, GraphQL, REST APIs, Python, React, Next.js, AWS, Azure, PostgreSQL, MySQL, SQL Server, DynamoDB, Redis, Docker, Kubernetes, Jest"
+    "lead": "I'm a full-stack software engineer with a focus on the backend. Today I work on PayPal's Node.js and GraphQL platform.",
+    "body": "I started in 2018 at Ingenico, customizing payment terminals, and moved to the web soon after. At Trocafone I went from frontend to backend developer and then tech lead: I led five major projects and the migration of a legacy PHP monolith to microservices in Node.js, Python (FastAPI) and .NET Core, behind a GraphQL gateway.\n\nSince then I've built serverless, event-driven services on AWS at Serasa, GraphQL services and Next.js applications on Azure at AB InBev and, at PayPal, the GraphQL schemas and resolvers that platform services use.",
+    "principlesTitle": "How I work",
+    "principles": [
+      {
+        "title": "Reliable once it's in production",
+        "text": "Idempotent message processing, tests with Jest, CI/CD pipelines and observability are part of the work, not a step after it."
+      },
+      {
+        "title": "Easy to change later",
+        "text": "Clean architecture and modular design keep a growing codebase maintainable."
+      },
+      {
+        "title": "Decided with the team",
+        "text": "I review code, take part in architecture decisions and work with Product to turn requirements into technically feasible plans."
+      }
+    ]
   },
   "pt": {
-    "lead": "Sou engenheiro de software full-stack, com mais de 8 anos de experiência e foco em backend: APIs REST e GraphQL, integrações e sistemas distribuídos com Node.js e TypeScript, e aplicações web com React e Next.js. Hoje trabalho na plataforma de Node.js e GraphQL do PayPal.",
-    "body": "Na Trocafone, passei de desenvolvedor frontend a backend e depois a tech lead. Liderei cinco grandes projetos e a migração de um monólito legado em PHP para microsserviços em Node.js, Python (FastAPI) e .NET Core, atrás de um gateway GraphQL e publicados com Docker e Kubernetes.\n\nDepois disso, construí serviços serverless e orientados a eventos na AWS, com Lambda, API Gateway, SQS, SNS e Step Functions; serviços GraphQL com NestJS e aplicações Next.js no Azure; e, no PayPal, schemas e resolvers GraphQL usados por vários serviços da plataforma. Trabalho com PostgreSQL, MySQL, SQL Server, DynamoDB e Redis.\n\nCuido do que mantém um sistema confiável em produção: processamento idempotente de mensagens, testes com Jest, pipelines de CI/CD e observabilidade. Também reviso código e participo das decisões de arquitetura com o time.",
-    "stackTitle": "Tecnologias e ferramentas",
-    "technologies": "Node.js, TypeScript, NestJS, GraphQL, REST APIs, Python, React, Next.js, AWS, Azure, PostgreSQL, MySQL, SQL Server, DynamoDB, Redis, Docker, Kubernetes, Jest"
+    "lead": "Sou engenheiro de software full-stack, com foco em backend. Hoje trabalho na plataforma de Node.js e GraphQL do PayPal.",
+    "body": "Comecei em 2018 na Ingenico, customizando terminais de pagamento, e logo passei para a web. Na Trocafone, fui de desenvolvedor frontend a backend e depois a tech lead: liderei cinco grandes projetos e a migração de um monólito legado em PHP para microsserviços em Node.js, Python (FastAPI) e .NET Core, atrás de um gateway GraphQL.\n\nDepois disso, construí serviços serverless e orientados a eventos na AWS, na Serasa; serviços GraphQL e aplicações Next.js no Azure, na AB InBev; e, no PayPal, os schemas e resolvers GraphQL que os serviços da plataforma usam.",
+    "principlesTitle": "Como trabalho",
+    "principles": [
+      {
+        "title": "Confiável depois de entrar em produção",
+        "text": "Processamento idempotente de mensagens, testes com Jest, pipelines de CI/CD e observabilidade fazem parte do trabalho, não são uma etapa depois dele."
+      },
+      {
+        "title": "Fácil de mudar depois",
+        "text": "Arquitetura limpa e design modular mantêm uma base de código em crescimento fácil de manter."
+      },
+      {
+        "title": "Decidido com o time",
+        "text": "Reviso código, participo das decisões de arquitetura e trabalho com Produto para transformar requisitos em planos tecnicamente viáveis."
+      }
+    ]
   },
   "es": {
-    "lead": "Soy ingeniero de software full-stack, con más de 8 años de experiencia y foco en el backend: APIs REST y GraphQL, integraciones y sistemas distribuidos con Node.js y TypeScript, y aplicaciones web con React y Next.js. Hoy trabajo en la plataforma de Node.js y GraphQL de PayPal.",
-    "body": "En Trocafone pasé de desarrollador frontend a backend y después a tech lead. Lideré cinco grandes proyectos y la migración de un monolito heredado en PHP a microservicios en Node.js, Python (FastAPI) y .NET Core, detrás de un gateway GraphQL y desplegados con Docker y Kubernetes.\n\nDesde entonces construí servicios serverless y orientados a eventos en AWS, con Lambda, API Gateway, SQS, SNS y Step Functions; servicios GraphQL con NestJS y aplicaciones Next.js en Azure; y, en PayPal, schemas y resolvers GraphQL que usan varios servicios de la plataforma. Trabajo con PostgreSQL, MySQL, SQL Server, DynamoDB y Redis.\n\nMe ocupo de lo que mantiene un sistema confiable en producción: procesamiento idempotente de mensajes, pruebas con Jest, pipelines de CI/CD y observabilidad. También reviso código y participo en las decisiones de arquitectura con el equipo.",
-    "stackTitle": "Tecnologías y herramientas",
-    "technologies": "Node.js, TypeScript, NestJS, GraphQL, REST APIs, Python, React, Next.js, AWS, Azure, PostgreSQL, MySQL, SQL Server, DynamoDB, Redis, Docker, Kubernetes, Jest"
+    "lead": "Soy ingeniero de software full-stack, con foco en el backend. Hoy trabajo en la plataforma de Node.js y GraphQL de PayPal.",
+    "body": "Empecé en 2018 en Ingenico, personalizando terminales de pago, y pronto pasé a la web. En Trocafone pasé de desarrollador frontend a backend y después a tech lead: lideré cinco grandes proyectos y la migración de un monolito heredado en PHP a microservicios en Node.js, Python (FastAPI) y .NET Core, detrás de un gateway GraphQL.\n\nDesde entonces construí servicios serverless y orientados a eventos en AWS, en Serasa; servicios GraphQL y aplicaciones Next.js en Azure, en AB InBev; y, en PayPal, los schemas y resolvers GraphQL que usan los servicios de la plataforma.",
+    "principlesTitle": "Cómo trabajo",
+    "principles": [
+      {
+        "title": "Confiable una vez en producción",
+        "text": "El procesamiento idempotente de mensajes, las pruebas con Jest, los pipelines de CI/CD y la observabilidad son parte del trabajo, no un paso posterior."
+      },
+      {
+        "title": "Fácil de cambiar después",
+        "text": "La arquitectura limpia y el diseño modular mantienen una base de código en crecimiento fácil de mantener."
+      },
+      {
+        "title": "Decidido con el equipo",
+        "text": "Reviso código, participo en las decisiones de arquitectura y trabajo con Producto para convertir los requisitos en planes técnicamente viables."
+      }
+    ]
   }
 }

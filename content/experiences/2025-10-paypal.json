@@ -17,7 +17,8 @@
           "Work with platform engineers and product and frontend teams to ship secure features to production."
         ]
       }
-    ]
+    ],
+    "earlier": false
   },
   "pt": {
     "company": "PayPal",
@@ -37,7 +38,8 @@
           "Trabalho com engenheiros de plataforma e times de produto e frontend para levar funcionalidades seguras à produção."
         ]
       }
-    ]
+    ],
+    "earlier": false
   },
   "es": {
     "company": "PayPal",
@@ -57,6 +59,7 @@
           "Trabajo con ingenieros de plataforma y equipos de producto y frontend para llevar funcionalidades seguras a producción."
         ]
       }
-    ]
+    ],
+    "earlier": false
   }
 }
