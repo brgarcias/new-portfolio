@@ -1,5 +1,10 @@
 import { readFile } from 'node:fs/promises';
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import {
+  expect as baseExpect,
+  test,
+  type Locator,
+  type Page,
+} from '@playwright/test';
 import {
   gatesOf,
   maxGates,
@@ -18,6 +23,14 @@ import { biomes } from '../src/app/game/world/biomes';
 // The game at /play: the hangar, the flight and the ways around it. The
 // headless Chromium draws its WebGL by software, so it runs in CI too. The
 // HUD reports the ship's position, heading and speed in data attributes.
+
+// CI's software renderer takes its time. Compiling the shaders can hold the page
+// for several seconds, above all in the first test of each process, and each
+// command to the page can take a second. So every test here gets more time, and
+// every check more patience, without asking for anything less: what a check
+// waits for still has to happen.
+test.describe.configure({ timeout: 90_000 });
+const expect = baseExpect.configure({ timeout: 15_000 });
 
 const shipNames = [
   'X-wing',
@@ -66,6 +79,41 @@ async function hold(page: Page, codes: string | string[], ms: number) {
     [Array.isArray(codes) ? codes : [codes], ms] as const,
   );
 }
+
+// Thrusts straight ahead until the HUD shows the ship past a point, checked
+// every frame in the page, and lets go there. Speed and distance go together,
+// however slow the frames, so from there the ship always coasts into the first
+// pad, which catches it. A burst timed by the clock could come up short when
+// the frames stalled, and leave the ship stopped before the pad.
+async function thrustPast(page: Page, z: number) {
+  await page.evaluate(
+    (z) =>
+      new Promise<void>((done, fail) => {
+        const hud = document.querySelector<HTMLElement>('.hud');
+        const send = (type: string) =>
+          document.body.dispatchEvent(
+            new KeyboardEvent(type, { code: 'KeyW', bubbles: true }),
+          );
+        const started = performance.now();
+        const check = () => {
+          const past = Number(hud?.dataset.z) < z;
+          if (past || performance.now() - started > 30_000) {
+            send('keyup');
+            if (past) done();
+            else fail(new Error(`The ship stayed at ${hud?.dataset.z}.`));
+            return;
+          }
+          requestAnimationFrame(check);
+        };
+        send('keydown');
+        requestAnimationFrame(check);
+      }),
+    z,
+  );
+}
+
+// How far a ship flies before it lets go, on the way to the first pad.
+const padApproach = -28;
 
 // Turns the ship with a key until the HUD shows its heading past a target,
 // checked every frame in the page: the key goes up on the first frame past
@@ -228,7 +276,6 @@ test('chega do hiperespaço e desce até a nave, ou começa atrás dela com meno
   test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
   // Two flights, one with the whole arrival, each of whose frames can take
   // a second on CI's software renderer.
-  test.slow();
   await page.goto('/play');
   await page.getByRole('button', { name: 'Take off' }).click();
   // Out of hyperspace, the camera comes down from high over the platform
@@ -338,9 +385,6 @@ test('mostra o nome do planeta a cada entrada, sem piscar na fronteira', async (
 });
 
 test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
-  // Many steps over the 3D flight, each of which can take a second on CI's
-  // software renderer.
-  test.slow();
   await takeOff(page);
   await page.getByRole('button', { name: 'Open the navigation chart' }).click();
   const map = page.getByRole('dialog', { name: 'Navigation chart' });
@@ -535,7 +579,6 @@ test('projeta o plano de voo sobre o voo, e o desfaz pela faixa', async ({
   page,
   isMobile,
 }) => {
-  test.slow();
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await takeOff(page);
@@ -594,7 +637,6 @@ test('aponta o destino da borda da tela quando a nave dá as costas a ele', asyn
   isMobile,
 }) => {
   test.skip(isMobile, 'The keys turn the ship; phones share the same code.');
-  test.slow();
   await takeOff(page);
   await setCourse(page, 'Tatooine');
   const lock = page.locator('.course-lock');
@@ -612,7 +654,6 @@ test('conta os portais em voo e encerra o plano ao pousar', async ({
   isMobile,
 }) => {
   test.skip(isMobile, 'Phones fly with the joystick.');
-  test.slow();
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await takeOff(page);
@@ -625,7 +666,7 @@ test('conta os portais em voo e encerra o plano ao pousar', async ({
     .toBeGreaterThanOrEqual(2);
   // The same thrust that takes the ship to the first pad. Gates go by on the
   // way; the pad catches the ship, and the plan ends with the landing.
-  await hold(page, 'KeyW', 2500);
+  await thrustPast(page, padApproach);
   const about = page.getByRole('dialog', { name: 'About Me' });
   await expect(about).toBeVisible({ timeout: 30_000 });
   expect(await reading(page, 'route-flown')).toBeGreaterThanOrEqual(2);
@@ -639,7 +680,6 @@ test('recalcula a rota quando a nave se desvia dela', async ({
   isMobile,
 }) => {
   test.skip(isMobile, 'Phones fly with the joystick.');
-  test.slow();
   await takeOff(page);
   await setCourse(page, 'Tatooine');
   await expect
@@ -664,7 +704,6 @@ test('traça o plano de novo numa nova decolagem, a partir de onde a nave está'
   isMobile,
 }) => {
   test.skip(isMobile, 'Once is enough.');
-  test.slow();
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await takeOff(page);
@@ -693,7 +732,6 @@ test('traça o plano de novo numa nova decolagem, a partir de onde a nave está'
 
 test('leva a rota na cor do planeta de destino', async ({ page, isMobile }) => {
   test.skip(isMobile, 'Once is enough.');
-  test.slow();
   await takeOff(page);
   // Two planets, each with its own color, on the strip, the lock, the radar
   // and the chart.
@@ -733,7 +771,6 @@ test('leva a rota na cor do planeta de destino', async ({ page, isMobile }) => {
 test('deixa só o quadro no modo foto, e a mira no HUD imersivo', async ({
   page,
 }) => {
-  test.slow();
   await takeOff(page);
   await setCourse(page, 'Tatooine');
   const strip = page.locator('.course-strip');
@@ -765,7 +802,6 @@ test('mantém o plano de voo inteiro na tela nos três idiomas', async ({
   isMobile,
 }) => {
   test.skip(!isMobile, 'The narrow screen is the hard one.');
-  test.slow();
   const lands = [
     { path: '/play', chart: 'Open the navigation chart', take: 'Take off' },
     { path: '/pt/play', chart: 'Abrir a carta de navegação', take: 'Decolar' },
@@ -813,7 +849,6 @@ test('guarda a missão para a próxima visita e recomeça só depois de confirma
   page,
   isMobile,
 }) => {
-  test.slow();
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   // An earlier visit landed on About Me, recovered two holocrons and read
@@ -909,7 +944,6 @@ test('guarda a missão para a próxima visita e recomeça só depois de confirma
 test('lê uma seção pela carta sem pousar nem contar a visita', async ({
   page,
 }) => {
-  test.slow();
   await takeOff(page);
   // A new exploration begins with the mission, once the ship has arrived.
   await expect(page.locator('.toast[data-kind="briefing"]')).toContainText(
@@ -982,7 +1016,6 @@ test('joga com o progresso ilegível ou sem armazenamento', async ({
   browser,
 }, testInfo) => {
   test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
-  test.slow();
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   // A save cut in the middle starts a new exploration.
@@ -1022,7 +1055,6 @@ test('troca o HUD entre completo, mínimo e imersivo e lembra a escolha', async 
   page,
   isMobile,
 }) => {
-  test.slow();
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await takeOff(page);
   const hud = page.locator('.hud');
@@ -1064,7 +1096,6 @@ test('mostra os controles a quem não sai do lugar', async ({
   page,
   isMobile,
 }) => {
-  test.slow();
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await takeOff(page);
   await expect(page.locator('.toast[data-kind="hint"]')).toContainText(
@@ -1074,9 +1105,6 @@ test('mostra os controles a quem não sai do lugar', async ({
 });
 
 test('liga o som e entra no modo foto', async ({ page, isMobile }) => {
-  // Many steps over the 3D flight, each of which can take a second on CI's
-  // software renderer.
-  test.slow();
   await takeOff(page);
   // The sounds come on with their button, and the choice is kept.
   await page.getByRole('button', { name: 'Sound off' }).click();
@@ -1112,7 +1140,6 @@ test('cala os motores no hangar e quando a página some', async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
-  test.slow();
   // The sound is on from the start, and the page's audio is watched: its
   // context and every volume in it, the first one being the master's.
   await page.addInitScript(() => {
@@ -1175,7 +1202,6 @@ test('mostra de novo o nome do planeta quando a nave sai e volta', async ({
   isMobile,
 }) => {
   test.skip(isMobile, 'Phones fly with the joystick.');
-  test.slow();
   await takeOff(page);
   await page.evaluate(() => {
     const titles: string[] = [];
@@ -1259,7 +1285,6 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   isMobile,
 }) => {
   test.skip(isMobile, 'Phones fly with the joystick.');
-  test.slow();
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await takeOff(page);
@@ -1292,14 +1317,11 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   const titles = () =>
     page.evaluate(() => (window as unknown as { titles: string[] }).titles);
 
-  // Two and a half seconds of thrust: the ship picks up speed and moves
-  // ahead, towards -Z. Straight ahead lies the first pad, About Me; the
-  // thrust goes off well before it, as a pilot would, the ship coasts in,
-  // the pad catches it, and once it stops there the section opens over the
-  // flight. Timed, not read from the page: on CI's software renderer each
-  // command to the page can take a second, and the pad catches the ship
-  // whether the thrust goes off a second early or a second late.
-  await hold(page, 'KeyW', 2500);
+  // Thrust: the ship picks up speed and moves ahead, towards -Z. Straight
+  // ahead lies the first pad, About Me; the thrust goes off well before it, as
+  // a pilot would, the ship coasts in, the pad catches it, and once it stops
+  // there the section opens over the flight.
+  await thrustPast(page, padApproach);
   // Read by position, not speed: on a slow machine the pad may have caught
   // the ship before the first reading.
   await expect.poll(() => reading(page, 'z')).toBeLessThan(-5);
@@ -1430,7 +1452,6 @@ test.describe('no tablet', () => {
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
-    test.slow();
     // Taking off is in sight in the stacked hangar, without scrolling.
     await page.goto('/play');
     await expect(
@@ -1465,7 +1486,6 @@ test.describe('no celular deitado', () => {
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
-    test.slow();
     // The ship and taking off are in sight, without scrolling.
     await page.goto('/play');
     await expect(page.locator('.hangar__stage')).toBeInViewport({
@@ -1538,14 +1558,17 @@ test('voa pelo joystick no celular', async ({ page, isMobile }) => {
     .getByRole('button', { name: 'Boost' })
     .boundingBox())!;
   expect(boost.x + boost.width / 2).toBeLessThan(width / 2);
-  // Pushes the stick forward for a moment, then lets go well before the
-  // first pad: the ship coasts in and lands there.
+  // Pushes the stick forward until the ship is on its way, then lets go well
+  // before the first pad: the ship coasts in and lands there. By its position,
+  // not by the clock: when the frames stalled, two and a half seconds of stick
+  // left the ship stopped short of the pad.
   await page.mouse.move(centerX, centerY);
   await page.mouse.down();
   await page.mouse.move(centerX, centerY - 40, { steps: 5 });
-  await page.waitForTimeout(2500);
+  await expect
+    .poll(() => reading(page, 'z'), { timeout: 30_000, intervals: [100] })
+    .toBeLessThan(padApproach);
   await page.mouse.up();
-  await expect.poll(() => reading(page, 'z')).toBeLessThan(-5);
   await expect(joystick.locator('.joystick__knob')).toHaveAttribute(
     'style',
     '',
@@ -1632,7 +1655,7 @@ test('fala a língua da página e leva /en/play para /play', async ({
     .poll(() => reading(page, 'time'), { timeout: 20_000 })
     .toBeGreaterThan(0.5);
   // The sections open in the page's language too.
-  await hold(page, 'KeyW', 2500);
+  await thrustPast(page, padApproach);
   await expect(page.locator('.hud__pad')).toContainText('Sobre mim', {
     timeout: 20_000,
   });

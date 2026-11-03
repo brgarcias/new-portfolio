@@ -5,7 +5,17 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
-  reporter: 'list',
+  // On CI, also the annotations on the pull request, which show a test that
+  // only passed on the retry, and the file behind the job's summary.
+  reporter: process.env.CI
+    ? [
+        ['list'],
+        ['github'],
+        ['json', { outputFile: 'playwright-report/results.json' }],
+      ]
+    : 'list',
+  // The summary has the slowest tests; this warns about whole files.
+  reportSlowTests: null,
   // Screenshots only match the Linux container where CI runs, so they live
   // in one folder per device instead of one per operating system.
   snapshotPathTemplate: '{testDir}/snapshots/{projectName}/{arg}{ext}',
@@ -24,7 +34,10 @@ export default defineConfig({
     // The site follows the system's theme. Tests use the dark one, the
     // original look, unless they ask for the light one.
     colorScheme: 'dark',
-    trace: 'retain-on-failure',
+    // Recording every test took about a third of the time of the game's, and
+    // slowed the frames those tests wait for. Only a retry records now, which
+    // is what a failure gets on CI. Locally, ask for it with --trace=on.
+    trace: 'on-first-retry',
     launchOptions: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
       ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH }
       : {},
