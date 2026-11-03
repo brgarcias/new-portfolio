@@ -83,26 +83,24 @@ for (const { home, play, lang } of languages) {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(home);
     // Every block enters as it scrolls into view, and a block still fading in
-    // would read as low contrast. Two frames at each one, as the browser only
-    // reports what came into view when it draws: on a busy machine, a block
-    // passed by in a hurry never entered.
-    await page.evaluate(async () => {
-      for (const block of document.querySelectorAll(
-        'main [style*="opacity"]',
-      )) {
-        if (block.getClientRects().length === 0) continue;
-        block.scrollIntoView({ block: 'center', behavior: 'instant' });
-        await new Promise((done) =>
-          requestAnimationFrame(() => requestAnimationFrame(done)),
-        );
-      }
-    });
-    // What waits behind a button, as the early roles, has not entered.
-    await page.waitForFunction(() =>
-      [...document.querySelectorAll('main [style*="opacity"]')]
+    // would read as low contrast. So it goes to each one that has not started,
+    // until all have entered: the code of the entrances loads after the page,
+    // and a block passed by before that stayed hidden. What waits behind a
+    // button, as the early roles, has no box and does not enter.
+    await page.waitForFunction(() => {
+      const opacities = [
+        ...document.querySelectorAll('main [style*="opacity"]'),
+      ]
         .filter((block) => block.getClientRects().length > 0)
-        .every((block) => getComputedStyle(block).opacity === '1'),
-    );
+        .map((block) => ({
+          block,
+          opacity: getComputedStyle(block).opacity,
+        }));
+      opacities
+        .find(({ opacity }) => opacity === '0')
+        ?.block.scrollIntoView({ block: 'center', behavior: 'instant' });
+      return opacities.every(({ opacity }) => opacity === '1');
+    });
     await page.addScriptTag({ path: 'node_modules/axe-core/axe.min.js' });
     const audit = () =>
       page.evaluate(async () => {
