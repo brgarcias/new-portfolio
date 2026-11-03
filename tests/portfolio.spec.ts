@@ -650,6 +650,91 @@ test('no celular, deixa o CV ao lado das redes e o jogo como botão', async ({
   }
 });
 
+test('deixa o topo inteiro na primeira tela de um notebook', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'Laptops.');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const [width, height] of [
+    [1024, 768],
+    [1366, 657],
+  ]) {
+    await page.setViewportSize({ width, height });
+    for (const path of ['/', '/pt', '/es']) {
+      await page.goto(path);
+      const where = `${path} at ${width}x${height}`;
+      // The three buttons in one row, and the companies still on the screen.
+      const rows = await page
+        .locator('#top .hero__actions .btn:visible')
+        .evaluateAll((all) =>
+          all.map((button) => Math.round(button.getBoundingClientRect().top)),
+        );
+      expect(rows, where).toHaveLength(3);
+      expect(new Set(rows).size, where).toBe(1);
+      const proof = (await page.locator('#top .hero__proof').boundingBox())!;
+      expect(proof.y + proof.height, where).toBeLessThanOrEqual(height);
+    }
+  }
+});
+
+test('mantém as empresas numa linha só no celular', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, 'The narrow layouts are the phones.');
+  for (const width of [360, 390, 402, 440]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto('/');
+    const rows = await page
+      .locator('#top .hero__companies li')
+      .evaluateAll((all) =>
+        all.map((company) => Math.round(company.getBoundingClientRect().top)),
+      );
+    expect(new Set(rows).size, `${width}px`).toBe(1);
+  }
+});
+
+test('continua inteiro quando um pedaço do código falha ao baixar', async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  // What loads after the page: the animations of the blocks, which are tried
+  // again, and the code of the dialogs, which only matters when one opens.
+  const later = /\/chunks\/\d+\.[0-9a-f]+\.js/;
+  const failed = new Set<string>();
+  await page.route(later, (route) => {
+    failed.add(route.request().url());
+    return route.abort();
+  });
+  await page.goto('/');
+  await expect.poll(() => failed.size, { timeout: 15_000 }).toBeGreaterThan(2);
+  await page.unroute(later);
+  await scrollTo(page, '#courses .course-list');
+  await expect(page.locator('#courses .course-list-wrap')).toHaveCSS(
+    'opacity',
+    '1',
+    { timeout: 15_000 },
+  );
+  await page.locator('#courses .course__button').first().click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test.describe('sem JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+
+  test('mostra os blocos que entram com a rolagem', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('#expertise .ledger-wrap')).toHaveCSS(
+      'opacity',
+      '1',
+    );
+    await expect(page.locator('#contact .contact')).toHaveCSS('opacity', '1');
+  });
+});
+
 test('segue o tema escolhido em outra aba', async ({ page, context }) => {
   await page.goto('/');
   const html = page.locator('html');

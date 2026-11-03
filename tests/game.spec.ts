@@ -189,18 +189,18 @@ test.describe('tema do site', () => {
   const night = 'rgb(5, 7, 13)';
   const day = 'rgb(238, 241, 249)';
 
-  // The texts that axe finds without enough contrast on what the page shows
-  // now. A text over the 3D scene has no background it can read, so it does
-  // not count.
-  async function lowContrast(page: Page) {
+  // Runs axe on what the page shows now. A text over the 3D scene has no
+  // background it can read, so it does not count.
+  async function audit(page: Page) {
     await page.addScriptTag({ path: 'node_modules/axe-core/axe.min.js' });
     return page.evaluate(async () => {
       const { axe } = window as unknown as { axe: typeof AxeCore };
       const { violations } = await axe.run(document, {
-        runOnly: ['color-contrast'],
+        runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'],
       });
-      return violations.flatMap(({ nodes }) =>
-        nodes.map(({ target }) => target.join(' ')),
+      return violations.map(
+        ({ id, nodes }) =>
+          `${id}: ${nodes.map(({ target }) => target.join(' ')).join(', ')}`,
       );
     });
   }
@@ -241,7 +241,7 @@ test.describe('tema do site', () => {
       await expect.poll(sky, { timeout: 40_000 }).toBeGreaterThan(0.5);
     });
 
-    test('tem contraste no hangar, na carta e no arquivo', async ({
+    test('não tem violações de acessibilidade no hangar, na carta e no arquivo', async ({
       page,
     }, testInfo) => {
       test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
@@ -249,21 +249,29 @@ test.describe('tema do site', () => {
       await expect(page.locator('.hangar__canvas canvas')).toBeVisible();
       // What enters at first has entered.
       await waitForEntrances(page);
-      expect(await lowContrast(page), 'hangar').toEqual([]);
+      expect(await audit(page), 'hangar').toEqual([]);
       await page.getByRole('button', { name: 'Take off' }).click();
       await expect(page.locator('.hud')).toBeVisible();
       await page.keyboard.press('KeyM');
       const chart = page.getByRole('dialog', { name: 'Navigation chart' });
       await expect(chart).toBeVisible();
       await waitForEntrances(page);
-      expect(await lowContrast(page), 'chart').toEqual([]);
+      expect(await audit(page), 'chart').toEqual([]);
+      // The name of a destination is what it shows, after what it does.
+      const tatooine = chart.getByRole('button', {
+        name: /^Set a course for Tatooine About Me/,
+      });
+      await tatooine.click();
+      await expect(tatooine).toHaveAttribute('aria-pressed', 'true');
+      expect(await audit(page), 'chart with a course').toEqual([]);
+      await tatooine.click();
       await page.keyboard.press('Escape');
       await expect(chart).toBeHidden();
       await page.keyboard.press('KeyH');
       const archive = page.getByRole('dialog', { name: 'Holocron archive' });
       await expect(archive).toBeVisible();
       await waitForEntrances(page);
-      expect(await lowContrast(page), 'archive').toEqual([]);
+      expect(await audit(page), 'archive').toEqual([]);
     });
   });
 
