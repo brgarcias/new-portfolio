@@ -468,6 +468,8 @@
   max-width: var(--container-wide);
   flex-direction: column;
   justify-content: center;
+  /* What does not fit stays below the bar. */
+  justify-content: safe center;
   gap: 1.75rem;
   margin: 0 auto;
   padding: calc(var(--header-height) + 0.5rem) var(--gutter) 1.5rem;
@@ -590,6 +592,55 @@
   .stack-menu__footer .social-links__link {
     width: 2.5rem;
     height: 2.5rem;
+  }
+}
+
+/* The narrowest phones: the longest short names still fit their column. */
+@media (max-width: 359px) {
+  .stack-menu__list {
+    gap: 0 0.5rem;
+  }
+
+  .stack-menu__title {
+    font-size: 1rem;
+  }
+}
+
+/* A phone lying down: the links in two rows of four, with their short names. */
+@media (max-height: 480px) {
+  .stack-menu {
+    gap: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .stack-menu__list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0 1rem;
+  }
+
+  .stack-menu__link {
+    padding: 0.3rem 0;
+  }
+
+  .stack-menu__title {
+    font-size: 1.05rem;
+  }
+
+  .stack-menu__title-full {
+    display: none;
+  }
+
+  .stack-menu__title-short {
+    display: inline;
+  }
+
+  .stack-menu__footer {
+    gap: 0.5rem 0.75rem;
+  }
+
+  .stack-menu__footer .social-links__link {
+    width: 2.25rem;
+    height: 2.25rem;
   }
 }
 

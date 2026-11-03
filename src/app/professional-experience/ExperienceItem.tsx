@@ -2,28 +2,27 @@
 
 // HOOKS
 import { Fragment, useId, useState } from 'react';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faChevronDown,
-  faCode,
-  faDesktopAlt,
-  faMobileRetro,
-  faUsers,
-} from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import Reveal from '@/src/components/Reveal';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
 import type { Experience } from '@/src/content';
+// ICONS
+import {
+  ChevronDownIcon,
+  CodeIcon,
+  LaptopIcon,
+  TabletIcon,
+  UsersIcon,
+} from '@/src/components/Icon';
 
 // The icon on the node of each role, as chosen in its content file.
 const icons = {
-  code: faCode,
-  desktop: faDesktopAlt,
-  mobile: faMobileRetro,
-  users: faUsers,
+  code: CodeIcon,
+  desktop: LaptopIcon,
+  mobile: TabletIcon,
+  users: UsersIcon,
 };
 
 interface ExperienceItemProps {
@@ -51,13 +50,14 @@ export default function ExperienceItem({
   defaultOpen = false,
 }: Readonly<ExperienceItemProps>) {
   const t = useI18n().messages.experience;
+  const NodeIcon = icons[icon];
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const detailsId = useId();
 
   return (
     <li className={`xp-item${current ? ' xp-item--current' : ''}`}>
       <span className="xp-item__node" aria-hidden="true">
-        <FontAwesomeIcon icon={icons[icon]} />
+        <NodeIcon />
       </span>
 
       <Reveal className="xp-item__meta">
@@ -85,7 +85,7 @@ export default function ExperienceItem({
           >
             {title}
             <span className="xp-card__chevron" aria-hidden="true">
-              <FontAwesomeIcon icon={faChevronDown} />
+              <ChevronDownIcon />
             </span>
           </button>
         </h3>

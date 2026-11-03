@@ -4,19 +4,11 @@
 import Image from 'next/image';
 // HOOKS
 import { useEffect, useState } from 'react';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faArrowLeft,
-  faArrowRight,
-  faExpand,
-} from '@fortawesome/free-solid-svg-icons';
 // COMPONENTS
 import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
 import ModalComponent from '@/src/components/Modal/Lazy';
 import { openOnKey } from '@/src/components/Modal/openOnKey';
-import { markup } from '@/src/components/Markup';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
@@ -27,6 +19,8 @@ import type {
 } from '@/src/content';
 // CSS
 import './styles.css';
+// ICONS
+import { ArrowLeftIcon, ArrowRightIcon, MoveIcon } from '@/src/components/Icon';
 
 const pad = (value: number) => String(value).padStart(2, '0');
 // The viewer goes around: after the last photo comes the first.
@@ -76,10 +70,23 @@ export default function Contributing({
     <Section header={header}>
       <div className="contrib">
         <Reveal className="contrib__story">
-          <p className="contrib__label">{content.storyLabel}</p>
-          <div className="contrib__story-text">
-            {content.story.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
+          <div>
+            <p className="contrib__label">{content.storyLabel}</p>
+            <div className="contrib__story-text">
+              {content.story.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+          </div>
+          <div className="contrib-stats">
+            {content.stats.map((stat) => (
+              <div key={stat.label} className="contrib-stat">
+                <strong>
+                  {stat.value}
+                  {stat.suffix && <sup>{stat.suffix}</sup>}
+                </strong>
+                <span>{stat.label}</span>
+              </div>
             ))}
           </div>
         </Reveal>
@@ -119,7 +126,7 @@ export default function Contributing({
                       {item.label}
                     </span>
                     <span className="contrib-card__zoom" aria-hidden="true">
-                      <FontAwesomeIcon icon={faExpand} />
+                      <MoveIcon />
                     </span>
                   </button>
                 </li>
@@ -127,24 +134,6 @@ export default function Contributing({
             </ul>
           </Reveal>
         </div>
-
-        <Reveal className="contrib__closing">
-          <div className="contrib-stats">
-            {content.stats.map((stat) => (
-              <div key={stat.label} className="contrib-stat">
-                <strong>
-                  {stat.value}
-                  {stat.suffix && <sup>{stat.suffix}</sup>}
-                </strong>
-                <span>{stat.label}</span>
-              </div>
-            ))}
-          </div>
-          <div className="contrib__closing-text">
-            <p>{content.closing}</p>
-            <p className="contrib__highlight">{markup(content.highlight)}</p>
-          </div>
-        </Reveal>
       </div>
 
       {/* The photo opens large, with what the initiative was about. */}
@@ -175,7 +164,7 @@ export default function Contributing({
                 aria-label={t.previous}
                 onClick={() => go(-1)}
               >
-                <FontAwesomeIcon icon={faArrowLeft} />
+                <ArrowLeftIcon />
               </button>
               <button
                 type="button"
@@ -183,7 +172,7 @@ export default function Contributing({
                 aria-label={t.next}
                 onClick={() => go(1)}
               >
-                <FontAwesomeIcon icon={faArrowRight} />
+                <ArrowRightIcon />
               </button>
             </div>
           </div>

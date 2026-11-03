@@ -1,7 +1,9 @@
 // NEXT
 import { notFound } from 'next/navigation';
 // SECTIONS
-import AboutMe from '../../about-me';
+import Hero from '../../about-me';
+import About from '../../about-me/About';
+import Expertise from '../../expertise';
 import ProfessionalExperience from '../../professional-experience';
 import AcademicEducation from '../../academic-education';
 import Projects from '../../projects';
@@ -13,12 +15,13 @@ import OffscreenPause from '@/src/components/OffscreenPause';
 // CONTENT
 import {
   getAbout,
-  getContactCards,
+  getContact,
   getCases,
   getContributing,
   getCourses,
   getEducation,
   getExperiences,
+  getExpertise,
   getHero,
   getInitiatives,
   getProfile,
@@ -27,7 +30,7 @@ import {
   getSocialLinks,
 } from '@/src/content';
 // I18N
-import { isLocale, locales } from '@/src/i18n/config';
+import { isLocale, locales, pagePath } from '@/src/i18n/config';
 import { getMessages } from '@/src/i18n/messages';
 
 // Regenerates the page once a day, so the current role's duration does not
@@ -58,12 +61,12 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
 
   return (
     <main id="main" tabIndex={-1}>
-      <AboutMe
-        header={sections.about}
+      <Hero
         profile={profile}
         hero={getHero(locale)}
-        about={getAbout(locale)}
         social={social}
+        t={messages.hero}
+        playHref={pagePath(locale, 'play')}
         currentRole={
           current && {
             // "Software Engineer (Node.js / GraphQL Platform)" reads as
@@ -73,20 +76,25 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
           }
         }
       />
-      <ProfessionalExperience
-        header={sections.experience}
-        experiences={experiences}
-      />
-      <AcademicEducation
-        header={sections.education}
-        steps={getEducation(locale)}
-      />
-      <Courses header={sections.courses} courses={getCourses(locale)} />
       <Projects
         header={sections.projects}
         cases={getCases(locale)}
         projects={getProjects(locale)}
       />
+      <Expertise header={sections.expertise} expertise={getExpertise(locale)} />
+      <ProfessionalExperience
+        header={sections.experience}
+        experiences={experiences}
+      />
+      <About header={sections.about} about={getAbout(locale)} />
+      {/* Beside each other on a wide screen: what backs up the rest. */}
+      <div className="study">
+        <AcademicEducation
+          header={sections.education}
+          steps={getEducation(locale)}
+        />
+        <Courses header={sections.courses} courses={getCourses(locale)} />
+      </div>
       <Contributing
         header={sections.contributing}
         content={getContributing(locale)}
@@ -94,9 +102,9 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
       />
       <Contact
         header={sections.contact}
-        cards={getContactCards(locale, profile)}
+        contact={getContact(locale, profile)}
         social={social}
-        socialLabel={messages.frame.socialLinks}
+        labels={messages.contact}
       />
       <OffscreenPause />
     </main>

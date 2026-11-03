@@ -10,8 +10,6 @@ interface SectionProps {
   // From content/site/sections.json, which the menu also reads, so the menu
   // and the page always agree.
   header: SectionHeader;
-  // Shown right after the description, such as an icon.
-  descriptionEnd?: ReactNode;
   className?: string;
   children?: ReactNode;
 }
@@ -19,7 +17,6 @@ interface SectionProps {
 // A home page section with the shared numbered header.
 export default function Section({
   header,
-  descriptionEnd,
   className,
   children,
 }: Readonly<SectionProps>) {
@@ -37,15 +34,14 @@ export default function Section({
           <span className="eyebrow__index">{number}</span>
           {label}
         </p>
-        <h2 id={`${id}-title`} className="section__title">
-          {title}
-        </h2>
-        {description && (
-          <p className="section__description">
-            {markup(description)}
-            {descriptionEnd}
-          </p>
-        )}
+        <div className="section__heading">
+          <h2 id={`${id}-title`} className="section__title">
+            {title}
+          </h2>
+          {description && (
+            <p className="section__description">{markup(description)}</p>
+          )}
+        </div>
         {quote && (
           <blockquote className="section__quote">
             <p>{`“${quote.text}”`}</p>

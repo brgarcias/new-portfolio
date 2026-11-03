@@ -2,14 +2,13 @@
 
 // HOOKS
 import { useEffect, useId, useRef, useState } from 'react';
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 // I18N
 import { homePath, locales, type Locale } from '@/src/i18n/config';
 import { useI18n } from '@/src/i18n/I18nProvider';
 // CONTENT
-import type { SectionId } from '@/src/content/sections';
+import type { PageId } from '@/src/content/sections';
+// ICONS
+import { GlobeIcon } from '@/src/components/Icon';
 
 // Each language by its own name, as visitors look for it.
 const names: Record<Locale, string> = {
@@ -23,7 +22,7 @@ interface LanguageSwitchProps {
   // side in the menu.
   variant: 'dropdown' | 'inline';
   // The section on screen, which the page in the other language opens at.
-  section: SectionId | null;
+  section: PageId | null;
 }
 
 // Links to the same page in the other languages. They load the page again,
@@ -97,7 +96,7 @@ export default function LanguageSwitch({
         aria-controls={listId}
         onClick={() => setOpen((value) => !value)}
       >
-        <FontAwesomeIcon icon={faGlobe} />
+        <GlobeIcon />
         <span aria-hidden="true">{locale.toUpperCase()}</span>
         <span className="visually-hidden">
           {t.language}: {names[locale]}

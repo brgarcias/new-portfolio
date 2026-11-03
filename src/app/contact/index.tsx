@@ -1,89 +1,108 @@
-// FONT AWESOME
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faEnvelope,
-  faGraduationCap,
-  faLanguage,
-  faUser,
-} from '@fortawesome/free-solid-svg-icons';
+// ICONS
+import { DownloadIcon, PhoneIcon } from '@/src/components/Icon';
 // COMPONENTS
+import Feedback from '@/src/components/Feedback';
 import Section from '@/src/components/Section';
 import Reveal from '@/src/components/Reveal';
+// I18N
+import type { Messages } from '@/src/i18n/messages';
 // CONTENT
-import type { ContactCard, SectionHeader, SocialLink } from '@/src/content';
-import { linkTarget, socialIcons } from '@/src/components/SiteFrame/content';
+import type {
+  Contact as ContactContent,
+  SectionHeader,
+  SocialLink,
+} from '@/src/content';
+import {
+  linkTarget,
+  resume,
+  SocialIcon,
+} from '@/src/components/SiteFrame/content';
 // CSS
 import './styles.css';
 
-const icons = {
-  profile: faUser,
-  education: faGraduationCap,
-  contact: faEnvelope,
-  languages: faLanguage,
-};
-
 interface ContactProps {
   header: SectionHeader;
-  cards: readonly ContactCard[];
+  contact: ContactContent;
   social: readonly SocialLink[];
-  // The name of the list of social buttons, for screen readers.
-  socialLabel: string;
+  labels: Messages['contact'];
 }
 
+// How to reach Bruno: the email first, large, then LinkedIn, GitHub and the
+// résumé, and the rest in a quieter line.
 export default function Contact({
   header,
-  cards,
+  contact,
   social,
-  socialLabel,
+  labels,
 }: Readonly<ContactProps>) {
-  return (
-    <Section header={header}>
-      <Reveal className="contact">
-        <ul className="contact-grid">
-          {cards.map((card) => (
-            <li
-              key={card.id}
-              className={`contact-card contact-card--${card.id}`}
-            >
-              <span className="contact-card__icon" aria-hidden="true">
-                <FontAwesomeIcon icon={icons[card.id]} />
-              </span>
-              <p className="contact-card__label">{card.label}</p>
-              <h3 className="contact-card__title">
-                {'titleHref' in card ? (
-                  <a href={card.titleHref}>{card.title}</a>
-                ) : (
-                  card.title
-                )}
-              </h3>
-              <p className="contact-card__subtitle">
-                {'subtitleHref' in card ? (
-                  <a href={card.subtitleHref}>{card.subtitle}</a>
-                ) : (
-                  card.subtitle
-                )}
-              </p>
-              {card.details.length > 0 && (
-                <ul className="contact-card__details">
-                  {card.details.map((detail) => (
-                    <li key={detail}>{detail}</li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
+  const channel = (id: SocialLink['id']) =>
+    social.find((link) => link.id === id);
+  const main = [channel('linkedin'), channel('github')].filter(
+    (link) => link !== undefined,
+  );
+  const whatsapp = channel('whatsapp');
 
-        <ul className="contact-links" aria-label={socialLabel}>
-          {social.map(({ id, href, text }) => (
-            <li key={id}>
-              <a className="btn btn--ghost" href={href} {...linkTarget(href)}>
-                <FontAwesomeIcon icon={socialIcons[id]} />
-                {text}
+  return (
+    <Section header={header} className="contact-section">
+      <Reveal className="contact">
+        <div className="contact__panel" data-loop>
+          <p className="contact__label">{labels.email}</p>
+          <a className="contact__email" href={contact.emailHref}>
+            {contact.email}
+          </a>
+          <ul className="contact__links">
+            {main.map(({ id, href, text }) => (
+              <li key={id}>
+                <a className="btn btn--ghost" href={href} {...linkTarget(href)}>
+                  <SocialIcon id={id} />
+                  {text}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a
+                className="btn btn--ghost"
+                href={resume.href}
+                download={resume.fileName}
+              >
+                <DownloadIcon />
+                {labels.resume}
               </a>
             </li>
-          ))}
-        </ul>
+          </ul>
+          <ul className="contact__quiet" aria-label={labels.channels}>
+            {whatsapp && (
+              <li>
+                <a href={whatsapp.href} {...linkTarget(whatsapp.href)}>
+                  <SocialIcon id="whatsapp" />
+                  {whatsapp.text}
+                </a>
+              </li>
+            )}
+            <li>
+              <a href={contact.phoneHref}>
+                <PhoneIcon />
+                <span className="visually-hidden">{labels.phone}: </span>
+                {contact.phone}
+              </a>
+            </li>
+          </ul>
+        </div>
+        <dl className="contact__facts">
+          <div>
+            <dt>{labels.location}</dt>
+            <dd>
+              {contact.location}. {contact.availability}.
+            </dd>
+          </div>
+          <div>
+            <dt>{labels.languages}</dt>
+            <dd>{contact.languages}.</dd>
+          </div>
+        </dl>
+        <div className="contact__feedback">
+          <Feedback label={labels.feedback} />
+        </div>
       </Reveal>
     </Section>
   );

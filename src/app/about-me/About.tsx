@@ -11,8 +11,8 @@ interface AboutProps {
   about: AboutContent;
 }
 
-// The About section: the text and the technologies. It follows the hero on
-// the home page, and it is the first landing pad of the game.
+// The About section: the story, short, and how Bruno works. It is also the
+// first landing pad of the game.
 export default function About({ header, about }: Readonly<AboutProps>) {
   return (
     <Section header={header} className="about">
@@ -23,12 +23,13 @@ export default function About({ header, about }: Readonly<AboutProps>) {
             <p key={paragraph}>{paragraph}</p>
           ))}
         </Reveal>
-        <Reveal className="about__stack" delay={0.12}>
-          <h3 className="about__stack-title">{about.stackTitle}</h3>
-          <ul className="tag-list">
-            {about.technologies.map((name) => (
-              <li key={name} className="tag">
-                {name}
+        <Reveal className="about__approach" delay={0.12}>
+          <h3 className="about__approach-title">{about.principlesTitle}</h3>
+          <ul className="about__principles">
+            {about.principles.map((principle) => (
+              <li key={principle.title}>
+                <h4>{principle.title}</h4>
+                <p>{principle.text}</p>
               </li>
             ))}
           </ul>
