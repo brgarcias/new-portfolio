@@ -132,7 +132,9 @@ export default function GalaxyMap({
             ref={close}
             type="button"
             className="g-btn game-map__close"
-            aria-label={t.closeMap}
+            // With the key it shows, so a voice command can call it by that.
+            aria-label={`${t.closeMap}, Esc`}
+            aria-keyshortcuts="Escape"
             onClick={onClose}
           >
             <XIcon />
@@ -177,12 +179,17 @@ export default function GalaxyMap({
                       type="button"
                       className="destination"
                       aria-pressed={picked}
-                      aria-label={format(t.setCourse, {
-                        place: `${biomes[place.id].planet}, ${place.title}`,
-                      })}
                       onClick={() => onCourse(place.id)}
                     >
-                      <span className="destination__index g-num">
+                      {/* The name is what the button shows, after what it
+                          does: "Set a course for" and the place. */}
+                      <span className="g-sr">
+                        {t.setCourse.split('{place}')[0]}
+                      </span>
+                      <span
+                        className="destination__index g-num"
+                        aria-hidden="true"
+                      >
                         {String(index + 1).padStart(2, '0')}
                       </span>
                       <span className="destination__name">

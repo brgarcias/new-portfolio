@@ -131,7 +131,9 @@ export default function Archive({
             ref={close}
             type="button"
             className="g-btn game-map__close"
-            aria-label={t.closeArchive}
+            // With the key it shows, so a voice command can call it by that.
+            aria-label={`${t.closeArchive}, Esc`}
+            aria-keyshortcuts="Escape"
             onClick={onClose}
           >
             <XIcon />
@@ -199,11 +201,16 @@ export default function Archive({
                       <button
                         type="button"
                         className="g-btn record__course"
-                        aria-label={format(t.setCourse, { place: planet })}
                         aria-pressed={picked}
                         onClick={() => onCourse(place.id)}
                       >
                         <SendIcon />
+                        {/* Once set, the button says so, and keeps its name. */}
+                        {picked && (
+                          <span className="g-sr">
+                            {format(t.setCourse, { place: planet })}:{' '}
+                          </span>
+                        )}
                         {picked
                           ? t.courseSet
                           : format(t.setCourse, { place: planet })}
