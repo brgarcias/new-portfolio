@@ -1,6 +1,8 @@
 import type { SectionId } from '@/src/content/sections';
+import { diamond } from './chart-parts';
 import { hunt } from './hunt';
 import { overlay } from './overlay';
+import { route } from './flight-plan';
 import {
   bearingTo,
   navigation,
@@ -13,7 +15,8 @@ import { holocrons, pads } from './world/arena';
 
 // Moves the instruments over the flight, every frame, straight in the
 // DOM: the compass's tape and marks, the radar's map around the ship, the
-// ship and the course on the chart, the readouts and the landing status.
+// ship and the route on the chart, the flight plan's readings, the readouts
+// and the landing status.
 // Nothing is written that has not changed, what moves moves by transforms
 // on layers of its own, and text changes ten times a second, which reads
 // as live and costs less.
@@ -74,6 +77,24 @@ const targetOf = (kind: string | undefined, id: string | undefined) => {
   return padAt.get(id);
 };
 
+// The way still to fly, as the points of a line on the radar or the chart:
+// a point every so many of the route's, written again only when the ship
+// has moved along it.
+function drawRoute(line: SVGPolylineElement | null, every: number) {
+  if (!line || route.id !== navigation.course) return;
+  if (!write(line, 'route', `${route.version}:${route.index}`)) return;
+  const { points, index } = route;
+  let value = '';
+  for (let i = index; i < points.length; i += every) {
+    value += `${points[i].x.toFixed(1)},${points[i].z.toFixed(1)} `;
+  }
+  const end = points[points.length - 1];
+  line.setAttribute(
+    'points',
+    `${value}${end.x.toFixed(1)},${end.z.toFixed(1)}`,
+  );
+}
+
 function compass(bearing: number, text: boolean) {
   const tape = overlay.compassTape;
   if (!tape) return;
@@ -107,10 +128,11 @@ function compass(bearing: number, text: boolean) {
       const edge = outside ? (relative < 0 ? 'left' : 'right') : '';
       if (element.dataset.edge !== edge) element.dataset.edge = edge;
       if (text) {
-        const distance = Math.hypot(
-          target.x - telemetry.x,
-          target.z - telemetry.z,
-        );
+        // Along the route, as the flight plan counts it.
+        const distance =
+          route.id === navigation.course
+            ? Math.max(0, route.length - route.progress)
+            : Math.hypot(target.x - telemetry.x, target.z - telemetry.z);
         const label = element.firstElementChild;
         const value = `${Math.round(distance)} m`;
         if (label && label.textContent !== value) label.textContent = value;
@@ -128,11 +150,14 @@ function radar() {
   const map = overlay.radarMap;
   if (!map) return;
   const turn = toDegrees(telemetry.heading);
-  // The map turns and slides under the ship, which stays in the middle.
-  move(
-    map,
-    `rotate(${turn.toFixed(2)}deg) translate(${((-telemetry.x / radarSpan) * 100).toFixed(3)}%, ${((-telemetry.z / radarSpan) * 100).toFixed(3)}%)`,
-  );
+  // The map turns and slides under the ship, which stays in the middle, and
+  // the route, on its own layer, with it.
+  const place = `rotate(${turn.toFixed(2)}deg) translate(${((-telemetry.x / radarSpan) * 100).toFixed(3)}%, ${((-telemetry.z / radarSpan) * 100).toFixed(3)}%)`;
+  move(map, place);
+  if (overlay.radarRouteLayer) {
+    move(overlay.radarRouteLayer, place);
+    drawRoute(overlay.radarRoute, 3);
+  }
   if (overlay.radarNorth) {
     move(overlay.radarNorth, `rotate(${turn.toFixed(2)}deg)`);
   }
@@ -195,16 +220,60 @@ function chart(text: boolean) {
       `translate(${telemetry.x.toFixed(1)} ${telemetry.z.toFixed(1)}) rotate(${(-toDegrees(telemetry.heading)).toFixed(1)})`,
     );
   }
-  const line = overlay.chartCourse;
-  if (!line) return;
-  const target = navigation.course ? padAt.get(navigation.course) : undefined;
-  show(line, Boolean(target));
-  if (!target) return;
-  attribute(line, 'x1', telemetry.x.toFixed(1));
-  attribute(line, 'y1', telemetry.z.toFixed(1));
-  attribute(line, 'x2', target.x.toFixed(1));
-  attribute(line, 'y2', target.z.toFixed(1));
+  drawRoute(overlay.chartRoute, 2);
+  const gates = overlay.chartGates;
+  if (gates && route.id === navigation.course) {
+    if (write(gates, 'gates', `${route.version}:${route.flown}`)) {
+      gates.setAttribute(
+        'd',
+        route.gates
+          .filter((gate) => gate.age < 0)
+          .map((gate) => diamond(gate.x, gate.z, 2))
+          .join(' '),
+      );
+    }
+  }
 }
+
+// The flight plan's readings, wherever they show: how far along the route,
+// how long at the speed the ship goes, or cruises at when slower, and the
+// gates flown. The HUD keeps them too, for the tests.
+function plan(text: boolean) {
+  const root = overlay.hud;
+  if (!root || !navigation.course || route.id !== navigation.course) return;
+  const left = Math.max(0, route.length - route.progress);
+  if (overlay.courseBar) {
+    const flown = route.planned > 0 ? 1 - left / route.planned : 0;
+    move(overlay.courseBar, `scaleX(${clampShare(flown).toFixed(3)})`);
+  }
+  if (overlay.courseStrip) {
+    const state = route.recalculating > 0 ? 'recalculating' : '';
+    if (overlay.courseStrip.dataset.state !== state) {
+      overlay.courseStrip.dataset.state = state;
+    }
+  }
+  if (!text) return;
+  const speed = Math.max(telemetry.speed, route.cruise * 0.8);
+  const total = route.flown + route.gates.filter((gate) => gate.age < 0).length;
+  const distance = `${Math.round(left)} m`;
+  const time = `${Math.max(left > 1 ? 1 : 0, Math.round(left / speed))} s`;
+  const gates = `${route.flown}/${total}`;
+  for (const field of root.querySelectorAll<HTMLElement>('[data-plan]')) {
+    const value =
+      field.dataset.plan === 'distance'
+        ? distance
+        : field.dataset.plan === 'time'
+          ? time
+          : gates;
+    if (field.textContent !== value) field.textContent = value;
+  }
+  attribute(root, 'data-route-length', Math.round(route.length).toString());
+  attribute(root, 'data-route-flown', route.flown.toString());
+  attribute(root, 'data-route-gates', total.toString());
+  attribute(root, 'data-route-recalculations', route.recalculations.toString());
+}
+
+const clampShare = (share: number) => Math.min(1, Math.max(0, share));
 
 function readouts(text: boolean) {
   const root = overlay.hud;
@@ -254,6 +323,7 @@ export function updateInstruments(dt: number) {
   compass(shipBearing(), text);
   radar();
   chart(text);
+  plan(text);
   readouts(text);
   landing();
 }

@@ -34,6 +34,7 @@ import { sectionIds, type SectionId } from '@/src/content/sections';
 // GAME
 import Compass from './Compass';
 import { input } from './controls';
+import { CourseLock, CourseStrip } from './FlightPlan';
 import GalaxyMap from './GalaxyMap';
 import { overlay } from './overlay';
 import Radar from './Radar';
@@ -595,6 +596,21 @@ export default function Hud({
           </div>
         </div>
       </div>
+
+      {course && <CourseLock course={course} />}
+      {course && (
+        <CourseStrip
+          course={course}
+          title={placeOf(course)?.title}
+          onClear={() => onCourse(course)}
+        />
+      )}
+      <p className="g-sr" role="status">
+        {course &&
+          format(t.flightPlanTo, {
+            place: `${biomes[course].planet}, ${placeOf(course)?.title ?? ''}`,
+          })}
+      </p>
 
       <Landing pad={pad} place={pad ? placeOf(pad) : undefined} />
 

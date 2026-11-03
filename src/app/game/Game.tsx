@@ -19,6 +19,7 @@ import type { SectionId } from '@/src/content/sections';
 import Adaptive from './Adaptive';
 import Archive from './Archive';
 import { listenToKeyboard, resetInput } from './controls';
+import Course from './world/Course';
 import Hangar from './Hangar';
 import Hud from './Hud';
 import { hunt } from './hunt';
@@ -330,7 +331,7 @@ export default function Game({
     const next = course === id ? null : id;
     setCourse(next);
     navigation.course = next;
-    play('blip');
+    play(next ? 'plot' : 'blip');
   };
 
   const collect = (id: SectionId) => {
@@ -489,6 +490,11 @@ export default function Game({
           onCollect={collect}
           onEnter={enter}
           onArrived={arrived}
+        />
+        <Course
+          held={mapOpen || archiveOpen || Boolean(open)}
+          photo={photo}
+          cruise={ships[shipId].handling.maxSpeed}
         />
         <Labels />
         <Adaptive />

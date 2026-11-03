@@ -21,7 +21,18 @@ export const overlay = {
   radarEdges: null as HTMLElement | null,
   radarSize: 0,
   chartShip: null as SVGGElement | null,
-  chartCourse: null as SVGLineElement | null,
+  // The route on the radar, on a layer that moves with the map, and on the
+  // chart, with its gates.
+  radarRouteLayer: null as HTMLElement | null,
+  radarRoute: null as SVGPolylineElement | null,
+  chartRoute: null as SVGPolylineElement | null,
+  chartGates: null as SVGPathElement | null,
+  // The flight plan in flight: the lock on the destination, its arrow for
+  // when it is off the picture, and the bar of the way flown.
+  courseLock: null as HTMLElement | null,
+  courseArrow: null as HTMLElement | null,
+  courseBar: null as HTMLElement | null,
+  courseStrip: null as HTMLElement | null,
   // The chart's list of destinations, with their live distance and bearing.
   chartList: null as HTMLElement | null,
   speedBar: null as HTMLElement | null,
