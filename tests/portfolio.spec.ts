@@ -173,6 +173,32 @@ test('navega por todas as seções pelo menu e fecha o menu com Escape', async (
   await expect(page.locator('.menu-toggle')).toBeFocused();
 });
 
+test('mantém os links do menu abaixo da barra em telas baixas', async ({
+  page,
+}) => {
+  // A small phone, and one lying down: the page goes further down, and the links
+  // ran under the bar.
+  for (const [width, height] of [
+    [320, 568],
+    [874, 370],
+  ]) {
+    await page.setViewportSize({ width, height });
+    await page.goto('/pt');
+    await openMenu(page);
+    const bar = (await page.locator('.site-header').boundingBox())!;
+    const first = (await page
+      .locator('.stack-menu__link')
+      .first()
+      .boundingBox())!;
+    expect(first.y, `${width}x${height}`).toBeGreaterThanOrEqual(
+      bar.y + bar.height,
+    );
+    await expect(page.locator('.stage-catcher')).toBeInViewport();
+    await page.keyboard.press('Escape');
+    await expectMenuClosed(page);
+  }
+});
+
 test('pula a barra com o primeiro Tab', async ({ page }) => {
   await page.goto('/');
   await page.keyboard.press('Tab');

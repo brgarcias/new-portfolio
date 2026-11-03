@@ -83,17 +83,20 @@ for (const { home, play, lang } of languages) {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(home);
     // Every block enters as it scrolls into view, and a block still fading in
-    // would read as low contrast.
-    const height = await page.evaluate(
-      () => document.documentElement.scrollHeight,
-    );
-    for (let top = 0; top < height; top += 600) {
-      await page.evaluate(
-        (y) => window.scrollTo({ top: y, behavior: 'instant' }),
-        top,
-      );
-      await page.waitForTimeout(60);
-    }
+    // would read as low contrast. Two frames at each one, as the browser only
+    // reports what came into view when it draws: on a busy machine, a block
+    // passed by in a hurry never entered.
+    await page.evaluate(async () => {
+      for (const block of document.querySelectorAll(
+        'main [style*="opacity"]',
+      )) {
+        if (block.getClientRects().length === 0) continue;
+        block.scrollIntoView({ block: 'center', behavior: 'instant' });
+        await new Promise((done) =>
+          requestAnimationFrame(() => requestAnimationFrame(done)),
+        );
+      }
+    });
     // What waits behind a button, as the early roles, has not entered.
     await page.waitForFunction(() =>
       [...document.querySelectorAll('main [style*="opacity"]')]

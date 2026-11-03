@@ -119,7 +119,7 @@ for (const theme of ['dark', 'light'] as const) {
 
     test('detalhes de um curso', { tag: '@visual' }, async ({ page }) => {
       await page.goto('/');
-      await scrollTo(page, '#courses .course:has(.course__button)');
+      await scrollTo(page, '#courses .course-list');
       // Like the other captures that click, it waits for the list to finish
       // entering, so the page behind the dialog is always in the same place.
       await expect(page.locator('#courses .course-list-wrap')).toHaveCSS(

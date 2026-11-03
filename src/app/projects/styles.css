@@ -454,7 +454,12 @@
 }
 
 .case-feature__open {
+  height: auto;
+  min-height: 3rem;
   margin-top: 1.5rem;
+  padding-block: 0.6rem;
+  line-height: 1.25;
+  white-space: normal;
 }
 
 /* The real screen, in depth, with a drawing's sheet behind it. It leans
