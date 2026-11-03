@@ -34,6 +34,8 @@ export interface Biome {
   // The ground's two colors, mixed by a noise, and the accent of the
   // sector on the platform's edge and on the radar.
   ground: [string, string];
+  // The same, in the light theme, where it is too dark for the daylight.
+  groundByDay?: [string, string];
   accent: string;
   palette: Palette;
   weather?: Weather;
@@ -84,6 +86,7 @@ export const biomes: Record<SectionId, Biome> = {
     id: 'experience',
     planet: 'Coruscant',
     ground: ['#23263b', '#2c3050'],
+    groundByDay: ['#5a607e', '#686f90'],
     accent: '#ff7a9c',
     palette: {
       top: '#05060e',
@@ -103,6 +106,7 @@ export const biomes: Record<SectionId, Biome> = {
     id: 'education',
     planet: 'Dagobah',
     ground: ['#3a4a2c', '#2b3a22'],
+    groundByDay: ['#64784a', '#52663c'],
     accent: '#7fcf8a',
     weather: 'spores',
     weatherColor: '#b6f0a8',
@@ -166,6 +170,7 @@ export const biomes: Record<SectionId, Biome> = {
     id: 'contributing',
     planet: 'Endor',
     ground: ['#2f5a2a', '#3a4a26'],
+    groundByDay: ['#3f7a38', '#4e6432'],
     accent: '#9ad36a',
     weather: 'fireflies',
     weatherColor: '#fff0a0',

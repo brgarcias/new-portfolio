@@ -5240,8 +5240,8 @@
   --g-ink-2: rgb(13 21 48 / 0.84);
   --g-ink-3: rgb(13 21 48 / 0.7);
   --g-holo: 24 88 168;
-  --g-plate: rgb(247 249 255 / 0.86);
-  --g-plate-2: rgb(247 249 255 / 0.94);
+  --g-plate: rgb(247 249 255 / 0.9);
+  --g-plate-2: rgb(247 249 255 / 0.96);
   --g-brand: #4c4ed3;
   --g-amber: #a85a00;
   --g-teal: #0a7d60;
@@ -5262,7 +5262,6 @@
 .light .record__course[aria-pressed='true'],
 .light .game-panel__planet {
   color: color-mix(in srgb, var(--accent) 40%, #0d1530);
-  color: oklch(from var(--accent) 0.46 max(c, 0.1) h);
 }
 
 .light .compass__mark small,
@@ -5271,7 +5270,27 @@
 .light .course-lock,
 .light .flight-plan__to .g-label {
   color: color-mix(in srgb, var(--route) 40%, #0d1530);
-  color: oklch(from var(--route) 0.46 max(c, 0.1) h);
+}
+
+@supports (color: oklch(from red l c h)) {
+  .light .game__label-planet,
+  .light .hud__planet strong,
+  .light .planet-title__section,
+  .light .destination__name strong,
+  .light .destination__state[data-state='course'],
+  .light .record__where strong,
+  .light .record__course[aria-pressed='true'],
+  .light .game-panel__planet {
+    color: oklch(from var(--accent) 0.46 max(c, 0.1) h);
+  }
+
+  .light .compass__mark small,
+  .light .course-strip__icon,
+  .light .course-strip__plan .g-label,
+  .light .course-lock,
+  .light .flight-plan__to .g-label {
+    color: oklch(from var(--route) 0.46 max(c, 0.1) h);
+  }
 }
 
 @media (hover: hover) {
@@ -5348,11 +5367,11 @@
 
 .light .hud__log,
 .light .hud__craft {
-  background: linear-gradient(90deg, var(--g-plate), rgb(247 249 255 / 0.66));
+  background: linear-gradient(90deg, var(--g-plate), rgb(247 249 255 / 0.82));
 }
 
 .light .hud__locator {
-  background: linear-gradient(270deg, var(--g-plate), rgb(247 249 255 / 0.66));
+  background: linear-gradient(270deg, var(--g-plate), rgb(247 249 255 / 0.82));
 }
 
 .light .hud__tool[aria-pressed='true'] {
@@ -5373,7 +5392,7 @@
 }
 
 .light .compass__window {
-  background: linear-gradient(180deg, var(--g-plate), rgb(247 249 255 / 0.5));
+  background: linear-gradient(180deg, var(--g-plate), rgb(247 249 255 / 0.7));
 }
 
 .light .compass__caret {

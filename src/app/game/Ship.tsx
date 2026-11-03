@@ -155,18 +155,16 @@ function stretch(left: number) {
     positions.setZ(i * 4 + 3, far);
   }
   positions.needsUpdate = true;
-  streakMaterial.opacity = Math.min(0.9, left * 1.8);
-  // Added to a bright sky, the light would not show: over the day of the light
-  // theme, they are dark lines.
-  const blending =
-    currentTheme() === 'light' ? THREE.NormalBlending : THREE.AdditiveBlending;
-  if (streakMaterial.blending !== blending) {
-    streakMaterial.blending = blending;
-    streakMaterial.color.set(
-      blending === THREE.NormalBlending ? '#46609c' : '#ffffff',
-    );
-    streakMaterial.needsUpdate = true;
-  }
+  const fade = Math.min(0.9, left * 1.8);
+  streakMaterial.opacity = fade;
+  // Added to a bright sky, light would not show: by day, the rays darken it
+  // instead, to a slate blue, and still fade towards the middle.
+  const day = currentTheme() === 'light';
+  streakMaterial.blending = day
+    ? THREE.SubtractiveBlending
+    : THREE.AdditiveBlending;
+  if (day) streakMaterial.color.setRGB(fade, fade * 0.8, fade * 0.5);
+  else streakMaterial.color.setRGB(1, 1, 1);
 }
 
 // The arrival, a frame of it: it moves on, faster once the pilot moves, and

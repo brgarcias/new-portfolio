@@ -20,13 +20,13 @@ const deck = '#24263a';
 const deckByDay = '#c3cce2';
 const brand = '#5c5edc';
 
-function makeGround(deckTone: string) {
+function makeGround(light: boolean) {
   const rings = 46;
   const around = 96;
   const positions: number[] = [0, 0, 0];
   const colors: number[] = [];
   const color = new THREE.Color();
-  const deckColor = new THREE.Color(deckTone);
+  const deckColor = new THREE.Color(light ? deckByDay : deck);
   const dark = new THREE.Color('#000000');
   colors.push(deckColor.r, deckColor.g, deckColor.b);
   for (let ring = 1; ring <= rings; ring++) {
@@ -38,7 +38,8 @@ function makeGround(deckTone: string) {
       const biome = biomes[sectorUnder(x, z)];
       positions.push(x, groundHeight(x, z), z);
       const n = noise(x * 1.7, z * 1.7);
-      color.set(biome.ground[0]).lerp(new THREE.Color(biome.ground[1]), n);
+      const tones = (light && biome.groundByDay) || biome.ground;
+      color.set(tones[0]).lerp(new THREE.Color(tones[1]), n);
       color.lerp(dark, 0.12 * (1 - n));
       color.lerp(deckColor, 1 - smoothstep(hubRadius, hubRadius + 5, r));
       colors.push(color.r, color.g, color.b);
@@ -89,19 +90,20 @@ function makeEdge(inner: number, outer: number) {
 
 export default function Ground() {
   const light = useTheme() === 'light';
-  const ground = useMemo(() => makeGround(light ? deckByDay : deck), [light]);
+  const ground = useMemo(() => makeGround(light), [light]);
   const edge = useMemo(
     () => makeEdge(platformRadius - 1.2, platformRadius),
     [],
   );
   const glow = useMemo(() => makeEdge(platformRadius, platformRadius + 3), []);
+  // Each on its own: a new theme makes only a new ground.
+  useEffect(() => () => ground.dispose(), [ground]);
   useEffect(
     () => () => {
-      ground.dispose();
       edge.dispose();
       glow.dispose();
     },
-    [ground, edge, glow],
+    [edge, glow],
   );
 
   return (
