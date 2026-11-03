@@ -21,6 +21,7 @@ import { format } from '@/src/i18n/messages';
 import { shipIds, ships, specOf, specs, type Ship, type ShipId } from './ships';
 import { Keycap, ShipGlyph } from './ui';
 import { useReducedMotion } from './useMediaQuery';
+import { useTheme } from './useTheme';
 // ICONS
 import { ArrowLeftIcon, RefreshIcon, RocketIcon } from '@/src/components/Icon';
 
@@ -114,6 +115,7 @@ function Preview({ shipId }: { shipId: ShipId }) {
   const stand = useRef<THREE.Group>(null);
   const ring = useRef<THREE.Group>(null);
   const reduced = useReducedMotion();
+  const light = useTheme() === 'light';
 
   useEffect(() => {
     spin.yaw = reduced ? 0.6 : 0;
@@ -197,7 +199,9 @@ function Preview({ shipId }: { shipId: ShipId }) {
 
   return (
     <>
-      <hemisphereLight args={['#8d8fff', '#15161f', 1]} />
+      <hemisphereLight
+        args={light ? ['#ffffff', '#a9b3d4', 1.6] : ['#8d8fff', '#15161f', 1]}
+      />
       {/* The key light on the camera's side, the fill from behind. */}
       <directionalLight position={[6, 8, -6]} intensity={1.7} color="#fff2e0" />
       <directionalLight position={[-6, 3, 5]} intensity={0.6} color="#5c5edc" />
@@ -208,20 +212,20 @@ function Preview({ shipId }: { shipId: ShipId }) {
           turns, and a soft glow where the ship's light falls. */}
       <mesh rotation-x={-Math.PI / 2} position-y={-1.62}>
         <circleGeometry args={[3.4, 64]} />
-        <meshBasicMaterial color="#0d1022" />
+        <meshBasicMaterial color={light ? '#d5dbef' : '#0d1022'} />
       </mesh>
       <mesh rotation-x={-Math.PI / 2} position-y={-1.6}>
         <ringGeometry args={[3.25, 3.42, 64]} />
-        <meshBasicMaterial color="#7b7dff" />
+        <meshBasicMaterial color={light ? '#5c5edc' : '#7b7dff'} />
       </mesh>
       <mesh rotation-x={-Math.PI / 2} position-y={-1.61}>
         <circleGeometry args={[2.6, 48]} />
         <meshBasicMaterial
           color="#5c5edc"
           transparent
-          opacity={0.18}
+          opacity={light ? 0.14 : 0.18}
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
+          blending={light ? THREE.NormalBlending : THREE.AdditiveBlending}
         />
       </mesh>
       <group ref={ring} position-y={-1.59}>
@@ -242,7 +246,7 @@ function Preview({ shipId }: { shipId: ShipId }) {
               ]}
             />
             <meshBasicMaterial
-              color="#9ad7ff"
+              color={light ? '#2a6fbf' : '#9ad7ff'}
               transparent
               opacity={index % 6 === 0 ? 0.75 : 0.28}
             />

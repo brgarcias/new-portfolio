@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import type AxeCore from 'axe-core';
 import {
   expect as baseExpect,
   test,
@@ -155,6 +156,22 @@ const overlap = (a: Box, b: Box) =>
   a.y < b.y + b.height &&
   b.y < a.y + a.height;
 
+// Waits for the animations that enter once, as a dialog's, to end: a text still
+// fading in would read as low contrast. The ones that loop never end.
+async function waitForEntrances(page: Page) {
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => {
+          const iterations = animation.effect?.getTiming().iterations;
+          return iterations !== Infinity;
+        })
+        .map((animation) => animation.finished.catch(() => undefined)),
+    ),
+  );
+}
+
 async function takeOff(page: Page) {
   await page.goto('/play');
   await page.getByRole('button', { name: 'Take off' }).click();
@@ -166,6 +183,119 @@ async function takeOff(page: Page) {
     .poll(() => reading(page, 'time'), { timeout: 20_000 })
     .toBeGreaterThan(0.5);
 }
+
+test.describe('tema do site', () => {
+  // The background of the page, which the theme decides.
+  const night = 'rgb(5, 7, 13)';
+  const day = 'rgb(238, 241, 249)';
+
+  // The texts that axe finds without enough contrast on what the page shows
+  // now. A text over the 3D scene has no background it can read, so it does
+  // not count.
+  async function lowContrast(page: Page) {
+    await page.addScriptTag({ path: 'node_modules/axe-core/axe.min.js' });
+    return page.evaluate(async () => {
+      const { axe } = window as unknown as { axe: typeof AxeCore };
+      const { violations } = await axe.run(document, {
+        runOnly: ['color-contrast'],
+      });
+      return violations.flatMap(({ nodes }) =>
+        nodes.map(({ target }) => target.join(' ')),
+      );
+    });
+  }
+
+  test.describe('claro', () => {
+    test.use({ colorScheme: 'light' });
+
+    test('voa de dia e acompanha a troca de tema em pleno voo', async ({
+      page,
+    }, testInfo) => {
+      test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+      await page.goto('/play');
+      const play = page.locator('.play');
+      await expect(page.locator('html')).toHaveClass(/light/);
+      await expect(play).toHaveCSS('background-color', day);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveCSS(
+        'color',
+        'rgb(13, 21, 48)',
+      );
+      await page.getByRole('button', { name: 'Take off' }).click();
+      const hud = page.locator('.hud');
+      await expect(hud).toBeVisible();
+      const sky = async () => Number(await hud.getAttribute('data-sky'));
+      // By day from the first frame, and not easing out of the night.
+      await expect.poll(sky).toBeGreaterThan(0.5);
+      await expect(page.locator('.hud__log')).toHaveCSS(
+        'color',
+        'rgb(13, 21, 48)',
+      );
+
+      // The system changes, and the game follows it, the sky easing over.
+      await page.emulateMedia({ colorScheme: 'dark' });
+      await expect(page.locator('html')).toHaveClass(/dark/);
+      await expect(play).toHaveCSS('background-color', night);
+      await expect.poll(sky, { timeout: 40_000 }).toBeLessThan(0.2);
+      await page.emulateMedia({ colorScheme: 'light' });
+      await expect(play).toHaveCSS('background-color', day);
+      await expect.poll(sky, { timeout: 40_000 }).toBeGreaterThan(0.5);
+    });
+
+    test('tem contraste no hangar, na carta e no arquivo', async ({
+      page,
+    }, testInfo) => {
+      test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+      await page.goto('/play');
+      await expect(page.locator('.hangar__canvas canvas')).toBeVisible();
+      // What enters at first has entered.
+      await waitForEntrances(page);
+      expect(await lowContrast(page), 'hangar').toEqual([]);
+      await page.getByRole('button', { name: 'Take off' }).click();
+      await expect(page.locator('.hud')).toBeVisible();
+      await page.keyboard.press('KeyM');
+      const chart = page.getByRole('dialog', { name: 'Navigation chart' });
+      await expect(chart).toBeVisible();
+      await waitForEntrances(page);
+      expect(await lowContrast(page), 'chart').toEqual([]);
+      await page.keyboard.press('Escape');
+      await expect(chart).toBeHidden();
+      await page.keyboard.press('KeyH');
+      const archive = page.getByRole('dialog', { name: 'Holocron archive' });
+      await expect(archive).toBeVisible();
+      await waitForEntrances(page);
+      expect(await lowContrast(page), 'archive').toEqual([]);
+    });
+  });
+
+  test('segue o tema escolhido no site, em outra aba', async ({
+    page,
+    context,
+  }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+    await page.goto('/play');
+    const play = page.locator('.play');
+    await expect(play).toHaveCSS('background-color', night);
+    const site = await context.newPage();
+    await site.goto('/');
+    const toggle = site.locator('.site-header .theme-toggle');
+    await toggle.click();
+    await expect(page.locator('html')).toHaveClass(/light/);
+    await expect(play).toHaveCSS('background-color', day);
+    await toggle.click();
+    await expect(page.locator('html')).toHaveClass(/dark/);
+    await expect(play).toHaveCSS('background-color', night);
+  });
+
+  test('abre no tema guardado, mesmo com o sistema no outro', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+    await page.addInitScript(() => localStorage.setItem('theme', 'light'));
+    await page.goto('/play');
+    await expect(page.locator('html')).toHaveClass(/light/);
+    await expect(page.locator('.play')).toHaveCSS('background-color', day);
+  });
+});
 
 test('abre o hangar com as naves e lembra a escolhida', async ({ page }) => {
   const errors: string[] = [];

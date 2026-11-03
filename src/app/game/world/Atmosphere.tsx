@@ -5,13 +5,16 @@ import { useEffect, useMemo, useRef } from 'react';
 // THREE
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
+// THEME
+import { currentTheme, type Theme } from '@/src/app/theme';
 // GAME
 import { useReducedMotion } from '../useMediaQuery';
 import { atmosphere, paletteOf, type Palette, type Sector } from './biomes';
 
 // The sky, the stars, the fog and the lights, which follow the ship from
 // sector to sector: as it crosses into another planet's slice, the colors
-// of the sky and of the light ease over to that planet's. Over Kamino,
+// of the sky and of the light ease over to that planet's. They ease the same
+// way when the site's theme changes, from night to day and back. Over Kamino,
 // lightning now and then.
 
 const skyVertex = /* glsl */ `
@@ -59,11 +62,12 @@ interface Colors {
   sun: THREE.Color;
 }
 
-const targets = new Map<Sector, Colors>();
-function colorsOf(sector: Sector): Colors {
-  let colors = targets.get(sector);
+const targets = new Map<string, Colors>();
+function colorsOf(sector: Sector, theme: Theme): Colors {
+  const key = `${sector}-${theme}`;
+  let colors = targets.get(key);
   if (!colors) {
-    const palette = paletteOf(sector);
+    const palette = paletteOf(sector, theme);
     colors = {
       top: new THREE.Color(palette.top),
       horizon: new THREE.Color(palette.horizon),
@@ -73,7 +77,7 @@ function colorsOf(sector: Sector): Colors {
       groundLight: new THREE.Color(palette.groundLight),
       sun: new THREE.Color(palette.sun),
     };
-    targets.set(sector, colors);
+    targets.set(key, colors);
   }
   return colors;
 }
@@ -100,6 +104,9 @@ export default function Atmosphere() {
     sunIntensity: paletteOf('hub').sunIntensity,
     flash: 0,
     nextFlash: 6,
+    // The first frame takes the colors at once, or a flight in the light theme
+    // would open at night.
+    first: true,
   });
 
   const sky = useMemo(() => {
@@ -133,14 +140,18 @@ export default function Atmosphere() {
 
   useFrame(({ scene }, delta) => {
     const dt = Math.min(delta, 0.1);
-    const k = reduced ? 1 : 1 - Math.exp(-1.4 * dt);
-    const sector = atmosphere.sector;
-    const palette: Palette = paletteOf(sector);
-    const target = colorsOf(sector);
     const current = state.current;
+    const k = reduced || current.first ? 1 : 1 - Math.exp(-1.4 * dt);
+    current.first = false;
+    const sector = atmosphere.sector;
+    const theme = currentTheme();
+    const palette: Palette = paletteOf(sector, theme);
+    const target = colorsOf(sector, theme);
     skyUniforms.top.value.lerp(target.top, k);
     skyUniforms.horizon.value.lerp(target.horizon, k);
     skyUniforms.below.value.lerp(target.below, k);
+    const { r, g, b } = skyUniforms.horizon.value;
+    atmosphere.horizon = 0.2126 * r + 0.7152 * g + 0.0722 * b;
     if (scene.fog instanceof THREE.FogExp2) {
       scene.fog.color.lerp(target.fog, k);
       current.density = towards(current.density, palette.density, k);

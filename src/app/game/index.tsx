@@ -3,11 +3,18 @@
 // NEXT
 import dynamic from 'next/dynamic';
 // HOOKS
-import { useSyncExternalStore } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 // GAME
 import type { GameProps } from './Game';
+// THEME
+import {
+  applyTheme,
+  applyThemeAtOnce,
+  currentTheme,
+  followTheme,
+} from '@/src/app/theme';
 // CSS
 import './styles.css';
 // ICONS
@@ -65,6 +72,12 @@ export default function GameLoader({
 }: Readonly<GameProps>) {
   const t = useI18n().messages.game;
   const webgl = useSyncExternalStore(never, canDraw, unknown);
+
+  // This page has no theme button, and follows the site's theme all the same.
+  useEffect(() => {
+    applyTheme(currentTheme());
+    return followTheme(applyThemeAtOnce);
+  }, []);
 
   if (webgl === null) return <Loading />;
   if (!webgl) {

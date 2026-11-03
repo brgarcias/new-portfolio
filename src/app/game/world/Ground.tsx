@@ -5,6 +5,7 @@ import { useEffect, useMemo } from 'react';
 // THREE
 import * as THREE from 'three';
 // GAME
+import { useTheme } from '../useTheme';
 import { platformRadius } from './arena';
 import { biomes, hubRadius, sectorOfAngle } from './biomes';
 import { groundHeight, noise, sectorUnder, smoothstep } from './terrain';
@@ -14,16 +15,18 @@ import { groundHeight, noise, sectorUnder, smoothstep } from './terrain';
 // middle, flat under the pads, and the edge of the platform lit in the
 // color of each sector.
 
+// The deck of the hub, by night and, in the light theme, by day.
 const deck = '#24263a';
+const deckByDay = '#c3cce2';
 const brand = '#5c5edc';
 
-function makeGround() {
+function makeGround(deckTone: string) {
   const rings = 46;
   const around = 96;
   const positions: number[] = [0, 0, 0];
   const colors: number[] = [];
   const color = new THREE.Color();
-  const deckColor = new THREE.Color(deck);
+  const deckColor = new THREE.Color(deckTone);
   const dark = new THREE.Color('#000000');
   colors.push(deckColor.r, deckColor.g, deckColor.b);
   for (let ring = 1; ring <= rings; ring++) {
@@ -85,7 +88,8 @@ function makeEdge(inner: number, outer: number) {
 }
 
 export default function Ground() {
-  const ground = useMemo(() => makeGround(), []);
+  const light = useTheme() === 'light';
+  const ground = useMemo(() => makeGround(light ? deckByDay : deck), [light]);
   const edge = useMemo(
     () => makeEdge(platformRadius - 1.2, platformRadius),
     [],
@@ -110,14 +114,19 @@ export default function Ground() {
           args={[platformRadius, platformRadius * 0.96, 4, 72, 1, true]}
         />
         <meshStandardMaterial
-          color="#14151f"
+          color={light ? '#8b95b2' : '#14151f'}
           flatShading
           side={THREE.DoubleSide}
         />
       </mesh>
       {/* The deck of the hub, where the ships start. */}
       <polarGridHelper
-        args={[hubRadius, 8, 3, 48, '#3b3f62', '#2c2f4a']}
+        key={light ? 'day' : 'night'}
+        args={
+          light
+            ? [hubRadius, 8, 3, 48, '#7f8ab0', '#98a2c2']
+            : [hubRadius, 8, 3, 48, '#3b3f62', '#2c2f4a']
+        }
         position-y={0.03}
       />
       <mesh rotation-x={-Math.PI / 2} position-y={0.04}>
