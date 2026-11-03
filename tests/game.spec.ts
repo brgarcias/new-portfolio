@@ -336,28 +336,34 @@ test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
 });
 
 // Whether a piece of the flight plan stays clear of the instruments it would
-// hide.
-async function expectClearOfInstruments(
-  page: Page,
-  piece: Locator,
-  where: string,
-) {
-  const box = await piece.boundingBox();
-  expect(box, where).not.toBeNull();
-  for (const selector of [
-    '.hud__nw > *',
-    '.hud__ne > *',
-    '.compass',
-    '.touch > *',
-    '.hud__craft',
-    '.hud__hint',
-  ]) {
-    for (const other of await page.locator(selector).all()) {
-      const area = await other.boundingBox();
-      if (box && area)
-        expect(overlap(box, area), `${where}: ${selector}`).toBe(false);
-    }
-  }
+// hide. All measured in one go: on CI's software renderer each command to the
+// page can take a second, and a command per instrument took more than a test
+// has.
+async function expectClearOfInstruments(piece: Locator, where: string) {
+  const met = await piece.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    return [
+      '.hud__nw > *',
+      '.hud__ne > *',
+      '.compass',
+      '.touch > *',
+      '.hud__craft',
+      '.hud__hint',
+    ].filter((selector) =>
+      [...document.querySelectorAll(selector)].some((other) => {
+        const area = other.getBoundingClientRect();
+        return (
+          area.width > 0 &&
+          area.height > 0 &&
+          box.left < area.right &&
+          area.left < box.right &&
+          box.top < area.bottom &&
+          area.top < box.bottom
+        );
+      }),
+    );
+  });
+  expect(met, where).toEqual([]);
 }
 
 // Sets a course on the chart, by its destination, and flies off with the
@@ -513,8 +519,8 @@ test('projeta o plano de voo sobre o voo, e o desfaz pela faixa', async ({
     'opacity',
     '0',
   );
-  await expectClearOfInstruments(page, strip, 'strip');
-  await expectClearOfInstruments(page, named, 'lock');
+  await expectClearOfInstruments(strip, 'strip');
+  await expectClearOfInstruments(named, 'lock');
   // Clearing it from the strip takes it all away, and the radar's route.
   await strip.getByRole('button', { name: 'Clear the course' }).click();
   await expect(strip).toHaveCount(0);
@@ -540,11 +546,7 @@ test('aponta o destino da borda da tela quando a nave dá as costas a ele', asyn
   await expect(lock).toHaveAttribute('data-edge', 'true');
   await expect(lock.locator('.course-lock__arrow')).toHaveCSS('opacity', '1');
   await expect(lock.locator('.course-lock__text')).toBeInViewport({ ratio: 1 });
-  await expectClearOfInstruments(
-    page,
-    lock.locator('.course-lock__text'),
-    'lock',
-  );
+  await expectClearOfInstruments(lock.locator('.course-lock__text'), 'lock');
 });
 
 test('conta os portais em voo e encerra o plano ao pousar', async ({
@@ -654,7 +656,7 @@ test('deixa só o quadro no modo foto, e a mira no HUD imersivo', async ({
   await view.click();
   await expect(page.locator('.hud')).toHaveAttribute('data-hud', 'minimal');
   await expect(strip).toBeVisible();
-  await expectClearOfInstruments(page, strip, 'minimal');
+  await expectClearOfInstruments(strip, 'minimal');
   await view.click();
   await expect(page.locator('.hud')).toHaveAttribute('data-hud', 'immersive');
   await expect(strip).toBeHidden();
@@ -690,7 +692,7 @@ test('mantém o plano de voo inteiro na tela nos três idiomas', async ({
     await expect(page.locator('.game-map')).toHaveCount(0);
     const strip = page.locator('.course-strip');
     await expect(strip).toBeInViewport({ ratio: 1 });
-    await expectClearOfInstruments(page, strip, land.path);
+    await expectClearOfInstruments(strip, land.path);
     // Nothing spills out of the strip, nor is cut short.
     const spills = await strip.evaluate((element) => {
       const edge = element.getBoundingClientRect();
@@ -1246,6 +1248,7 @@ test.describe('no tablet', () => {
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+    test.slow();
     // Taking off is in sight in the stacked hangar, without scrolling.
     await page.goto('/play');
     await expect(
@@ -1265,7 +1268,7 @@ test.describe('no tablet', () => {
     await setCourse(page, 'Coruscant');
     const strip = page.locator('.course-strip');
     await expect(strip).toBeInViewport({ ratio: 1 });
-    await expectClearOfInstruments(page, strip, 'strip');
+    await expectClearOfInstruments(strip, 'strip');
   });
 });
 
@@ -1333,7 +1336,7 @@ test.describe('no celular deitado', () => {
     await expect(page.getByRole('dialog')).toHaveCount(0);
     const strip = page.locator('.course-strip');
     await expect(strip).toBeInViewport({ ratio: 1 });
-    await expectClearOfInstruments(page, strip, 'strip');
+    await expectClearOfInstruments(strip, 'strip');
   });
 });
 
