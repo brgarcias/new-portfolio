@@ -1001,16 +1001,6 @@
   letter-spacing: 0.08em;
 }
 
-.game__label[data-course] {
-  border-color: rgb(255 191 94 / 0.6);
-  border-top-color: var(--g-amber);
-  box-shadow: 0 0 22px -8px rgb(255 191 94 / 0.85);
-}
-
-.game__label[data-course] .game__label-distance {
-  color: var(--g-amber);
-}
-
 /* ─── The HUD ───────────────────────────────────────────── */
 .hud {
   --accent: rgb(var(--g-holo));
@@ -1018,11 +1008,29 @@
   --edge-r: max(var(--g-edge), env(safe-area-inset-right));
   --edge-b: max(var(--g-edge), env(safe-area-inset-bottom));
   --edge-l: max(var(--g-edge), env(safe-area-inset-left));
+  --course-room: 0rem;
+  /* The color of the route: the planet it leads to, set by the HUD. */
+  --route: var(--g-amber);
 
   position: absolute;
   inset: 0;
   color: var(--g-ink);
   pointer-events: none;
+}
+
+/* With no compass between them, the groups stay in their corners. */
+.hud[data-hud='minimal'] .hud__top {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+/* The flight plan's strip takes the top of the stack under the instruments,
+   and the rest of the stack steps down by its height. */
+.hud:has(> .course-strip) {
+  --course-room: 4rem;
+}
+
+.hud[data-hud='immersive']:has(> .course-strip) {
+  --course-room: 0rem;
 }
 
 .hud button,
@@ -1235,6 +1243,7 @@
 .hud[data-hud='minimal'] .hud__coords,
 .hud[data-hud='minimal'] .hud__hint,
 .hud[data-hud='immersive'] .compass,
+.hud[data-hud='immersive'] .course-strip,
 .hud[data-hud='immersive'] .hud__log,
 .hud[data-hud='immersive'] .hud__ne,
 .hud[data-hud='immersive'] .hud__craft,
@@ -1350,8 +1359,10 @@
   left: -7px;
   width: 14px;
   height: 11px;
-  background: var(--g-amber);
-  filter: drop-shadow(0 0 4px rgb(255 191 94 / 0.8));
+  background: var(--route);
+  filter: drop-shadow(
+    0 0 4px color-mix(in srgb, var(--route) 80%, transparent)
+  );
 }
 
 .compass__mark[data-edge='left']::before {
@@ -1366,7 +1377,7 @@
   position: absolute;
   top: 1.05rem;
   left: 0;
-  color: var(--g-amber);
+  color: var(--route);
   font-family: var(--g-display);
   font-size: 0.5625rem;
   font-weight: 600;
@@ -1476,6 +1487,14 @@
   height: 100%;
 }
 
+.radar__route polyline {
+  fill: none;
+  stroke: var(--route);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
 .radar__sweep {
   position: absolute;
   inset: 0;
@@ -1552,7 +1571,7 @@
 }
 
 .radar__pad[data-course] {
-  stroke: var(--g-amber) !important;
+  stroke: var(--route) !important;
   stroke-width: 2.6;
 }
 
@@ -1636,7 +1655,7 @@
 }
 
 .radar__edges .is-course {
-  --c: var(--g-amber);
+  --c: var(--route);
 
   z-index: 1;
   width: 12px;
@@ -1710,7 +1729,7 @@
   --landing: 0;
 
   position: absolute;
-  top: calc(var(--edge-t) + 5.75rem);
+  top: calc(var(--edge-t) + 5.75rem + var(--course-room));
   left: 50%;
   display: flex;
   min-width: 16rem;
@@ -1995,7 +2014,7 @@
    so it holds over any sky. */
 .planet-titles {
   position: absolute;
-  top: max(21%, calc(var(--edge-t) + 10.5rem));
+  top: max(21%, calc(var(--edge-t) + 10.5rem + var(--course-room)));
   right: 0;
   left: 0;
   display: grid;
@@ -2163,6 +2182,8 @@
 .hud__top,
 .hud__bottom,
 .hud__pad,
+.course-strip,
+.course-lock,
 .toasts {
   transition: opacity 0.6s var(--g-ease);
 }
@@ -2170,8 +2191,264 @@
 .hud[data-finale] .hud__top,
 .hud[data-finale] .hud__bottom,
 .hud[data-finale] .hud__pad,
+.hud[data-finale] .course-strip,
+.hud[data-finale] .course-lock,
 .hud[data-finale] .toasts {
   opacity: 0.15;
+}
+
+/* The flight plan: the readings the strip and the chart share. */
+.plan-readings {
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+}
+
+.plan-readings > div {
+  display: grid;
+  gap: 0.05rem;
+}
+
+.plan-readings dt {
+  font-size: 0.5625rem;
+}
+
+.plan-readings dd {
+  margin: 0;
+  color: var(--g-ink);
+  font-family: var(--g-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* The strip under the compass. */
+.course-strip {
+  position: absolute;
+  top: calc(var(--edge-t) + 5rem);
+  left: 50%;
+  display: flex;
+  overflow: hidden;
+  width: max-content;
+  max-width: calc(100% - 33rem);
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.45rem 0.5rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--route) 38%, transparent);
+  border-top: 2px solid var(--route);
+  background: var(--g-plate-2);
+  transform: translateX(-50%);
+}
+
+.course-strip__icon {
+  flex: none;
+  color: var(--route);
+  font-size: 0.875rem;
+}
+
+.course-strip__plan {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0 0.3rem;
+  margin: 0;
+}
+
+.course-strip__plan .g-label {
+  position: relative;
+  grid-column: 1 / -1;
+  color: var(--route);
+  font-size: 0.5625rem;
+  white-space: nowrap;
+}
+
+.course-strip__notice {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  white-space: nowrap;
+}
+
+.course-strip__label,
+.course-strip__notice {
+  transition: opacity var(--g-fast) var(--g-ease);
+}
+
+.course-strip[data-state='recalculating'] .course-strip__label {
+  opacity: 0;
+}
+
+.course-strip[data-state='recalculating'] .course-strip__notice {
+  opacity: 1;
+}
+
+.course-strip__plan strong {
+  color: var(--g-ink);
+  font-family: var(--g-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.course-strip__plan small {
+  overflow: hidden;
+  color: var(--g-ink-2);
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.course-strip__readings {
+  flex: none;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--g-line);
+}
+
+.course-strip__clear {
+  flex: none;
+}
+
+/* With no compass, the strip takes the top. */
+@media (min-width: 940px) {
+  .hud[data-hud='minimal'] .course-strip {
+    top: var(--edge-t);
+  }
+}
+
+/* Between the groups in the corners, it does without the section's name. */
+@media (max-width: 1079px) {
+  .course-strip__plan small {
+    display: none;
+  }
+}
+
+/* The way flown, along the foot of the strip. */
+.course-strip__bar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: color-mix(in srgb, var(--route) 16%, transparent);
+}
+
+.course-strip__bar span {
+  position: absolute;
+  inset: 0;
+  background: var(--route);
+  transform: scaleX(0);
+  transform-origin: left;
+  will-change: transform;
+}
+
+/* The lock on the destination: corners over its pad, and the name and the
+   distance under them; at the edge of the picture, an arrow takes the
+   corners' place. It is placed by its middle, on a layer of its own. */
+.course-lock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  color: var(--route);
+  will-change: transform;
+}
+
+.course-lock__frame,
+.course-lock__arrow {
+  position: absolute;
+  top: -1.125rem;
+  left: -1.125rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  transition: opacity var(--g-fast) var(--g-ease);
+}
+
+.course-lock__frame i {
+  position: absolute;
+  width: 0.6rem;
+  height: 0.6rem;
+  border: 2px solid currentColor;
+  filter: drop-shadow(0 0 3px rgb(5 9 20 / 0.9));
+}
+
+.course-lock__frame i:nth-child(1) {
+  top: 0;
+  left: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.course-lock__frame i:nth-child(2) {
+  top: 0;
+  right: 0;
+  border-bottom: 0;
+  border-left: 0;
+}
+
+.course-lock__frame i:nth-child(3) {
+  right: 0;
+  bottom: 0;
+  border-top: 0;
+  border-left: 0;
+}
+
+.course-lock__frame i:nth-child(4) {
+  bottom: 0;
+  left: 0;
+  border-top: 0;
+  border-right: 0;
+}
+
+.course-lock__arrow {
+  opacity: 0;
+}
+
+.course-lock__arrow::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.125rem;
+  height: 1.125rem;
+  background: currentColor;
+  clip-path: polygon(50% 0, 100% 90%, 50% 66%, 0 90%);
+  content: '';
+  transform: translate(-50%, -50%);
+}
+
+.course-lock[data-edge='true'] .course-lock__frame {
+  opacity: 0;
+}
+
+.course-lock[data-edge='true'] .course-lock__arrow {
+  opacity: 1;
+}
+
+.course-lock__text {
+  position: absolute;
+  top: 1.35rem;
+  left: 0;
+  display: grid;
+  justify-items: center;
+  padding: 0.1rem 0.45rem 0.15rem;
+  background: rgb(6 10 22 / 0.72);
+  font-family: var(--g-display);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.course-lock__text b {
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.course-lock__text span {
+  color: var(--g-ink);
 }
 
 /* The bottom: the ship and its speed, and the keys. */
@@ -2520,9 +2797,10 @@
   display: none;
 }
 
-/* While a planet's title shows, the pads' labels step back: the title
-   names the planet and its section. */
-.game:has(.planet-title) .game__labels {
+/* While a planet's title shows, the pads' labels and the lock step back: the
+   title names the planet and its section. */
+.game:has(.planet-title) .game__labels,
+.hud:has(.planet-title) .course-lock {
   opacity: 0;
 }
 
@@ -2774,10 +3052,17 @@
 }
 
 .chart__course {
-  stroke: var(--g-amber);
-  stroke-dasharray: 3 2.5;
+  fill: none;
+  stroke: var(--route);
   stroke-linecap: round;
-  stroke-width: 1.2;
+  stroke-linejoin: round;
+  stroke-width: 1.4;
+}
+
+.chart__gates {
+  fill: var(--route);
+  stroke: rgb(5 9 20 / 0.85);
+  stroke-width: 0.5;
 }
 
 .chart__halo {
@@ -2812,12 +3097,12 @@
 }
 
 .chart__pad[data-course] .chart__disc {
-  stroke: var(--g-amber);
+  stroke: var(--route);
   stroke-width: 2;
 }
 
 .chart__pad[data-course] .chart__halo {
-  fill: var(--g-amber);
+  fill: var(--route);
   opacity: 0.18;
 }
 
@@ -2873,6 +3158,46 @@
   font-size: 0.875rem;
 }
 
+/* The plan of the course set, with the way back to the flight, which stays
+   in sight at the foot of the list. */
+.flight-plan {
+  position: sticky;
+  z-index: 1;
+  bottom: 0;
+  display: grid;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 0.65rem 0.75rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--route) 38%, transparent);
+  border-top: 2px solid var(--route);
+  background: rgb(6 10 22);
+}
+
+.flight-plan__to {
+  display: grid;
+  min-width: 0;
+  margin: 0;
+}
+
+.flight-plan__to .g-label {
+  color: var(--route);
+}
+
+.flight-plan__to strong {
+  overflow: hidden;
+  font-family: var(--g-display);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flight-plan__fly {
+  grid-column: 1 / -1;
+  justify-content: center;
+}
+
 .game-map__legend {
   display: grid;
   gap: 0.375rem;
@@ -2922,9 +3247,9 @@
 }
 
 .destination[aria-pressed='true'] {
-  border-color: rgb(255 191 94 / 0.65);
-  border-left-color: var(--g-amber);
-  background: rgb(255 191 94 / 0.08);
+  border-color: color-mix(in srgb, var(--accent) 65%, transparent);
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
 .destination__index {
@@ -2995,7 +3320,7 @@
 }
 
 .destination__state[data-state='course'] {
-  color: var(--g-amber);
+  color: var(--accent);
 }
 
 .destination__holocron {
@@ -3182,9 +3507,9 @@
 }
 
 .record__course[aria-pressed='true'] {
-  --btn-line: rgb(255 191 94 / 0.65);
+  --btn-line: color-mix(in srgb, var(--accent) 65%, transparent);
 
-  color: var(--g-amber);
+  color: var(--accent);
 }
 
 .archive__footer {
@@ -3832,13 +4157,73 @@
     animation-delay: calc(0.12s + var(--i, 0) * 0.04s);
   }
 
-  .chart__course {
-    animation: course-march 1.2s linear infinite;
+  .course-strip {
+    animation: course-strip-boot 0.45s var(--g-ease) both;
   }
 
-  @keyframes course-march {
+  @keyframes course-strip-boot {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -6px);
+    }
+
+    35% {
+      opacity: 0.7;
+    }
+
+    50% {
+      opacity: 0.25;
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateX(-50%);
+    }
+  }
+
+  .course-lock__frame {
+    animation:
+      lock-on 0.5s var(--g-ease) both,
+      lock-breathe 1.8s ease-in-out 0.5s infinite;
+  }
+
+  @keyframes lock-on {
+    from {
+      opacity: 0;
+      transform: scale(2.4) rotate(45deg);
+    }
+
+    55% {
+      opacity: 0.6;
+    }
+
+    70% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes lock-breathe {
+    50% {
+      transform: scale(1.14);
+    }
+  }
+
+  .chart__course {
+    animation: course-draw 0.7s var(--g-ease) both;
+    stroke-dasharray: 1;
+  }
+
+  .chart__gates {
+    animation: g-fade 0.4s 0.45s var(--g-ease) both;
+  }
+
+  @keyframes course-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+
     to {
-      stroke-dashoffset: -11;
+      stroke-dashoffset: 0;
     }
   }
 }
@@ -3999,6 +4384,28 @@
 
 /* Touch screens wider than a phone: the touch controls keep the bottom
    corners, and the ship's panel sits above the boost. */
+/* Too narrow for the flight plan's strip between the groups in the corners,
+   and not yet a phone: it goes under them, and nothing above it moves. */
+@media (min-width: 640px) and (max-width: 939px) {
+  .hud:has(> .course-strip) {
+    --course-room: 0rem;
+  }
+
+  .hud .course-strip {
+    top: calc(var(--edge-t) + 15.25rem);
+    max-width: calc(100% - 2 * var(--g-edge));
+  }
+
+  .hud:has(> .course-strip) .planet-titles,
+  .hud:has(> .course-strip) .toasts {
+    top: calc(var(--edge-t) + 19.25rem);
+  }
+
+  .hud:has(> .course-strip) .planet-titles:not(:empty) ~ .toasts {
+    top: calc(var(--edge-t) + 25.75rem);
+  }
+}
+
 @media (pointer: coarse) and (min-width: 640px) {
   .hud__bottom {
     position: static;
@@ -4178,8 +4585,68 @@
     display: none;
   }
 
-  .hud__pad {
+  /* The flight plan's strip takes the top of the stack, under the
+     instruments, across the screen. */
+  .hud:has(> .course-strip) {
+    --course-room: 3.65rem;
+  }
+
+  .hud .course-strip {
     top: calc(var(--edge-t) + 11.5rem);
+    width: calc(100% - 2 * var(--g-edge));
+    max-width: none;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.3rem 0.35rem 0.4rem 0.6rem;
+  }
+
+  .course-strip__plan small {
+    display: none;
+  }
+
+  .course-strip .plan-readings {
+    gap: 0.6rem;
+  }
+
+  .course-strip__readings {
+    margin-left: auto;
+    padding-left: 0.5rem;
+  }
+
+  @media (max-width: 359px) {
+    .course-strip__icon,
+    .course-strip .plan-readings dt {
+      display: none;
+    }
+  }
+
+  /* The list ends under the plan's plate, which covers what passes under it,
+     and fades into it from above. */
+  .flight-plan::before,
+  .flight-plan::after {
+    position: absolute;
+    right: -1px;
+    left: -1px;
+    pointer-events: none;
+    content: '';
+  }
+
+  .flight-plan::before {
+    bottom: 100%;
+    height: 1.25rem;
+    margin-bottom: 2px;
+    background: linear-gradient(transparent, rgb(6 10 22));
+  }
+
+  .flight-plan::after {
+    top: 100%;
+    height: 2rem;
+    margin-top: 1px;
+    background: rgb(6 10 22);
+  }
+
+  .hud__pad {
+    top: calc(var(--edge-t) + 11.5rem + var(--course-room));
     min-width: 0;
     max-width: calc(100% - 2 * var(--g-edge));
     gap: 0.6rem;
@@ -4199,29 +4666,29 @@
   }
 
   .toasts {
-    top: calc(var(--edge-t) + 11.5rem);
+    top: calc(var(--edge-t) + 11.5rem + var(--course-room));
     right: 50%;
     justify-items: center;
     transform: translateX(50%);
   }
 
   .hud__pad:not(:empty) ~ .toasts {
-    top: calc(var(--edge-t) + 16.75rem);
+    top: calc(var(--edge-t) + 16.75rem + var(--course-room));
   }
 
   /* A planet's title takes the notices' place under the instruments, and
      they go down under it; under the landing zone, when it shows. */
   .planet-titles {
-    top: calc(var(--edge-t) + 11.5rem);
+    top: calc(var(--edge-t) + 11.5rem + var(--course-room));
   }
 
   .hud__pad:not(:empty) ~ .planet-titles,
   .planet-titles:not(:empty) ~ .toasts {
-    top: calc(var(--edge-t) + 16.75rem);
+    top: calc(var(--edge-t) + 16.75rem + var(--course-room));
   }
 
   .hud__pad:not(:empty) ~ .planet-titles:not(:empty) ~ .toasts {
-    top: calc(var(--edge-t) + 22rem);
+    top: calc(var(--edge-t) + 22rem + var(--course-room));
   }
 
   .planet-title {
@@ -4537,8 +5004,43 @@
     display: none;
   }
 
-  .hud__pad {
+  /* The flight plan's strip takes the top of the middle, between the groups
+     in the corners, with the stack under it. */
+  .hud:has(> .course-strip) {
+    --course-room: 3.5rem;
+  }
+
+  .hud .course-strip {
     top: var(--edge-t);
+    width: max-content;
+    max-width: min(30rem, calc(100% - 15rem));
+    gap: 0.5rem;
+    padding: 0.3rem 0.35rem 0.4rem 0.6rem;
+  }
+
+  .course-strip .plan-readings {
+    gap: 0.6rem;
+  }
+
+  .course-strip__readings {
+    padding-left: 0.5rem;
+  }
+
+  /* Over the mission's log, it has the height of the buttons beside it. */
+  @media (max-width: 719px) {
+    .hud .course-strip {
+      padding-block: 0.15rem 0.25rem;
+    }
+
+    .course-strip__plan .g-label,
+    .course-strip__plan small,
+    .course-strip .plan-readings dt {
+      display: none;
+    }
+  }
+
+  .hud__pad {
+    top: calc(var(--edge-t) + var(--course-room));
     min-width: 0;
     max-width: calc(100% - 2 * var(--g-edge));
     gap: 0.6rem;
@@ -4563,7 +5065,7 @@
 
   .toasts,
   .planet-titles {
-    top: var(--edge-t);
+    top: calc(var(--edge-t) + var(--course-room));
   }
 
   .toasts {
@@ -4574,15 +5076,15 @@
 
   .hud__pad:not(:empty) ~ .planet-titles,
   .hud__pad:not(:empty) ~ .toasts {
-    top: calc(var(--edge-t) + 4.25rem);
+    top: calc(var(--edge-t) + 4.25rem + var(--course-room));
   }
 
   .planet-titles:not(:empty) ~ .toasts {
-    top: calc(var(--edge-t) + 4.75rem);
+    top: calc(var(--edge-t) + 4.75rem + var(--course-room));
   }
 
   .hud__pad:not(:empty) ~ .planet-titles:not(:empty) ~ .toasts {
-    top: calc(var(--edge-t) + 9.5rem);
+    top: calc(var(--edge-t) + 9.5rem + var(--course-room));
   }
 
   .planet-title {

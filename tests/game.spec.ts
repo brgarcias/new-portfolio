@@ -1,5 +1,19 @@
 import { readFile } from 'node:fs/promises';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
+import {
+  gatesOf,
+  maxGates,
+  plotRoute,
+  routeStep,
+} from '../src/app/game/flight-plan';
+import { enteredPlanet, newTitleWatch } from '../src/app/game/titles';
+import {
+  arena,
+  pads,
+  padRadius,
+  platformRadius,
+} from '../src/app/game/world/arena';
+import { biomes } from '../src/app/game/world/biomes';
 
 // The game at /play: the hangar, the flight and the ways around it. The
 // headless Chromium draws its WebGL by software, so it runs in CI too. The
@@ -267,6 +281,62 @@ test('gira a nave no hangar ao arrastar', async ({ page }) => {
     .toBeGreaterThan(0.5);
 });
 
+test('mostra o nome do planeta a cada entrada, sem piscar na fronteira', async ({}, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+  const fly = (legs: [Parameters<typeof enteredPlanet>[1], number][]) => {
+    const watch = newTitleWatch();
+    const shown: string[] = [];
+    for (const [sector, seconds] of legs) {
+      for (let time = 0; time < seconds; time += 1 / 60) {
+        const planet = enteredPlanet(watch, sector, 1 / 60);
+        if (planet) shown.push(planet);
+      }
+    }
+    return shown;
+  };
+  // Each entry, into another planet or back into the same one.
+  expect(fly([['about', 1]])).toEqual(['about']);
+  expect(
+    fly([
+      ['hub', 1],
+      ['about', 3],
+      ['experience', 3],
+      ['about', 3],
+    ]),
+  ).toEqual(['about', 'experience', 'about']);
+  expect(
+    fly([
+      ['about', 3],
+      ['hub', 4],
+      ['about', 3],
+    ]),
+  ).toEqual(['about', 'about']);
+  // The hub has no title.
+  expect(fly([['hub', 5]])).toEqual([]);
+  // A moment out of a planet is not leaving it.
+  expect(
+    fly([
+      ['about', 3],
+      ['hub', 1],
+      ['about', 3],
+    ]),
+  ).toEqual(['about']);
+  // Along a border, one frame on each side, the name does not blink: only the
+  // first shows, once the ship has stayed long enough to enter a planet.
+  const border = fly([
+    ['about', 3],
+    ...Array.from(
+      { length: 600 },
+      (_, frame) =>
+        [frame % 2 ? 'about' : 'experience', 1 / 60] as [
+          Parameters<typeof enteredPlanet>[1],
+          number,
+        ],
+    ),
+  ]);
+  expect(border).toEqual(['about']);
+});
+
 test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
   // Many steps over the 3D flight, each of which can take a second on CI's
   // software renderer.
@@ -321,6 +391,422 @@ test('abre o mapa pelo radar e pela tecla M', async ({ page, isMobile }) => {
   expect(await reading(page, 'speed')).toBe(0);
   await page.keyboard.press('KeyM');
   await expect(map).toBeHidden();
+});
+
+// Whether a piece of the flight plan stays clear of the instruments it would
+// hide. All measured in one go: on CI's software renderer each command to the
+// page can take a second, and a command per instrument took more than a test
+// has.
+async function expectClearOfInstruments(piece: Locator, where: string) {
+  const met = await piece.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    return [
+      '.hud__nw > *',
+      '.hud__ne > *',
+      '.compass',
+      '.touch > *',
+      '.hud__craft',
+      '.hud__hint',
+    ].filter((selector) =>
+      [...document.querySelectorAll(selector)].some((other) => {
+        const area = other.getBoundingClientRect();
+        return (
+          area.width > 0 &&
+          area.height > 0 &&
+          box.left < area.right &&
+          area.left < box.right &&
+          box.top < area.bottom &&
+          area.top < box.bottom
+        );
+      }),
+    );
+  });
+  expect(met, where).toEqual([]);
+}
+
+// Sets a course on the chart, by its destination, and flies off with the
+// chart's own button.
+async function setCourse(page: Page, place: string) {
+  await page.getByRole('button', { name: 'Open the navigation chart' }).click();
+  const map = page.getByRole('dialog', { name: 'Navigation chart' });
+  await map
+    .getByRole('button', { name: new RegExp(`^Set a course for ${place}`) })
+    .click();
+  // The plan shows on the chart at once, with what it holds worked out.
+  await expect(map.locator('.chart__course')).toHaveAttribute(
+    'points',
+    /\d.* .*\d/,
+  );
+  await expect(map.locator('.flight-plan')).toContainText(place);
+  await expect(map.locator('.flight-plan [data-plan="distance"]')).toHaveText(
+    /^\d+ m$/,
+  );
+  const fly = map.getByRole('button', { name: 'Fly this course' });
+  await expect(fly).toBeInViewport();
+  await fly.click();
+  await expect(map).toBeHidden();
+}
+
+test('traça rotas que desviam do que é sólido e das outras plataformas', async ({}, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+  // A fixed set of places to start from, all over the platform, and the pads
+  // themselves, where a flight can pick up again.
+  let seed = 7;
+  const next = () => {
+    seed = (seed * 16807) % 2147483647;
+    return seed / 2147483647;
+  };
+  const starts = [
+    { x: 0, z: 0 },
+    ...pads.map((pad) => ({ x: pad.x, z: pad.z })),
+    ...Array.from({ length: 120 }, () => {
+      const angle = next() * Math.PI * 2;
+      const distance = next() * (platformRadius - 6);
+      return { x: Math.sin(angle) * distance, z: Math.cos(angle) * distance };
+    }),
+  ];
+  // The widest ship's radius: a ship that follows the route fits everywhere.
+  const widest = 2.8;
+  for (const start of starts) {
+    for (const pad of pads) {
+      const points = plotRoute(start.x, start.z, pad.id);
+      const label = `${start.x.toFixed(1)}, ${start.z.toFixed(1)} → ${pad.id}`;
+      expect(points[0], label).toEqual(start);
+      expect(points.at(-1), label).toEqual({ x: pad.x, z: pad.z });
+      let longestStep = 0;
+      let farthest = 0;
+      let roomFromSolid = Infinity;
+      let roomFromPads = Infinity;
+      points.forEach((point, index) => {
+        if (index) {
+          longestStep = Math.max(
+            longestStep,
+            Math.hypot(
+              point.x - points[index - 1].x,
+              point.z - points[index - 1].z,
+            ),
+          );
+        }
+        // Past the first stretch, which starts wherever the ship is.
+        if (index * routeStep < 10) return;
+        farthest = Math.max(farthest, Math.hypot(point.x, point.z));
+        for (const obstacle of arena.obstacles) {
+          roomFromSolid = Math.min(
+            roomFromSolid,
+            Math.hypot(point.x - obstacle.x, point.z - obstacle.z) - obstacle.r,
+          );
+        }
+        for (const other of pads) {
+          if (other.id === pad.id) continue;
+          // The pad the ship starts on is the way out.
+          if (Math.hypot(start.x - other.x, start.z - other.z) < other.r + 14) {
+            continue;
+          }
+          roomFromPads = Math.min(
+            roomFromPads,
+            Math.hypot(point.x - other.x, point.z - other.z) - other.r,
+          );
+        }
+      });
+      expect(longestStep, label).toBeLessThanOrEqual(routeStep + 0.001);
+      expect(farthest, label).toBeLessThan(platformRadius);
+      expect(roomFromSolid, label).toBeGreaterThan(widest);
+      expect(roomFromPads, label).toBeGreaterThan(0);
+      const gates = gatesOf(points);
+      expect(gates.length, label).toBeLessThanOrEqual(maxGates);
+      expect(
+        gates.every(
+          (gate) => Math.hypot(gate.x - pad.x, gate.z - pad.z) > padRadius,
+        ),
+        label,
+      ).toBe(true);
+    }
+  }
+  // Around, when there is something in the way, but not the long way around:
+  // from the start, each pad is a little more than its straight line away.
+  for (const pad of pads) {
+    const points = plotRoute(0, 0, pad.id);
+    const length = (points.length - 1) * routeStep;
+    expect(length, pad.id).toBeLessThan(Math.hypot(pad.x, pad.z) * 1.25);
+  }
+});
+
+test('projeta o plano de voo sobre o voo, e o desfaz pela faixa', async ({
+  page,
+  isMobile,
+}) => {
+  test.slow();
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await takeOff(page);
+  const strip = page.locator('.course-strip');
+  const lock = page.locator('.course-lock');
+  const named = lock.locator('.course-lock__text');
+  const status = page.locator('.hud > [role="status"].g-sr');
+  await expect(strip).toHaveCount(0);
+  await expect(lock).toHaveCount(0);
+  await setCourse(page, 'Tatooine');
+  // The strip names where the plan leads, with the distance along the route,
+  // the time and the gates, and a screen reader hears it.
+  await expect(strip).toBeInViewport({ ratio: 1 });
+  await expect(strip).toContainText('Flight plan');
+  await expect(strip).toContainText('Tatooine');
+  await expect(strip.locator('[data-plan="distance"]')).toHaveText(/^\d+ m$/);
+  await expect(strip.locator('[data-plan="time"]')).toHaveText(/^\d+ s$/);
+  await expect(strip.locator('[data-plan="gates"]')).toHaveText(/^0\/\d+$/);
+  await expect(status).toHaveText('Flight plan to Tatooine, About Me');
+  await expect
+    .poll(() => reading(page, 'route-gates'))
+    .toBeGreaterThanOrEqual(2);
+  expect(await reading(page, 'route-length')).toBeGreaterThan(60);
+  // The radar shows the route too, on its own layer.
+  await expect(page.locator('.radar__route polyline')).toHaveAttribute(
+    'points',
+    /\d.* .*\d/,
+  );
+  // The lock names the destination, with the distance, in the picture and
+  // clear of the instruments; the pad's own label gives way to it. Tatooine
+  // lies straight ahead of the start: on a wide screen the lock stands on its
+  // pad, and on a phone, where the instruments cover the horizon, it points
+  // up from under them.
+  await expect(named).toBeInViewport({ ratio: 1 });
+  await expect(named).toContainText('Tatooine');
+  await expect(named.locator('[data-plan="distance"]')).toHaveText(/^\d+ m$/);
+  await expect(lock).toHaveAttribute('data-edge', isMobile ? 'true' : 'false');
+  await expect(page.locator('.game__label[data-course]')).toHaveCSS(
+    'opacity',
+    '0',
+  );
+  await expectClearOfInstruments(strip, 'strip');
+  await expectClearOfInstruments(named, 'lock');
+  // Clearing it from the strip takes it all away, and the radar's route.
+  await strip.getByRole('button', { name: 'Clear the course' }).click();
+  await expect(strip).toHaveCount(0);
+  await expect(lock).toHaveCount(0);
+  await expect(page.locator('.radar__route')).toHaveCount(0);
+  await expect(page.locator('.game__label[data-course]')).toHaveCount(0);
+  await expect(status).toHaveText('');
+  expect(errors).toEqual([]);
+});
+
+test('aponta o destino da borda da tela quando a nave dá as costas a ele', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'The keys turn the ship; phones share the same code.');
+  test.slow();
+  await takeOff(page);
+  await setCourse(page, 'Tatooine');
+  const lock = page.locator('.course-lock');
+  await expect(lock).toHaveAttribute('data-edge', 'false');
+  // A half turn: the pad falls behind the camera.
+  await steer(page, 'KeyD', -3);
+  await expect(lock).toHaveAttribute('data-edge', 'true');
+  await expect(lock.locator('.course-lock__arrow')).toHaveCSS('opacity', '1');
+  await expect(lock.locator('.course-lock__text')).toBeInViewport({ ratio: 1 });
+  await expectClearOfInstruments(lock.locator('.course-lock__text'), 'lock');
+});
+
+test('conta os portais em voo e encerra o plano ao pousar', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'Phones fly with the joystick.');
+  test.slow();
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await takeOff(page);
+  // With the sound on, for the notes of the plan and of each gate.
+  await page.getByRole('button', { name: 'Sound off' }).click();
+  await setCourse(page, 'Tatooine');
+  const strip = page.locator('.course-strip');
+  await expect
+    .poll(() => reading(page, 'route-gates'))
+    .toBeGreaterThanOrEqual(2);
+  // The same thrust that takes the ship to the first pad. Gates go by on the
+  // way; the pad catches the ship, and the plan ends with the landing.
+  await hold(page, 'KeyW', 2500);
+  const about = page.getByRole('dialog', { name: 'About Me' });
+  await expect(about).toBeVisible({ timeout: 30_000 });
+  expect(await reading(page, 'route-flown')).toBeGreaterThanOrEqual(2);
+  await expect(strip).toHaveCount(0);
+  await expect(page.locator('.course-lock')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('recalcula a rota quando a nave se desvia dela', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'Phones fly with the joystick.');
+  test.slow();
+  await takeOff(page);
+  await setCourse(page, 'Tatooine');
+  await expect
+    .poll(() => reading(page, 'route-gates'))
+    .toBeGreaterThanOrEqual(2);
+  expect(await reading(page, 'route-recalculations')).toBe(0);
+  // A quarter turn and off to the side, far from the route.
+  await steer(page, 'KeyA', 1.4);
+  await hold(page, 'KeyW', 1500);
+  await expect
+    .poll(() => reading(page, 'route-recalculations'), { timeout: 20_000 })
+    .toBeGreaterThanOrEqual(1);
+  // The plan goes on, from where the ship is now.
+  await expect(page.locator('.course-strip')).toBeVisible();
+  await expect(page.locator('.course-strip [data-plan="distance"]')).toHaveText(
+    /^\d+ m$/,
+  );
+});
+
+test('traça o plano de novo numa nova decolagem, a partir de onde a nave está', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'Once is enough.');
+  test.slow();
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await takeOff(page);
+  await setCourse(page, 'Tatooine');
+  const left = () =>
+    page
+      .locator('.course-strip [data-plan="distance"]')
+      .textContent()
+      .then((text) => Number.parseInt(text ?? '', 10));
+  await expect.poll(left).toBeGreaterThan(60);
+  const whole = await left();
+  await hold(page, 'KeyW', 600);
+  await expect.poll(left).toBeLessThan(whole);
+  await page.getByRole('button', { name: 'Change ship' }).click();
+  await page.getByRole('button', { name: 'Take off' }).click();
+  await expect
+    .poll(() => reading(page, 'time'), { timeout: 20_000 })
+    .toBeGreaterThan(0.5);
+  await expect(page.locator('.course-strip')).toBeVisible();
+  await expect(page.locator('.course-lock__text')).toBeVisible();
+  // From the start again, the whole way, with none of its gates flown.
+  await expect.poll(left).toBeGreaterThanOrEqual(whole - 1);
+  expect(await reading(page, 'route-flown')).toBe(0);
+  expect(errors).toEqual([]);
+});
+
+test('leva a rota na cor do planeta de destino', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Once is enough.');
+  test.slow();
+  await takeOff(page);
+  // Two planets, each with its own color, on the strip, the lock, the radar
+  // and the chart.
+  for (const [place, id] of [
+    ['Coruscant', 'experience'],
+    ['Kamino', 'courses'],
+  ] as const) {
+    await setCourse(page, place);
+    const accent = biomes[id].accent;
+    const channels = [1, 3, 5].map((at) =>
+      Number.parseInt(accent.slice(at, at + 2), 16),
+    );
+    const rgb = `rgb(${channels.join(', ')})`;
+    await expect(page.locator('.course-strip')).toHaveCSS(
+      'border-top-color',
+      rgb,
+    );
+    await expect(page.locator('.course-lock')).toHaveCSS('color', rgb);
+    await expect(page.locator('.radar__route polyline')).toHaveCSS(
+      'stroke',
+      rgb,
+    );
+    await page
+      .getByRole('button', { name: 'Open the navigation chart' })
+      .click();
+    const map = page.getByRole('dialog', { name: 'Navigation chart' });
+    await expect(map.locator('.chart__course')).toHaveCSS('stroke', rgb);
+    // Picking the destination again clears the course, for the next one.
+    await map
+      .getByRole('button', { name: new RegExp(`^Set a course for ${place}`) })
+      .click();
+    await page.keyboard.press('Escape');
+    await expect(map).toBeHidden();
+  }
+});
+
+test('deixa só o quadro no modo foto, e a mira no HUD imersivo', async ({
+  page,
+}) => {
+  test.slow();
+  await takeOff(page);
+  await setCourse(page, 'Tatooine');
+  const strip = page.locator('.course-strip');
+  const named = page.locator('.course-lock__text');
+  await expect(strip).toBeVisible();
+  await expect(named).toBeVisible();
+  // Photo mode: nothing over the picture.
+  await page.getByRole('button', { name: 'Photo mode' }).click();
+  await expect(page.locator('.photo')).toBeVisible();
+  await expect(strip).toBeHidden();
+  await expect(named).toBeHidden();
+  await page.getByRole('button', { name: /Leave photo mode/ }).click();
+  await expect(strip).toBeVisible();
+  await expect(named).toBeVisible();
+  // Full, minimal, immersive: the last keeps the lock and hides the strip.
+  const view = page.locator('.hud__view');
+  await view.click();
+  await expect(page.locator('.hud')).toHaveAttribute('data-hud', 'minimal');
+  await expect(strip).toBeVisible();
+  await expectClearOfInstruments(strip, 'minimal');
+  await view.click();
+  await expect(page.locator('.hud')).toHaveAttribute('data-hud', 'immersive');
+  await expect(strip).toBeHidden();
+  await expect(named).toBeVisible();
+});
+
+test('mantém o plano de voo inteiro na tela nos três idiomas', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, 'The narrow screen is the hard one.');
+  test.slow();
+  const lands = [
+    { path: '/play', chart: 'Open the navigation chart', take: 'Take off' },
+    { path: '/pt/play', chart: 'Abrir a carta de navegação', take: 'Decolar' },
+    {
+      path: '/es/play',
+      chart: 'Abrir la carta de navegación',
+      take: 'Despegar',
+    },
+  ];
+  for (const land of lands) {
+    await page.goto(land.path);
+    await page.getByRole('button', { name: land.take }).click();
+    await expect
+      .poll(() => reading(page, 'time'), { timeout: 20_000 })
+      .toBeGreaterThan(0.5);
+    await page.getByRole('button', { name: land.chart }).click();
+    // The planet with the longest name.
+    await page.locator('.destination').nth(1).click();
+    await expect(page.locator('.flight-plan__fly')).toBeInViewport();
+    await page.locator('.flight-plan__fly').click();
+    await expect(page.locator('.game-map')).toHaveCount(0);
+    const strip = page.locator('.course-strip');
+    await expect(strip).toBeInViewport({ ratio: 1 });
+    await expectClearOfInstruments(strip, land.path);
+    // Nothing spills out of the strip, nor is cut short.
+    const spills = await strip.evaluate((element) => {
+      const edge = element.getBoundingClientRect();
+      return [...element.querySelectorAll('strong, dd, dt, button')].filter(
+        (piece) => {
+          const box = piece.getBoundingClientRect();
+          return (
+            box.width > 0 &&
+            (box.left < edge.left - 0.5 ||
+              box.right > edge.right + 0.5 ||
+              piece.scrollWidth > piece.clientWidth + 1)
+          );
+        },
+      ).length;
+    });
+    expect(spills, land.path).toBe(0);
+  }
 });
 
 test('guarda a missão para a próxima visita e recomeça só depois de confirmar', async ({
@@ -684,6 +1170,90 @@ test('cala os motores no hangar e quando a página some', async ({
   await expect.poll(state).toBe('running');
 });
 
+test('mostra de novo o nome do planeta quando a nave sai e volta', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'Phones fly with the joystick.');
+  test.slow();
+  await takeOff(page);
+  await page.evaluate(() => {
+    const titles: string[] = [];
+    Object.assign(window, { titles });
+    new MutationObserver((changes) => {
+      for (const change of changes) {
+        for (const node of change.addedNodes) {
+          const name = (node as HTMLElement).querySelector(
+            '.planet-title__name',
+          );
+          titles.push(name?.textContent ?? '');
+        }
+      }
+    }).observe(document.querySelector('.planet-titles')!, { childList: true });
+  });
+  const titles = () =>
+    page.evaluate(() => (window as unknown as { titles: string[] }).titles);
+  // Flies to a point, turning and thrusting by the HUD's readings, every
+  // frame, in the page: a command from the test can arrive late.
+  const flyTo = (x: number, z: number) =>
+    page.evaluate(
+      ([x, z]) =>
+        new Promise<void>((done, fail) => {
+          const hud = document.querySelector<HTMLElement>('.hud')!;
+          const send = (type: string, code: string) =>
+            document.body.dispatchEvent(
+              new KeyboardEvent(type, { code, bubbles: true }),
+            );
+          const held = new Set<string>();
+          const want = (code: string, on: boolean) => {
+            if (on === held.has(code)) return;
+            if (on) held.add(code);
+            else held.delete(code);
+            send(on ? 'keydown' : 'keyup', code);
+          };
+          const started = performance.now();
+          const check = () => {
+            const dx = x - Number(hud.dataset.x);
+            const dz = z - Number(hud.dataset.z);
+            const heading = Number(hud.dataset.heading);
+            const wanted = Math.atan2(-dx, -dz);
+            const turn = Math.atan2(
+              Math.sin(wanted - heading),
+              Math.cos(wanted - heading),
+            );
+            const arrived = Math.hypot(dx, dz) < 6;
+            const late = performance.now() - started > 40_000;
+            want('KeyA', !arrived && !late && turn > 0.08);
+            want('KeyD', !arrived && !late && turn < -0.08);
+            want('KeyW', !arrived && !late && Math.abs(turn) < 0.6);
+            if (arrived) done();
+            else if (late) fail(new Error(`Still ${dx}, ${dz} away.`));
+            else requestAnimationFrame(check);
+          };
+          requestAnimationFrame(check);
+        }),
+      [x, z] as const,
+    );
+  // Into Tatooine, the first planet ahead, short of its pad.
+  await flyTo(0, -26);
+  await expect.poll(titles).toEqual(['Tatooine']);
+  // Back over the hub, for long enough to have left the planet, and in again.
+  // The ship may coast on across the hub, into the planet beyond, which names
+  // itself too.
+  await flyTo(0, 0);
+  await expect
+    .poll(() => reading(page, 'speed'), { timeout: 20_000 })
+    .toBeLessThan(1);
+  await page.waitForTimeout(2500);
+  await flyTo(0, -26);
+  await expect
+    .poll(() =>
+      titles().then((names) => names.filter((n) => n === 'Tatooine').length),
+    )
+    .toBe(2);
+  expect((await titles()).at(-1)).toBe('Tatooine');
+});
+
 test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
   page,
   isMobile,
@@ -837,7 +1407,8 @@ test('voa pelo teclado, dá turbo e pousa na primeira plataforma', async ({
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).toBeHidden();
   }
-  // Each planet's title came up once, the first time in it.
+  // The title of each planet the ship entered, as it entered, the first one
+  // Tatooine; flying straight on, it never entered the same one twice.
   const seen = await titles();
   expect(seen[0]).toBe('Tatooine');
   expect(new Set(seen).size).toBe(seen.length);
@@ -859,6 +1430,7 @@ test.describe('no tablet', () => {
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+    test.slow();
     // Taking off is in sight in the stacked hangar, without scrolling.
     await page.goto('/play');
     await expect(
@@ -874,6 +1446,11 @@ test.describe('no tablet', () => {
     const craft = (await page.locator('.hud__craft').boundingBox())!;
     expect(overlap(boost, craft)).toBe(false);
     expect(overlap(joystick, craft)).toBe(false);
+    // The flight plan's strip finds its place among them.
+    await setCourse(page, 'Coruscant');
+    const strip = page.locator('.course-strip');
+    await expect(strip).toBeInViewport({ ratio: 1 });
+    await expectClearOfInstruments(strip, 'strip');
   });
 });
 
@@ -929,6 +1506,19 @@ test.describe('no celular deitado', () => {
     const side = (await page.locator('.game-map__side').boundingBox())!;
     expect(overlap(chart, side)).toBe(false);
     expect(chart.y + chart.height).toBeLessThanOrEqual(342);
+    // A course leaves the way back to the flight in sight, and a strip clear
+    // of the rest of the HUD.
+    await page
+      .getByRole('button', { name: /^Set a course for Coruscant/ })
+      .click();
+    await expect(page.locator('.flight-plan__fly')).toBeInViewport({
+      ratio: 1,
+    });
+    await page.locator('.flight-plan__fly').click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    const strip = page.locator('.course-strip');
+    await expect(strip).toBeInViewport({ ratio: 1 });
+    await expectClearOfInstruments(strip, 'strip');
   });
 });
 

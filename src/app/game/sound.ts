@@ -187,7 +187,22 @@ export type Cue =
   | 'arrive'
   | 'photo'
   | 'party'
-  | 'blip';
+  | 'blip'
+  | 'plot'
+  | 'route'
+  | 'recalculate';
+
+// Each gate of a flight plan sounds the next note of this scale, so that
+// flying the whole corridor plays a phrase that climbs to the landing.
+const gateScale = [
+  440, 523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.51, 1567.98,
+];
+
+export function playGate(flown: number) {
+  if (!sound.enabled) return;
+  const note = gateScale[Math.min(gateScale.length - 1, flown - 1)];
+  tone([note, note * 1.5], [0, 0.03], 'triangle', 0.26, 0.075);
+}
 
 export function play(cue: Cue) {
   const { enabled, context, master } = sound;
@@ -197,6 +212,38 @@ export function play(cue: Cue) {
     case 'blip':
       // A soft tick for the chart and the course.
       tone([988, 1319], [0, 0.05], 'sine', 0.16, 0.07);
+      break;
+    case 'plot': {
+      // The nav computer working out the way: an astromech's quick chatter.
+      const osc = context.createOscillator();
+      osc.type = 'sine';
+      const notes = [1480, 2217, 1320, 2637, 1760, 2960, 2093];
+      notes.forEach((note, index) => {
+        const at = now + index * 0.058;
+        osc.frequency.setValueAtTime(note, at);
+        osc.frequency.exponentialRampToValueAtTime(
+          note * (index % 2 ? 0.78 : 1.22),
+          at + 0.05,
+        );
+      });
+      const gain = context.createGain();
+      const end = now + notes.length * 0.058;
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.05, now + 0.012);
+      gain.gain.setValueAtTime(0.05, end - 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, end + 0.03);
+      osc.connect(gain);
+      gain.connect(master);
+      osc.start(now);
+      osc.stop(end + 0.05);
+      break;
+    }
+    case 'route':
+      // The route opening out over the world.
+      tone([392, 587, 784], [0, 0.09, 0.18], 'sine', 0.55, 0.06);
+      break;
+    case 'recalculate':
+      tone([740, 554], [0, 0.09], 'square', 0.09, 0.022);
       break;
     case 'land':
       tone([523, 784], [0, 0.1], 'sine', 0.5, 0.18);

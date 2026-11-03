@@ -17,6 +17,7 @@ import { format } from '@/src/i18n/messages';
 import type { SectionId } from '@/src/content/sections';
 // GAME
 import Chart from './Chart';
+import { PlanReadings } from './FlightPlan';
 import { overlay } from './overlay';
 import type { Ship } from './ships';
 import type { Place } from './types';
@@ -46,8 +47,10 @@ interface GalaxyMapProps {
 // The navigation chart over the flight: the chart of the platform and the
 // destinations, the site's sections on their planets, each with how far
 // and which way it lies, live, whether it was explored, and its holocron.
-// Picking one sets a course, which the compass, the radar, the pad's label
-// and the chart follow; picking it again clears it. The book beside each
+// Picking one sets a course, with a route worked out around what is in the
+// way, which the chart shows at once and the flight projects over the world
+// when the chart closes, with its button at the end of the list; picking it
+// again clears it. The book beside each
 // destination reads its section at once, without landing, for whoever came
 // for the portfolio more than for the flight. It opens from the radar or
 // with M, and closes with its button, with Escape, with M again or with a
@@ -236,6 +239,25 @@ export default function GalaxyMap({
                 );
               })}
             </ol>
+            {course && (
+              <div className="flight-plan">
+                <p className="flight-plan__to">
+                  <span className="g-label">{t.flightPlan}</span>
+                  <strong>{biomes[course].planet}</strong>
+                </p>
+                <div aria-hidden="true">
+                  <PlanReadings className="plan-readings" />
+                </div>
+                <button
+                  type="button"
+                  className="g-btn g-btn--primary flight-plan__fly"
+                  onClick={onClose}
+                >
+                  <FontAwesomeIcon icon={faLocationArrow} />
+                  {t.flyCourse}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>

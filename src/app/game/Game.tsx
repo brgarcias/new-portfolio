@@ -19,6 +19,7 @@ import type { SectionId } from '@/src/content/sections';
 import Adaptive from './Adaptive';
 import Archive from './Archive';
 import { listenToKeyboard, resetInput } from './controls';
+import Course from './world/Course';
 import Hangar from './Hangar';
 import Hud from './Hud';
 import { hunt } from './hunt';
@@ -125,7 +126,7 @@ export default function Game({
   const [mapLeaving, setMapLeaving] = useState(false);
   const [panelLeaving, setPanelLeaving] = useState(false);
   const [departing, setDeparting] = useState(false);
-  // The planet whose title shows, the first time the ship enters it.
+  // The planet whose title shows, as the ship enters it.
   const [title, setTitle] = useState<{ id: SectionId; key: number } | null>(
     null,
   );
@@ -330,7 +331,7 @@ export default function Game({
     const next = course === id ? null : id;
     setCourse(next);
     navigation.course = next;
-    play('blip');
+    play(next ? 'plot' : 'blip');
   };
 
   const collect = (id: SectionId) => {
@@ -348,7 +349,7 @@ export default function Game({
     }
   };
 
-  // A planet's title, the first time the ship enters it; the next planet's
+  // A planet's title, each time the ship enters it; the next planet's
   // takes its place.
   const enter = (id: SectionId) => {
     window.clearTimeout(timers.current.title);
@@ -395,7 +396,6 @@ export default function Game({
   const startOver = () => {
     hunt.found.clear();
     hunt.age.clear();
-    hunt.entered.clear();
     setVisited([]);
     setFound([]);
     setRead([]);
@@ -489,6 +489,11 @@ export default function Game({
           onCollect={collect}
           onEnter={enter}
           onArrived={arrived}
+        />
+        <Course
+          held={mapOpen || archiveOpen || Boolean(open)}
+          photo={photo}
+          cruise={ships[shipId].handling.maxSpeed}
         />
         <Labels />
         <Adaptive />

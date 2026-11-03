@@ -11,8 +11,11 @@ import { biomes, hubRadius, sectorAngle } from './world/biomes';
 const registerShip = (element: SVGGElement | null) => {
   overlay.chartShip = element;
 };
-const registerCourse = (element: SVGLineElement | null) => {
-  overlay.chartCourse = element;
+const registerRoute = (element: SVGPolylineElement | null) => {
+  overlay.chartRoute = element;
+};
+const registerGates = (element: SVGPathElement | null) => {
+  overlay.chartGates = element;
 };
 
 const solid = flora.filter((item) => item.solid);
@@ -219,7 +222,7 @@ export default function Chart({
           );
         })}
       </svg>
-      {/* What moves, the course and the ship, on a layer of its own over
+      {/* What moves, the route and the ship, on a layer of its own over
         the chart, which is drawn once. */}
       <svg
         className="chart__live"
@@ -227,11 +230,16 @@ export default function Chart({
         aria-hidden="true"
         focusable="false"
       >
-        <line
-          ref={registerCourse}
-          className="chart__course"
-          style={{ display: 'none' }}
-        />
+        {course && (
+          <g key={course} className="chart__plan">
+            <polyline
+              ref={registerRoute}
+              className="chart__course"
+              pathLength="1"
+            />
+            <path ref={registerGates} className="chart__gates" />
+          </g>
+        )}
         <g ref={registerShip} className="chart__ship">
           <circle className="chart__ship-ring" r="8" />
           <path className="chart__ship-cone" d="M0 0L-11 -34H11Z" />

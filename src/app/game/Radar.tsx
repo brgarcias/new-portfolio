@@ -20,6 +20,12 @@ const registerNorth = (element: HTMLDivElement | null) => {
 const registerEdges = (element: HTMLDivElement | null) => {
   overlay.radarEdges = element;
 };
+const registerRouteLayer = (element: HTMLDivElement | null) => {
+  overlay.radarRouteLayer = element;
+};
+const registerRoute = (element: SVGPolylineElement | null) => {
+  overlay.radarRoute = element;
+};
 
 // The bezel's ticks, every ten degrees, longer every thirty.
 const ticks = Array.from({ length: 36 }, (_, index) => index * 10);
@@ -38,10 +44,11 @@ interface RadarProps {
 // in the middle facing up, as far as the ring reaches. Each part that
 // moves is a layer of its own, so the compositor moves it without drawing
 // it again: the map, drawn once, which the frame loop turns and slides
-// under the ship (instruments.ts); the sweep, which turns by itself; the
-// mark of the way the flight started, on the bezel; and a chevron on the
-// ring for each pad and holocron out of reach, and for the course. The
-// bezel, the range and the ship are drawn once, over it all.
+// under the ship (instruments.ts); the route of the flight plan, which moves
+// with it; the sweep, which turns by itself; the mark of the way the flight
+// started, on the bezel; and a chevron on the ring for each pad and holocron
+// out of reach, and for the course. The bezel, the range and the ship are
+// drawn once, over it all.
 export default function Radar({
   activePad,
   visited,
@@ -149,6 +156,13 @@ export default function Radar({
             )}
           </svg>
         </div>
+        {course && (
+          <div ref={registerRouteLayer} className="radar__map radar__route">
+            <svg viewBox={`${-half} ${-half} ${radarSpan} ${radarSpan}`}>
+              <polyline ref={registerRoute} />
+            </svg>
+          </div>
+        )}
         <div className="radar__sweep" />
       </div>
       <svg className="radar__face" viewBox="-100 -100 200 200">
