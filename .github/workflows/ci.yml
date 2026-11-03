@@ -62,11 +62,12 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
 
-  # The browser tests, on four machines of about the same load, each with its
+  # The browser tests, on six machines of about the same load, each with its
   # own build: the site's, and the game's, which take most of the time because
   # the WebGL is drawn by software, more slowly on the desktop's larger screen.
-  # The job has no name of its own, so that it shows as a single "e2e" when it
-  # is skipped, and as "e2e (site)" and so on when it runs.
+  # Sharding alone divides by count, along the projects, which left the slow
+  # ones together. The job has no name of its own, so that it shows as a single
+  # "e2e" when it is skipped, and as "e2e (site-desktop)" and so on when it runs.
   e2e:
     needs: changes
     if: needs.changes.outputs.browser == 'true'
@@ -75,7 +76,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        part: [site, game-desktop-1, game-desktop-2, game-mobile]
+        part:
+          - site-desktop
+          - site-mobile
+          - game-desktop-1
+          - game-desktop-2
+          - game-desktop-3
+          - game-mobile
     # The screenshots in tests/snapshots are recorded in this image. Keep its
     # tag equal to the @playwright/test version in package.json.
     container:
@@ -103,9 +110,11 @@ jobs:
           PART: ${{ matrix.part }}
         run: |
           case "$PART" in
-            site) pnpm test:site --workers=4 ;;
-            game-desktop-1) pnpm test:game --project=desktop --shard=1/2 ;;
-            game-desktop-2) pnpm test:game --project=desktop --shard=2/2 ;;
+            site-desktop) pnpm test:site --project=desktop --workers=4 ;;
+            site-mobile) pnpm test:site --project=mobile --workers=4 ;;
+            game-desktop-1) pnpm test:game --project=desktop --shard=1/3 ;;
+            game-desktop-2) pnpm test:game --project=desktop --shard=2/3 ;;
+            game-desktop-3) pnpm test:game --project=desktop --shard=3/3 ;;
             game-mobile) pnpm test:game --project=mobile ;;
           esac
       - name: Fail on new screenshots
