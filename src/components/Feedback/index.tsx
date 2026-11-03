@@ -14,7 +14,7 @@ import {
 // COMPONENTS
 import ModalComponent from '@/src/components/Modal/Lazy';
 import { openOnKey } from '@/src/components/Modal/openOnKey';
-import { whenIdle } from '@/src/components/Modal/whenIdle';
+import { preloadWhenIdle } from '@/src/components/Modal/whenIdle';
 import SnackbarFeedback from '@/src/components/SnackBar';
 import { fields, isValidField } from '@/src/components/Form/utils';
 // I18N
@@ -44,7 +44,7 @@ export default function Feedback({ label }: Readonly<{ label: string }>) {
     colorIcon: '',
   });
 
-  useEffect(() => whenIdle(() => void loadForm()), []);
+  useEffect(() => preloadWhenIdle(loadForm), []);
   const [errorsState, setErrorsState] = useState(noErrors);
   const validateField = (fieldName: string, value: string | null) => {
     setErrorsState((prevState) => ({
