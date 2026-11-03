@@ -1,6 +1,6 @@
 # Bruno Garcia — portfólio
 
-Portfólio profissional de Bruno Garcia, desenvolvedor full-stack. O site é uma página única em inglês, feita com Next.js, publicada no Netlify em <https://brgarcias-portfolio.netlify.app>.
+Portfólio profissional de Bruno Garcia, engenheiro de software full-stack. O site é uma página única em inglês, português e espanhol, feita com Next.js, publicada no Netlify em <https://brgarcias-portfolio.netlify.app>.
 
 ## Executar localmente
 
@@ -29,7 +29,7 @@ Os comandos de lint, tipos e formatação também podem ser executados individua
 
 ## Testes
 
-Os testes de navegador rodam em desktop (1440 px) e em celular (iPhone 13) sobre o build de produção. Eles cobrem a navegação pela barra e pelo menu em pilha, o fechamento com Esc, a preferência por reduzir movimento, as experiências, as etapas da formação, inclusive pelo teclado, os detalhes dos cursos, o carrossel e os detalhes dos projetos, as fotos das contribuições, os cartões de contato, o rodapé, o download do currículo, os links de contato, a validação e o envio do feedback, a página 404 e as páginas de erro.
+Os testes de navegador rodam em desktop (1440 px) e em celular (iPhone 13) sobre o build de produção. Eles cobrem a navegação pela barra e pelo menu em pilha, o fechamento com Esc, a preferência por reduzir movimento, as experiências, as competências, os detalhes dos cursos, o estudo de caso em destaque, o carrossel e os detalhes dos projetos, as fotos das contribuições, o painel de contato, o rodapé, o download do currículo, os links de contato, a validação e o envio do feedback, a página 404 e as páginas de erro.
 
 ```sh
 pnpm exec playwright install chromium
