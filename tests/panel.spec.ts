@@ -341,10 +341,10 @@ test('salva cada alteração num commit assinado pelo GitHub', async ({
   github.behind = true;
   await page.goto('/admin#/collections/site/entries/about');
   const field = page
-    .getByRole('textbox', { name: 'Título da lista de tecnologias' })
+    .getByRole('textbox', { name: 'Título de como trabalho' })
     .first();
-  await expect(field).toHaveValue('Technologies and tools');
-  await field.fill('Technologies and tooling');
+  await expect(field).toHaveValue('How I work');
+  await field.fill('How I build');
   await page.getByRole('button', { name: 'Salvar' }).click();
   await expect(page.getByText('Entrada salva')).toBeVisible();
 
@@ -365,8 +365,8 @@ test('salva cada alteração num commit assinado pelo GitHub', async ({
   const [file] = commit.fileChanges.additions;
   expect(file.path).toBe('content/site/about.json');
   const saved = JSON.parse(Buffer.from(file.contents, 'base64').toString());
-  expect(saved.en.stackTitle).toBe('Technologies and tooling');
-  expect(saved.pt.stackTitle).toBe('Tecnologias e ferramentas');
+  expect(saved.en.principlesTitle).toBe('How I build');
+  expect(saved.pt.principlesTitle).toBe('Como trabalho');
   expect(github.writes[1].body).toEqual({ expected_head_sha: 'head2' });
 });
 

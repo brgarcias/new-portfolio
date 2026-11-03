@@ -1,5 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
-import { findSpills, pageOverflow, sections } from './helpers';
+import type AxeCore from 'axe-core';
+import {
+  findSpills,
+  pageOverflow,
+  sections,
+  waitForTransitions,
+} from './helpers';
 
 // What the content can break without the build noticing: a text that spills out
 // of its card on a phone, a markup left unclosed, a page that fails in the
@@ -40,7 +46,7 @@ for (const { home, play, lang } of languages) {
 
     // Every section, with its title and something under it.
     for (const id of sections) {
-      const section = page.locator(`main > section#${id}`);
+      const section = page.locator(`main section#${id}`);
       await expect(section.getByRole('heading').first()).not.toBeEmpty();
       await expect(section).not.toBeEmpty();
     }
@@ -55,10 +61,7 @@ for (const { home, play, lang } of languages) {
     for (const width of isMobile ? [320, 390] : [1440]) {
       await page.setViewportSize({ width, height: 800 });
       expect(await pageOverflow(page), `${width}px`).toBeLessThanOrEqual(0);
-      // On a wide screen the top's big title may run a little past its column,
-      // short of the illustration, as a word like "Desenvolvedor" does.
-      const allowed = isMobile ? undefined : '.hero__title-line';
-      expect(await findSpills(page, 'main', allowed), `${width}px`).toEqual([]);
+      expect(await findSpills(page, 'main'), `${width}px`).toEqual([]);
     }
 
     // Every image the content points to exists.
@@ -73,6 +76,48 @@ for (const { home, play, lang } of languages) {
       expect(file.ok(), `${image}`).toBe(true);
     }
     expect(errors).toEqual([]);
+  });
+
+  test(`não tem violações de acessibilidade em ${home}`, async ({ page }) => {
+    test.slow();
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(home);
+    // Every block enters as it scrolls into view, and a block still fading in
+    // would read as low contrast.
+    const height = await page.evaluate(
+      () => document.documentElement.scrollHeight,
+    );
+    for (let top = 0; top < height; top += 600) {
+      await page.evaluate(
+        (y) => window.scrollTo({ top: y, behavior: 'instant' }),
+        top,
+      );
+      await page.waitForTimeout(60);
+    }
+    // What waits behind a button, as the early roles, has not entered.
+    await page.waitForFunction(() =>
+      [...document.querySelectorAll('main [style*="opacity"]')]
+        .filter((block) => block.getClientRects().length > 0)
+        .every((block) => getComputedStyle(block).opacity === '1'),
+    );
+    await page.addScriptTag({ path: 'node_modules/axe-core/axe.min.js' });
+    const audit = () =>
+      page.evaluate(async () => {
+        const { axe } = window as unknown as { axe: typeof AxeCore };
+        const { violations } = await axe.run(document, {
+          runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'],
+        });
+        return violations.map(
+          ({ id, nodes }) =>
+            `${id}: ${nodes.map(({ target }) => target.join(' ')).join(', ')}`,
+        );
+      });
+    expect(await audit(), 'dark theme').toEqual([]);
+    // The site follows the system's theme at once.
+    await page.emulateMedia({ colorScheme: 'light' });
+    await expect(page.locator('html')).toHaveClass(/light/);
+    await waitForTransitions(page);
+    expect(await audit(), 'light theme').toEqual([]);
   });
 
   test(`abre o jogo em ${play} com o conteúdo das seções`, async ({
