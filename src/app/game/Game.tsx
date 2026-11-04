@@ -28,7 +28,9 @@ import { overlay } from './overlay';
 import Panel from './Panel';
 import { loadProgress, saveProgress } from './progress';
 import Ship from './Ship';
+import PhotoRig from './PhotoRig';
 import Snapshot from './Snapshot';
+import Tooltip from './Tooltip';
 import { play, setSound, storedSound } from './sound';
 import { isShipId, ships, type ShipId } from './ships';
 import { navigation, telemetry } from './telemetry';
@@ -244,6 +246,8 @@ export default function Game({
   // Escape leaves too.
   const onKey = useEffectEvent((event: KeyboardEvent) => {
     if (event.repeat) return;
+    // The photo mode has its own keys, and the flight's wait.
+    if (photo && event.code !== 'KeyP' && event.key !== 'Escape') return;
     if (event.code === 'KeyM') {
       event.preventDefault();
       if (mapOpen && !mapLeaving) {
@@ -265,7 +269,7 @@ export default function Game({
       cycleHud();
     } else if (event.code === 'KeyP') {
       event.preventDefault();
-      setPhoto((value) => !value);
+      if (!mapOpen && !archiveOpen) setPhoto((value) => !value);
     } else if (event.key === 'Escape') {
       setPhoto(false);
     }
@@ -498,6 +502,7 @@ export default function Game({
         <Labels />
         <Adaptive />
         <Snapshot />
+        <PhotoRig active={photo} hover={ships[shipId].hover} />
       </Canvas>
       <div ref={registerLabels} className="game__labels" aria-hidden="true">
         {pads.map((landingPad) => (
@@ -574,6 +579,7 @@ export default function Game({
           {panels[open]}
         </Panel>
       )}
+      <Tooltip />
     </div>
   );
 }
