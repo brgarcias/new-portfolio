@@ -586,7 +586,12 @@ export default function Ship({
     const glow =
       0.6 + Math.max(0, controls.thrust) * 1.4 + (boosting ? 1.2 : 0);
     for (const material of flight.engines) material.emissiveIntensity = glow;
-    hum(controls.thrust, boosting, state.speed);
+    hum(
+      ship.id,
+      controls.thrust,
+      boosting,
+      state.speed / (ship.handling.maxSpeed * ship.handling.boost),
+    );
     if (hit > 4) play('bump');
     // Fire from the engines with the thrust, longer under boost.
     const firing = controls.thrust > 0;

@@ -23,11 +23,21 @@ import { Keycap, ShipGlyph } from './ui';
 import { useReducedMotion } from './useMediaQuery';
 import { useTheme } from './useTheme';
 // ICONS
-import { ArrowLeftIcon, RefreshIcon, RocketIcon } from '@/src/components/Icon';
+import {
+  ArrowLeftIcon,
+  RefreshIcon,
+  RocketIcon,
+  VolumeIcon,
+  VolumeOffIcon,
+} from '@/src/components/Icon';
 
 interface HangarProps {
   shipId: ShipId;
   onChoose: (id: ShipId) => void;
+  // The sound's button, which also lets the ships be heard: with it on, choosing
+  // one plays its engines.
+  soundOn: boolean;
+  onToggleSound: () => void;
   // The moment the launch begins, inside the pilot's press, so the sound
   // can start; and the moment the ship has gone, when the flight takes
   // over.
@@ -450,6 +460,8 @@ function Sheet({
 export default function Hangar({
   shipId,
   onChoose,
+  soundOn,
+  onToggleSound,
   onIgnite,
   onTakeOff,
   home,
@@ -549,10 +561,21 @@ export default function Hangar({
           <ArrowLeftIcon />
           {t.backToSite}
         </a>
-        <p className="g-label hangar__ready">
-          <span className="hangar__ready-light" aria-hidden="true" />
-          {format(t.shipsReady, { count: String(shipIds.length) })}
-        </p>
+        <div className="hangar__status">
+          <p className="g-label hangar__ready">
+            <span className="hangar__ready-light" aria-hidden="true" />
+            {format(t.shipsReady, { count: String(shipIds.length) })}
+          </p>
+          <button
+            type="button"
+            className="g-btn hangar__sound"
+            aria-pressed={soundOn}
+            onClick={onToggleSound}
+          >
+            {soundOn ? <VolumeIcon /> : <VolumeOffIcon />}
+            <span>{soundOn ? t.soundOn : t.soundOff}</span>
+          </button>
+        </div>
       </header>
       <div className="hangar__layout">
         <div className="hangar__head">

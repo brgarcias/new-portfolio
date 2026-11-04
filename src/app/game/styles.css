@@ -427,6 +427,12 @@
   padding: 1.25rem var(--gutter) 0;
 }
 
+.hangar__status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .hangar__ready {
   display: inline-flex;
   align-items: center;
@@ -4942,6 +4948,24 @@
     position: absolute;
     bottom: calc(var(--edge-b) + 6.75rem);
     left: var(--edge-l);
+  }
+}
+
+/* Only the icon, where its label doesn't fit beside the way back and the count of
+   ships, in Spanish the longest. */
+@media (max-width: 767px) {
+  .hangar__sound {
+    width: 2.5rem;
+    padding: 0;
+  }
+
+  .hangar__sound span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 

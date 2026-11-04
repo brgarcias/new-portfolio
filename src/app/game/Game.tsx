@@ -31,7 +31,7 @@ import Ship from './Ship';
 import PhotoRig from './PhotoRig';
 import Snapshot from './Snapshot';
 import Tooltip from './Tooltip';
-import { play, setSound, storedSound } from './sound';
+import { duck, ignite, play, preview, setSound, storedSound } from './sound';
 import { isShipId, ships, type ShipId } from './ships';
 import { navigation, telemetry } from './telemetry';
 import { hudModes, type HudMode, type Place, type Toast } from './types';
@@ -175,6 +175,11 @@ export default function Game({
     if (!flying || open || mapOpen || archiveOpen) return;
     return listenToKeyboard();
   }, [flying, open, mapOpen, archiveOpen]);
+  // Under a section, the chart or the archive, the engines stay down.
+  const reading = mapOpen || archiveOpen || Boolean(open);
+  useEffect(() => {
+    duck(reading);
+  }, [reading]);
   // The sound comes on with the stored choice, once the game is on.
   useEffect(() => {
     if (flying && soundOn) setSound(true);
@@ -286,12 +291,19 @@ export default function Game({
     try {
       localStorage.setItem(storageKey, id);
     } catch {}
+    // With the sound on, choosing a ship is hearing it.
+    if (soundOn) {
+      setSound(true);
+      preview(id);
+    }
   };
 
   const toggleSound = () => {
     const on = !soundOn;
     setSoundOn(on);
     setSound(on);
+    // In the hangar, turning it on plays the ship on the pedestal.
+    if (on && !flying) preview(shipId);
   };
 
   // A notice for a moment; no more than three at once.
@@ -465,10 +477,12 @@ export default function Game({
       <Hangar
         shipId={shipId}
         onChoose={choose}
+        soundOn={soundOn}
+        onToggleSound={toggleSound}
         onIgnite={() => {
           if (soundOn) {
             setSound(true);
-            play('takeoff');
+            ignite(shipId);
           }
         }}
         onTakeOff={() => setFlying(true)}
@@ -495,7 +509,7 @@ export default function Game({
           onArrived={arrived}
         />
         <Course
-          held={mapOpen || archiveOpen || Boolean(open)}
+          held={reading}
           photo={photo}
           cruise={ships[shipId].handling.maxSpeed}
         />
