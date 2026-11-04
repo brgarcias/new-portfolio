@@ -1,27 +1,49 @@
 // The game's sounds, made on the spot with the Web Audio API, so no file
-// is downloaded and the site's policy stays as it is: the hum of the
-// engines, which rises with the thrust, the speed and the boost, the wind,
-// and short notes for a landing, a holocron found, a bump, the take-off,
-// the arrival out of hyperspace and a photo. Off until the visitor turns
-// them on, with a button that the browser counts as the gesture an
-// AudioContext needs; the choice is kept in localStorage. The engines and
-// the wind die down in the hangar, and a hidden page makes no sound.
+// is downloaded and the site's policy stays as it is: the engines, each ship
+// with its own voice (engines.ts), which follow the thrust, the speed and the
+// boost, the wind, and short notes for a landing, a holocron found, a bump, the
+// arrival out of hyperspace and a photo. Off until the visitor turns them on,
+// with a button that the browser counts as the gesture an AudioContext needs;
+// the choice is kept in localStorage. Engines only run while they are heard: in
+// flight and for a moment in the hangar, when a ship is chosen. A hidden page
+// makes no sound.
+
+// GAME
+import {
+  createEngine,
+  makeNoiseBank,
+  voices,
+  type Engine,
+  type NoiseBank,
+} from './engines';
+import type { ShipId } from './ships';
 
 const storageKey = 'sound';
-
-interface Engine {
-  gain: GainNode;
-  filter: BiquadFilterNode;
-  hum: OscillatorNode;
-  sub: OscillatorNode;
-  wind: GainNode;
-}
+// How often the engines follow the controls, in seconds. They glide anyway, and
+// every change is an event on each of their dozens of parameters.
+const humStep = 1 / 15;
+// How long a ship's engines hold in the hangar, once up, and how long they take
+// to settle back and go.
+const previewHold = 1.4;
+const previewEnd = 0.7;
 
 export const sound = {
   enabled: false,
   context: null as AudioContext | null,
   master: null as GainNode | null,
+  // Under the master, what the engines and the wind go through.
+  bed: null as GainNode | null,
+  noise: null as NoiseBank | null,
+  wind: null as GainNode | null,
+  // The engines running, one ship's at a time.
   engine: null as Engine | null,
+  ship: null as ShipId | null,
+  // Until when they spool up, with the hum waiting.
+  spooling: 0,
+  // When they last followed the controls, and whether under boost.
+  hummed: 0,
+  boosting: false,
+  previewTimer: 0,
   lastBump: 0,
 };
 
@@ -33,47 +55,20 @@ export function storedSound() {
   }
 }
 
-// A second of white noise, for the wind and the bumps.
-function noise(context: AudioContext) {
-  const buffer = context.createBuffer(
-    1,
-    context.sampleRate,
-    context.sampleRate,
-  );
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-  return buffer;
-}
-
 function setUp() {
   if (sound.context) return;
   const context = new AudioContext();
   const master = context.createGain();
   master.gain.value = 0;
   master.connect(context.destination);
-
-  const gain = context.createGain();
-  gain.gain.value = 0;
-  const filter = context.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.value = 300;
-  const hum = context.createOscillator();
-  hum.type = 'sawtooth';
-  hum.frequency.value = 50;
-  const sub = context.createOscillator();
-  sub.type = 'sine';
-  sub.frequency.value = 100;
-  hum.connect(filter);
-  sub.connect(filter);
-  filter.connect(gain);
-  gain.connect(master);
-  hum.start();
-  sub.start();
+  const bed = context.createGain();
+  bed.connect(master);
+  const noise = makeNoiseBank(context);
 
   const wind = context.createGain();
   wind.gain.value = 0;
   const rush = context.createBufferSource();
-  rush.buffer = noise(context);
+  rush.buffer = noise.white;
   rush.loop = true;
   const band = context.createBiquadFilter();
   band.type = 'bandpass';
@@ -81,12 +76,14 @@ function setUp() {
   band.Q.value = 0.6;
   rush.connect(band);
   band.connect(wind);
-  wind.connect(master);
+  wind.connect(bed);
   rush.start();
 
   sound.context = context;
   sound.master = master;
-  sound.engine = { gain, filter, hum, sub, wind };
+  sound.bed = bed;
+  sound.noise = noise;
+  sound.wind = wind;
 
   // A hidden page makes no sound: the context sleeps until the page shows
   // again, and wakes only if the sound is still on.
@@ -109,46 +106,86 @@ export function setSound(on: boolean) {
     master.gain.setTargetAtTime(0.5, context.currentTime, 0.05);
   } else if (sound.context && sound.master) {
     sound.master.gain.setTargetAtTime(0, sound.context.currentTime, 0.05);
+    quiet();
   }
 }
 
-// The engines and the wind die down, as the ship leaves the flight for the
-// hangar.
-export function quiet() {
-  const { context, engine } = sound;
-  if (!context || !engine) return;
-  const now = context.currentTime;
-  engine.gain.gain.setTargetAtTime(0, now, 0.12);
-  engine.wind.gain.setTargetAtTime(0, now, 0.12);
+// The engines of a ship, running: the ones already on, or new ones, in place of
+// another ship's.
+function running(id: ShipId) {
+  const { enabled, context, bed, noise } = sound;
+  if (!enabled || !context || !bed || !noise) return null;
+  if (sound.engine && sound.ship === id) return sound.engine;
+  sound.engine?.stop(context.currentTime);
+  sound.ship = id;
+  sound.engine = createEngine(context, bed, voices[id], noise);
+  return sound.engine;
 }
 
-// Each frame: how hard the engines work, and how fast the wind blows.
-export function hum(thrust: number, boost: boolean, speed: number) {
-  const { enabled, context, engine } = sound;
-  if (!enabled || !context || !engine) return;
+// The engines and the wind stay down while the visitor reads, but the notes of
+// what is pressed don't.
+export function duck(on: boolean) {
+  const { context, bed } = sound;
+  if (!context || !bed) return;
+  bed.gain.setTargetAtTime(on ? 0.35 : 1, context.currentTime, 0.25);
+}
+
+// The engines stop and go, and the wind dies down, as the ship leaves the flight
+// for the hangar or the photo mode.
+export function quiet() {
+  window.clearTimeout(sound.previewTimer);
+  const { context, engine, wind } = sound;
+  if (!context) return;
   const now = context.currentTime;
-  const push = Math.max(0, thrust);
-  engine.gain.gain.setTargetAtTime(
-    0.06 + push * 0.12 + (boost ? 0.1 : 0),
-    now,
-    0.08,
+  engine?.stop(now);
+  sound.engine = null;
+  sound.ship = null;
+  sound.spooling = 0;
+  sound.boosting = false;
+  wind?.gain.setTargetAtTime(0, now, 0.12);
+}
+
+// On take-off, the ship's engines spool up, and the hum takes over once they have.
+export function ignite(id: ShipId) {
+  const engine = running(id);
+  if (!engine || !sound.context) return;
+  window.clearTimeout(sound.previewTimer);
+  const now = sound.context.currentTime;
+  engine.rev(now);
+  engine.kick(now + 0.2);
+  sound.spooling = now + engine.voice.spool;
+}
+
+// In the hangar, a ship's engines for a moment, to hear it before choosing.
+export function preview(id: ShipId) {
+  const engine = running(id);
+  if (!engine || !sound.context) return;
+  window.clearTimeout(sound.previewTimer);
+  engine.rev(sound.context.currentTime, previewHold);
+  sound.previewTimer = window.setTimeout(
+    quiet,
+    (engine.voice.spool + previewHold + previewEnd) * 1000,
   );
-  engine.filter.frequency.setTargetAtTime(
-    260 + push * 900 + (boost ? 1200 : 0) + speed * 18,
-    now,
-    0.1,
-  );
-  engine.hum.frequency.setTargetAtTime(
-    48 + speed * 1.1 + (boost ? 18 : 0),
-    now,
-    0.1,
-  );
-  engine.sub.frequency.setTargetAtTime(96 + speed * 2.2, now, 0.1);
-  engine.wind.gain.setTargetAtTime(
-    Math.min(0.22, speed / 140) + (boost ? 0.12 : 0),
-    now,
-    0.1,
-  );
+}
+
+// Each frame: how hard the engines work, under boost or not, and how much of its
+// top speed the ship is at, from 0 to 1, for them and for the wind.
+export function hum(id: ShipId, thrust: number, boost: boolean, pace: number) {
+  const { enabled, context, wind } = sound;
+  if (!enabled || !context || !wind) return;
+  const now = context.currentTime;
+  if (now < sound.spooling) return;
+  if (boost === sound.boosting && now - sound.hummed < humStep) return;
+  const engine = running(id);
+  if (!engine) return;
+  // A ship in flight is past any moment in the hangar.
+  window.clearTimeout(sound.previewTimer);
+  const share = Math.min(1, pace);
+  engine.set(0.62 * Math.max(0, thrust) + 0.38 * share, boost, now);
+  if (boost && !sound.boosting) engine.kick(now);
+  sound.hummed = now;
+  sound.boosting = boost;
+  wind.gain.setTargetAtTime(share * 0.09 + (boost ? 0.05 : 0), now, 0.1);
 }
 
 // A note, or a chord, that fades: frequencies, their start offsets, the
@@ -183,7 +220,6 @@ export type Cue =
   | 'land'
   | 'holocron'
   | 'bump'
-  | 'takeoff'
   | 'arrive'
   | 'photo'
   | 'party'
@@ -205,8 +241,8 @@ export function playGate(flown: number) {
 }
 
 export function play(cue: Cue) {
-  const { enabled, context, master } = sound;
-  if (!enabled || !context || !master) return;
+  const { enabled, context, master, noise } = sound;
+  if (!enabled || !context || !master || !noise) return;
   const now = context.currentTime;
   switch (cue) {
     case 'blip':
@@ -260,25 +296,10 @@ export function play(cue: Cue) {
         0.14,
       );
       break;
-    case 'takeoff': {
-      const osc = context.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(110, now);
-      osc.frequency.exponentialRampToValueAtTime(520, now + 0.7);
-      const gain = context.createGain();
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.2, now + 0.1);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
-      osc.connect(gain);
-      gain.connect(master);
-      osc.start(now);
-      osc.stop(now + 1);
-      break;
-    }
     case 'arrive': {
       // Out of hyperspace: a rush of air that falls away, over a low boom.
       const rush = context.createBufferSource();
-      rush.buffer = noise(context);
+      rush.buffer = noise.white;
       const band = context.createBiquadFilter();
       band.type = 'bandpass';
       band.Q.value = 0.8;
@@ -325,7 +346,7 @@ export function play(cue: Cue) {
     }
     case 'photo': {
       const click = context.createBufferSource();
-      click.buffer = noise(context);
+      click.buffer = noise.white;
       const band = context.createBiquadFilter();
       band.type = 'bandpass';
       band.frequency.value = 2800;

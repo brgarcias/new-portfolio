@@ -12,6 +12,7 @@ import {
   plotRoute,
   routeStep,
 } from '../src/app/game/flight-plan';
+import { voices, type Voice } from '../src/app/game/engines';
 import { enteredPlanet, newTitleWatch } from '../src/app/game/titles';
 import {
   arena,
@@ -170,6 +171,125 @@ async function waitForEntrances(page: Page) {
         .map((animation) => animation.finished.catch(() => undefined)),
     ),
   );
+}
+
+// What the page's audio does, watched from before the game starts: what comes out
+// of the master, the first volume to be made, its level and how bright it is, the
+// loudest since the last reset, the sources running and the tones and the rushes
+// of air they were.
+interface AudioWatch {
+  context: AudioContext | null;
+  level: number;
+  loudest: number;
+  brightness: number;
+  running: number;
+  rushes: number;
+  tones: string[];
+}
+
+async function watchAudio(page: Page) {
+  await page.addInitScript(() => {
+    const watch: AudioWatch = {
+      context: null,
+      level: 0,
+      loudest: 0,
+      brightness: 0,
+      running: 0,
+      rushes: 0,
+      tones: [],
+    };
+    let analyser: AnalyserNode | null = null;
+    Object.assign(window, { audioWatch: watch });
+    const Original = window.AudioContext;
+    window.AudioContext = class extends Original {
+      constructor(options?: AudioContextOptions) {
+        super(options);
+        watch.context = this;
+      }
+      createGain() {
+        const node = super.createGain();
+        if (!analyser) {
+          analyser = this.createAnalyser();
+          analyser.fftSize = 8192;
+          analyser.smoothingTimeConstant = 0;
+          node.connect(analyser);
+        }
+        return node;
+      }
+    };
+    // A buffer's source has its own start, with an offset.
+    for (const kind of [AudioScheduledSourceNode, AudioBufferSourceNode]) {
+      const start = kind.prototype.start as (...args: number[]) => void;
+      kind.prototype.start = function (
+        this: AudioScheduledSourceNode,
+        ...args: number[]
+      ) {
+        watch.running += 1;
+        this.addEventListener('ended', () => {
+          watch.running -= 1;
+        });
+        if (this instanceof OscillatorNode && this.frequency.value >= 20) {
+          watch.tones.push(`${this.type}:${Math.round(this.frequency.value)}`);
+        }
+        if (this instanceof AudioBufferSourceNode && !this.loop) {
+          watch.rushes += 1;
+        }
+        start.apply(this, args);
+      };
+    }
+    // The page measures for itself, because each command to it can take a second
+    // on CI's software renderer.
+    setInterval(() => {
+      if (!analyser || !watch.context) return;
+      const wave = new Float32Array(analyser.fftSize);
+      analyser.getFloatTimeDomainData(wave);
+      let sum = 0;
+      for (const value of wave) sum += value * value;
+      watch.level = Math.sqrt(sum / wave.length);
+      if (watch.level <= watch.loudest) return;
+      watch.loudest = watch.level;
+      const bins = new Float32Array(analyser.frequencyBinCount);
+      analyser.getFloatFrequencyData(bins);
+      let power = 0;
+      let moment = 0;
+      bins.forEach((db, bin) => {
+        const share = 10 ** (db / 10);
+        power += share;
+        moment += share * bin;
+      });
+      watch.brightness =
+        ((moment / (power || 1)) * watch.context.sampleRate) / analyser.fftSize;
+    }, 60);
+  });
+  const read = (page: Page) =>
+    page.evaluate(() => {
+      const { context, ...numbers } = (
+        window as unknown as { audioWatch: AudioWatch }
+      ).audioWatch;
+      return { ...numbers, state: context?.state };
+    });
+  return {
+    level: async () => (await read(page)).level,
+    loudest: async () => (await read(page)).loudest,
+    brightness: async () => (await read(page)).brightness,
+    running: async () => (await read(page)).running,
+    rushes: async () => (await read(page)).rushes,
+    state: async () => (await read(page)).state,
+    // The tones made since the last time they were read.
+    tones: () =>
+      page.evaluate(() => {
+        const watch = (window as unknown as { audioWatch: AudioWatch })
+          .audioWatch;
+        return watch.tones.splice(0);
+      }),
+    reset: () =>
+      page.evaluate(() => {
+        const watch = (window as unknown as { audioWatch: AudioWatch })
+          .audioWatch;
+        watch.loudest = 0;
+        watch.brightness = 0;
+      }),
+  };
 }
 
 async function takeOff(page: Page) {
@@ -345,8 +465,11 @@ test('abre o hangar com as naves e lembra a escolhida', async ({ page }) => {
   // Taking off is in sight on every screen, pinned to the bottom on the
   // smaller ones.
   await expect(page.getByRole('button', { name: /Take off/ })).toBeInViewport();
-  // Tab reaches the chosen ship before the take-off button.
+  // Tab goes through the way back and the sound, and reaches the chosen ship
+  // before the take-off button.
   await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: 'Sound off' })).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(page.getByRole('radio', { name: 'X-wing' })).toBeFocused();
   await page.keyboard.press('Tab');
@@ -1571,52 +1694,168 @@ test('liga o som e entra no modo foto', async ({ page, isMobile }) => {
   await expect(page.locator('.hud__top')).toBeVisible();
 });
 
+test('cada nave tem a própria voz, sem nada de um escapamento', () => {
+  const list = Object.values(voices);
+  expect(list).toHaveLength(shipNames.length);
+  expect(new Set(list.map((voice) => JSON.stringify(voice))).size).toBe(
+    shipNames.length,
+  );
+  const mix = ([idle, full]: readonly [number, number], load: number) =>
+    idle + (full - idle) * load;
+  // The harmonics that count, of each wave.
+  const series: Partial<Record<OscillatorType, number[]>> = {
+    sine: [1],
+    triangle: [1, 3],
+    square: [1, 3],
+    sawtooth: [1, 2, 3],
+  };
+  const check = (voice: Voice, load: number, boost: number) => {
+    const partials = voice.tones.flatMap((tone) => {
+      const pitch =
+        (tone.at
+          ? mix(tone.at, load)
+          : mix(voice.pitch, load) * (tone.ratio ?? 1)) * boost;
+      // A hard-edged wave down low is a train of pulses.
+      if (tone.wave === 'sawtooth' || tone.wave === 'square') {
+        expect(pitch).toBeGreaterThanOrEqual(200);
+      }
+      return (series[tone.wave] ?? []).map((harmonic) => pitch * harmonic);
+    });
+    // Two low partials beat, and between 15 and 90 Hz apart that beat is the rate
+    // of an exhaust. Closer, it is a slow swell; further, they don't beat.
+    const low = partials.filter((partial) => partial < 500);
+    for (const a of low) {
+      for (const b of low) {
+        const gap = Math.abs(a - b);
+        expect(gap <= 15 || gap >= 90).toBe(true);
+      }
+    }
+  };
+  for (const voice of list) {
+    // A motorcycle more than doubles its pitch.
+    expect(voice.pitch[1] / voice.pitch[0]).toBeLessThan(1.6);
+    for (const load of [0, 0.25, 0.5, 0.75, 1]) {
+      check(voice, load, 1);
+      check(voice, load, voice.boost);
+    }
+  }
+});
+
+test('toca o motor de cada nave no hangar, um de cada vez', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text());
+  });
+  const audio = await watchAudio(page);
+  await page.goto('/play');
+  // With the sound off, choosing a ship plays nothing.
+  await page.getByRole('radio', { name: 'TIE fighter' }).click();
+  expect(await audio.running()).toBe(0);
+  await page.getByRole('radio', { name: 'X-wing' }).click();
+  // Turning it on plays the ship on the pedestal, for a moment, and all that is
+  // left then is the wind's source, silent.
+  await page.getByRole('button', { name: 'Sound off' }).click();
+  await expect(page.getByRole('button', { name: 'Sound on' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect.poll(audio.loudest).toBeGreaterThan(0.004);
+  await expect.poll(audio.level).toBeLessThan(0.0003);
+  await expect.poll(audio.running).toBe(1);
+  expect(await page.evaluate(() => localStorage.getItem('sound'))).toBe('on');
+  await audio.tones();
+  // Each ship plays its own voice, without waiting for the last one to end.
+  const ids = Object.keys(voices) as (keyof typeof voices)[];
+  for (const [index, name] of [...shipNames.entries()].slice(1)) {
+    const voice = voices[ids[index]];
+    await audio.reset();
+    await page.getByRole('radio', { name }).click();
+    await expect.poll(audio.loudest).toBeGreaterThan(0.004);
+    expect(await audio.tones()).toEqual(
+      voice.tones.map((tone) => {
+        const pitch = tone.at ? tone.at[0] : voice.pitch[0] * (tone.ratio ?? 1);
+        return `${tone.wave}:${Math.round(pitch * 0.62)}`;
+      }),
+    );
+  }
+  await expect.poll(audio.level).toBeLessThan(0.0003);
+  await expect.poll(audio.running).toBe(1);
+  // What comes out follows: the freighter is the deepest, and the A-wing the
+  // brightest, measured where each is loudest, with nothing else playing.
+  const brightness = async (name: string) => {
+    await audio.reset();
+    await page.getByRole('radio', { name }).click();
+    await expect.poll(audio.loudest).toBeGreaterThan(0.004);
+    await page.waitForTimeout(1200);
+    const heard = await audio.brightness();
+    await expect.poll(audio.level).toBeLessThan(0.0003);
+    return heard;
+  };
+  expect(await brightness('Millennium Falcon')).toBeLessThan(450);
+  expect(await brightness('A-wing')).toBeGreaterThan(700);
+  // Choosing the same ship plays it again, and turning the sound off stops it.
+  await audio.reset();
+  await page.getByRole('radio', { name: shipNames[5] }).click();
+  await expect.poll(audio.loudest).toBeGreaterThan(0.004);
+  await page.getByRole('button', { name: 'Sound on' }).click();
+  await expect.poll(audio.level).toBeLessThan(0.0003);
+  await expect.poll(audio.running).toBe(1);
+  await page.getByRole('radio', { name: 'X-wing' }).click();
+  expect(await audio.running()).toBe(1);
+  expect(errors).toEqual([]);
+});
+
 test('cala os motores no hangar e quando a página some', async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
-  // The sound is on from the start, and the page's audio is watched: its
-  // context and every volume in it, the first one being the master's.
-  await page.addInitScript(() => {
-    localStorage.setItem('sound', 'on');
-    const gains: GainNode[] = [];
-    const contexts: AudioContext[] = [];
-    Object.assign(window, { gains, contexts });
-    const Original = window.AudioContext;
-    window.AudioContext = class extends Original {
-      constructor(options?: AudioContextOptions) {
-        super(options);
-        contexts.push(this);
-      }
-      createGain() {
-        const node = super.createGain();
-        gains.push(node);
-        return node;
-      }
-    };
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text());
   });
-  const loudest = () =>
-    page.evaluate(() =>
-      Math.max(
-        ...(window as unknown as { gains: GainNode[] }).gains
-          .slice(1)
-          .map((node) => node.gain.value),
-      ),
-    );
-  const state = () =>
-    page.evaluate(
-      () =>
-        (window as unknown as { contexts: AudioContext[] }).contexts[0]?.state,
-    );
+  // The sound is on from the start, and what comes out of it is measured.
+  await page.addInitScript(() => localStorage.setItem('sound', 'on'));
+  const audio = await watchAudio(page);
   await takeOff(page);
-  // In flight, the engines hum.
-  await expect.poll(loudest).toBeGreaterThan(0.04);
-  // Back in the hangar, they die down, the wind too.
+  // In flight, the engines hum, softly while the ship idles.
+  await expect.poll(audio.level).toBeGreaterThan(0.002);
+  await expect.poll(audio.level).toBeLessThan(0.016);
+  // Under the chart, they stay down for the reading, measured once the level
+  // holds, within a fifth, for half a second.
+  let flying = 0;
+  await expect
+    .poll(async () => {
+      const before = await audio.level();
+      await page.waitForTimeout(500);
+      flying = await audio.level();
+      return Math.abs(flying - before) / before;
+    })
+    .toBeLessThan(0.2);
+  await page.keyboard.press('KeyM');
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect.poll(audio.level).toBeLessThan(flying * 0.6);
+  await page.keyboard.press('KeyM');
+  await expect(page.getByRole('dialog')).toBeHidden();
+  await expect.poll(audio.level).toBeGreaterThan(flying * 0.7);
+  // The photo mode silences them, and they come back with the flight.
+  await page.keyboard.press('KeyP');
+  await expect(page.locator('.hud__top')).toBeHidden();
+  await expect.poll(audio.level).toBeLessThan(0.0003);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.hud__top')).toBeVisible();
+  await expect.poll(audio.level).toBeGreaterThan(0.002);
+  // Back in the hangar, they stop, the wind dies down, and only its source runs.
   await page.getByRole('button', { name: 'Change ship' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Choose your ship',
   );
-  await expect.poll(loudest).toBeLessThan(0.005);
+  await expect.poll(audio.level).toBeLessThan(0.0003);
+  await expect.poll(audio.running).toBe(1);
   // A hidden page makes no sound, and the sound comes back with the page.
   const hide = (hidden: boolean) =>
     page.evaluate((hidden) => {
@@ -1627,9 +1866,26 @@ test('cala os motores no hangar e quando a página some', async ({
       document.dispatchEvent(new Event('visibilitychange'));
     }, hidden);
   await hide(true);
-  await expect.poll(state).toBe('suspended');
+  await expect.poll(audio.state).toBe('suspended');
   await hide(false);
-  await expect.poll(state).toBe('running');
+  await expect.poll(audio.state).toBe('running');
+  // On a new take-off they spool up and settle, the thrust opens them up, and the
+  // boost brings a rush of air. This comes last, because the ship goes on to the
+  // first platform, and its section opens over the buttons.
+  await page.getByRole('button', { name: 'Take off' }).click();
+  await expect
+    .poll(() => reading(page, 'time'), { timeout: 20_000 })
+    .toBeGreaterThan(0.5);
+  await expect.poll(audio.level).toBeLessThan(0.016);
+  await audio.reset();
+  await page.keyboard.down('KeyW');
+  await expect.poll(audio.loudest).toBeGreaterThan(0.016);
+  const rushes = await audio.rushes();
+  await page.keyboard.down('ShiftLeft');
+  await expect.poll(audio.rushes).toBeGreaterThan(rushes);
+  await page.keyboard.up('ShiftLeft');
+  await page.keyboard.up('KeyW');
+  expect(errors).toEqual([]);
 });
 
 test('mostra de novo o nome do planeta quando a nave sai e volta', async ({
