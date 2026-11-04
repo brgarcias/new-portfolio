@@ -173,18 +173,21 @@ async function waitForEntrances(page: Page) {
   );
 }
 
-// What the page's audio does, watched from before the game starts: what comes out
-// of the master, the first volume to be made, its level and how bright it is, the
-// loudest since the last reset, the sources running and the tones and the rushes
-// of air they were.
+// What the page's audio does, watched from before the game starts: what reaches
+// the speakers, its level, its peak and how bright it is, the loudest since the
+// last reset, the sources running and the tones and the rushes of air they were,
+// and the audio session Safari would see, which no other browser has.
 interface AudioWatch {
   context: AudioContext | null;
   level: number;
+  peak: number;
   loudest: number;
   brightness: number;
   running: number;
   rushes: number;
   tones: string[];
+  session: { type: string };
+  startedAs: string;
 }
 
 async function watchAudio(page: Page) {
@@ -192,31 +195,41 @@ async function watchAudio(page: Page) {
     const watch: AudioWatch = {
       context: null,
       level: 0,
+      peak: 0,
       loudest: 0,
       brightness: 0,
       running: 0,
       rushes: 0,
       tones: [],
+      session: { type: 'auto' },
+      startedAs: '',
     };
     let analyser: AnalyserNode | null = null;
     Object.assign(window, { audioWatch: watch });
+    Object.defineProperty(navigator, 'audioSession', { value: watch.session });
     const Original = window.AudioContext;
     window.AudioContext = class extends Original {
       constructor(options?: AudioContextOptions) {
         super(options);
         watch.context = this;
-      }
-      createGain() {
-        const node = super.createGain();
-        if (!analyser) {
-          analyser = this.createAnalyser();
-          analyser.fftSize = 8192;
-          analyser.smoothingTimeConstant = 0;
-          node.connect(analyser);
-        }
-        return node;
+        watch.startedAs = watch.session.type;
       }
     };
+    const connect = AudioNode.prototype.connect as (
+      ...args: unknown[]
+    ) => unknown;
+    AudioNode.prototype.connect = function (
+      this: AudioNode,
+      ...args: unknown[]
+    ) {
+      if (!analyser && args[0] === this.context.destination) {
+        analyser = this.context.createAnalyser();
+        analyser.fftSize = 8192;
+        analyser.smoothingTimeConstant = 0;
+        connect.call(this, analyser);
+      }
+      return connect.apply(this, args);
+    } as typeof AudioNode.prototype.connect;
     // A buffer's source has its own start, with an offset.
     for (const kind of [AudioScheduledSourceNode, AudioBufferSourceNode]) {
       const start = kind.prototype.start as (...args: number[]) => void;
@@ -244,7 +257,10 @@ async function watchAudio(page: Page) {
       const wave = new Float32Array(analyser.fftSize);
       analyser.getFloatTimeDomainData(wave);
       let sum = 0;
-      for (const value of wave) sum += value * value;
+      for (const value of wave) {
+        sum += value * value;
+        watch.peak = Math.max(watch.peak, Math.abs(value));
+      }
       watch.level = Math.sqrt(sum / wave.length);
       if (watch.level <= watch.loudest) return;
       watch.loudest = watch.level;
@@ -270,11 +286,14 @@ async function watchAudio(page: Page) {
     });
   return {
     level: async () => (await read(page)).level,
+    peak: async () => (await read(page)).peak,
     loudest: async () => (await read(page)).loudest,
     brightness: async () => (await read(page)).brightness,
     running: async () => (await read(page)).running,
     rushes: async () => (await read(page)).rushes,
     state: async () => (await read(page)).state,
+    session: async () => (await read(page)).session.type,
+    startedAs: async () => (await read(page)).startedAs,
     // The tones made since the last time they were read.
     tones: () =>
       page.evaluate(() => {
@@ -1756,14 +1775,18 @@ test('toca o motor de cada nave no hangar, um de cada vez', async ({
   await page.getByRole('radio', { name: 'TIE fighter' }).click();
   expect(await audio.running()).toBe(0);
   await page.getByRole('radio', { name: 'X-wing' }).click();
+  expect(await audio.session()).toBe('auto');
   // Turning it on plays the ship on the pedestal, for a moment, and all that is
-  // left then is the wind's source, silent.
+  // left then is the wind's source, silent. On an iPhone it plays as media does,
+  // from the start, or the silent mode would mute it on the speaker.
   await page.getByRole('button', { name: 'Sound off' }).click();
   await expect(page.getByRole('button', { name: 'Sound on' })).toHaveAttribute(
     'aria-pressed',
     'true',
   );
-  await expect.poll(audio.loudest).toBeGreaterThan(0.004);
+  expect(await audio.startedAs()).toBe('playback');
+  expect(await audio.session()).toBe('playback');
+  await expect.poll(audio.loudest).toBeGreaterThan(0.02);
   await expect.poll(audio.level).toBeLessThan(0.0003);
   await expect.poll(audio.running).toBe(1);
   expect(await page.evaluate(() => localStorage.getItem('sound'))).toBe('on');
@@ -1774,7 +1797,7 @@ test('toca o motor de cada nave no hangar, um de cada vez', async ({
     const voice = voices[ids[index]];
     await audio.reset();
     await page.getByRole('radio', { name }).click();
-    await expect.poll(audio.loudest).toBeGreaterThan(0.004);
+    await expect.poll(audio.loudest).toBeGreaterThan(0.02);
     expect(await audio.tones()).toEqual(
       voice.tones.map((tone) => {
         const pitch = tone.at ? tone.at[0] : voice.pitch[0] * (tone.ratio ?? 1);
@@ -1789,7 +1812,7 @@ test('toca o motor de cada nave no hangar, um de cada vez', async ({
   const brightness = async (name: string) => {
     await audio.reset();
     await page.getByRole('radio', { name }).click();
-    await expect.poll(audio.loudest).toBeGreaterThan(0.004);
+    await expect.poll(audio.loudest).toBeGreaterThan(0.02);
     await page.waitForTimeout(1200);
     const heard = await audio.brightness();
     await expect.poll(audio.level).toBeLessThan(0.0003);
@@ -1800,10 +1823,13 @@ test('toca o motor de cada nave no hangar, um de cada vez', async ({
   // Choosing the same ship plays it again, and turning the sound off stops it.
   await audio.reset();
   await page.getByRole('radio', { name: shipNames[5] }).click();
-  await expect.poll(audio.loudest).toBeGreaterThan(0.004);
+  await expect.poll(audio.loudest).toBeGreaterThan(0.02);
   await page.getByRole('button', { name: 'Sound on' }).click();
   await expect.poll(audio.level).toBeLessThan(0.0003);
   await expect.poll(audio.running).toBe(1);
+  // Off, it lets go of the phone's audio and sleeps.
+  expect(await audio.session()).toBe('auto');
+  await expect.poll(audio.state).toBe('suspended');
   await page.getByRole('radio', { name: 'X-wing' }).click();
   expect(await audio.running()).toBe(1);
   expect(errors).toEqual([]);
@@ -1823,8 +1849,8 @@ test('cala os motores no hangar e quando a página some', async ({
   const audio = await watchAudio(page);
   await takeOff(page);
   // In flight, the engines hum, softly while the ship idles.
-  await expect.poll(audio.level).toBeGreaterThan(0.002);
-  await expect.poll(audio.level).toBeLessThan(0.016);
+  await expect.poll(audio.level).toBeGreaterThan(0.01);
+  await expect.poll(audio.level).toBeLessThan(0.08);
   // Under the chart, they stay down for the reading, measured once the level
   // holds, within a fifth, for half a second.
   let flying = 0;
@@ -1848,7 +1874,7 @@ test('cala os motores no hangar e quando a página some', async ({
   await expect.poll(audio.level).toBeLessThan(0.0003);
   await page.keyboard.press('Escape');
   await expect(page.locator('.hud__top')).toBeVisible();
-  await expect.poll(audio.level).toBeGreaterThan(0.002);
+  await expect.poll(audio.level).toBeGreaterThan(0.01);
   // Back in the hangar, they stop, the wind dies down, and only its source runs.
   await page.getByRole('button', { name: 'Change ship' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
@@ -1876,15 +1902,17 @@ test('cala os motores no hangar e quando a página some', async ({
   await expect
     .poll(() => reading(page, 'time'), { timeout: 20_000 })
     .toBeGreaterThan(0.5);
-  await expect.poll(audio.level).toBeLessThan(0.016);
+  await expect.poll(audio.level).toBeLessThan(0.08);
   await audio.reset();
   await page.keyboard.down('KeyW');
-  await expect.poll(audio.loudest).toBeGreaterThan(0.016);
+  await expect.poll(audio.loudest).toBeGreaterThan(0.08);
   const rushes = await audio.rushes();
   await page.keyboard.down('ShiftLeft');
   await expect.poll(audio.rushes).toBeGreaterThan(rushes);
   await page.keyboard.up('ShiftLeft');
   await page.keyboard.up('KeyW');
+  // Loud enough for a phone's speaker, and it never clips.
+  expect(await audio.peak()).toBeLessThan(1);
   expect(errors).toEqual([]);
 });
 

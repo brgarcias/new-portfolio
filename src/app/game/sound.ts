@@ -26,6 +26,9 @@ const humStep = 1 / 15;
 // to settle back and go.
 const previewHold = 1.4;
 const previewEnd = 0.7;
+// How long the engines take to fade out and go, in milliseconds, when the sound is
+// turned off.
+const fadeOut = 1000;
 
 export const sound = {
   enabled: false,
@@ -55,12 +58,33 @@ export function storedSound() {
   }
 }
 
+// On an iPhone, a page's sound counts as ambient, and silent mode mutes it on the
+// speaker, though not on headphones or a Bluetooth speaker: the button would seem
+// broken. The visitor asked for the sound by pressing it, so it plays as media
+// does. Only Safari has this so far, and nothing else needs it.
+function playAsMedia(on: boolean) {
+  const { audioSession } = navigator as Navigator & {
+    audioSession?: { type: string };
+  };
+  if (audioSession) audioSession.type = on ? 'playback' : 'auto';
+}
+
 function setUp() {
   if (sound.context) return;
   const context = new AudioContext();
   const master = context.createGain();
   master.gain.value = 0;
-  master.connect(context.destination);
+  // The voices are quiet for a phone's speaker, so everything goes up, and this
+  // keeps the engines and the notes together from clipping. It also lifts what
+  // stays under its threshold, by itself, about 7 dB in Chromium and WebKit alike.
+  const limiter = context.createDynamicsCompressor();
+  limiter.threshold.value = -18;
+  limiter.knee.value = 12;
+  limiter.ratio.value = 6;
+  limiter.attack.value = 0.005;
+  limiter.release.value = 0.15;
+  master.connect(limiter);
+  limiter.connect(context.destination);
   const bed = context.createGain();
   bed.connect(master);
   const noise = makeNoiseBank(context);
@@ -99,14 +123,22 @@ export function setSound(on: boolean) {
     localStorage.setItem(storageKey, on ? 'on' : 'off');
   } catch {}
   if (on) {
+    playAsMedia(true);
     setUp();
     const { context, master } = sound;
     if (!context || !master) return;
     void context.resume();
-    master.gain.setTargetAtTime(0.5, context.currentTime, 0.05);
+    master.gain.setTargetAtTime(1, context.currentTime, 0.05);
   } else if (sound.context && sound.master) {
-    sound.master.gain.setTargetAtTime(0, sound.context.currentTime, 0.05);
+    const { context, master } = sound;
+    master.gain.setTargetAtTime(0, context.currentTime, 0.05);
     quiet();
+    // Off, it lets go of the phone's audio, for the music of another app, and
+    // sleeps once the engines have gone.
+    playAsMedia(false);
+    window.setTimeout(() => {
+      if (!sound.enabled) void context.suspend();
+    }, fadeOut);
   }
 }
 
