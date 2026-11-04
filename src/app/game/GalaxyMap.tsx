@@ -230,6 +230,7 @@ export default function GalaxyMap({
                         place: `${biomes[place.id].planet}, ${place.title}`,
                       })}
                       data-tip={t.remoteAccess}
+                      data-tip-side="right"
                       onClick={() => onRead(place.id)}
                     >
                       <BookIcon />

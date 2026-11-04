@@ -212,6 +212,11 @@ test.describe('tema do site', () => {
       page,
     }, testInfo) => {
       test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
+      const errors: string[] = [];
+      page.on('pageerror', (error) => errors.push(error.message));
+      page.on('console', (message) => {
+        if (message.type() === 'error') errors.push(message.text());
+      });
       await page.goto('/play');
       const play = page.locator('.play');
       await expect(page.locator('html')).toHaveClass(/light/);
@@ -239,9 +244,12 @@ test.describe('tema do site', () => {
       await page.emulateMedia({ colorScheme: 'light' });
       await expect(play).toHaveCSS('background-color', day);
       await expect.poll(sky, { timeout: 40_000 }).toBeGreaterThan(0.5);
+      // Nothing in the console, from the rays of the arrival on: their blending
+      // by day asks for a setting the renderer complains about without it.
+      expect(errors).toEqual([]);
     });
 
-    test('não tem violações de acessibilidade no hangar, na carta e no arquivo', async ({
+    test('não tem violações de acessibilidade no hangar, na carta, no arquivo e no modo foto', async ({
       page,
     }, testInfo) => {
       test.skip(testInfo.project.name === 'mobile', 'Once is enough.');
@@ -272,6 +280,23 @@ test.describe('tema do site', () => {
       await expect(archive).toBeVisible();
       await waitForEntrances(page);
       expect(await audit(page), 'archive').toEqual([]);
+      await page.keyboard.press('Escape');
+      await expect(archive).toBeHidden();
+      // The photo mode: each of its settings, and the photo before it is kept.
+      await page.keyboard.press('KeyP');
+      await expect(page.locator('.photo')).toBeVisible();
+      await waitForEntrances(page);
+      expect(await audit(page), 'camera settings').toEqual([]);
+      await page.getByRole('button', { name: 'Look', exact: true }).click();
+      expect(await audit(page), 'look settings').toEqual([]);
+      await page.getByRole('button', { name: 'Frame', exact: true }).click();
+      expect(await audit(page), 'frame settings').toEqual([]);
+      await page.getByRole('button', { name: 'Take photo' }).click();
+      await expect(
+        page.getByRole('dialog', { name: 'Your photo' }),
+      ).toBeVisible();
+      await waitForEntrances(page);
+      expect(await audit(page), 'preview').toEqual([]);
     });
   });
 
@@ -906,6 +931,288 @@ test('leva a rota na cor do planeta de destino', async ({ page, isMobile }) => {
   }
 });
 
+test.describe('modo foto', () => {
+  const place = async (page: Page) =>
+    (await page.locator('.photo').getAttribute('data-camera'))!
+      .split(' ')
+      .map(Number);
+  const moved = (from: number[], to: number[]) =>
+    Math.hypot(to[0] - from[0], to[1] - from[1], to[2] - from[2]);
+
+  test('para o mundo e solta a câmera', async ({ page }, testInfo) => {
+    test.skip(
+      testInfo.project.name === 'mobile',
+      'With a keyboard and a mouse.',
+    );
+    await takeOff(page);
+    await page.getByRole('button', { name: 'Photo mode' }).click();
+    const photo = page.locator('.photo');
+    await expect(photo).toHaveAttribute('data-camera', /\d/);
+    // The world stands still: the flight's clock stops.
+    const time = await reading(page, 'time');
+    const x = await reading(page, 'x');
+    const z = await reading(page, 'z');
+    await page.waitForTimeout(400);
+    expect(await reading(page, 'time')).toBe(time);
+
+    // The keys move the camera, and not the ship.
+    let from = await place(page);
+    await page.keyboard.down('KeyW');
+    await expect
+      .poll(async () => moved(from, await place(page)))
+      .toBeGreaterThan(1);
+    await page.keyboard.up('KeyW');
+    expect(await reading(page, 'x')).toBe(x);
+    expect(await reading(page, 'z')).toBe(z);
+    // E takes it up.
+    from = await place(page);
+    await page.keyboard.down('KeyE');
+    await expect
+      .poll(async () => (await place(page))[1] - from[1])
+      .toBeGreaterThan(0.5);
+    await page.keyboard.up('KeyE');
+
+    // A drag on the picture goes around the ship.
+    from = await place(page);
+    const box = (await page.locator('.photo__surface').boundingBox())!;
+    await page.mouse.move(box.width * 0.4, box.height * 0.6);
+    await page.mouse.down();
+    await page.mouse.move(box.width * 0.55, box.height * 0.6, { steps: 5 });
+    await page.mouse.up();
+    await expect
+      .poll(async () => moved(from, await place(page)))
+      .toBeGreaterThan(1);
+    // The wheel brings it closer, and the slider says so.
+    const distance = page.locator('.photo-range', { hasText: 'Distance' });
+    const far = await distance.locator('output').textContent();
+    await page.mouse.wheel(0, -600);
+    await expect(distance.locator('output')).not.toHaveText(far!);
+    // The sliders do it too, without a drag on the picture.
+    await page.getByLabel('Zoom').fill('3');
+    await expect
+      .poll(async () => Number(await photo.getAttribute('data-fov')))
+      .toBeLessThan(25);
+    await page.getByLabel('Tilt').fill('20');
+    await expect(
+      page.locator('.photo-range', { hasText: 'Tilt' }).locator('output'),
+    ).toHaveText('20°');
+    // And R brings it back.
+    await page.keyboard.press('KeyR');
+    await expect
+      .poll(async () => Number(await photo.getAttribute('data-fov')))
+      .toBeGreaterThan(50);
+
+    // H clears the screen, and the picture is all that stays.
+    await page.keyboard.press('KeyH');
+    await expect(page.locator('.photo__panel')).toBeHidden();
+    await expect(page.locator('.photo__shutter')).toBeHidden();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.photo__panel')).toBeVisible();
+
+    // The flight goes on from where it was, and the view comes back to it.
+    await page.keyboard.press('Escape');
+    await expect(photo).toBeHidden();
+    await expect.poll(() => reading(page, 'time')).toBeGreaterThan(time);
+    expect(await reading(page, 'x')).toBeCloseTo(x, 0);
+  });
+
+  test('mostra a prévia antes de salvar', async ({ page }, testInfo) => {
+    await takeOff(page);
+    await page.getByRole('button', { name: 'Photo mode' }).click();
+    // On a phone the settings start closed, leaving the picture.
+    const look = page.getByRole('button', { name: 'Look', exact: true });
+    if (testInfo.project.name === 'mobile') {
+      await expect(page.getByLabel('Zoom')).toBeHidden();
+      await look.click();
+    } else {
+      await look.click();
+    }
+    await page.getByRole('button', { name: 'Noir', exact: true }).click();
+    // The filter shows on the picture as it will come out.
+    await expect(page.locator('.game__canvas')).toHaveCSS(
+      'filter',
+      /grayscale\(1\)/,
+    );
+    await page.getByRole('button', { name: 'Frame', exact: true }).click();
+    await page.getByRole('button', { name: 'Square', exact: true }).click();
+    await page.getByRole('button', { name: 'Take photo' }).click();
+
+    const dialog = page.getByRole('dialog', { name: 'Your photo' });
+    await expect(dialog).toBeVisible();
+    // Square, in black and white, and sharper than the screen.
+    const picture = await dialog.getByRole('img').evaluate((element) => {
+      const canvas = element as HTMLCanvasElement;
+      const { data } = canvas
+        .getContext('2d')!
+        .getImageData(0, 0, canvas.width, canvas.height);
+      let colored = 0;
+      for (let i = 0; i < data.length; i += 4 * 97) {
+        if (data[i] !== data[i + 1] || data[i + 1] !== data[i + 2]) {
+          colored += 1;
+        }
+      }
+      return { width: canvas.width, height: canvas.height, colored };
+    });
+    expect(picture.width).toBe(picture.height);
+    expect(picture.colored).toBe(0);
+
+    // Nothing is saved until it is asked for.
+    await expect(dialog.getByRole('status')).toHaveText('');
+    const download = page.waitForEvent('download');
+    await dialog.getByRole('link', { name: 'Save photo' }).click();
+    const file = await download;
+    expect(file.suggestedFilename()).toMatch(/^portfolio-.*\.png$/);
+    const png = await readFile((await file.path())!);
+    expect(png.subarray(1, 4).toString()).toBe('PNG');
+    expect(png.readUInt32BE(16)).toBe(picture.width);
+    expect(png.readUInt32BE(20)).toBe(picture.height);
+    await expect(dialog.getByRole('status')).toHaveText('Photo saved');
+
+    // Escape goes back to the camera, and only then leaves it.
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    await expect(page.locator('.photo')).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Take photo' }),
+    ).toBeFocused();
+    if (testInfo.project.name === 'mobile') return;
+    // Space takes another.
+    await page.keyboard.press('Space');
+    await expect(dialog).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.photo')).toBeHidden();
+    await expect(page.locator('.game__canvas')).toHaveCSS('filter', 'none');
+  });
+
+  test('deixa aproximar com dois dedos no celular', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile', 'Fingers.');
+    await takeOff(page);
+    await page.getByRole('button', { name: 'Photo mode' }).click();
+    await page.getByRole('button', { name: 'Camera', exact: true }).click();
+    const output = page
+      .locator('.photo-range', { hasText: 'Distance' })
+      .locator('output');
+    await expect(output).toHaveText(/\d/);
+    const before = parseInt((await output.textContent())!, 10);
+    await page.getByRole('button', { name: 'Camera', exact: true }).click();
+    const session = await page.context().newCDPSession(page);
+    const touch = (type: string, points: { x: number; y: number }[]) =>
+      session.send('Input.dispatchTouchEvent', {
+        type,
+        touchPoints: points,
+      } as never);
+    await touch('touchStart', [
+      { x: 170, y: 200 },
+      { x: 220, y: 200 },
+    ]);
+    await touch('touchMove', [
+      { x: 120, y: 200 },
+      { x: 270, y: 200 },
+    ]);
+    await touch('touchMove', [
+      { x: 80, y: 200 },
+      { x: 310, y: 200 },
+    ]);
+    await touch('touchEnd', []);
+    await page.getByRole('button', { name: 'Camera', exact: true }).click();
+    await expect
+      .poll(async () => parseInt((await output.textContent())!, 10))
+      .toBeLessThan(before);
+  });
+});
+
+test.describe('rótulos dos botões', () => {
+  test('ficam por cima de tudo, sem cobrir os vizinhos', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile', 'A touch has no hover.');
+    await takeOff(page);
+    const tip = page.locator('.g-tip');
+    await expect(tip).toBeHidden();
+    const tools = page.locator('.hud__tool');
+    const boxes = await tools.evaluateAll((all) =>
+      all.map((tool) => {
+        const { left, right, top, bottom } = tool.getBoundingClientRect();
+        return { left, right, top, bottom };
+      }),
+    );
+    for (const [index, name] of [
+      [0, 'Holocron archive'],
+      [1, 'Sound off'],
+      [2, 'Photo mode'],
+      [3, 'HUD: full'],
+    ] as const) {
+      await tools.nth(index).hover();
+      await expect(tip).toBeVisible();
+      await expect(tip).toContainText(name);
+      // It clears the row of buttons, and is not behind any of them.
+      const box = (await tip.boundingBox())!;
+      for (const tool of boxes) {
+        const clear =
+          box.y >= tool.bottom ||
+          box.y + box.height <= tool.top ||
+          box.x >= tool.right ||
+          box.x + box.width <= tool.left;
+        expect(clear, name).toBe(true);
+      }
+    }
+    await page.mouse.move(700, 500);
+    await expect(tip).toBeHidden();
+  });
+
+  test('saem da carta, sem dar a ela uma rolagem', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile', 'A touch has no hover.');
+    await takeOff(page);
+    await page
+      .getByRole('button', { name: 'Open the navigation chart' })
+      .click();
+    const map = page.getByRole('dialog', { name: 'Navigation chart' });
+    await expect(map).toBeVisible();
+    const sheet = page.locator('.game-map__sheet');
+    const scrolls = () =>
+      sheet.evaluate((element) => element.scrollWidth > element.clientWidth);
+    expect(await scrolls()).toBe(false);
+    const tip = page.locator('.g-tip');
+    await page.locator('.destination__read').first().hover();
+    await expect(tip).toHaveText('Remote access');
+    await expect(tip).toBeVisible();
+    expect(await scrolls()).toBe(false);
+    // Beyond the sheet's edge, and whole on the screen.
+    const box = (await tip.boundingBox())!;
+    const edge = (await sheet.boundingBox())!;
+    expect(box.x + box.width).toBeGreaterThan(edge.x + edge.width);
+    expect(box.x + box.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+    // With no room at the side, it stays on the screen on the other one.
+    await page.setViewportSize({ width: 1100, height: 800 });
+    await page.mouse.move(10, 10);
+    await page.locator('.destination__read').first().hover();
+    await expect(tip).toBeVisible();
+    const narrow = (await tip.boundingBox())!;
+    expect(narrow.x + narrow.width).toBeLessThanOrEqual(1100);
+    // It goes when the dialog does.
+    await page.keyboard.press('Escape');
+    await expect(map).toBeHidden();
+    await expect(tip).toBeHidden();
+  });
+
+  test('aparecem pelo teclado', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile', 'With a keyboard.');
+    await takeOff(page);
+    await page.locator('.hud__tool').first().focus();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('.g-tip')).toBeVisible();
+    await expect(page.locator('.g-tip')).toContainText('Sound off');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.g-tip')).toBeHidden();
+  });
+});
+
 test('deixa só o quadro no modo foto, e a mira no HUD imersivo', async ({
   page,
 }) => {
@@ -1251,19 +1558,9 @@ test('liga o som e entra no modo foto', async ({ page, isMobile }) => {
     'true',
   );
   expect(await page.evaluate(() => localStorage.getItem('sound'))).toBe('on');
-  // Photo mode leaves only the picture, and saves it.
+  // Photo mode leaves only the picture.
   await page.getByRole('button', { name: 'Photo mode' }).click();
   await expect(page.locator('.hud__top')).toBeHidden();
-  const download = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Save photo' }).click();
-  const photo = await download;
-  expect(photo.suggestedFilename()).toMatch(/^portfolio-.*\.png$/);
-  // At the canvas's own resolution, whatever the frames: the width in the
-  // PNG's header is at least the page's.
-  const png = await readFile((await photo.path())!);
-  expect(png.readUInt32BE(16)).toBeGreaterThanOrEqual(
-    page.viewportSize()!.width,
-  );
   await page.getByRole('button', { name: 'Leave photo mode' }).click();
   await expect(page.locator('.hud__top')).toBeVisible();
   if (isMobile) return;

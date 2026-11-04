@@ -15,6 +15,7 @@ import { hunt } from './hunt';
 import { hum, play, quiet } from './sound';
 import { updateInstruments } from './instruments';
 import { overlay } from './overlay';
+import { photo } from './photo';
 import { createState, step, type ShipState } from './physics';
 import { resetTelemetry, telemetry } from './telemetry';
 import { enteredPlanet, newTitleWatch } from './titles';
@@ -139,6 +140,8 @@ const streakMaterial = new THREE.MeshBasicMaterial({
   depthTest: false,
   depthWrite: false,
   blending: THREE.AdditiveBlending,
+  // Subtracting light, by day, asks for it, and adding it looks the same.
+  premultipliedAlpha: true,
   side: THREE.DoubleSide,
   fog: false,
   toneMapped: false,
@@ -155,15 +158,14 @@ function stretch(left: number) {
     positions.setZ(i * 4 + 3, far);
   }
   positions.needsUpdate = true;
-  const fade = Math.min(0.9, left * 1.8);
-  streakMaterial.opacity = fade;
+  streakMaterial.opacity = Math.min(0.9, left * 1.8);
   // Added to a bright sky, light would not show: by day, the rays darken it
   // instead, to a slate blue, and still fade towards the middle.
   const day = currentTheme() === 'light';
   streakMaterial.blending = day
     ? THREE.SubtractiveBlending
     : THREE.AdditiveBlending;
-  if (day) streakMaterial.color.setRGB(fade, fade * 0.8, fade * 0.5);
+  if (day) streakMaterial.color.setRGB(0.5, 0.42, 0.3);
   else streakMaterial.color.setRGB(1, 1, 1);
 }
 
@@ -533,6 +535,14 @@ export default function Ship({
   }, [model]);
 
   useFrame(({ camera }, delta) => {
+    // In the photo mode the ship stands as it was, flames and all, the camera is
+    // PhotoRig's, and it may leave the picture. The streaks of an arrival do.
+    if (photo.active) {
+      if (rig.current) rig.current.visible = !photo.hideShip;
+      if (hyper.current) hyper.current.visible = false;
+      return;
+    }
+    if (rig.current) rig.current.visible = true;
     // Slow frames, as on a weak machine or a software renderer, do not slow
     // the ship down: the physics runs in short steps that add up to the
     // frame's time, up to a second, as after a tab change.

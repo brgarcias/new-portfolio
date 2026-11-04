@@ -1,13 +1,7 @@
 'use client';
 
 // HOOKS
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type PointerEvent,
-} from 'react';
+import { useRef, type CSSProperties, type PointerEvent } from 'react';
 // I18N
 import { useI18n } from '@/src/i18n/I18nProvider';
 import { format } from '@/src/i18n/messages';
@@ -19,10 +13,9 @@ import { input } from './controls';
 import { CourseLock, CourseStrip } from './FlightPlan';
 import GalaxyMap from './GalaxyMap';
 import { overlay } from './overlay';
+import PhotoMode from './PhotoMode';
 import Radar from './Radar';
 import type { Ship } from './ships';
-import { snapshot } from './Snapshot';
-import { play } from './sound';
 import type { HudMode, Place, Toast } from './types';
 import { HolocronIcon, Keycap, Pips } from './ui';
 import { useMediaQuery } from './useMediaQuery';
@@ -34,7 +27,6 @@ import {
   BoltIcon,
   CameraIcon,
   CheckIcon,
-  DownloadIcon,
   EyeClosedIcon,
   EyeIcon,
   EyeOffIcon,
@@ -42,7 +34,6 @@ import {
   MapPinIcon,
   VolumeIcon,
   VolumeOffIcon,
-  XIcon,
 } from '@/src/components/Icon';
 
 const stickRadius = 44;
@@ -277,68 +268,6 @@ function Finale({ total }: { total: number }) {
           <Keycap>H</Keycap>
         </p>
       </div>
-    </div>
-  );
-}
-
-// Photo mode: nothing over the picture but a viewfinder's corners and two
-// buttons. A saved photo flashes the screen and says so for a moment.
-function PhotoMode({ onLeave }: { onLeave: () => void }) {
-  const t = useI18n().messages.game;
-  const [shots, setShots] = useState(0);
-  const [saved, setSaved] = useState<string | null>(null);
-  const timer = useRef(0);
-
-  useEffect(() => () => window.clearTimeout(timer.current), []);
-
-  const save = () => {
-    const picture = snapshot.take?.();
-    if (!picture) return;
-    const sector = overlay.hud?.dataset.sector;
-    const planet =
-      sector && sector !== 'hub'
-        ? biomes[sector as SectionId].planet.toLowerCase()
-        : 'space';
-    const name = `portfolio-${planet}.png`;
-    const link = document.createElement('a');
-    link.href = picture;
-    link.download = name;
-    link.click();
-    play('photo');
-    setShots((count) => count + 1);
-    setSaved(name);
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setSaved(null), 2600);
-  };
-
-  return (
-    <div className="photo" role="group" aria-label={t.photoMode}>
-      <span className="photo__frame" aria-hidden="true" />
-      <div className="photo__bar">
-        <span className="g-label photo__label">
-          <CameraIcon />
-          {t.photoMode}
-        </span>
-        <button type="button" className="g-btn g-btn--primary" onClick={save}>
-          <DownloadIcon />
-          {t.savePhoto}
-        </button>
-        <button type="button" className="g-btn" onClick={onLeave}>
-          <XIcon />
-          {t.leavePhoto}
-          <Keycap>Esc</Keycap>
-        </button>
-      </div>
-      {saved && (
-        <p className="photo__saved" role="status">
-          <CheckIcon />
-          {t.photoSaved}
-          <span className="g-num">{saved}</span>
-        </p>
-      )}
-      {shots > 0 && (
-        <span key={shots} className="photo__flash" aria-hidden="true" />
-      )}
     </div>
   );
 }
@@ -732,7 +661,7 @@ export default function Hud({
         {touch ? <TouchControls /> : <Legend />}
       </div>
 
-      {photo && <PhotoMode onLeave={() => onPhoto(false)} />}
+      {photo && <PhotoMode ship={ship} onLeave={() => onPhoto(false)} />}
       {mapOpen && (
         <GalaxyMap
           leaving={mapLeaving}

@@ -218,17 +218,18 @@
   color: #fff;
 }
 
-/* A label that slides out of an icon button, with its key. */
-[data-tip]::after {
-  position: absolute;
-  top: 50%;
-  left: calc(100% + 0.6rem);
+/* The label of an icon button, with its key, over everything (Tooltip.tsx). */
+.g-tip {
+  position: fixed;
+  z-index: 90;
+  top: 0;
+  left: 0;
   padding: 0.4rem 0.55rem;
-  border: 1px solid var(--g-line);
+  border: 1px solid var(--g-line-2);
   border-radius: var(--g-radius);
   background: var(--g-plate-2);
+  box-shadow: 0 10px 24px -14px rgb(0 0 0 / 0.8);
   color: var(--g-ink);
-  content: attr(data-tip);
   font-family: var(--g-display);
   font-size: 0.6875rem;
   font-weight: 600;
@@ -236,23 +237,14 @@
   opacity: 0;
   pointer-events: none;
   text-transform: uppercase;
-  transform: translate(-4px, -50%);
-  transition:
-    opacity var(--g-fast) var(--g-ease),
-    transform var(--g-fast) var(--g-ease);
+  transition: opacity var(--g-fast) var(--g-ease);
+  visibility: hidden;
   white-space: nowrap;
 }
 
-[data-tip][data-key]::after {
-  content: attr(data-tip) '  ·  ' attr(data-key);
-}
-
-@media (hover: hover) {
-  [data-tip]:hover::after,
-  [data-tip]:focus-visible::after {
-    opacity: 1;
-    transform: translate(0, -50%);
-  }
+.g-tip[data-show] {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Keys mean nothing under a finger. */
@@ -2710,31 +2702,122 @@
 .photo {
   position: absolute;
   inset: 0;
+  overflow: hidden;
+  container-type: size;
   pointer-events: none;
+}
+
+/* Where the pointer moves the camera, under everything else. */
+.photo__surface {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.photo__surface:active {
+  cursor: grabbing;
+}
+
+/* What will come out, in its proportions, cut from the middle of the screen. */
+.photo__crop {
+  --ratio: 1;
+
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  margin: auto;
+  pointer-events: none;
+}
+
+.photo__crop:not([data-frame='screen']) {
+  width: min(100cqw, calc(100cqh * var(--ratio)));
+  height: min(100cqh, calc(100cqw / var(--ratio)));
+  box-shadow: 0 0 0 100vmax rgb(0 0 0 / 0.82);
+}
+
+.photo__vignette,
+.photo__grid {
+  position: absolute;
+  inset: 0;
+}
+
+.photo__vignette {
+  background: radial-gradient(
+    ellipse farthest-corner at center,
+    transparent 55%,
+    rgb(0 0 0 / 0.6) 100%
+  );
+}
+
+.photo__grid {
+  background:
+    linear-gradient(rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.5)) 33.333% 0 /
+      1px 100%,
+    linear-gradient(rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.5)) 66.666% 0 /
+      1px 100%,
+    linear-gradient(rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.5)) 0 33.333% /
+      100% 1px,
+    linear-gradient(rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.5)) 0 66.666% /
+      100% 1px;
+  background-repeat: no-repeat;
 }
 
 .photo__frame {
   position: absolute;
-  inset: calc(var(--edge-t) + 3.75rem) var(--edge-r) var(--edge-b) var(--edge-l);
+  inset: 1rem;
   background:
-    linear-gradient(#fff, #fff) top left / 2.25rem 2px,
-    linear-gradient(#fff, #fff) top left / 2px 2.25rem,
-    linear-gradient(#fff, #fff) top right / 2.25rem 2px,
-    linear-gradient(#fff, #fff) top right / 2px 2.25rem,
-    linear-gradient(#fff, #fff) bottom left / 2.25rem 2px,
-    linear-gradient(#fff, #fff) bottom left / 2px 2.25rem,
-    linear-gradient(#fff, #fff) bottom right / 2.25rem 2px,
-    linear-gradient(#fff, #fff) bottom right / 2px 2.25rem;
+    linear-gradient(#fff, #fff) top left / 1.75rem 2px,
+    linear-gradient(#fff, #fff) top left / 2px 1.75rem,
+    linear-gradient(#fff, #fff) top right / 1.75rem 2px,
+    linear-gradient(#fff, #fff) top right / 2px 1.75rem,
+    linear-gradient(#fff, #fff) bottom left / 1.75rem 2px,
+    linear-gradient(#fff, #fff) bottom left / 2px 1.75rem,
+    linear-gradient(#fff, #fff) bottom right / 1.75rem 2px,
+    linear-gradient(#fff, #fff) bottom right / 2px 1.75rem;
   background-repeat: no-repeat;
-  opacity: 0.7;
+  opacity: 0.55;
 }
 
-/* At the top, where nothing else sits in photo mode (the bottom of a
-   Deploy Preview carries Netlify's own drawer). */
+/* In shares of the picture's shorter side, as the developed photo has it, in
+   darkroom.ts. It stays in the page, to give that its font. */
+.photo__caption {
+  position: absolute;
+  bottom: 4cqmin;
+  left: 4cqmin;
+  display: grid;
+  gap: 1.2cqmin;
+  color: #fff;
+  font-family: var(--g-display);
+  text-shadow: 0 0.2cqmin 1.2cqmin rgb(0 0 0 / 0.6);
+  white-space: nowrap;
+}
+
+.photo__caption[data-off] {
+  visibility: hidden;
+}
+
+.photo__caption b {
+  font-size: 4.4cqmin;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.photo__caption span {
+  font-size: 1.9cqmin;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+/* At the top, where nothing else sits. */
 .photo__bar {
   position: absolute;
   top: var(--edge-t);
-  left: 50%;
+  left: var(--edge-l);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -2742,7 +2825,6 @@
   border: 1px solid var(--g-line);
   background: var(--g-plate-2);
   pointer-events: auto;
-  transform: translateX(-50%);
 }
 
 .photo__label {
@@ -2753,38 +2835,483 @@
   color: var(--g-ink-2);
 }
 
-.photo__saved {
+.photo[data-hidden] .photo__frame {
+  display: none;
+}
+
+.photo__reveal {
   position: absolute;
-  top: calc(var(--edge-t) + 3.75rem);
-  left: 50%;
+  top: var(--edge-t);
+  right: var(--edge-r);
+  opacity: 0.75;
+  pointer-events: auto;
+}
+
+.photo__hints {
+  position: absolute;
+  top: calc(var(--edge-t) + 3.6rem);
+  left: var(--edge-l);
+  display: flex;
+  max-width: 21rem;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin: 0;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--g-line);
+  background: var(--g-plate);
+  color: var(--g-ink-2);
+  font-family: var(--g-display);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+.photo__hints span {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  margin: 0;
-  padding: 0.45rem 0.8rem;
-  border: 1px solid rgb(94 230 192 / 0.45);
+  gap: 0.2rem;
+}
+
+.photo__hints .g-kbd:last-of-type {
+  margin-right: 0.3rem;
+}
+
+.photo__hints--touch {
+  display: none;
+}
+
+/* On a touch screen, the fingers' gestures instead of the keys. */
+@media (hover: none) and (pointer: coarse) {
+  .photo__hints--keys {
+    display: none;
+  }
+
+  .photo__hints--touch {
+    display: block;
+  }
+}
+
+.photo__shutter {
+  position: absolute;
+  bottom: var(--edge-b);
+  left: 50%;
+  min-height: 3rem;
+  padding-inline: 1.5rem;
+  pointer-events: auto;
+  transform: translateX(-50%);
+}
+
+.photo__panel {
+  position: absolute;
+  top: var(--edge-t);
+  right: var(--edge-r);
+  display: grid;
+  width: 18rem;
+  max-height: calc(100cqh - var(--edge-t) - var(--edge-b));
+  align-content: start;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--g-line);
   background: var(--g-plate-2);
+  pointer-events: auto;
+  touch-action: pan-x pan-y;
+}
+
+.photo__tabs {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-bottom: 1px solid var(--g-line);
+  background: var(--g-plate-2);
+}
+
+.photo__tabs button {
+  min-height: 2.5rem;
+  border-bottom: 2px solid transparent;
+  color: var(--g-ink-3);
+  cursor: pointer;
+  font-family: var(--g-display);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.photo__tabs button:hover {
+  color: var(--g-ink);
+}
+
+.photo__tabs button:focus-visible {
+  outline: 2px solid rgb(var(--g-holo));
+  outline-offset: -2px;
+}
+
+.photo__tabs button[aria-pressed='true'] {
+  border-bottom-color: var(--g-brand);
+  color: var(--g-ink);
+}
+
+.photo__tab {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem;
+}
+
+.photo__tab[hidden] {
+  display: none;
+}
+
+.photo-range {
+  display: grid;
+  align-items: baseline;
+  gap: 0.15rem 0.5rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  color: var(--g-ink-2);
+  font-family: var(--g-display);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.photo-range output {
+  color: var(--g-ink);
+}
+
+.photo-range input {
+  width: 100%;
+  height: 1.5rem;
+  margin: 0;
+  grid-column: 1 / -1;
+  accent-color: var(--g-brand);
+  cursor: pointer;
+}
+
+.photo-range input:focus-visible {
+  outline: 2px solid rgb(var(--g-holo));
+  outline-offset: 2px;
+}
+
+.photo-switch {
+  display: flex;
+  min-height: 2.25rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0 0.65rem;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-radius);
+  background: rgb(var(--g-holo) / 0.04);
+  color: var(--g-ink-2);
+  cursor: pointer;
+  font-family: var(--g-display);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+.photo-switch:hover {
+  border-color: var(--g-line-2);
+  color: var(--g-ink);
+}
+
+.photo-switch:focus-visible {
+  outline: 2px solid rgb(var(--g-holo));
+  outline-offset: 2px;
+}
+
+.photo-switch__led {
+  width: 1.75rem;
+  height: 0.4rem;
+  background: rgb(var(--g-holo) / 0.2);
+  transition: background-color var(--g-fast) var(--g-ease);
+}
+
+.photo-switch[aria-checked='true'] {
+  color: var(--g-ink);
+}
+
+.photo-switch[aria-checked='true'] .photo-switch__led {
+  background: var(--g-brand);
+}
+
+.photo__chips {
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.photo-chip {
+  display: grid;
+  min-width: 0;
+  justify-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.2rem 0.35rem;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-radius);
+  background: rgb(var(--g-holo) / 0.04);
+  color: var(--g-ink-2);
+  cursor: pointer;
+  font-family: var(--g-display);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.photo-chip:hover {
+  border-color: var(--g-line-2);
+  color: var(--g-ink);
+}
+
+.photo-chip:focus-visible {
+  outline: 2px solid rgb(var(--g-holo));
+  outline-offset: 2px;
+}
+
+.photo-chip[aria-pressed='true'] {
+  border-color: var(--g-brand);
+  background: rgb(92 94 220 / 0.2);
+  color: var(--g-ink);
+}
+
+/* A little landscape, sky over sand and grass, under each filter. */
+.photo-chip__swatch {
+  display: block;
+  width: 100%;
+  height: 1.75rem;
+  background: linear-gradient(
+    180deg,
+    #5a7ab8 0%,
+    #f2b26a 58%,
+    #c08f58 60%,
+    #4f9a4a 100%
+  );
+}
+
+/* A frame's shape, in a box that fits the widest. */
+.photo-chip__shape {
+  --screen-shape: 1.6;
+
+  display: block;
+  height: 1.5rem;
+  max-width: 100%;
+  aspect-ratio: var(--shape);
+  border: 1.5px solid currentColor;
+}
+
+.photo__reset {
+  width: 100%;
+}
+
+.photo__flash {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The photo, before it is kept. */
+.photo-preview {
+  position: fixed;
+  z-index: 70;
+  inset: 0;
+  display: grid;
+  padding: clamp(0.5rem, 2vw, 1.5rem);
+  background: rgb(3 6 14 / 0.86);
+  place-items: center;
+  pointer-events: auto;
+  touch-action: pan-x pan-y;
+}
+
+.photo-preview__sheet {
+  display: grid;
+  max-width: 100%;
+  max-height: 100%;
+  align-items: stretch;
+  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1fr) 16rem;
+  overflow: auto;
+  padding: 1rem;
+  border: 1px solid var(--g-line);
+  background: var(--g-plate-2);
+  box-shadow: 0 50px 100px -40px #000;
+  overscroll-behavior: contain;
+}
+
+.photo-preview__sheet:focus {
+  outline: none;
+}
+
+.photo-preview__picture {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: calc(100dvh - 5rem);
+  margin: auto;
+  border: 1px solid var(--g-line);
+  object-fit: contain;
+}
+
+.photo-preview__side {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.photo-preview__title {
+  margin: 0.35rem 0 0;
+  color: var(--g-ink);
+  font-family: var(--g-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.photo-preview__meta {
+  margin: 0.6rem 0 0;
+  color: var(--g-ink-3);
+  font-family: var(--g-display);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.photo-preview__actions {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.photo-preview__actions .g-btn {
+  width: 100%;
+  white-space: normal;
+}
+
+.photo-preview__saved {
+  display: flex;
+  min-height: 1.25rem;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
   color: var(--g-teal);
   font-family: var(--g-display);
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  transform: translateX(-50%);
-  white-space: nowrap;
 }
 
-.photo__saved .g-num {
-  color: var(--g-ink-3);
-  letter-spacing: 0.04em;
-  text-transform: none;
+/* A picture taller than wide keeps its side beside it, up to the phone. */
+@media (max-width: 767px) {
+  .photo-preview__sheet {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+  }
+
+  .photo-preview__picture {
+    max-height: 52dvh;
+  }
 }
 
-.photo__flash {
-  position: absolute;
-  inset: 0;
-  background: #fff;
-  opacity: 0;
+/* A phone: the shutter and the settings at the bottom, under the thumb, with the
+   picture above them. The bar keeps to its buttons. */
+@media (max-width: 767px) and (orientation: portrait) {
+  .photo__dock {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: grid;
+    pointer-events: none;
+  }
+
+  .photo__shutter {
+    position: static;
+    transform: none;
+  }
+
+  .photo__panel {
+    position: static;
+    width: 100%;
+    max-height: 34cqh;
+    padding-bottom: env(safe-area-inset-bottom);
+    border-width: 1px 0 0;
+  }
+
+  .photo__tab {
+    gap: 0.5rem;
+    padding: 0.6rem var(--edge-l);
+  }
+
+  .photo__hints {
+    display: none;
+  }
+
+  /* The button keeps its name for screen readers, without the room for it. */
+  .photo__leave {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .photo__label {
+    display: none;
+  }
+
+  .photo__bar {
+    padding: 0.3rem;
+  }
+}
+
+/* A phone lying down: the settings at the side, the rest of the screen for the
+   picture. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .photo__panel {
+    width: 15rem;
+  }
+
+  .photo__tab {
+    gap: 0.45rem;
+    padding: 0.5rem;
+  }
+
+  .photo__hints,
+  .photo__label {
+    display: none;
+  }
+
+  .photo__leave {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .photo__bar {
+    padding: 0.3rem;
+  }
+
+  .photo__shutter {
+    right: calc(var(--edge-r) + 16rem);
+    left: auto;
+    transform: none;
+  }
+
+  .photo-preview__sheet {
+    grid-template-columns: minmax(0, 1fr) 13rem;
+  }
+
+  .photo-preview__picture {
+    max-height: calc(100dvh - 3.5rem);
+  }
 }
 
 /* Photo mode hides everything but the picture. */
@@ -4092,7 +4619,11 @@
   }
 
   .photo__frame,
-  .photo__bar {
+  .photo__bar,
+  .photo__panel,
+  .photo__shutter,
+  .photo__hints,
+  .photo-preview {
     animation: g-fade 0.4s var(--g-ease) both;
   }
 
@@ -4108,10 +4639,6 @@
     to {
       opacity: 0;
     }
-  }
-
-  .photo__saved {
-    animation: pad-in 0.45s var(--g-ease) both;
   }
 
   .game-map__backdrop,
@@ -4554,10 +5081,6 @@
     min-height: 2.75rem;
   }
 
-  [data-tip]::after {
-    display: none;
-  }
-
   .radar-button {
     width: 6.25rem;
     height: 6.25rem;
@@ -4777,23 +5300,6 @@
     padding: 1.5rem 1.25rem;
   }
 
-  .photo__bar {
-    max-width: calc(100% - 2 * var(--g-edge));
-    padding-left: 0.4rem;
-  }
-
-  .photo__label {
-    display: none;
-  }
-
-  .photo__bar .g-btn {
-    padding: 0 0.7rem;
-  }
-
-  .photo__bar .g-kbd {
-    display: none;
-  }
-
   .game-map {
     padding: 0;
   }
@@ -4971,10 +5477,6 @@
   .hud__done,
   .hud__found {
     font-size: 0.5625rem;
-  }
-
-  [data-tip]::after {
-    display: none;
   }
 
   .radar-button {
@@ -5533,8 +6035,16 @@
   filter: drop-shadow(0 0 1px rgb(13 21 48 / 0.85));
 }
 
-.light .photo__saved {
-  border-color: rgb(10 125 96 / 0.5);
+.light .photo-preview {
+  background: rgb(226 232 246 / 0.88);
+}
+
+.light .photo-preview__sheet {
+  box-shadow: 0 50px 100px -50px rgb(13 21 48 / 0.55);
+}
+
+.light .photo-chip[aria-pressed='true'] {
+  background: rgb(92 94 220 / 0.14);
 }
 
 /* The chart and the archive. */
