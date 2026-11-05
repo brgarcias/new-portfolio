@@ -15,7 +15,7 @@ Em outubro de 2026 o Bruno pediu um redesign, mais moderno e animado, que evolui
 - Use Node.js 24.22.1, a versão do `.nvmrc`. Rode `nvm use` antes de qualquer comando e confira com `node --version`, porque o shell pode abrir em outra versão. Se cada comando abrir um shell novo, ative o Node no mesmo comando, como em `nvm use >/dev/null && pnpm check`. O `.npmrc` tem `engine-strict=true`, então outra versão do Node faz a instalação falhar.
 - Use somente pnpm 11.3.0, via Corepack. Não use npm nem yarn para instalar dependências e não crie outros lockfiles. O único lockfile é o `pnpm-lock.yaml`.
 - Instale com `pnpm install --frozen-lockfile`.
-- O `pnpm-workspace.yaml` libera scripts de instalação apenas para `@heroui/shared-utils`, que copia a variante para React 19 na instalação, e para `unrs-resolver`. Ele também aceita ESLint 10 nos plugins que ainda declaram suporte só até a versão 9. Mantenha essas regras ao mexer em dependências.
+- O `pnpm-workspace.yaml` libera scripts de instalação apenas para `@heroui/shared-utils`, que copia a variante para React 19 na instalação, e para `unrs-resolver`. Ele também aceita ESLint 10 nos plugins que ainda declaram suporte só até a versão 9. Em `overrides`, ele força o minimatch 11 nos pacotes do ESLint que ainda pedem o 10, por um alerta do Dependabot; o comentário ao lado diz quando tirar a regra. Mantenha essas regras ao mexer em dependências. Num `node_modules` já instalado, o pnpm 11 pode pular a resolução e responder "Already up to date" sem aplicar um `overrides` novo: apague `node_modules/.pnpm-workspace-state-v1.json`, rode `pnpm install` de novo e confira a seção `overrides` do lockfile.
 
 ## Comandos
 
@@ -141,7 +141,7 @@ O projeto usa o App Router. As seções são componentes de servidor quando não
 ### Versões que não devem subir sem cuidado
 
 - **Tailwind CSS** fica na 3.4. A versão 4 muda o reset de estilos e o HeroUI 2.8 em diante exige a 4.
-- **HeroUI** fica em `@heroui/react` 2.7.11, a última linha compatível com Tailwind 3. O `Modal` fixa `max-h-[calc(100%_-_7.5rem)]`, porque o HeroUI mudou esse limite para 8rem.
+- **HeroUI** fica em `@heroui/react` 2.7.11, a última linha compatível com Tailwind 3. O `Modal` fixa `max-h-[calc(100%_-_7.5rem)]`, porque o HeroUI mudou esse limite para 8rem. O `deepmerge` 4.3.1 que o `@heroui/theme` traz tem um alerta sem correção (GHSA-gcqx-w48m-w2h4), dispensado no GitHub como risco tolerável: só o plugin do Tailwind o usa, no build, com a configuração do próprio projeto. Não troque o HeroUI por causa dele; o registro fica em `SECURITY.md`.
 - **Playwright**: a versão de `@playwright/test` precisa ser igual à tag do contêiner em `.github/workflows/ci.yml`. Ao atualizar, regrave as imagens dos testes visuais e confira que nada mudou além do esperado.
 - **three** e **@react-three/fiber** ficam na 0.186 e na 9.x: a linha 9 do fiber é a feita para o React 19. Atualize os dois juntos e abra `/play` para conferir as naves e o voo.
 - **Decap CMS** fica na 3.17.1, copiada do pacote `decap-cms` do npm para `public/admin/cms/` (o `decap-cms.js`, os pedaços `*.decap-cms.js`, os dois `.wasm` e a licença). Para atualizar, baixe o `.tgz` da versão nova do registro do npm, confira o `integrity` que o registro informa, troque esses arquivos, atualize a versão aqui, e abra o painel para conferir que ele carrega sem violações da CSP. Confira também o que `public/admin/panel.js` usa do Decap: o registro do backend `github` (`CMS.getBackend`), o `authenticate` e o `logout` dele, os métodos da API que ele troca (`persistFiles`, `deleteFiles` e `forceMergePR`) e os que ele chama, e as classes dos botões de publicar. Os testes de `tests/panel.spec.ts` passam por esse caminho.
@@ -198,3 +198,4 @@ Uma seção que muda de altura desloca as de baixo por frações de pixel, e o t
 - Os PRs que o painel de conteúdo abre, em branches `cms/...`, são do Bruno: ele publica pelo painel. Não faça merge, não feche e não mude esses PRs, a não ser que ele peça.
 - Não publique pelo Netlify CLI. A produção só muda por merge em `main`.
 - A configuração do Netlify fica no painel do site. Não há `netlify.toml` no repositório.
+- O GitHub roda o Dependabot (alertas e atualizações de segurança), o CodeQL (configuração padrão, em cada PR e toda semana) e o secret scanning com proteção de push, e aceita relatos privados de vulnerabilidade. `SECURITY.md`, na raiz, diz como relatar, o escopo e como cada alerta do Dependabot é tratado: com a versão corrigida, com um `overrides` ou, sem correção, dispensado com a justificativa e registrado lá.
