@@ -19,6 +19,9 @@ jobs:
   # A minor or patch update merges by itself once every required check passes:
   # auto-merge, with squash, like the merges made by hand. A major update, or
   # one of the ignored packages, waits for a review and is merged by hand.
+  # With the DEPENDABOT_TOKEN secret (a token of Bruno, see AGENTS.md), the
+  # merge is made in his name and its push runs ci.yml and CodeQL on main; with
+  # the Actions token, that push starts no workflow.
   auto-merge:
     if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'brgarcias/new-portfolio'
     runs-on: ubuntu-latest
@@ -31,14 +34,16 @@ jobs:
       - if: steps.metadata.outputs.update-type != 'version-update:semver-major'
         run: gh pr merge --auto --squash "$PR_URL"
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.DEPENDABOT_TOKEN || secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
 
   # main requires the branch to be up to date, and Dependabot only rebases on
   # its own when there is a conflict. After a push to main, ask it to rebase
   # the open pull requests that fell behind and have auto-merge on; the rebase
-  # runs the checks again and the merge follows. A merge made by this workflow
-  # does not start workflows, so this can also be run by hand.
+  # runs the checks again and the merge follows. Dependabot only obeys a user
+  # with push access, not the Actions token, so the comment needs the
+  # DEPENDABOT_TOKEN secret; without it, the job only warns. It can also be
+  # run by hand.
   rebase:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
@@ -56,10 +61,18 @@ jobs:
             sleep 10
           done
           behind=$(list --jq '[.[] | select(.mergeStateStatus == "BEHIND" and .autoMergeRequest != null) | .number] | join(" ")')
-          [ -z "$behind" ] && echo "No Dependabot pull request with auto-merge is behind main." && exit 0
+          if [ -z "$behind" ]; then
+            echo "No Dependabot pull request with auto-merge is behind main."
+            exit 0
+          fi
           for number in $behind; do
-            echo "Asking Dependabot to rebase #$number"
-            gh pr comment "$number" --repo "$GITHUB_REPOSITORY" --body '@dependabot rebase'
+            if [ -n "$DEPENDABOT_TOKEN" ]; then
+              echo "Asking Dependabot to rebase #$number"
+              GH_TOKEN="$DEPENDABOT_TOKEN" gh pr comment "$number" --repo "$GITHUB_REPOSITORY" --body '@dependabot rebase'
+            else
+              echo "::warning::Dependabot pull request #$number is behind main. Update its branch, comment '@dependabot rebase' on it, or set the DEPENDABOT_TOKEN secret so this job can."
+            fi
           done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPENDABOT_TOKEN: ${{ secrets.DEPENDABOT_TOKEN }}
