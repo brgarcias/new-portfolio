@@ -16,10 +16,10 @@ import { markup } from '@/src/components/Markup';
 import { format, type Messages } from '@/src/i18n/messages';
 // CONTENT
 import {
-  resume,
   linkTarget,
   ResumeShort,
   SocialIcon,
+  type Resume,
 } from '@/src/components/SiteFrame/content';
 import type { Hero as HeroContent, Profile, SocialLink } from '@/src/content';
 // CSS
@@ -35,6 +35,8 @@ interface HeroProps {
   frame: Messages['frame'];
   // The address of the game, in the page's language.
   playHref: string;
+  // The résumé in the page's language.
+  resume: Resume;
 }
 
 // The leader of each technology around the illustration, like the callouts of
@@ -60,6 +62,7 @@ export default function Hero({
   t,
   frame,
   playHref,
+  resume,
 }: Readonly<HeroProps>) {
   return (
     <section id="top" className="hero" aria-labelledby="hero-title" data-loop>

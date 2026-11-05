@@ -618,7 +618,10 @@ test('no celular, deixa o CV ao lado das redes e o jogo como botão', async ({
     await page.goto('/pt');
     const top = page.locator('#top');
     const cv = top.getByRole('link', { name: 'Baixar CV', exact: true });
-    await expect(cv).toHaveAttribute('download', 'Bruno_Garcia_Resume.pdf');
+    await expect(cv).toHaveAttribute(
+      'download',
+      'Bruno_Garcia_Full_Stack_PTBR.pdf',
+    );
     await expect(cv.locator('svg')).toBeVisible();
     await expectBeside(top.locator('.social-links li').last(), cv);
     await expect(
@@ -1121,7 +1124,7 @@ test('mostra os dados de contato', async ({ page, isMobile }) => {
   }
   await expect(contact.getByRole('link', { name: resume })).toHaveAttribute(
     'download',
-    'Bruno_Garcia_Resume.pdf',
+    'Bruno_Garcia_Full_Stack.pdf',
   );
   await expect(
     contact.getByRole('link', { name: 'WhatsApp', exact: true }),
@@ -1161,32 +1164,65 @@ test('oferece o currículo e os canais de contato', async ({
   request,
   isMobile,
 }) => {
-  await page.goto('/');
-  const resumeLink = page.locator('#top').getByRole('link', {
-    name: isMobile ? 'Download CV' : 'Download résumé',
-    exact: true,
-  });
-  await expect(resumeLink).toHaveAttribute(
-    'href',
+  // Each page offers the résumé in its own language: the PDF itself, opened
+  // without unpacking anything, under the file's own name. English last, so
+  // the rest of the test runs on /.
+  const resumes = [
+    [
+      '/pt',
+      'Baixar currículo',
+      'Baixar CV',
+      'PT/Bruno_Garcia_Full_Stack_PTBR.pdf',
+    ],
+    [
+      '/es',
+      'Descargar currículum',
+      'Descargar CV',
+      'ES/Bruno_Garcia_Full_Stack_ES.pdf',
+    ],
+    ['/', 'Download résumé', 'Download CV', 'EN/Bruno_Garcia_Full_Stack.pdf'],
+  ] as const;
+  for (const [path, full, short, file] of resumes) {
+    await page.goto(path);
+    const resumeLink = page.locator('#top').getByRole('link', {
+      name: isMobile ? short : full,
+      exact: true,
+    });
+    await expect(resumeLink).toHaveAttribute('href', `/documents/cv/${file}`);
+    // The top's buttons enter with a CSS animation; a click during it can
+    // miss. The loops of the top never end and are left out.
+    await page.waitForFunction(() =>
+      document
+        .querySelector('#top')
+        ?.getAnimations({ subtree: true })
+        .every(
+          (animation) =>
+            !(animation instanceof CSSAnimation) ||
+            animation.playState !== 'running' ||
+            animation.effect?.getTiming().iterations === Infinity,
+        ),
+    );
+    const downloadPromise = page.waitForEvent('download');
+    await resumeLink.click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe(file.split('/')[1]);
+    const response = await request.get(`/documents/cv/${file}`);
+    expect(response.ok()).toBe(true);
+    expect(response.headers()['content-type']).toBe('application/pdf');
+    expect((await response.body()).subarray(0, 5).toString()).toBe('%PDF-');
+  }
+  // The addresses shared before, of the ZIP and of the single PDF, lead to
+  // the English one.
+  for (const oldPath of [
+    '/documents/cv/Bruno_Garcia_Resume.zip',
     '/documents/cv/Bruno_Garcia_Resume.pdf',
-  );
-  const downloadPromise = page.waitForEvent('download');
-  await resumeLink.click();
-  const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe('Bruno_Garcia_Resume.pdf');
-  // The résumé is the PDF itself, opened without unpacking anything.
-  const response = await request.get('/documents/cv/Bruno_Garcia_Resume.pdf');
-  expect(response.ok()).toBe(true);
-  expect(response.headers()['content-type']).toBe('application/pdf');
-  expect((await response.body()).subarray(0, 5).toString()).toBe('%PDF-');
-  // The old ZIP's address, in links shared before, leads to the PDF.
-  const old = await request.get('/documents/cv/Bruno_Garcia_Resume.zip', {
-    maxRedirects: 0,
-  });
-  expect(old.status()).toBe(308);
-  expect(old.headers()['location']).toMatch(
-    /\/documents\/cv\/Bruno_Garcia_Resume\.pdf$/,
-  );
+  ]) {
+    const old = await request.get(oldPath, { maxRedirects: 0 });
+    expect(old.status()).toBe(308);
+    expect(old.headers()['location']).toMatch(
+      /\/documents\/cv\/EN\/Bruno_Garcia_Full_Stack\.pdf$/,
+    );
+  }
 
   const social = page.locator('.hero__links .social-links a');
   await expect(social).toHaveCount(4);
@@ -1219,7 +1255,7 @@ test('oferece o currículo e os canais de contato', async ({
   ).toHaveCount(0);
   await expect(page.locator('.site-header__cv')).toHaveAttribute(
     'download',
-    'Bruno_Garcia_Resume.pdf',
+    'Bruno_Garcia_Full_Stack.pdf',
   );
   await expect(page.getByRole('link', { name: 'text me' })).toHaveAttribute(
     'rel',

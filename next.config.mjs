@@ -60,10 +60,16 @@ const nextConfig = {
     return [
       { source: '/en', destination: '/', permanent: true },
       { source: '/en/play', destination: '/play', permanent: true },
-      // The résumé was a ZIP with this PDF inside; old links still reach it.
+      // The résumé was a ZIP, then a single PDF; old links still reach it,
+      // in English.
       {
         source: '/documents/cv/Bruno_Garcia_Resume.zip',
-        destination: '/documents/cv/Bruno_Garcia_Resume.pdf',
+        destination: '/documents/cv/EN/Bruno_Garcia_Full_Stack.pdf',
+        permanent: true,
+      },
+      {
+        source: '/documents/cv/Bruno_Garcia_Resume.pdf',
+        destination: '/documents/cv/EN/Bruno_Garcia_Full_Stack.pdf',
         permanent: true,
       },
     ];

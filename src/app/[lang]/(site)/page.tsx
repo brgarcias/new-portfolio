@@ -12,6 +12,7 @@ import Contributing from '../../contributing';
 import Courses from '../../courses';
 // COMPONENTS
 import OffscreenPause from '@/src/components/OffscreenPause';
+import { resume } from '@/src/components/SiteFrame/content';
 // CONTENT
 import {
   getAbout,
@@ -53,6 +54,8 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
   const locale = lang;
   const messages = getMessages(locale);
   const profile = getProfile(locale);
+  // The résumé in the page's language, for the top and the contact panel.
+  const cv = resume(locale);
   const social = getSocialLinks(profile, messages);
   const sections = getSections(locale, profile);
   const experiences = getExperiences(locale, messages);
@@ -67,6 +70,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
         social={social}
         t={messages.hero}
         frame={messages.frame}
+        resume={cv}
         playHref={pagePath(locale, 'play')}
         currentRole={
           current && {
@@ -107,6 +111,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
         social={social}
         labels={messages.contact}
         frame={messages.frame}
+        resume={cv}
       />
       <OffscreenPause />
     </main>

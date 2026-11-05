@@ -6,6 +6,8 @@ I hope you find something compelling within, even if it's just a few lines.
 
 ---
 
-**[Open the resume](Bruno_Garcia_Resume.pdf)**
+**[Open the resume](EN/Bruno_Garcia_Full_Stack.pdf)**
+
+Also in [Portuguese](PT/Bruno_Garcia_Full_Stack_PTBR.pdf) and in [Spanish](ES/Bruno_Garcia_Full_Stack_ES.pdf).
 
 Thank you for your interest!

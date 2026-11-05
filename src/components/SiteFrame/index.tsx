@@ -95,6 +95,7 @@ export default function SiteFrame({
   // The server renders the English home page as /en, which / rewrites to,
   // while the browser reads /. Both are the home page.
   const isHome = pathname === home || pathname === `/${locale}`;
+  const cv = resume(locale);
   const [menu, setMenu] = useState<MenuState>('closed');
   const [scroll, setScroll] = useState({ saved: 0, target: 0 });
   const [targetId, setTargetId] = useState<PageId | null>(null);
@@ -318,8 +319,8 @@ export default function SiteFrame({
             <a
               ref={resumeRef}
               className="btn btn--ghost btn--small site-header__cv"
-              href={resume.href}
-              download={resume.fileName}
+              href={cv.href}
+              download={cv.fileName}
             >
               <ResumeShort t={t} />
             </a>
@@ -387,8 +388,8 @@ export default function SiteFrame({
           </ul>
           <a
             className="btn btn--ghost btn--small"
-            href={resume.href}
-            download={resume.fileName}
+            href={cv.href}
+            download={cv.fileName}
           >
             <span className="resume-label resume-label--full">
               <ArrowDownIcon />
