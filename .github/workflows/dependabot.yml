@@ -1,0 +1,65 @@
+# Keeps the pull requests of Dependabot moving. The checks of ci.yml and of
+# Netlify still decide: main only takes a pull request with them green and the
+# branch up to date, as with any other. Nothing of the pull request is checked
+# out or run here, because the token can write.
+name: Dependabot
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  # A minor or patch update merges by itself once every required check passes:
+  # auto-merge, with squash, like the merges made by hand. A major update, or
+  # one of the ignored packages, waits for a review and is merged by hand.
+  auto-merge:
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'brgarcias/new-portfolio'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - id: metadata
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - if: steps.metadata.outputs.update-type != 'version-update:semver-major'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+
+  # main requires the branch to be up to date, and Dependabot only rebases on
+  # its own when there is a conflict. After a push to main, ask it to rebase
+  # the open pull requests that fell behind and have auto-merge on; the rebase
+  # runs the checks again and the merge follows. A merge made by this workflow
+  # does not start workflows, so this can also be run by hand.
+  rebase:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - run: |
+          list() {
+            gh pr list --repo "$GITHUB_REPOSITORY" --author app/dependabot --state open \
+              --json number,mergeStateStatus,autoMergeRequest "$@"
+          }
+          # GitHub computes the merge state lazily: the first read can say UNKNOWN.
+          for attempt in 1 2 3 4 5 6; do
+            unknown=$(list --jq '[.[] | select(.mergeStateStatus == "UNKNOWN")] | length')
+            [ "$unknown" = "0" ] && break
+            sleep 10
+          done
+          behind=$(list --jq '[.[] | select(.mergeStateStatus == "BEHIND" and .autoMergeRequest != null) | .number] | join(" ")')
+          [ -z "$behind" ] && echo "No Dependabot pull request with auto-merge is behind main." && exit 0
+          for number in $behind; do
+            echo "Asking Dependabot to rebase #$number"
+            gh pr comment "$number" --repo "$GITHUB_REPOSITORY" --body '@dependabot rebase'
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -53,6 +53,8 @@ Cada alerta do Dependabot é tratado por pull request:
 - Quando existe uma versão corrigida, a dependência sobe. Se quem a pede ainda não aceita essa versão, um `overrides` em `pnpm-workspace.yaml` força a versão corrigida, com o alerta e o motivo em comentário.
 - Quando não existe correção, o uso real no projeto decide. Se a falha não é alcançável, o alerta é dispensado no GitHub com a justificativa e fica registrado abaixo, para ser revisto quando a correção aparecer.
 
+O Dependabot também propõe, toda semana, as atualizações de versão, cada uma com pelo menos 7 dias desde o lançamento. As minors e os patches entram sozinhos quando todos os checks passam; as majors esperam uma revisão.
+
 Alertas dispensados:
 
 | Pacote            | Aviso                                                                    | Motivo                                                                                                                                                                           |
