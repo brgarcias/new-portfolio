@@ -13,6 +13,7 @@ import Courses from '../../courses';
 import Projects from '../../projects';
 import Contributing from '../../contributing';
 import Contact from '../../contact';
+import { resume } from '@/src/components/SiteFrame/content';
 // CONTENT
 import {
   getAbout,
@@ -161,6 +162,7 @@ export default async function Play({ params }: PageProps<'/[lang]/play'>) {
         social={social}
         labels={messages.contact}
         frame={messages.frame}
+        resume={resume(lang)}
       />
     ),
   };

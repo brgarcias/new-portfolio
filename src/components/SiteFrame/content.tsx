@@ -1,3 +1,5 @@
+// I18N
+import type { Locale } from '@/src/i18n/config';
 // CONTENT
 import type { SocialLink } from '@/src/content';
 import type { PageId } from '@/src/content/sections';
@@ -19,10 +21,24 @@ export interface NavItem {
   title: string;
 }
 
-export const resume = {
-  href: '/documents/cv/Bruno_Garcia_Resume.pdf',
-  fileName: 'Bruno_Garcia_Resume.pdf',
-} as const;
+// The résumé in each language, in public/documents/cv/. A page offers the one
+// of its language, downloaded under the file's own name; the old addresses, in
+// links shared before, lead to the English one (next.config.mjs).
+const resumes: Record<Locale, string> = {
+  en: '/documents/cv/EN/Bruno_Garcia_Full_Stack.pdf',
+  pt: '/documents/cv/PT/Bruno_Garcia_Full_Stack_PTBR.pdf',
+  es: '/documents/cv/ES/Bruno_Garcia_Full_Stack_ES.pdf',
+};
+
+export interface Resume {
+  href: string;
+  fileName: string;
+}
+
+export const resume = (locale: Locale): Resume => {
+  const href = resumes[locale];
+  return { href, fileName: href.slice(href.lastIndexOf('/') + 1) };
+};
 
 // The résumé's short label, as in the bar: the arrow and "CV", which a screen
 // reader hears as "Download CV".
