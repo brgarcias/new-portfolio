@@ -1,0 +1,69 @@
+# Dependabot version updates. The security updates are turned on in the
+# repository settings and do not need this file. The ignore rules mirror the
+# versions that AGENTS.md says must not move without care ("Versões que não
+# devem subir sem cuidado"): change one side, change the other.
+version: 2
+updates:
+  # pnpm goes through the npm ecosystem.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: America/Sao_Paulo
+    # A release waits a week before Dependabot proposes it, in case it turns
+    # out to be compromised. pnpm 11 waits a day on its own.
+    cooldown:
+      default-days: 7
+    # Conventional Commits, in English: "chore(deps): bump ..." for production
+    # and "chore(deps-dev): bump ..." for development.
+    commit-message:
+      prefix: chore
+      include: scope
+    # One pull request a week with every minor and patch update, which the
+    # Dependabot workflow merges when the checks pass. A major update comes in
+    # its own pull request and waits for a review.
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # @heroui/react 2.8 and @heroui/theme 2.4.18 onwards need Tailwind 4;
+      # 2.7.11 and 2.4.17 are the last ones for Tailwind 3.
+      - dependency-name: '@heroui/*'
+      # Tailwind 4 changes the style reset, and HeroUI 2.7 needs 3.
+      - dependency-name: tailwindcss
+        update-types: ['version-update:semver-major']
+      # The version has to match the container tag in ci.yml, and a new one
+      # redraws the visual snapshots: update it by hand, with the tag.
+      - dependency-name: '@playwright/test'
+      # three is 0.x, so a minor is a breaking change: update three,
+      # @types/three and @react-three/fiber together and check /play.
+      - dependency-name: three
+        update-types:
+          ['version-update:semver-minor', 'version-update:semver-major']
+      - dependency-name: '@types/three'
+        update-types:
+          ['version-update:semver-minor', 'version-update:semver-major']
+      # fiber 9 is the line made for React 19.
+      - dependency-name: '@react-three/fiber'
+        update-types: ['version-update:semver-major']
+      # Node 24 types, the version of .nvmrc.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: wednesday
+      time: '06:00'
+      timezone: America/Sao_Paulo
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
