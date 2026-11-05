@@ -10,3 +10,11 @@ peerDependencyRules:
     'eslint-plugin-import>eslint': '10'
     'eslint-plugin-jsx-a11y>eslint': '10'
     'eslint-plugin-react>eslint': '10'
+
+# Dependabot alert 2 (GHSA-g3hv-75wg-m249): ESLint 10.14, @eslint/config-array
+# 0.23 and @typescript-eslint/typescript-estree 8.72 still ask for minimatch 10,
+# whose pattern preprocessing can be amplified into a denial of service. They
+# only call match() and read pattern, which minimatch 11 keeps. Drop this once
+# they ask for 11 themselves.
+overrides:
+  'minimatch@>=7 <11.0.1': '^11.0.1'
